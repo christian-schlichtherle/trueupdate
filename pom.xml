@@ -105,7 +105,7 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>archiva-autoupdate-util</artifactId>
+                <artifactId>archiva-update-commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -557,8 +557,8 @@
     </profiles>
 
     <modules>
-        <module>archiva-autoupdate-client</module>
-        <module>archiva-autoupdate-server</module>
-        <module>archiva-autoupdate-util</module>
+        <module>archiva-update-client</module>
+        <module>archiva-update-commons</module>
+        <module>archiva-update-server</module>
     </modules>
 </project>

@@ -13,16 +13,16 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-autoupdate-server</artifactId>
+    <artifactId>archiva-update-server</artifactId>
     <packaging>war</packaging>
 
-    <name>*Archiva AutoUpdate Server</name>
+    <name>*Archiva Update Server</name>
     <description>Provides a RESTful web service for updating *Archiva products.</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-autoupdate-util</artifactId>
+            <artifactId>archiva-update-commons</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
