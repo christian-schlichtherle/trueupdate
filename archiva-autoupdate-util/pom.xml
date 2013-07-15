@@ -13,16 +13,8 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-autoupdate-client</artifactId>
-    <packaging>war</packaging>
+    <artifactId>archiva-autoupdate-util</artifactId>
 
-    <name>*Archiva AutoUpdate Client</name>
-    <description>Provides a RESTful web client for updating *Archiva products.</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-autoupdate-util</artifactId>
-        </dependency>
-    </dependencies>
+    <name>*Archiva AutoUpdate Utilities</name>
+    <description>Provides utilities for updating *Archiva products.</description>
 </project>

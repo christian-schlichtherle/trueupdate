@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright (C) 2013 Stimulus Software. All Rights Reserved.
+  - Copyright (C) 2005-2013 Stimulus Software. All Rights Reserved.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -14,7 +14,25 @@
     </parent>
 
     <artifactId>archiva-autoupdate-server</artifactId>
+    <packaging>war</packaging>
 
     <name>*Archiva AutoUpdate Server</name>
-    <description>The server module of the AutoUpdate system for *Archiva.</description>
+    <description>Provides a RESTful web service for updating *Archiva products.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>archiva-autoupdate-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
