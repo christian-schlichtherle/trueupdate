@@ -5,11 +5,14 @@
 package com.stimulus.archiva.update.server.maven;
 
 import com.stimulus.archiva.update.server.finder.ArtifactDescriptor;
+import com.stimulus.archiva.update.server.finder.ArtifactUpdateFinder;
 import com.stimulus.archiva.update.server.finder.UpToDateException;
-import com.stimulus.archiva.update.server.finder.UpdateFinder;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -34,28 +37,28 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.version.Version;
 
 /**
- * Finds the latest version of a given artifact by looking it up in the local
- * Maven repository.
+ * Finds the latest version of a given artifact by looking it up in a local
+ * Maven repository and, optionally, some remote Maven repositories.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public class MavenizedUpdateFinder implements UpdateFinder {
+public class MavenizedArtifactUpdateFinder implements ArtifactUpdateFinder {
 
-    private final LocalRepository localRepository;
-
-    /**
-     * Constructs a mavenized update finder which uses the given local
-     * repository for artifacts.
-     *
-     * @param localRepository the local repository for artifacts.
-     */
-    public MavenizedUpdateFinder(final LocalRepository localRepository) {
-        this.localRepository = Objects.requireNonNull(localRepository);
+    public static void main(String[] args) throws Exception {
+        System.out.println("Resolved: " + finder().findUpdatePath(descriptor()));
     }
 
-    public static void main(final String[] args) throws Exception {
-        System.out.println("Resolved: " + new MavenizedUpdateFinder(new LocalRepository("/Users/christian/.m2/repository")).findUpdatePath(descriptor()));
+    private static MavenizedArtifactUpdateFinder finder() {
+        return new MavenizedArtifactUpdateFinder(userRepository(), centralRepository());
+    }
+
+    private static LocalRepository userRepository() {
+        return new LocalRepository("target/repository");
+    }
+
+    private static RemoteRepository centralRepository() {
+        return new RemoteRepository.Builder("central", "default", "http://repo1.maven.org/maven2/").build();
     }
 
     private static ArtifactDescriptor descriptor() {
@@ -66,6 +69,24 @@ public class MavenizedUpdateFinder implements UpdateFinder {
                 .packaging("jar")
                 .version("0")
                 .build();
+    }
+
+    private final LocalRepository local;
+    private final List<RemoteRepository> remotes;
+
+    /**
+     * Constructs a mavenized update finder which uses the given local
+     * and remote Maven repositories for finding the latest update for a
+     * described artifact.
+     *
+     * @param local the local repository for artifacts.
+     * @param remotes the remote repositories for artifacts.
+     */
+    public MavenizedArtifactUpdateFinder(
+            final LocalRepository local,
+            final RemoteRepository... remotes) {
+        this.local = Objects.requireNonNull(local);
+        this.remotes = Collections.unmodifiableList(Arrays.asList(remotes));
     }
 
     @Override public Path findUpdatePath(ArtifactDescriptor descriptor)
@@ -80,7 +101,7 @@ public class MavenizedUpdateFinder implements UpdateFinder {
 
     private Artifact findUpdateArtifact(ArtifactDescriptor descriptor)
     throws Exception {
-        final Artifact artifact = resolve(rangedArtifact(descriptor));
+        final Artifact artifact = findUpdateArtifact(rangedArtifact(descriptor));
         if (artifact.getVersion().equals(descriptor.version()))
             throw new UpToDateException(descriptor);
         return artifact;
@@ -95,7 +116,7 @@ public class MavenizedUpdateFinder implements UpdateFinder {
                 String.format("[%s,)", descriptor.version()));
     }
 
-    private Artifact resolve(final Artifact rangedArtifact)
+    private Artifact findUpdateArtifact(final Artifact rangedArtifact)
     throws RepositoryException {
         final VersionRangeResult versionRangeResult = resolveVersionRange(versionRangeRequest(rangedArtifact));
         final Version version = versionRangeResult.getHighestVersion();
@@ -115,41 +136,41 @@ public class MavenizedUpdateFinder implements UpdateFinder {
     }
 
     private VersionRangeRequest versionRangeRequest(final Artifact artifact) {
-        final VersionRangeRequest versionRangeRequest = new VersionRangeRequest();
-        versionRangeRequest.addRepository(centralRepository());
-        versionRangeRequest.setArtifact(artifact);
-        return versionRangeRequest;
+        return new VersionRangeRequest()
+                .setRepositories(remotes)
+                .setArtifact(artifact);
     }
 
     private ArtifactRequest artifactRequest(final Artifact artifact) {
-        final ArtifactRequest artifactRequest = new ArtifactRequest();
-        artifactRequest.addRepository(centralRepository());
-        artifactRequest.setArtifact(artifact);
-        return artifactRequest;
+        return new ArtifactRequest()
+                .setRepositories(remotes)
+                .setArtifact(artifact);
     }
 
     private DefaultRepositorySystemSession repositorySystemSession() {
-        final DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        session.setTransferListener(new ConsoleTransferListener());
-        session.setRepositoryListener(new ConsoleRepositoryListener());
-        session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, localRepository));
+        final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
+                .newSession()
+                .setTransferListener(new ConsoleTransferListener())
+                .setRepositoryListener(new ConsoleRepositoryListener());
+        session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, local));
         return session;
     }
 
     private RepositorySystem repositorySystem() {
-        final DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-        locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
-            @Override public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
-                throw new UndeclaredThrowableException(exception);
-            }
-        });
-        locator.addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class);
-        locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
-        locator.setServices(WagonProvider.class, new ManualWagonProvider());
+        final DefaultServiceLocator locator = MavenRepositorySystemUtils
+                .newServiceLocator()
+                .addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class)
+                .addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class)
+                .setServices(WagonProvider.class, new ManualWagonProvider());
+        locator.setErrorHandler(errorHandler());
         return locator.getService(RepositorySystem.class);
     }
 
-    private RemoteRepository centralRepository() {
-        return new RemoteRepository.Builder("central", "default", "http://repo1.maven.org/maven2/").build();
+    private DefaultServiceLocator.ErrorHandler errorHandler() {
+        return new DefaultServiceLocator.ErrorHandler() {
+            @Override public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
+                throw new UndeclaredThrowableException(exception);
+            }
+        };
     }
 }

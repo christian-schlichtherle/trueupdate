@@ -7,15 +7,14 @@ package com.stimulus.archiva.update.server.finder;
 import java.nio.file.Path;
 
 /**
- * Finds the latest version of a given artifact.
+ * Finds the latest update for a described artifact.
  *
  * @author Christian Schlichtherle
  */
-public interface UpdateFinder {
+public interface ArtifactUpdateFinder {
 
     /**
-     * Returns the path to the latest version of the artifact with the given
-     * Maven coordinates.
+     * Returns the path to the latest update for the described artifact.
      *
      * @param  descriptor the descriptor for the artifact.
      * @return the path to the latest version of the artifact with the given
