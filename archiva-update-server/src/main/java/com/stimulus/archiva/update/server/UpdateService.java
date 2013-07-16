@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.autoupdate.server;
+package com.stimulus.archiva.update.server;
 
 import java.util.Objects;
 import javax.inject.Inject;
