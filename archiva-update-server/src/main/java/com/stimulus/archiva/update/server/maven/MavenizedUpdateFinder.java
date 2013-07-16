@@ -10,6 +10,7 @@ import com.stimulus.archiva.update.server.finder.UpdateFinder;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Path;
+import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -41,8 +42,20 @@ import org.eclipse.aether.version.Version;
 @Immutable
 public class MavenizedUpdateFinder implements UpdateFinder {
 
+    private final LocalRepository localRepository;
+
+    /**
+     * Constructs a mavenized update finder which uses the given local
+     * repository for artifacts.
+     *
+     * @param localRepository the local repository for artifacts.
+     */
+    public MavenizedUpdateFinder(final LocalRepository localRepository) {
+        this.localRepository = Objects.requireNonNull(localRepository);
+    }
+
     public static void main(final String[] args) throws Exception {
-        System.out.println("Resolved: " + new MavenizedUpdateFinder().findUpdatePath(descriptor()));
+        System.out.println("Resolved: " + new MavenizedUpdateFinder(new LocalRepository("/Users/christian/.m2/repository")).findUpdatePath(descriptor()));
     }
 
     private static ArtifactDescriptor descriptor() {
@@ -60,12 +73,12 @@ public class MavenizedUpdateFinder implements UpdateFinder {
         return findUpdateFile(descriptor).toPath();
     }
 
-    private static File findUpdateFile(ArtifactDescriptor descriptor)
+    private File findUpdateFile(ArtifactDescriptor descriptor)
     throws Exception {
         return findUpdateArtifact(descriptor).getFile();
     }
 
-    private static Artifact findUpdateArtifact(ArtifactDescriptor descriptor)
+    private Artifact findUpdateArtifact(ArtifactDescriptor descriptor)
     throws Exception {
         final Artifact artifact = resolve(rangedArtifact(descriptor));
         if (artifact.getVersion().equals(descriptor.version()))
@@ -73,7 +86,7 @@ public class MavenizedUpdateFinder implements UpdateFinder {
         return artifact;
     }
 
-    private static Artifact rangedArtifact(ArtifactDescriptor descriptor) {
+    private Artifact rangedArtifact(ArtifactDescriptor descriptor) {
         return new DefaultArtifact(
                 descriptor.groupId(),
                 descriptor.artifactId(),
@@ -82,7 +95,7 @@ public class MavenizedUpdateFinder implements UpdateFinder {
                 String.format("[%s,)", descriptor.version()));
     }
 
-    private static Artifact resolve(final Artifact rangedArtifact)
+    private Artifact resolve(final Artifact rangedArtifact)
     throws RepositoryException {
         final VersionRangeResult versionRangeResult = resolveVersionRange(versionRangeRequest(rangedArtifact));
         final Version version = versionRangeResult.getHighestVersion();
@@ -91,47 +104,39 @@ public class MavenizedUpdateFinder implements UpdateFinder {
         return artifactResult.getArtifact();
     }
 
-    private static VersionRangeResult resolveVersionRange(VersionRangeRequest request)
+    private VersionRangeResult resolveVersionRange(VersionRangeRequest request)
     throws VersionRangeResolutionException {
         return repositorySystem().resolveVersionRange(repositorySystemSession(), request);
     }
 
-    private static ArtifactResult resolveArtifact(ArtifactRequest request)
+    private ArtifactResult resolveArtifact(ArtifactRequest request)
     throws ArtifactResolutionException {
         return repositorySystem().resolveArtifact(repositorySystemSession(), request);
     }
 
-    private static VersionRangeRequest versionRangeRequest(final Artifact artifact) {
+    private VersionRangeRequest versionRangeRequest(final Artifact artifact) {
         final VersionRangeRequest versionRangeRequest = new VersionRangeRequest();
         versionRangeRequest.addRepository(centralRepository());
         versionRangeRequest.setArtifact(artifact);
         return versionRangeRequest;
     }
 
-    private static ArtifactRequest artifactRequest(final Artifact artifact) {
+    private ArtifactRequest artifactRequest(final Artifact artifact) {
         final ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.addRepository(centralRepository());
         artifactRequest.setArtifact(artifact);
         return artifactRequest;
     }
 
-    private static DefaultRepositorySystemSession repositorySystemSession() {
+    private DefaultRepositorySystemSession repositorySystemSession() {
         final DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-
-        final LocalRepository localRepo = new LocalRepository("target/local-repo");
-        session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, localRepo));
-
         session.setTransferListener(new ConsoleTransferListener());
         session.setRepositoryListener(new ConsoleRepositoryListener());
-
+        session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, localRepository));
         return session;
     }
 
-    private static RepositorySystem repositorySystem() {
-        // Aether's components implement org.eclipse.aether.spi.locator.ServiceLocator
-        // to ease manual wiring and using the prepopulated
-        // DefaultServiceLocator, we only need to register the repository
-        // connector factories.
+    private RepositorySystem repositorySystem() {
         final DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
         locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
             @Override public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
@@ -144,7 +149,7 @@ public class MavenizedUpdateFinder implements UpdateFinder {
         return locator.getService(RepositorySystem.class);
     }
 
-    private static RemoteRepository centralRepository() {
+    private RemoteRepository centralRepository() {
         return new RemoteRepository.Builder("central", "default", "http://repo1.maven.org/maven2/").build();
     }
 }
