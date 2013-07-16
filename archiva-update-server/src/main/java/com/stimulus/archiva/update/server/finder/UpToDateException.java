@@ -23,8 +23,8 @@ public final class UpToDateException extends Exception {
     }
 
     @Override public String getMessage() {
-        return "The artifact" +
-                (null != descriptor ? " with the coordinates " + descriptor : "")
-                + " is already up-to-date.";
+        return "The artifact "
+                + (null != descriptor ? descriptor + " " : "")
+                + "is already up-to-date.";
     }
 }
