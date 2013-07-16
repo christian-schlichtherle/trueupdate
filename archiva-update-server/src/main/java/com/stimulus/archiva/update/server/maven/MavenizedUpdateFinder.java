@@ -51,7 +51,7 @@ public class MavenizedUpdateFinder implements UpdateFinder {
                 .artifactId("truevfs-profile-full")
                 .classifier("shaded")
                 .packaging("jar")
-                .version("0.10.2")
+                .version("0")
                 .build();
     }
 
