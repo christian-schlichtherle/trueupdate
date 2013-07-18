@@ -13,7 +13,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class TransferSize {
+class TransferSize {
 
     private final double amount;
     private final TransferUnit unit;

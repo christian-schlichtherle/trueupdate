@@ -14,7 +14,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class TransferRate extends TransferSize {
+class TransferRate extends TransferSize {
 
     /**
      * Constructs a transfer rate.
