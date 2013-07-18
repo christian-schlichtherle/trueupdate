@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.commons
+package com.stimulus.archiva.update.server.maven
 
 import java.util.Locale
 import org.junit.runner.RunWith

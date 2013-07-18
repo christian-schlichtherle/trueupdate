@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.commons;
+package com.stimulus.archiva.update.server.maven;
 
 import java.util.Locale;
 import javax.annotation.concurrent.Immutable;
@@ -15,7 +15,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class TransferSize {
 
-    private final long sizeBytes;
+    private final double amount;
     private final TransferUnit unit;
 
     /**
@@ -25,11 +25,11 @@ public class TransferSize {
      */
     public TransferSize(final long sizeBytes) {
         if (0 > sizeBytes) throw new IllegalArgumentException();
-        this.sizeBytes = sizeBytes;
         final TransferUnit[] units = TransferUnit.values();
         for (int i = units.length; 0 <= --i;) {
             final TransferUnit unit = units[i];
             if (sizeBytes >= unit.threshold()) {
+                this.amount = sizeBytes / unit.quotient();
                 this.unit = unit;
                 return;
             }
@@ -48,7 +48,7 @@ public class TransferSize {
      * transferred for the given locale.
      */
     public String toString(Locale locale) {
-        return unit.format(locale, sizeBytes);
+        return unit.format(locale, amount);
     }
 
     private enum TransferUnit {
@@ -65,9 +65,8 @@ public class TransferSize {
         long threshold() { return threshold; }
         double quotient() { return 0 != threshold ? threshold : 1; }
 
-        String format(Locale locale, long sizeBytes) {
-            return String.format(locale, "%,.2f %s", sizeBytes / quotient(),
-                    name());
+        String format(Locale locale, double amount) {
+            return String.format(locale, "%,.2f %s", amount, name());
         }
     }
 }

@@ -4,8 +4,6 @@
  */
 package com.stimulus.archiva.update.server.maven;
 
-import com.stimulus.archiva.update.commons.TransferRate;
-import com.stimulus.archiva.update.commons.TransferSize;
 import java.util.Locale;
 import javax.annotation.concurrent.Immutable;
 import org.eclipse.aether.spi.log.Logger;
