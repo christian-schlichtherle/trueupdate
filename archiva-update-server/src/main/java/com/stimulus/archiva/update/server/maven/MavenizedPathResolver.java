@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositoryException;
@@ -43,7 +43,7 @@ import org.eclipse.aether.version.Version;
  *
  * @author Christian Schlichtherle
  */
-@Immutable
+@ThreadSafe
 public class MavenizedPathResolver implements PathResolver {
 
     private volatile RepositorySystem repositorySystem;
