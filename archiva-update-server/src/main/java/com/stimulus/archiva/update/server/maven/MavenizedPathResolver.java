@@ -35,6 +35,8 @@ import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.locator.ServiceLocator;
+import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.version.Version;
 
 /**
@@ -46,7 +48,7 @@ import org.eclipse.aether.version.Version;
 @ThreadSafe
 public class MavenizedPathResolver implements PathResolver {
 
-    private volatile RepositorySystem repositorySystem;
+    private volatile ServiceLocator serviceLocator;
     private volatile RepositorySystemSession repositorySystemSession;
 
     public static void main(String[] args) throws Exception {
@@ -194,27 +196,33 @@ public class MavenizedPathResolver implements PathResolver {
     private RepositorySystemSession newRepositorySystemSession() {
         final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
                 .newSession()
-                .setTransferListener(new ConsoleTransferListener())
+                .setTransferListener(new LogTransferListener(loggerFactory()))
                 .setRepositoryListener(new ConsoleRepositoryListener());
         session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, local));
         return session;
     }
 
     private RepositorySystem repositorySystem() {
-        final RepositorySystem rs = this.repositorySystem;
-        return null != rs
-                ? rs
-                : (this.repositorySystem = newRepositorySystem());
+        return serviceLocator().getService(RepositorySystem.class);
     }
 
-    private RepositorySystem newRepositorySystem() {
-        final DefaultServiceLocator locator = MavenRepositorySystemUtils
+    private LoggerFactory loggerFactory() {
+        return serviceLocator().getService(LoggerFactory.class);
+    }
+
+    private ServiceLocator serviceLocator() {
+        final ServiceLocator sl = this.serviceLocator;
+        return null != sl ? sl : (this.serviceLocator = newServiceLocator());
+    }
+
+    private ServiceLocator newServiceLocator() {
+        final DefaultServiceLocator sl = MavenRepositorySystemUtils
                 .newServiceLocator()
                 .addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class)
                 .addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class)
                 .setServices(WagonProvider.class, new ManualWagonProvider());
-        locator.setErrorHandler(errorHandler());
-        return locator.getService(RepositorySystem.class);
+        sl.setErrorHandler(errorHandler());
+        return sl;
     }
 
     private DefaultServiceLocator.ErrorHandler errorHandler() {
