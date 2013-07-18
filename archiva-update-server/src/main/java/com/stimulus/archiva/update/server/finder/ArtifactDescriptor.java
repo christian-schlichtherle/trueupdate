@@ -24,15 +24,15 @@ public interface ArtifactDescriptor extends Serializable {
     /** Returns the version, e.g. {@code 3.2.1}. */
     String version();
 
+    /** Returns the classifier, which may be empty. */
+    String classifier();
+
     /**
-     * Returns the packaging, e.g. {@code war}.
+     * Returns the extension, e.g. {@code war}.
      * In the Maven realm, this may also be referred to as the artifact
      * <i>type</i> or <i>extension</i>.
      */
-    String packaging();
-
-    /** Returns the classifier, which may be empty. */
-    String classifier();
+    String extension();
 
     /**
      * Returns {@code true} if and only if the given object is an
@@ -51,7 +51,7 @@ public interface ArtifactDescriptor extends Serializable {
 
     /** A builder for an artifact descriptor. */
     class Builder {
-        private String groupId, artifactId, version, packaging, classifier;
+        private String groupId, artifactId, version, extension, classifier;
 
         public Builder groupId(final String groupId) {
             this.groupId = requireNonNull(groupId);
@@ -68,8 +68,8 @@ public interface ArtifactDescriptor extends Serializable {
             return this;
         }
 
-        public Builder packaging(final String packaging) {
-            this.packaging = requireNonNull(packaging);
+        public Builder extension(final String packaging) {
+            this.extension = requireNonNull(packaging);
             return this;
         }
 
@@ -79,28 +79,28 @@ public interface ArtifactDescriptor extends Serializable {
         }
 
         public ArtifactDescriptor build() {
-            return build(groupId, artifactId, version, packaging, classifier);
+            return build(groupId, artifactId, version, extension, classifier);
         }
 
         private ArtifactDescriptor build(
                 final String groupId,
                 final String artifactId,
                 final String version,
-                final String packaging,
+                final String extension,
                 final String classifier) {
             requireNonNull(groupId);
             requireNonNull(artifactId);
             requireNonNull(version);
-            requireNonNull(packaging);
             requireNonNull(classifier);
+            requireNonNull(extension);
             return new BasicArtifactDescriptor() {
                 private static final long serialVersionUID = 0L;
 
                 @Override public String groupId() { return groupId; }
                 @Override public String artifactId() { return artifactId; }
                 @Override public String version() { return version; }
-                @Override public String packaging() { return packaging; }
                 @Override public String classifier() { return classifier; }
+                @Override public String extension() { return extension; }
             };
         }
     }

@@ -4,21 +4,18 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a given artifact is already up-to-date.
+ * Indicates that a described artifact is already up-to-date.
  *
  * @author Christian Schlichtherle
  */
-public final class UpToDateException extends Exception {
+public final class ArtifactUpToDateException extends Exception {
 
     private static final long serialVersionUID = 0L;
 
     private final @Nullable ArtifactDescriptor descriptor;
 
-    /** Constructs an up-to-date-exception. */
-    public UpToDateException() { this(null); }
-
     /** Constructs an up-to-date-exception for the described artifact. */
-    public UpToDateException(final @CheckForNull ArtifactDescriptor descriptor) {
+    public ArtifactUpToDateException(final @CheckForNull ArtifactDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 

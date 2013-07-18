@@ -5,8 +5,8 @@
 package com.stimulus.archiva.update.server.maven;
 
 import com.stimulus.archiva.update.server.finder.ArtifactDescriptor;
-import com.stimulus.archiva.update.server.finder.ArtifactUpdateFinder;
-import com.stimulus.archiva.update.server.finder.UpToDateException;
+import com.stimulus.archiva.update.server.finder.ArtifactUpToDateException;
+import com.stimulus.archiva.update.server.finder.PathResolver;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Path;
@@ -19,6 +19,7 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositoryException;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
@@ -37,20 +38,26 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.version.Version;
 
 /**
- * Finds the latest version of a given artifact by looking it up in a local
+ * Resolves paths to artifacts and their updates by looking them up in a local
  * Maven repository and, optionally, some remote Maven repositories.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public class MavenizedArtifactUpdateFinder implements ArtifactUpdateFinder {
+public class MavenizedPathResolver implements PathResolver {
+
+    private volatile RepositorySystem repositorySystem;
+    private volatile RepositorySystemSession repositorySystemSession;
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Resolved: " + finder().findUpdatePath(descriptor()));
+        final MavenizedPathResolver finder = resolver();
+        final ArtifactDescriptor descriptor = descriptor();
+        System.out.println("Resolved artifact path: " + finder.resolveArtifactPath(descriptor));
+        System.out.println("Resolved update path: " + finder.resolveUpdatePath(descriptor));
     }
 
-    private static MavenizedArtifactUpdateFinder finder() {
-        return new MavenizedArtifactUpdateFinder(userRepository(), centralRepository());
+    private static MavenizedPathResolver resolver() {
+        return new MavenizedPathResolver(userRepository(), centralRepository());
     }
 
     private static LocalRepository userRepository() {
@@ -66,8 +73,8 @@ public class MavenizedArtifactUpdateFinder implements ArtifactUpdateFinder {
                 .groupId("net.java.truevfs")
                 .artifactId("truevfs-profile-full")
                 .classifier("shaded")
-                .packaging("jar")
-                .version("0")
+                .extension("jar")
+                .version("0.9")
                 .build();
     }
 
@@ -82,45 +89,57 @@ public class MavenizedArtifactUpdateFinder implements ArtifactUpdateFinder {
      * @param local the local repository for artifacts.
      * @param remotes the remote repositories for artifacts.
      */
-    public MavenizedArtifactUpdateFinder(
+    public MavenizedPathResolver(
             final LocalRepository local,
             final RemoteRepository... remotes) {
         this.local = Objects.requireNonNull(local);
         this.remotes = Collections.unmodifiableList(Arrays.asList(remotes));
     }
 
-    @Override public Path findUpdatePath(ArtifactDescriptor descriptor)
+    @Override public Path resolveArtifactPath(ArtifactDescriptor descriptor)
     throws Exception {
-        return findUpdateFile(descriptor).toPath();
+        return resolveArtifactFile(descriptor).toPath();
     }
 
-    private File findUpdateFile(ArtifactDescriptor descriptor)
+    private File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws Exception {
-        return findUpdateArtifact(descriptor).getFile();
+        return resolveArtifact(descriptor).getFile();
     }
 
-    private Artifact findUpdateArtifact(ArtifactDescriptor descriptor)
+    private Artifact resolveArtifact(ArtifactDescriptor descriptor)
     throws Exception {
-        final Artifact artifact = findUpdateArtifact(rangedArtifact(descriptor));
+        return resolveArtifact(artifact(descriptor));
+    }
+
+    private Artifact resolveArtifact(final Artifact artifact)
+    throws RepositoryException {
+        final ArtifactResult artifactResult = resolveArtifact(artifactRequest(artifact));
+        return artifactResult.getArtifact();
+    }
+
+    @Override public Path resolveUpdatePath(ArtifactDescriptor descriptor)
+    throws Exception {
+        return resolveUpdateFile(descriptor).toPath();
+    }
+
+    private File resolveUpdateFile(ArtifactDescriptor descriptor)
+    throws Exception {
+        return resolveUpdate(descriptor).getFile();
+    }
+
+    private Artifact resolveUpdate(ArtifactDescriptor descriptor)
+    throws Exception {
+        final Artifact artifact = resolveUpdate(rangedArtifact(descriptor));
         if (artifact.getVersion().equals(descriptor.version()))
-            throw new UpToDateException(descriptor);
+            throw new ArtifactUpToDateException(descriptor);
         return artifact;
     }
 
-    private Artifact rangedArtifact(ArtifactDescriptor descriptor) {
-        return new DefaultArtifact(
-                descriptor.groupId(),
-                descriptor.artifactId(),
-                descriptor.classifier(),
-                descriptor.packaging(),
-                String.format("[%s,)", descriptor.version()));
-    }
-
-    private Artifact findUpdateArtifact(final Artifact rangedArtifact)
+    private Artifact resolveUpdate(final Artifact intervalArtifact)
     throws RepositoryException {
-        final VersionRangeResult versionRangeResult = resolveVersionRange(versionRangeRequest(rangedArtifact));
+        final VersionRangeResult versionRangeResult = resolveVersionRange(versionRangeRequest(intervalArtifact));
         final Version version = versionRangeResult.getHighestVersion();
-        final Artifact resolvedArtifact = rangedArtifact.setVersion(version.toString());
+        final Artifact resolvedArtifact = intervalArtifact.setVersion(version.toString());
         final ArtifactResult artifactResult = resolveArtifact(artifactRequest(resolvedArtifact));
         return artifactResult.getArtifact();
     }
@@ -147,7 +166,32 @@ public class MavenizedArtifactUpdateFinder implements ArtifactUpdateFinder {
                 .setArtifact(artifact);
     }
 
-    private DefaultRepositorySystemSession repositorySystemSession() {
+    private Artifact rangedArtifact(ArtifactDescriptor descriptor) {
+        return artifact(descriptor)
+                .setVersion(openRange(descriptor));
+    }
+
+    private Artifact artifact(ArtifactDescriptor descriptor) {
+        return new DefaultArtifact(
+                descriptor.groupId(),
+                descriptor.artifactId(),
+                descriptor.classifier(),
+                descriptor.extension(),
+                descriptor.version());
+    }
+
+    private String openRange(ArtifactDescriptor descriptor) {
+        return String.format("[%s,)", descriptor.version());
+    }
+
+    private RepositorySystemSession repositorySystemSession() {
+        final RepositorySystemSession rss = this.repositorySystemSession;
+        return null != rss
+                ? rss
+                : (this.repositorySystemSession = newRepositorySystemSession());
+    }
+
+    private RepositorySystemSession newRepositorySystemSession() {
         final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
                 .newSession()
                 .setTransferListener(new ConsoleTransferListener())
@@ -157,6 +201,13 @@ public class MavenizedArtifactUpdateFinder implements ArtifactUpdateFinder {
     }
 
     private RepositorySystem repositorySystem() {
+        final RepositorySystem rs = this.repositorySystem;
+        return null != rs
+                ? rs
+                : (this.repositorySystem = newRepositorySystem());
+    }
+
+    private RepositorySystem newRepositorySystem() {
         final DefaultServiceLocator locator = MavenRepositorySystemUtils
                 .newServiceLocator()
                 .addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class)

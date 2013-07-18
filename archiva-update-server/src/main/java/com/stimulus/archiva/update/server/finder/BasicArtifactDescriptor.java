@@ -18,8 +18,8 @@ public abstract class BasicArtifactDescriptor implements ArtifactDescriptor {
         return  this.groupId().equals(that.groupId()) &&
                 this.artifactId().equals(that.artifactId()) &&
                 this.version().equals(that.version()) &&
-                this.packaging().equals(that.packaging()) &&
-                this.classifier().equals(that.classifier());
+                this.classifier().equals(that.classifier()) &&
+                this.extension().equals(that.extension());
     }
 
     @Override public final int hashCode() {
@@ -27,8 +27,8 @@ public abstract class BasicArtifactDescriptor implements ArtifactDescriptor {
         hash = hash * 31 + groupId().hashCode();
         hash = hash * 31 + artifactId().hashCode();
         hash = hash * 31 + version().hashCode();
-        hash = hash * 31 + packaging().hashCode();
         hash = hash * 31 + classifier().hashCode();
+        hash = hash * 31 + extension().hashCode();
         return hash;
     }
 
@@ -36,7 +36,7 @@ public abstract class BasicArtifactDescriptor implements ArtifactDescriptor {
         StringBuilder sb = new StringBuilder(128);
         sb      .append(groupId())
                 .append(':').append(artifactId())
-                .append(':').append(packaging());
+                .append(':').append(extension());
         if (0 < classifier().length())
             sb.append(':').append(classifier());
         sb.append(':').append(version());
