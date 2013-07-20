@@ -2,12 +2,12 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.finder;
+package com.stimulus.archiva.update.server.resolver;
 
 import java.nio.file.Path;
 
 /**
- * Resolves paths to artifacts and their updates.
+ * Resolves paths to described artifacts and their latest update.
  *
  * @author Christian Schlichtherle
  */

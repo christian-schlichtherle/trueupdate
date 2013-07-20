@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.finder;
+package com.stimulus.archiva.update.server.resolver;
 
 import java.io.Serializable;
 import static java.util.Objects.requireNonNull;
@@ -49,9 +49,15 @@ public interface ArtifactDescriptor extends Serializable {
     /** Returns a human readable string representation of this descriptor. */
     @Override String toString();
 
-    /** A builder for an artifact descriptor. */
+    /**
+     * A builder for an artifact descriptor.
+     * The default value of the extension is {@code "jar"} and the default
+     * value of the classifier is {@code ""}.
+     */
     class Builder {
-        private String groupId, artifactId, version, extension, classifier;
+
+        private String groupId, artifactId, version,
+                extension = "jar", classifier = "";
 
         public Builder groupId(final String groupId) {
             this.groupId = requireNonNull(groupId);
@@ -68,13 +74,13 @@ public interface ArtifactDescriptor extends Serializable {
             return this;
         }
 
-        public Builder extension(final String packaging) {
-            this.extension = requireNonNull(packaging);
+        public Builder classifier(final String classifier) {
+            this.classifier = requireNonNull(classifier);
             return this;
         }
 
-        public Builder classifier(final String classifier) {
-            this.classifier = requireNonNull(classifier);
+        public Builder extension(final String packaging) {
+            this.extension = requireNonNull(packaging);
             return this;
         }
 

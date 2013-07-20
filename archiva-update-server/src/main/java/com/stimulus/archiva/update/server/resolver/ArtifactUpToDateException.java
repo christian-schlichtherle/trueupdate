@@ -1,4 +1,4 @@
-package com.stimulus.archiva.update.server.finder;
+package com.stimulus.archiva.update.server.resolver;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;

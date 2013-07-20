@@ -4,9 +4,9 @@
  */
 package com.stimulus.archiva.update.server.maven;
 
-import com.stimulus.archiva.update.server.finder.ArtifactDescriptor;
-import com.stimulus.archiva.update.server.finder.ArtifactUpToDateException;
-import com.stimulus.archiva.update.server.finder.PathResolver;
+import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor;
+import com.stimulus.archiva.update.server.resolver.ArtifactUpToDateException;
+import com.stimulus.archiva.update.server.resolver.PathResolver;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Path;
@@ -40,8 +40,9 @@ import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.version.Version;
 
 /**
- * Resolves paths to artifacts and their updates by looking them up in a local
- * Maven repository and, optionally, some remote Maven repositories.
+ * Resolves paths to described artifacts and their latest update by looking
+ * them up in a local Maven repository and, optionally, some remote Maven
+ * repositories.
  *
  * @author Christian Schlichtherle
  */
@@ -55,9 +56,9 @@ public class MavenPathResolver implements PathResolver {
     private final List<RemoteRepository> remotes;
 
     /**
-     * Constructs a mavenized update finder which uses the given local
-     * and remote Maven repositories for finding the latest update for a
-     * described artifact.
+     * Constructs a maven path resolver which uses the given local and remote
+     * Maven repositories for finding a described artifact and its latest
+     * update.
      *
      * @param local the local repository for artifacts.
      * @param remotes the remote repositories for artifacts.

@@ -9,4 +9,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.finder;
+package com.stimulus.archiva.update.server.resolver;
