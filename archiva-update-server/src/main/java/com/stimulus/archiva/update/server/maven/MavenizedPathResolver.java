@@ -67,7 +67,7 @@ public class MavenizedPathResolver implements PathResolver {
     }
 
     private static RemoteRepository centralRepository() {
-        return new RemoteRepository.Builder("central", "default", "http://repo1.maven.org/maven2/").build();
+        return new RemoteRepository.Builder("Central", "default", "http://repo1.maven.org/maven2/").build();
     }
 
     private static ArtifactDescriptor descriptor() {
