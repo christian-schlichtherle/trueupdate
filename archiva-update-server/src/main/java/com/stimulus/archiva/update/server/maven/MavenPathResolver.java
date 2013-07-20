@@ -46,39 +46,10 @@ import org.eclipse.aether.version.Version;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-public class MavenizedPathResolver implements PathResolver {
+public class MavenPathResolver implements PathResolver {
 
     private volatile ServiceLocator serviceLocator;
     private volatile RepositorySystemSession repositorySystemSession;
-
-    public static void main(String[] args) throws Exception {
-        final MavenizedPathResolver resolver = resolver();
-        final ArtifactDescriptor descriptor = descriptor();
-        System.out.println("Resolved artifact path: " + resolver.resolveArtifactPath(descriptor));
-        System.out.println("Resolved update path: " + resolver.resolveUpdatePath(descriptor));
-    }
-
-    private static MavenizedPathResolver resolver() {
-        return new MavenizedPathResolver(userRepository(), centralRepository());
-    }
-
-    private static LocalRepository userRepository() {
-        return new LocalRepository("target/repository");
-    }
-
-    private static RemoteRepository centralRepository() {
-        return new RemoteRepository.Builder("central", "default", "http://repo1.maven.org/maven2/").build();
-    }
-
-    private static ArtifactDescriptor descriptor() {
-        return new ArtifactDescriptor.Builder()
-                .groupId("net.java.truevfs")
-                .artifactId("truevfs-profile-full")
-                .classifier("shaded")
-                .extension("jar")
-                .version("0.9")
-                .build();
-    }
 
     private final LocalRepository local;
     private final List<RemoteRepository> remotes;
@@ -91,7 +62,7 @@ public class MavenizedPathResolver implements PathResolver {
      * @param local the local repository for artifacts.
      * @param remotes the remote repositories for artifacts.
      */
-    public MavenizedPathResolver(
+    public MavenPathResolver(
             final LocalRepository local,
             final RemoteRepository... remotes) {
         this.local = Objects.requireNonNull(local);
