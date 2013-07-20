@@ -35,7 +35,9 @@ final class LogTransferListener extends AbstractTransferListener {
 
     @Override public void transferFailed(final TransferEvent event) {
         if (!logger.isWarnEnabled()) return;
-        logger.warn(new Message(event).transferFailed(), event.getException());
+        // Don't log the exception: It gets thrown anyway, so that logging it
+        // just duplicates the information.
+        logger.warn(new Message(event).transferFailed());
     }
 
     @Immutable
