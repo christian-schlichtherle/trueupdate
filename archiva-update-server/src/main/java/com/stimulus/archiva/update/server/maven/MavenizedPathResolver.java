@@ -52,10 +52,10 @@ public class MavenizedPathResolver implements PathResolver {
     private volatile RepositorySystemSession repositorySystemSession;
 
     public static void main(String[] args) throws Exception {
-        final MavenizedPathResolver finder = resolver();
+        final MavenizedPathResolver resolver = resolver();
         final ArtifactDescriptor descriptor = descriptor();
-        System.out.println("Resolved artifact path: " + finder.resolveArtifactPath(descriptor));
-        System.out.println("Resolved update path: " + finder.resolveUpdatePath(descriptor));
+        System.out.println("Resolved artifact path: " + resolver.resolveArtifactPath(descriptor));
+        System.out.println("Resolved update path: " + resolver.resolveUpdatePath(descriptor));
     }
 
     private static MavenizedPathResolver resolver() {
@@ -194,10 +194,11 @@ public class MavenizedPathResolver implements PathResolver {
     }
 
     private RepositorySystemSession newRepositorySystemSession() {
+        final LoggerFactory loggerFactory = loggerFactory();
         final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
                 .newSession()
-                .setTransferListener(new LogTransferListener(loggerFactory()))
-                .setRepositoryListener(new ConsoleRepositoryListener());
+                .setTransferListener(new LogTransferListener(loggerFactory))
+                .setRepositoryListener(new LogRepositoryListener(loggerFactory));
         session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, local));
         return session;
     }

@@ -6,11 +6,8 @@ package com.stimulus.archiva.update.server.maven;
 
 import java.util.Locale;
 import javax.annotation.concurrent.Immutable;
-import org.eclipse.aether.spi.log.Logger;
-import org.eclipse.aether.spi.log.LoggerFactory;
-import org.eclipse.aether.transfer.AbstractTransferListener;
-import org.eclipse.aether.transfer.TransferEvent;
-import org.eclipse.aether.transfer.TransferResource;
+import org.eclipse.aether.spi.log.*;
+import org.eclipse.aether.transfer.*;
 
 /**
  * A transfer listener which logs succeeded and failed uploads and downloads.
@@ -51,29 +48,29 @@ final class LogTransferListener extends AbstractTransferListener {
             this.event = event;
         }
 
-        String transferInitiated() { return format(initiatedPattern()); }
+        String transferInitiated() { return format(initiatedFormat()); }
 
         String transferSucceeded() {
             final long bytes = event.getTransferredBytes();
             final TransferSize size = new TransferSize(bytes);
             final TransferRate rate = new TransferRate(bytes, durationMillis());
-            return format(succeededPattern(), resourceUrlString(),
+            return format(succeededFormat(), resourceUrlString(),
                     size.toString(Locale.ENGLISH),
                     rate.toString(Locale.ENGLISH));
         }
 
-        String transferFailed() { return format(failedPattern()); }
+        String transferFailed() { return format(failedFormat()); }
 
-        long durationMillis() {
+        private long durationMillis() {
             return System.currentTimeMillis() - resource().getTransferStartTime();
         }
 
-        private String format(String pattern) {
-            return format(pattern, resourceUrlString());
+        private String format(String format) {
+            return format(format, resourceUrlString());
         }
 
-        private String format(String pattern, Object... args) {
-            return String.format(Locale.ENGLISH, pattern, args);
+        private String format(String format, Object... args) {
+            return String.format(Locale.ENGLISH, format, args);
         }
 
         private String resourceUrlString() {
@@ -83,19 +80,19 @@ final class LogTransferListener extends AbstractTransferListener {
 
         private TransferResource resource() { return event.getResource(); }
 
-        private String initiatedPattern() {
+        private String initiatedFormat() {
             return isUpload()
                     ? "Starting to upload %s."
                     : "Starting to download %s.";
         }
 
-        private String succeededPattern() {
+        private String succeededFormat() {
             return isUpload()
                     ? "Succeeded to upload %s: %s at %s."
                     : "Succeeded to download %s: %s at %s.";
         }
 
-        private String failedPattern() {
+        private String failedFormat() {
             return isUpload()
                     ? "Failed to upload %s."
                     : "Failed to download %s.";
