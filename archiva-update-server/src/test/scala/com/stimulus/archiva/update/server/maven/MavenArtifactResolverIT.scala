@@ -14,16 +14,16 @@ import java.nio.file.{Files, Paths}
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class MavenPathResolverIT extends WordSpec {
+class MavenArtifactResolverIT extends WordSpec {
 
-  private val resolver = new MavenPathResolver(testRepository, centralRepository)
+  private val resolver = new MavenArtifactResolver(testRepository, centralRepository)
 
   private def testRepository = new LocalRepository(baseDir.toFile)
   private def baseDir = Paths.get("target/repository").toAbsolutePath
   private def centralRepository = new RemoteRepository.Builder(
     "central", "default", "http://repo1.maven.org/maven2/").build
 
-  private def descriptor =
+  private def artifactDescriptor =
     new ArtifactDescriptor.Builder()
       .groupId("net.java.truevfs")
       .artifactId("truevfs-kernel-spec")
@@ -46,15 +46,24 @@ class MavenPathResolverIT extends WordSpec {
   private def dashify(classifier: String) =
     if (classifier.isEmpty) classifier else "-" + classifier
 
-  "A maven path resolver" should {
-    "resolve the artifact path" in {
-      resolver resolveArtifactPath descriptor should
-        equal (resolvedPath(descriptor))
+  "A maven artifact resolver" should {
+    val artifactPath = resolver resolveArtifactPath artifactDescriptor
+
+    "resolve the artifact path to a readable file" in {
+      artifactPath should equal (resolvedPath(artifactDescriptor))
+      Files.isReadable(artifactPath) should be (true)
     }
 
-    "resolve the update path" in {
-      // The resolved update path may change over time.
-      Files.isReadable(resolver resolveUpdatePath descriptor) should be (true)
+    "resolve the update descriptor and path to a readable file" in {
+      // The resolved artifact descriptor may change over time.
+      val updateDescriptor = resolver resolveUpdateDescriptor artifactDescriptor
+      updateDescriptor.groupId should equal (artifactDescriptor.groupId)
+      updateDescriptor.artifactId should equal (artifactDescriptor.artifactId)
+      updateDescriptor.version should not equal (artifactDescriptor.version)
+      updateDescriptor.classifier should equal (artifactDescriptor.classifier)
+      updateDescriptor.extension should equal (artifactDescriptor.extension)
+      val updatePath = resolver resolveArtifactPath updateDescriptor
+      Files.isReadable(updatePath) should be (true)
     }
   }
 }

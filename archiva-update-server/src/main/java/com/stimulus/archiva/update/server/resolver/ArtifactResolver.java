@@ -11,7 +11,7 @@ import java.nio.file.Path;
  *
  * @author Christian Schlichtherle
  */
-public interface PathResolver {
+public interface ArtifactResolver {
 
     /**
      * Resolves the path to the described artifact.
@@ -24,14 +24,13 @@ public interface PathResolver {
     Path resolveArtifactPath(ArtifactDescriptor descriptor) throws Exception;
 
     /**
-     * Resolves the path to the latest update for the described artifact.
+     * Resolves the descriptor for the latest update for the described artifact.
      *
      * @param  descriptor the descriptor for the artifact.
-     * @return the path to the latest update for the described artifact.
-     * @throws ArtifactUpToDateException if the described artifact is already
-     *         up-to-date.
+     * @return the descriptor for the latest update for the described artifact.
      * @throws Exception if resolving the update is not possible for some
      *         (other) reason.
      */
-    Path resolveUpdatePath(ArtifactDescriptor descriptor) throws Exception;
+    ArtifactDescriptor resolveUpdateDescriptor(ArtifactDescriptor descriptor)
+    throws Exception;
 }

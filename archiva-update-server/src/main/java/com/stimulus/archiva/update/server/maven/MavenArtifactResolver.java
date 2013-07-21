@@ -5,8 +5,8 @@
 package com.stimulus.archiva.update.server.maven;
 
 import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor;
-import com.stimulus.archiva.update.server.resolver.ArtifactUpToDateException;
-import com.stimulus.archiva.update.server.resolver.PathResolver;
+import com.stimulus.archiva.update.server.resolver.ArtifactResolver;
+
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Path;
@@ -21,7 +21,6 @@ import org.eclipse.aether.RepositoryException;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
 import org.eclipse.aether.connector.wagon.WagonProvider;
 import org.eclipse.aether.connector.wagon.WagonRepositoryConnectorFactory;
@@ -38,6 +37,7 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.version.Version;
+import static com.stimulus.archiva.update.server.maven.ArtifactConversion.*;
 
 /**
  * Resolves paths to described artifacts and their latest update by looking
@@ -47,7 +47,7 @@ import org.eclipse.aether.version.Version;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-public class MavenPathResolver implements PathResolver {
+public class MavenArtifactResolver implements ArtifactResolver {
 
     private volatile ServiceLocator serviceLocator;
     private volatile RepositorySystemSession repositorySystemSession;
@@ -63,7 +63,7 @@ public class MavenPathResolver implements PathResolver {
      * @param local the local repository for artifacts.
      * @param remotes the remote repositories for artifacts.
      */
-    public MavenPathResolver(
+    public MavenArtifactResolver(
             final LocalRepository local,
             final RemoteRepository... remotes) {
         this.local = Objects.requireNonNull(local);
@@ -87,35 +87,26 @@ public class MavenPathResolver implements PathResolver {
 
     private Artifact resolveArtifact(final Artifact artifact)
     throws RepositoryException {
-        final ArtifactResult artifactResult = resolveArtifact(artifactRequest(artifact));
-        return artifactResult.getArtifact();
+        return resolveArtifact(artifactRequest(artifact)).getArtifact();
     }
 
-    @Override public Path resolveUpdatePath(ArtifactDescriptor descriptor)
+    @Override
+    public ArtifactDescriptor resolveUpdateDescriptor(ArtifactDescriptor descriptor)
     throws Exception {
-        return resolveUpdateFile(descriptor).toPath();
+        return descriptor(resolveUpdateArtifact(descriptor));
     }
 
-    private File resolveUpdateFile(ArtifactDescriptor descriptor)
+    private Artifact resolveUpdateArtifact(ArtifactDescriptor descriptor)
     throws Exception {
-        return resolveUpdate(descriptor).getFile();
+        return resolveUpdateArtifact(updateRangeArtifact(descriptor));
     }
 
-    private Artifact resolveUpdate(ArtifactDescriptor descriptor)
-    throws Exception {
-        final Artifact artifact = resolveUpdate(rangedArtifact(descriptor));
-        if (artifact.getVersion().equals(descriptor.version()))
-            throw new ArtifactUpToDateException(descriptor);
-        return artifact;
-    }
-
-    private Artifact resolveUpdate(final Artifact intervalArtifact)
+    private Artifact resolveUpdateArtifact(final Artifact intervalArtifact)
     throws RepositoryException {
-        final VersionRangeResult versionRangeResult = resolveVersionRange(versionRangeRequest(intervalArtifact));
-        final Version version = versionRangeResult.getHighestVersion();
-        final Artifact resolvedArtifact = intervalArtifact.setVersion(version.toString());
-        final ArtifactResult artifactResult = resolveArtifact(artifactRequest(resolvedArtifact));
-        return artifactResult.getArtifact();
+        final VersionRangeResult versionRangeResult = resolveVersionRange(
+                versionRangeRequest(intervalArtifact));
+        final Version highestVersion = versionRangeResult.getHighestVersion();
+        return intervalArtifact.setVersion(highestVersion.toString());
     }
 
     private VersionRangeResult resolveVersionRange(VersionRangeRequest request)
@@ -138,24 +129,6 @@ public class MavenPathResolver implements PathResolver {
         return new ArtifactRequest()
                 .setRepositories(remotes)
                 .setArtifact(artifact);
-    }
-
-    private Artifact rangedArtifact(ArtifactDescriptor descriptor) {
-        return artifact(descriptor)
-                .setVersion(openRange(descriptor));
-    }
-
-    private Artifact artifact(ArtifactDescriptor descriptor) {
-        return new DefaultArtifact(
-                descriptor.groupId(),
-                descriptor.artifactId(),
-                descriptor.classifier(),
-                descriptor.extension(),
-                descriptor.version());
-    }
-
-    private String openRange(ArtifactDescriptor descriptor) {
-        return String.format("[%s,)", descriptor.version());
     }
 
     private RepositorySystemSession repositorySystemSession() {
