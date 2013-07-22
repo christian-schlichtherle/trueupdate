@@ -8,8 +8,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
-import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor
 import java.nio.file.Files
+import com.stimulus.archiva.update.commons.ArtifactDescriptor
 
 private object MavenArtifactResolverIT {
 

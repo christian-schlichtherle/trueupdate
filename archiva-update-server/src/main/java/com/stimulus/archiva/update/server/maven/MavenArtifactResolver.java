@@ -4,8 +4,8 @@
  */
 package com.stimulus.archiva.update.server.maven;
 
-import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor;
-import com.stimulus.archiva.update.server.resolver.ArtifactResolver;
+import com.stimulus.archiva.update.commons.ArtifactDescriptor;
+import com.stimulus.archiva.update.server.ArtifactResolver;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;

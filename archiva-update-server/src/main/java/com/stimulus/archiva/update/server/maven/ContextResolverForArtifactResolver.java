@@ -1,6 +1,6 @@
 package com.stimulus.archiva.update.server.maven;
 
-import com.stimulus.archiva.update.server.resolver.ArtifactResolver;
+import com.stimulus.archiva.update.server.ArtifactResolver;
 import org.eclipse.aether.repository.LocalRepository;
 
 import javax.annotation.concurrent.ThreadSafe;

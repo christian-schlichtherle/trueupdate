@@ -4,8 +4,8 @@
  */
 package com.stimulus.archiva.update.server;
 
-import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor;
-import com.stimulus.archiva.update.server.resolver.ArtifactResolver;
+import com.stimulus.archiva.update.commons.ArtifactDescriptor;
+
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
@@ -36,7 +36,7 @@ public final class UpdateService {
      * package ...;
      *
      * import javax.ws.rs.ext.*;
-     * import com.stimulus.archiva.update.server.resolver.ArtifactResolver;
+     * import com.stimulus.archiva.update.server.ArtifactResolver;
      *
      * &#64;Provider
      * public class ArtifactResolverResolver

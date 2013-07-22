@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server
 
-import com.stimulus.archiva.update.server.resolver.{ArtifactDescriptor, ArtifactResolver}
+import com.stimulus.archiva.update.commons.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 trait TestContext {

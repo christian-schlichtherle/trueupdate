@@ -3,10 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an abstraction for a component which can find the latest version of
- * a given artifact.
+ * Provides an abstraction to describe artifacts via properties.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.resolver;
+package com.stimulus.archiva.update.commons;

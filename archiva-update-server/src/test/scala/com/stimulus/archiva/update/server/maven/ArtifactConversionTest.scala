@@ -9,8 +9,9 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
-import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor
-import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor.Builder
+import com.stimulus.archiva.update.commons.ArtifactDescriptor
+import ArtifactDescriptor.Builder
+import com.stimulus.archiva.update.commons.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])

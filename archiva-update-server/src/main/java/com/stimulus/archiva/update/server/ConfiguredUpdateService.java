@@ -1,6 +1,7 @@
 package com.stimulus.archiva.update.server;
 
-import com.stimulus.archiva.update.server.resolver.*;
+import com.stimulus.archiva.update.commons.ArtifactDescriptor;
+
 import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.GET;

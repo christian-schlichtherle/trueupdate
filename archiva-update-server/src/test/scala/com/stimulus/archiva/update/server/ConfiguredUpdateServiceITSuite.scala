@@ -11,8 +11,8 @@ import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import com.sun.jersey.api.core.{DefaultResourceConfig, ResourceConfig}
 import javax.ws.rs.ext.ContextResolver
-import com.stimulus.archiva.update.server.resolver.{ArtifactDescriptor, ArtifactResolver}
 import com.sun.jersey.core.util.MultivaluedMapImpl
+import com.stimulus.archiva.update.commons.ArtifactDescriptor
 
 private object ConfiguredUpdateServiceITSuite {
 

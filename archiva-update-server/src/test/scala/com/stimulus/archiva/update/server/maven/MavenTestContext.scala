@@ -8,7 +8,7 @@ import com.stimulus.archiva.update.server.TestContext
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import java.nio.file.Paths
 import java.io.File
-import com.stimulus.archiva.update.server.resolver.ArtifactDescriptor
+import com.stimulus.archiva.update.commons.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 trait MavenTestContext extends TestContext {
