@@ -22,11 +22,11 @@ private object ConfiguredUpdateServiceITSuite {
 
   private def queryParams(descriptor: ArtifactDescriptor) = {
     val map = new MultivaluedMapImpl
-    map.putSingle("groupId", descriptor.groupId);
-    map.putSingle("artifactId", descriptor.artifactId);
-    map.putSingle("version", descriptor.version);
-    map.putSingle("classifier", descriptor.classifier);
-    map.putSingle("extension", descriptor.extension);
+    map.putSingle("groupId", descriptor.groupId)
+    map.putSingle("artifactId", descriptor.artifactId)
+    map.putSingle("version", descriptor.version)
+    map.putSingle("classifier", descriptor.classifier)
+    map.putSingle("extension", descriptor.extension)
     map
   }
 }
