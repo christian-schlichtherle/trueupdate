@@ -5,7 +5,7 @@
 package com.stimulus.archiva.update.server
 
 import com.sun.jersey.test.framework.{LowLevelAppDescriptor, JerseyTest}
-import javax.ws.rs.core.{MultivaluedMap, MediaType}
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
