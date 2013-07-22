@@ -24,21 +24,24 @@ final class LogTransferListener extends AbstractTransferListener {
     }
 
     @Override public void transferInitiated(final TransferEvent event) {
-        if (!logger.isDebugEnabled()) return;
-        logger.debug(new Message(event).transferInitiated());
+        if (isDebugEnabled()) debug(new Message(event).transferInitiated());
     }
 
     @Override public void transferSucceeded(final TransferEvent event) {
-        if (!logger.isDebugEnabled()) return;
-        logger.debug(new Message(event).transferSucceeded());
+        if (isDebugEnabled()) debug(new Message(event).transferSucceeded());
     }
 
     @Override public void transferFailed(final TransferEvent event) {
-        if (!logger.isWarnEnabled()) return;
         // Don't log the exception: It gets thrown anyway, so that logging it
         // just duplicates the information.
-        logger.warn(new Message(event).transferFailed());
+        if (isWarnEnabled()) warn(new Message(event).transferFailed());
     }
+
+    private boolean isWarnEnabled() { return logger.isWarnEnabled(); }
+    private boolean isDebugEnabled() { return logger.isDebugEnabled(); }
+
+    private void warn(String message) { logger.warn(message); }
+    private void debug(String message) { logger.debug(message); }
 
     @Immutable
     private static final class Message {
