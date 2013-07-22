@@ -6,13 +6,12 @@ package com.stimulus.archiva.update.maven
 
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import java.io.File
-import com.stimulus.archiva.update.commons.ArtifactDescriptor
-import com.stimulus.archiva.update.commons.TestContext
+import com.stimulus.archiva.update.commons.{ArtifactResolver, ArtifactDescriptor, TestContext}
 
 /** @author Christian Schlichtherle */
 trait MavenTestContext extends TestContext {
 
-  override def artifactResolver =
+  override def artifactResolver: ArtifactResolver =
     new MavenArtifactResolver(testRepository, centralRepository)
 
   def testRepository = new LocalRepository(baseDir)
