@@ -63,11 +63,13 @@ public final class ConfiguredUpdateService {
     @Produces(TEXT_PLAIN)
     public String versionAsText() throws UpdateServiceException {
         final ArtifactDescriptor update = resolveUpdateDescriptor();
+        // Note that the version is equal if and only if there is no update
+        // available.
         assert update.groupId().equals(descriptor.groupId());
         assert update.artifactId().equals(descriptor.artifactId());
         assert update.classifier().equals(descriptor.classifier());
         assert update.extension().equals(descriptor.extension());
-        return descriptor.version();
+        return update.version();
     }
 
     private ArtifactDescriptor resolveUpdateDescriptor()

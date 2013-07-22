@@ -13,8 +13,12 @@ import com.sun.jersey.api.core.{DefaultResourceConfig, ResourceConfig}
 import javax.ws.rs.ext.ContextResolver
 import com.sun.jersey.core.util.MultivaluedMapImpl
 import com.stimulus.archiva.update.commons.{TestContext, ArtifactResolver, ArtifactDescriptor}
+import org.slf4j.LoggerFactory
 
 private object ConfiguredUpdateServiceITSuite {
+
+  private val logger = LoggerFactory.getLogger(
+    classOf[ConfiguredUpdateServiceITSuite])
 
   private def queryParams(descriptor: ArtifactDescriptor) = {
     val map = new MultivaluedMapImpl
@@ -37,13 +41,16 @@ class ConfiguredUpdateServiceITSuite extends JerseyTest { this: TestContext =>
   }
 
   private def assertUpdateVersionTo() {
-    val updateVersionTo = updateVersionToAs(TEXT_PLAIN_TYPE)
-    updateVersionToAs(APPLICATION_JSON_TYPE) should be ('"' + updateVersionTo + '"')
-    updateVersionToAs(APPLICATION_XML_TYPE) should
-      be ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><version>" + updateVersionTo + "</version>")
+    val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
+    logger.info("Resolved update for artifact {} to version {}.",
+      artifactDescriptor, updateVersion)
+    updateVersionAs(APPLICATION_JSON_TYPE) should
+      be ('"' + updateVersion + '"')
+    updateVersionAs(APPLICATION_XML_TYPE) should
+      be ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><version>" + updateVersion + "</version>")
   }
 
-  private def updateVersionToAs(mediaType: MediaType) =
+  private def updateVersionAs(mediaType: MediaType) =
     resource.path("update/version")
             .queryParams(queryParams(artifactDescriptor))
             .accept(mediaType)
