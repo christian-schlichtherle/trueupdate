@@ -26,7 +26,7 @@ class ContextResolverForArtifactResolverTest extends WordSpec {
 
       "default to the user's local Maven repository" in {
         ContextResolverForArtifactResolver.localRepository.getBasedir should
-        be (localRepositoryDir)
+          be (localRepositoryDir)
       }
     }
   }
