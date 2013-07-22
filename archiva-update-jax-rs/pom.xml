@@ -13,22 +13,19 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-update-server</artifactId>
-    <packaging>war</packaging>
+    <artifactId>archiva-update-jax-rs</artifactId>
 
-    <name>*Archiva Update Server</name>
-    <description>
-        Provides a RESTful web service for updating *Archiva products.
-    </description>
+    <name>*Archiva Update JAX-RS</name>
+    <description>Provides a RESTful web service for updating *Archiva products.</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-update-jax-rs</artifactId>
+            <artifactId>archiva-update-commons</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-update-maven</artifactId>
+            <groupId>com.sun.jersey.jersey-test-framework</groupId>
+            <artifactId>jersey-test-framework-http</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -36,4 +33,19 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

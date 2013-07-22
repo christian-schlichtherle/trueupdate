@@ -98,7 +98,11 @@
         <!-- maven-surefire-plugin && maven-failsafe-plugin -->
         <parallel>both</parallel>
 
+        <!-- For dependency management. -->
+        <aether.version>0.9.0.M2</aether.version>
+        <maven.version>3.1.0</maven.version>
         <slf4j.version>1.7.5</slf4j.version>
+        <wagon.version>1.2.1</wagon.version>
     </properties>
 
     <dependencyManagement>
@@ -106,6 +110,23 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>archiva-update-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>archiva-update-jax-rs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>archiva-update-jax-rs</artifactId>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>archiva-update-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -163,9 +184,29 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-aether-provider</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk16</artifactId>
                 <version>1.46</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>3.0.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-connector-file</artifactId>
+                <version>${aether.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-connector-wagon</artifactId>
+                <version>${aether.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -220,6 +261,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.sonatype.maven</groupId>
+                <artifactId>wagon-ahc</artifactId>
+                <version>${wagon.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -555,6 +601,8 @@
     <modules>
         <module>archiva-update-client</module>
         <module>archiva-update-commons</module>
+        <module>archiva-update-jax-rs</module>
+        <module>archiva-update-maven</module>
         <module>archiva-update-server</module>
     </modules>
 </project>

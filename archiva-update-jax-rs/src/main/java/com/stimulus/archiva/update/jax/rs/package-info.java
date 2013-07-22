@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides common functionality for updating *Archiva products.
+ * Provides a RESTful web service for updating *Archiva products.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.commons;
+package com.stimulus.archiva.update.jax.rs;

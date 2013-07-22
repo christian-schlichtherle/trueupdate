@@ -16,5 +16,7 @@
     <artifactId>archiva-update-commons</artifactId>
 
     <name>*Archiva Update Commons</name>
-    <description>Provides common functionality for updating *Archiva products.</description>
+    <description>
+        Provides common functionality for updating *Archiva products.
+    </description>
 </project>

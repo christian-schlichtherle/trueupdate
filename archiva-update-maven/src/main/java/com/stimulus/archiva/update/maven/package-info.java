@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides common functionality for updating *Archiva products.
- *
+ * Provides an artifact resolver which is based on a local Maven repository.
+ * 
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.commons;
+package com.stimulus.archiva.update.maven;
