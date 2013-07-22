@@ -12,7 +12,7 @@ import org.scalatest.matchers.ShouldMatchers._
 import com.sun.jersey.api.core.{DefaultResourceConfig, ResourceConfig}
 import javax.ws.rs.ext.ContextResolver
 import com.sun.jersey.core.util.MultivaluedMapImpl
-import com.stimulus.archiva.update.commons.{ArtifactResolver, ArtifactDescriptor}
+import com.stimulus.archiva.update.commons.{TestContext, ArtifactResolver, ArtifactDescriptor}
 
 private object ConfiguredUpdateServiceITSuite {
 
