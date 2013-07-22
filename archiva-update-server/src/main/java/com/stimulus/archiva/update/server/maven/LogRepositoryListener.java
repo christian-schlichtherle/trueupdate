@@ -34,7 +34,7 @@ final class LogRepositoryListener extends AbstractRepositoryListener {
     }
 
     @Override public void artifactDescriptorMissing(RepositoryEvent event) {
-        assert null == event.getArtifact(); // FIXME!
+        assert null == event.getArtifact(); // FIXME?
         logFailure("Missing artifact descriptor for %s.", event.getArtifact());
     }
 
@@ -121,13 +121,20 @@ final class LogRepositoryListener extends AbstractRepositoryListener {
     }
 
     private void logFinishedWorkOnSource(RepositoryEvent event, String verb, Object item, Object source) {
-        if (isFailure(event)) {
-            if (isWarnEnabled())
-                warn(finishedWorkOnSourceMessage(event, verb, item, source));
-        } else {
-            if (isDebugEnabled())
-                debug(finishedWorkOnSourceMessage(event, verb, item, source));
-        }
+        if (isFailure(event))
+            warnFinishedWorkOnSource(event, verb, item, source);
+        else
+            debugFinishedWorkOnSource(event, verb, item, source);
+    }
+
+    private void warnFinishedWorkOnSource(RepositoryEvent event, String verb, Object item, Object source) {
+        if (isWarnEnabled())
+            warn(finishedWorkOnSourceMessage(event, verb, item, source));
+    }
+
+    private void debugFinishedWorkOnSource(RepositoryEvent event, String verb, Object item, Object source) {
+        if (isDebugEnabled())
+            debug(finishedWorkOnSourceMessage(event, verb, item, source));
     }
 
     private static String finishedWorkOnSourceMessage(RepositoryEvent event, String verb, Object item, Object source) {
@@ -144,13 +151,20 @@ final class LogRepositoryListener extends AbstractRepositoryListener {
     }
 
     private void logFinishedWorkOnDestination(RepositoryEvent event, String verb, Object item, Object destination) {
-        if (isFailure(event)) {
-            if (isWarnEnabled())
-                warn(finishedWorkOnDestinationMessage(event, verb, item, destination));
-        } else {
-            if (isDebugEnabled())
-                debug(finishedWorkOnDestinationMessage(event, verb, item, destination));
-        }
+        if (isFailure(event))
+            warnFinishedWorkOnDestination(event, verb, item, destination);
+        else
+            debugFinishedWorkOnDestination(event, verb, item, destination);
+    }
+
+    private void warnFinishedWorkOnDestination(RepositoryEvent event, String verb, Object item, Object destination) {
+        if (isWarnEnabled())
+            warn(finishedWorkOnDestinationMessage(event, verb, item, destination));
+    }
+
+    private void debugFinishedWorkOnDestination(RepositoryEvent event, String verb, Object item, Object destination) {
+        if (isDebugEnabled())
+            debug(finishedWorkOnDestinationMessage(event, verb, item, destination));
     }
 
     private static String finishedWorkOnDestinationMessage(RepositoryEvent event, String verb, Object item, Object source) {
