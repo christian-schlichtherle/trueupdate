@@ -13,11 +13,11 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-update-commons</artifactId>
+    <artifactId>archiva-update-core</artifactId>
 
-    <name>*Archiva Update Commons</name>
+    <name>*Archiva Update Core</name>
     <description>
-        Provides common functionality for updating *Archiva products.
+        Provides core functionality for updating *Archiva products.
     </description>
 
     <build>

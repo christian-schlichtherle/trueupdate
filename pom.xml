@@ -109,12 +109,12 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>archiva-update-commons</artifactId>
+                <artifactId>archiva-update-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>archiva-update-commons</artifactId>
+                <artifactId>archiva-update-core</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -619,7 +619,7 @@
 
     <modules>
         <module>archiva-update-client</module>
-        <module>archiva-update-commons</module>
+        <module>archiva-update-core</module>
         <module>archiva-update-jax-rs</module>
         <module>archiva-update-maven</module>
         <module>archiva-update-server</module>

@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-update-commons</artifactId>
+            <artifactId>archiva-update-core</artifactId>
             <type>test-jar</type>
         </dependency>
         <dependency>
