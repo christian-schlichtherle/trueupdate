@@ -4,15 +4,15 @@
  */
 package com.stimulus.archiva.update.jax.rs
 
-import com.sun.jersey.test.framework.{LowLevelAppDescriptor, JerseyTest}
+import com.stimulus.archiva.update.core._
+import com.sun.jersey.api.core._
+import com.sun.jersey.core.util.MultivaluedMapImpl
+import com.sun.jersey.test.framework._
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
+import javax.ws.rs.ext.ContextResolver
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
-import com.sun.jersey.api.core.{DefaultResourceConfig, ResourceConfig}
-import javax.ws.rs.ext.ContextResolver
-import com.sun.jersey.core.util.MultivaluedMapImpl
-import com.stimulus.archiva.update.commons.{TestContext, ArtifactResolver, ArtifactDescriptor}
 import org.slf4j.LoggerFactory
 
 private object ConfiguredUpdateServiceITSuite {

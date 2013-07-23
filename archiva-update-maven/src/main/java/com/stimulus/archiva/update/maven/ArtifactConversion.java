@@ -4,9 +4,8 @@
  */
 package com.stimulus.archiva.update.maven;
 
-import com.stimulus.archiva.update.commons.ArtifactDescriptor;
-import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.artifact.DefaultArtifact;
+import com.stimulus.archiva.update.core.ArtifactDescriptor;
+import org.eclipse.aether.artifact.*;
 
 /**
  * Converts {@link ArtifactDescriptor}s to {@link Artifact}s and vice versa.

@@ -9,6 +9,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
+import com.stimulus.archiva.update.core.ArtifactDescriptor
 import ArtifactDescriptor.Builder
 
 /** @author Christian Schlichtherle */

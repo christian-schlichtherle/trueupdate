@@ -4,40 +4,25 @@
  */
 package com.stimulus.archiva.update.maven;
 
-import com.stimulus.archiva.update.commons.ArtifactDescriptor;
-import com.stimulus.archiva.update.commons.ArtifactResolver;
-
+import com.stimulus.archiva.update.core.*;
+import static com.stimulus.archiva.update.maven.ArtifactConversion.*;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositoryException;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
-import org.eclipse.aether.connector.wagon.WagonProvider;
-import org.eclipse.aether.connector.wagon.WagonRepositoryConnectorFactory;
+import org.eclipse.aether.connector.wagon.*;
 import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactRequest;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.ArtifactResult;
-import org.eclipse.aether.resolution.VersionRangeRequest;
-import org.eclipse.aether.resolution.VersionRangeResolutionException;
-import org.eclipse.aether.resolution.VersionRangeResult;
+import org.eclipse.aether.repository.*;
+import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.version.Version;
-import static com.stimulus.archiva.update.maven.ArtifactConversion.*;
 
 /**
  * Resolves paths to described artifacts and their latest update by looking
