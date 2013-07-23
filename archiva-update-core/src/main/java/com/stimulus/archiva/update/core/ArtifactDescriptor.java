@@ -9,6 +9,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Describes an artifact by its Maven coordinates.
+ * Implementations should be immutable.
  *
  * @see    <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven - POM Reference - Maven Coordinates</a>
  * @author Christian Schlichtherle
