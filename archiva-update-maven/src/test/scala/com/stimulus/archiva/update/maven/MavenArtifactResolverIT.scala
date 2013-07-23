@@ -5,11 +5,11 @@
 package com.stimulus.archiva.update.maven
 
 import com.stimulus.archiva.update.core.ArtifactDescriptor
-import java.nio.file.Files
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
+import java.io.File
 
 private object MavenArtifactResolverIT {
 
@@ -35,14 +35,14 @@ class MavenArtifactResolverIT extends WordSpec with MavenTestContext {
   import MavenArtifactResolverIT._
 
   private def resolvedPath(descriptor: ArtifactDescriptor) =
-    testRepository.getBasedir.toPath resolve relativePath(descriptor)
+    new File(testRepository.getBasedir, relativePath(descriptor))
 
   "A maven artifact resolver" should {
-    val artifactPath = artifactResolver resolveArtifactPath artifactDescriptor
+    val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
 
     "resolve the artifact path to a readable file" in {
-      artifactPath should equal (resolvedPath(artifactDescriptor))
-      Files.isReadable(artifactPath) should be (true)
+      artifactFile should equal (resolvedPath(artifactDescriptor))
+      artifactFile canRead () should be (true)
     }
 
     "resolve the update descriptor and path to a readable file" in {
@@ -53,8 +53,8 @@ class MavenArtifactResolverIT extends WordSpec with MavenTestContext {
       updateDescriptor.version should not equal (artifactDescriptor.version)
       updateDescriptor.classifier should equal (artifactDescriptor.classifier)
       updateDescriptor.extension should equal (artifactDescriptor.extension)
-      val updatePath = artifactResolver resolveArtifactPath updateDescriptor
-      Files.isReadable(updatePath) should be (true)
+      val updateFile = artifactResolver resolveArtifactFile updateDescriptor
+      updateFile canRead () should be (true)
     }
   }
 }

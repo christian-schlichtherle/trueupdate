@@ -8,7 +8,6 @@ import com.stimulus.archiva.update.core.*;
 import static com.stimulus.archiva.update.maven.ArtifactConversion.*;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.nio.file.Path;
 import java.util.*;
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -55,12 +54,7 @@ public class MavenArtifactResolver implements ArtifactResolver {
         this.remotes = Collections.unmodifiableList(Arrays.asList(remotes));
     }
 
-    @Override public Path resolveArtifactPath(ArtifactDescriptor descriptor)
-    throws Exception {
-        return resolveArtifactFile(descriptor).toPath();
-    }
-
-    private File resolveArtifactFile(ArtifactDescriptor descriptor)
+    @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws Exception {
         return resolveArtifact(descriptor).getFile();
     }

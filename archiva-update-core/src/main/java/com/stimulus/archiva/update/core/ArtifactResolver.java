@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.core;
 
-import java.nio.file.Path;
+import java.io.File;
 
 /**
  * Resolves paths to described artifacts and their latest update.
@@ -14,22 +14,22 @@ import java.nio.file.Path;
 public interface ArtifactResolver {
 
     /**
-     * Resolves the path to the described artifact.
+     * Resolves the file containing the described artifact.
      *
      * @param  descriptor the descriptor for the artifact.
-     * @return the path to the described artifact.
-     * @throws Exception if resolving the artifact is not possible for some
-     *         (other) reason.
+     * @return the file containing the described artifact.
+     * @throws Exception if resolving the artifact file is not possible for
+     *         some reason.
      */
-    Path resolveArtifactPath(ArtifactDescriptor descriptor) throws Exception;
+    File resolveArtifactFile(ArtifactDescriptor descriptor) throws Exception;
 
     /**
      * Resolves the descriptor for the latest update for the described artifact.
      *
      * @param  descriptor the descriptor for the artifact.
      * @return the descriptor for the latest update for the described artifact.
-     * @throws Exception if resolving the update is not possible for some
-     *         (other) reason.
+     * @throws Exception if resolving the update descriptor is not possible for
+     *         some reason.
      */
     ArtifactDescriptor resolveUpdateDescriptor(ArtifactDescriptor descriptor)
     throws Exception;
