@@ -23,9 +23,14 @@ public final class JarDiff {
 
     /**
      * Constructs a JAR diff.
+     * Note that this class ensures that the entry names are equal before
+     * calling {@link Comparator#equals(EntryInFile, EntryInFile)}.
      *
      * @param comparator the comparator for testing two JAR entries in
      *                   different JAR files for equality.
+     *                   The implementation can safely assume that the entry
+     *                   names are equal without testing.
+     *
      */
     public JarDiff(final Comparator comparator) {
         this.comparator = requireNonNull(comparator);
@@ -103,7 +108,16 @@ public final class JarDiff {
         };
     }
 
-    private static EntryInFile entryInFile(
+    /**
+     * Wraps the given JAR entry and JAR file.
+     *
+     * @param entry the JAR entry.
+     *              Note that this gets shared with the returned object.
+     * @param file the JAR file.
+     *             Note that this gets shared with the returned object.
+     * @return the wrapped JAR entry and JAR file.
+     */
+    static EntryInFile entryInFile(
             final JarEntry entry,
             final JarFile file) {
         return new EntryInFile() {
@@ -120,7 +134,7 @@ public final class JarDiff {
     @Immutable
     abstract class Engine {
 
-        final @WillNotClose JarFile file1, file2;
+        private final @WillNotClose JarFile file1, file2;
 
         Engine( final @WillNotClose JarFile file1,
                 final @WillNotClose JarFile file2) {
@@ -212,9 +226,6 @@ public final class JarDiff {
         /**
          * Returns {@code true} if and only if the two given JAR entries in
          * different JAR files should be considered to be equal.
-         * Note that it's the client's responsibility to ensure that the entry
-         * names are equal before calling this method so that the
-         * implementation can safely assume this without testing again.
          *
          * @param entryInFile1 the JAR entry in the first JAR file.
          * @param entryInFile2 the JAR entry in the second JAR file.
