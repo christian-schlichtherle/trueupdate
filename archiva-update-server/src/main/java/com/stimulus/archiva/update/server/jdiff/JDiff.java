@@ -136,7 +136,6 @@ public final class JDiff {
      * @param entry the JAR entry.
      *              Note that this gets shared with the returned object.
      * @param file the JAR file.
-     *             Note that this gets shared with the returned object.
      * @return the wrapped JAR entry and JAR file.
      */
     static EntryInFile entryInFile(
