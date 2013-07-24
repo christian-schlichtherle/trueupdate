@@ -10,7 +10,7 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import java.io.File
 import java.util.jar.JarFile
-import JarDiff.Fingerprint
+import com.stimulus.archiva.update.server.JarDiff._
 
 /**
  * @author Christian Schlichtherle
@@ -24,27 +24,36 @@ class JarDiffEngineIT extends WordSpec {
     "diffing the test JAR files" should {
       val file1 = new JarFile(file("test1.jar"))
       val file2 = new JarFile(file("test2.jar"))
-      val engine = new JarDiff.Engine(file1, file2) {
-
-        override def onEntryOnlyInFile1(fingerprint1: Fingerprint) {
-          fingerprint1.name should equal ("entryOnlyInFile1")
+      val comparator = new Comparator {
+        def equals(entryInFile1: EntryInFile, entryInFile2: EntryInFile) = {
+          val entry1 = entryInFile1.entry
+          val entry2 = entryInFile2.entry
+          entry1.getName should equal (entry2.getName)
+          entry1.getTime == entry2.getTime &&
+            entry1.getSize == entry2.getSize &&
+            entry1.getCrc == entry2.getCrc
+        }
+      }
+      val engine = new JarDiff.Engine(file1, file2, comparator) {
+        override def onEntryOnlyInFile1(entryInFile1: EntryInFile) {
+          entryInFile1.entry.getName should equal ("entryOnlyInFile1")
         }
 
-        override def onEntryOnlyInFile2(fingerprint2: Fingerprint) {
-          fingerprint2.name should equal ("entryOnlyInFile2")
+        override def onEntryOnlyInFile2(entryInFile2: EntryInFile) {
+          entryInFile2.entry.getName should equal ("entryOnlyInFile2")
         }
 
-        override def onEqualEntries(fingerprint1: Fingerprint, fingerprint2: Fingerprint) {
-          fingerprint1.name should equal (fingerprint2.name)
-          fingerprint1 should equal (fingerprint2)
-          fingerprint1.name should equal ("equalEntry")
+        override def onEqualEntries(entryInFile1: EntryInFile,
+                                    entryInFile2: EntryInFile) {
+          entryInFile1.entry.getName should equal (entryInFile2.entry.getName)
+          entryInFile1.entry.getName should equal ("equalEntry")
         }
 
-        override def onDifferentEntries(fingerprint1: Fingerprint, fingerprint2: Fingerprint) {
-          fingerprint1.name should equal (fingerprint2.name)
-          fingerprint1 should not equal (fingerprint2)
+        override def onDifferentEntries(entryInFile1: EntryInFile,
+                                        entryInFile2: EntryInFile) {
+          entryInFile1.entry.getName should equal (entryInFile2.entry.getName)
           Set("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime") should
-            contain (fingerprint1.name)
+            contain (entryInFile1.entry.getName)
         }
       }
 

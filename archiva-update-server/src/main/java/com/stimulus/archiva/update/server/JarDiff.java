@@ -4,9 +4,8 @@
  */
 package com.stimulus.archiva.update.server;
 
-import edu.umd.cs.findbugs.annotations.CreatesObligation;
-import java.io.*;
 import java.util.*;
+import static java.util.Objects.requireNonNull;
 import static java.util.Collections.unmodifiableCollection;
 import java.util.jar.*;
 import javax.annotation.WillNotClose;
@@ -31,39 +30,57 @@ public final class JarDiff {
      */
     public static Result compute(
             final @WillNotClose JarFile file1,
-            final @WillNotClose JarFile file2) {
-        final SortedMap<String, Fingerprint>
+            final @WillNotClose JarFile file2,
+            final Comparator comparator) {
+        final SortedMap<String, EntryInFile>
                 entriesOnlyInFile1 = new TreeMap<>(),
                 entriesOnlyInFile2 = new TreeMap<>();
-        final SortedMap<String, Pair> differentEntries = new TreeMap<>();
-        new Engine(file1, file2) {
-            @Override void onEntryOnlyInFile1(Fingerprint fingerprint1) {
-                entriesOnlyInFile1.put(fingerprint1.name(), fingerprint1);
+        final SortedMap<String, PairOfEntriesInFiles>
+                differentEntries = new TreeMap<>();
+        new Engine(file1, file2, comparator) {
+            @Override void onEntryOnlyInFile1(EntryInFile entryInFile1) {
+                entriesOnlyInFile1.put(
+                        entryInFile1.entry().getName(),
+                        entryInFile1);
             }
 
-            @Override void onEntryOnlyInFile2(Fingerprint fingerprint2) {
-                entriesOnlyInFile2.put(fingerprint2.name(), fingerprint2);
+            @Override void onEntryOnlyInFile2(EntryInFile entryInFile2) {
+                entriesOnlyInFile2.put(
+                        entryInFile2.entry().getName(),
+                        entryInFile2);
             }
 
             @Override void onDifferentEntries(
-                    Fingerprint fingerprint1,
-                    Fingerprint fingerprint2) {
-                differentEntries.put(fingerprint1.name(),
-                        new Pair(fingerprint1, fingerprint2));
+                    EntryInFile entryInFile1,
+                    EntryInFile entryInFile2) {
+                assert entryInFile1.entry().getName().equals(
+                        entryInFile2.entry().getName());
+                differentEntries.put(
+                        entryInFile1.entry().getName(),
+                        pairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
         }.run();
         return new Result() {
-            @Override public Collection<Fingerprint> entriesOnlyInFile1() {
+            @Override public Collection<EntryInFile> entriesOnlyInFile1() {
                 return unmodifiableCollection(entriesOnlyInFile1.values());
             }
 
-            @Override public Collection<Fingerprint> entriesOnlyInFile2() {
+            @Override public Collection<EntryInFile> entriesOnlyInFile2() {
                 return unmodifiableCollection(entriesOnlyInFile2.values());
             }
 
-            @Override public Collection<Pair> differentEntries() {
+            @Override public Collection<PairOfEntriesInFiles> differentEntries() {
                 return unmodifiableCollection(differentEntries.values());
             }
+        };
+    }
+
+    private static PairOfEntriesInFiles pairOfEntriesInFiles(
+            final EntryInFile entryInFile1,
+            final EntryInFile entryInFile2) {
+        return new PairOfEntriesInFiles() {
+            public EntryInFile entryInFile1() { return entryInFile1; }
+            public EntryInFile entryInFile2() { return entryInFile2; }
         };
     }
 
@@ -76,13 +93,14 @@ public final class JarDiff {
     abstract static class Engine {
 
         final @WillNotClose JarFile file1, file2;
+        final Comparator comparator;
 
         Engine( final @WillNotClose JarFile file1,
-                final @WillNotClose JarFile file2) {
-            assert null != file1;
-            this.file1 = file1;
-            assert null != file2;
-            this.file2 = file2;
+                final @WillNotClose JarFile file2,
+                final Comparator comparator) {
+            this.file1 = requireNonNull(file1);
+            this.file2 = requireNonNull(file2);
+            this.comparator = requireNonNull(comparator);
         }
 
         /**
@@ -96,18 +114,15 @@ public final class JarDiff {
                  e1.hasMoreElements(); ) {
                 final JarEntry entry1 = e1.nextElement();
                 final JarEntry entry2 = file2.getJarEntry(entry1.getName());
-                final Fingerprint fp1 = new Fingerprint(file1, entry1);
                 if (null == entry2) {
-                    onEntryOnlyInFile1(fp1);
+                    onEntryOnlyInFile1(entryInFile(entry1, file1));
                 } else {
-                    final Fingerprint fp2 = new Fingerprint(file2, entry2);
-                    if (fp1.quickEquals(fp2)) {
-                        assert fp1.equals(fp2);
-                        onEqualEntries(fp1, fp2);
-                    } else {
-                        assert !fp1.equals(fp2);
-                        onDifferentEntries(fp1, fp2);
-                    }
+                    final EntryInFile entryInFile1 = entryInFile(entry1, file1);
+                    final EntryInFile entryInFile2 = entryInFile(entry2, file2);
+                    if (comparator.equals(entryInFile1, entryInFile2))
+                        onEqualEntries(entryInFile1, entryInFile2);
+                    else
+                        onDifferentEntries(entryInFile1, entryInFile2);
                 }
             }
 
@@ -116,220 +131,123 @@ public final class JarDiff {
                 final JarEntry entry2 = e2.nextElement();
                 final JarEntry entry1 = file1.getJarEntry(entry2.getName());
                 if (null == entry1)
-                    onEntryOnlyInFile2(new Fingerprint(file2, entry2));
+                    onEntryOnlyInFile2(entryInFile(entry2, file2));
             }
         }
 
-        /**
-         * Called for each JAR entry which is present in {@link #file1}, but not
-         * in {@link #file2}.
-         *
-         * @param fingerprint1 the fingerprint for the JAR entry in the first file.
-         */
-        void onEntryOnlyInFile1(Fingerprint fingerprint1) {
-            assert null != fingerprint1;
+        private static EntryInFile entryInFile(
+                final JarEntry entry,
+                final JarFile file) {
+            return new EntryInFile() {
+                public JarEntry entry() { return entry; }
+                public JarFile file() { return file; }
+            };
         }
 
         /**
-         * Called for each JAR entry which is present in {@link #file2}, but not
-         * in {@link #file1}.
+         * Called for each JAR entry which is present in the first JAR file,
+         * but not in the second JAR file.
          *
-         * @param fingerprint2 the fingerprint for the JAR entry in the second file.
+         * @param entryInFile1 the JAR entry in the first JAR file.
          */
-        void onEntryOnlyInFile2(Fingerprint fingerprint2) {
-            assert null != fingerprint2;
+        void onEntryOnlyInFile1(EntryInFile entryInFile1) {
+            assert null != entryInFile1;
         }
 
         /**
-         * Called for each pair of JAR entries with an equal name in
-         * {@link #file1} and {@link #file2}
-         * and with equal {@link Fingerprint}s.
+         * Called for each JAR entry which is present in the second JAR file,
+         * but not in the first JAR file.
          *
-         * @param fingerprint1 the fingerprint for the JAR entry in the first file.
-         * @param fingerprint2 the fingerprint for the JAR entry in the second file.
+         * @param entryInFile2 the JAR entry in the second JAR file.
          */
-        void onEqualEntries(Fingerprint fingerprint1, Fingerprint fingerprint2) {
-            assert fingerprint1.name().equals(fingerprint2.name());
-            assert fingerprint1.equals(fingerprint2);
+        void onEntryOnlyInFile2(EntryInFile entryInFile2) {
+            assert null != entryInFile2;
         }
 
         /**
          * Called for each pair of JAR entries with an equal name in
-         * {@link #file1} and {@link #file2},
-         * but with different {@link Fingerprint}s.
+         * the first and second JAR file
+         * and which are considered to be equal.
          *
-         * @param fingerprint1 the fingerprint for the JAR entry in the first file.
-         * @param fingerprint2 the fingerprint for the JAR entry in the second file.
+         * @param entryInFile1 the JAR entry in the first JAR file.
+         * @param entryInFile2 the JAR entry in the second JAR file.
          */
-        void onDifferentEntries(Fingerprint fingerprint1, Fingerprint fingerprint2) {
-            assert fingerprint1.name().equals(fingerprint2.name());
-            assert !fingerprint1.equals(fingerprint2);
+        void onEqualEntries(EntryInFile entryInFile1, EntryInFile entryInFile2) {
+            assert entryInFile1.entry().getName().equals(
+                    entryInFile2.entry().getName());
+        }
+
+        /**
+         * Called for each pair of JAR entries with an equal name in
+         * the first and second JAR file,
+         * but which are considered to be different.
+         *
+         * @param entryInFile1 the JAR entry in the first JAR file.
+         * @param entryInFile2 the JAR entry in the second JAR file.
+         */
+        void onDifferentEntries(EntryInFile entryInFile1, EntryInFile entryInFile2) {
+            assert entryInFile1.entry().getName().equals(
+                    entryInFile2.entry().getName());
         }
     } // Engine
 
-    /**
-     * The result of diffing two JAR files.
-     * Note that the returned collections are unmodifiable.
-     */
+    /** Compares two JAR entries in different JAR files. */
+    public interface Comparator {
+        /**
+         * Returns {@code true} if and only if the two JAR entries in different
+         * JAR files should be considered to be equal, too.
+         * Note that the client needs to make sure that the JAR entry names are
+         * equal, so that the implementation doesn't need to test this again.
+         *
+         * @param entryInFile1 the JAR entry in the first JAR file.
+         * @param entryInFile2 the JAR entry in the second JAR file.
+         */
+        boolean equals(EntryInFile entryInFile1, EntryInFile entryInFile2);
+    } // Comparator
+
+    /** A result of diffing two JAR files. */
     public interface Result {
+        /**
+         * Returns an unmodifiable collection of JAR entries which are only
+         * present in the first JAR file.
+         * The collection is sorted according to the natural order of the JAR
+         * entry names.
+         */
+        Collection<EntryInFile> entriesOnlyInFile1();
 
         /**
-         * Returns an unmodifiable collection of fingerprints of the entries
-         * which are only present in the first JAR file.
-         * The fingerprints in the collection are sorted in the natural order
-         * of the corresponding entry names.
+         * Returns an unmodifiable collection of JAR entries which are only
+         * present in the second JAR file.
+         * The collection is sorted according to the natural order of the JAR
+         * entry names.
          */
-        Collection<Fingerprint> entriesOnlyInFile1();
+        Collection<EntryInFile> entriesOnlyInFile2();
 
         /**
-         * Returns an unmodifiable collection of fingerprints of the entries
-         * which are only present in the second JAR file.
-         * The fingerprints in the collection are sorted in the natural order
-         * of the corresponding entry names.
+         * Returns an unmodifiable collection of pairs of JAR entries with
+         * equal names in both JAR files, but which are considered to be
+         * different.
+         * The collection is sorted according to the natural order of the JAR
+         * entry names.
          */
-        Collection<Fingerprint> entriesOnlyInFile2();
-
-        /**
-         * Returns an unmodifiable collection of pairs of fingerprints of the
-         * entries which are different in both JAR files.
-         * Note that although the fingerprints are different, the corresponding
-         * entry names are equal, i.e. the entries are present in both JAR
-         * files.
-         * The fingerprints in the collection are sorted in the natural order
-         * of the corresponding entry names.
-         */
-        Collection<Pair> differentEntries();
+        Collection<PairOfEntriesInFiles> differentEntries();
     } // Result
 
-    /**
-     * A pair of JAR entry fingerprints in two different JAR files.
-     * The fingerprints may be different, but they are guaranteed to have an
-     * equal entry name.
-     */
-    @Immutable
-    public final static class Pair {
+    /** A pair of JAR entries with equal names in different JAR files. */
+    public interface PairOfEntriesInFiles {
+        /** Returns the JAR entry in the first JAR file. */
+        EntryInFile entryInFile1();
 
-        private final Fingerprint fingerprint1, fingerprint2;
+        /** Returns the JAR entry in the second JAR file. */
+        EntryInFile entryInFile2();
+    } // PairOfEntriesInFiles
 
-        Pair(final Fingerprint fingerprint1, final Fingerprint fingerprint2) {
-            assert fingerprint1.name().equals(fingerprint2.name());
-            this.fingerprint1 = fingerprint1;
-            this.fingerprint2 = fingerprint2;
-        }
+    /** A JAR entry in a JAR file. */
+    public interface EntryInFile {
+        /** Returns the JAR entry. */
+        JarEntry entry();
 
-        /** Returns the fingerprint of the JAR entry in the first file. */
-        public Fingerprint fingerprint1() { return fingerprint1; }
-
-        /** Returns the fingerprint of the JAR entry in the second file. */
-        public Fingerprint fingerprint2() { return fingerprint2; }
-
-        @Override public String toString() {
-            return String.format("%s@%x[fingerprint1=%s, fingerprint2=%s]",
-                    getClass().getName(),
-                    hashCode(),
-                    fingerprint1(),
-                    fingerprint2());
-        }
-
-        /**
-         * Returns {@code true} if and only if the given object is an instance
-         * of this class with equal {@link #fingerprint1()} and
-         * {@link #fingerprint2()}.
-         */
-        @Override public boolean equals(final Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof Pair)) return false;
-            final Pair that = (Pair) obj;
-            return this.fingerprint1().equals(that.fingerprint1()) &&
-                    this.fingerprint2().equals(that.fingerprint2());
-        }
-
-        /**
-         * Returns a hash code which is consistent with {@link #equals(Object)}.
-         */
-        @Override public int hashCode() {
-            int hash = 17;
-            hash = 31 * hash + fingerprint1().hashCode();
-            hash = 31 * hash + fingerprint2().hashCode();
-            return hash;
-        }
-    } // Pair
-
-    /** The fingerprint of an entry in a JAR file. */
-    @Immutable
-    public final static class Fingerprint {
-
-        private final JarFile file;
-        private final JarEntry entry;
-
-        Fingerprint(final JarFile file, final JarEntry entry) {
-            assert null != file;
-            this.file = file;
-            assert null != entry;
-            this.entry = entry;
-        }
-
-        /** Returns a new input stream for reading the corresponding entry. */
-        public @CreatesObligation
-        InputStream inputStream() throws IOException {
-            return file.getInputStream(entry);
-        }
-
-        /** Returns the entry name. */
-        public String name() { return entry.getName(); }
-
-        /** Returns the last modification time of the entry. */
-        public long time() { return entry.getTime(); }
-
-        /** Returns the size of the entry. */
-        public long size() { return entry.getSize(); }
-
-        /** Returns the CRC-32 checksum of the entry. */
-        public long crc32() { return entry.getCrc(); }
-
-        @Override public String toString() {
-            return String.format("%s@%x[name=\"%s\", time=%tc, size=%d, crc32=%d]",
-                    getClass().getName(),
-                    hashCode(),
-                    name(),
-                    time(),
-                    size(),
-                    crc32());
-        }
-
-        /**
-         * Returns {@code true} if and only if the given object is an instance
-         * of this class with equal {@link #name()}, {@link #time()},
-         * {@link #size()} and {@link #crc32()}.
-         */
-        @Override public boolean equals(final Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof Fingerprint)) return false;
-            final Fingerprint that = (Fingerprint) obj;
-            return this.name().equals(that.name()) && this.quickEquals(that);
-        }
-
-        boolean quickEquals(final Fingerprint that) {
-            assert this.name().equals(that.name());
-            return this.time() == that.time() &&
-                    this.size() == that.size() &&
-                    this.crc32() == that.crc32();
-        }
-
-        /**
-         * Returns a hash code which is consistent with {@link #equals(Object)}.
-         */
-        @Override public int hashCode() {
-            int hash = 17;
-            hash = 31 * hash + name().hashCode();
-            hash = 31 * hash + hashCode(time());
-            hash = 31 * hash + hashCode(size());
-            hash = 31 * hash + hashCode(crc32());
-            return hash;
-        }
-
-        private static int hashCode(long value) {
-            return (int) (value ^ (value >>> 32)); // stolen from Long.hashCode()
-        }
-    } // Fingerprint
+        /** Returns the JAR file. */
+        JarFile file();
+    } // EntryInFile
 }
