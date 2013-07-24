@@ -89,7 +89,7 @@ public interface ArtifactDescriptor extends Serializable {
             return build(groupId, artifactId, version, extension, classifier);
         }
 
-        private ArtifactDescriptor build(
+        private static ArtifactDescriptor build(
                 final String groupId,
                 final String artifactId,
                 final String version,
