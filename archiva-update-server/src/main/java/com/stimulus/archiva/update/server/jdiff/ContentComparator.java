@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.server.jdiff;
 
+import com.stimulus.archiva.update.core.io.Source;
+
 import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.security.*;
@@ -45,33 +47,31 @@ public class ContentComparator implements Comparator {
         return Arrays.equals(digest(digest, entryInFile1), digest(digest, entryInFile2));
     }
 
-    private static byte[] digest(final MessageDigest digest, final EntryInFile entryInFile) throws IOException {
-        try (InputStream in = entryInFile.input()) {
-            return digest(digest, in);
-        }
-    }
+    private static MessageDigest sha1() { return digest("SHA-1"); }
 
-    private static byte[] digest(
-            final MessageDigest digest,
-            final InputStream in)
-    throws IOException {
-        digest.reset();
-        final byte[] buffer = new byte[8 * 1024];
-        int read;
-        do {
-            read = in.read(buffer);
-            if (0 < read) digest.update(buffer, 0, read);
-        } while (0 <= read);
-        return digest.digest();
-    }
-
-    private static MessageDigest sha1() {
+    private static MessageDigest digest(final String algorithm) {
         try {
-            return MessageDigest.getInstance("SHA-1");
+            return MessageDigest.getInstance(algorithm);
         } catch (NoSuchAlgorithmException ex) {
             throw new AssertionError(
                     "JRE doesn't implement standard message digest SHA-1. See http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#MessageDigest .",
                     ex);
         }
+    }
+
+    private static byte[] digest(
+            final MessageDigest digest,
+            final Source source)
+    throws IOException {
+        digest.reset();
+        final byte[] buffer = new byte[8 * 1024];
+        try (InputStream in = source.input()) {
+            int read;
+            do {
+                read = in.read(buffer);
+                if (0 < read) digest.update(buffer, 0, read);
+            } while (0 <= read);
+        }
+        return digest.digest();
     }
 }
