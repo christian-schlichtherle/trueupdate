@@ -4,13 +4,14 @@
  */
 package com.stimulus.archiva.update.maven
 
-import com.stimulus.archiva.update.core.ArtifactDescriptor
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor
 import ArtifactDescriptor.Builder
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])

@@ -7,6 +7,7 @@ package com.stimulus.archiva.update.maven
 import com.stimulus.archiva.update.core._
 import java.io.File
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
+import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
 
 /** @author Christian Schlichtherle */
 trait MavenTestContext extends TestContext {

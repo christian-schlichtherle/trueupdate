@@ -4,12 +4,14 @@
  */
 package com.stimulus.archiva.update.maven;
 
-import com.stimulus.archiva.update.core.*;
 import static com.stimulus.archiva.update.maven.ArtifactConversion.*;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import javax.annotation.concurrent.ThreadSafe;
+
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor;
+import com.stimulus.archiva.update.core.artifact.ArtifactResolver;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;

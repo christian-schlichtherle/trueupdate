@@ -2,14 +2,13 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.commons
+package com.stimulus.archiva.update.core.artifact
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
-import com.stimulus.archiva.update.core.ArtifactDescriptor
 import ArtifactDescriptor.Builder
 
 /** @author Christian Schlichtherle */

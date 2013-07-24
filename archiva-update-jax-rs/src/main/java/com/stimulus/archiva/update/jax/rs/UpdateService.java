@@ -4,8 +4,8 @@
  */
 package com.stimulus.archiva.update.jax.rs;
 
-import com.stimulus.archiva.update.core.ArtifactDescriptor;
-import com.stimulus.archiva.update.core.ArtifactResolver;
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor;
+import com.stimulus.archiva.update.core.artifact.ArtifactResolver;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;

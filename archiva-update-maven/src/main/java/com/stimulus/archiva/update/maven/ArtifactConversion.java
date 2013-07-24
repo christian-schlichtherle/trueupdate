@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.maven;
 
-import com.stimulus.archiva.update.core.ArtifactDescriptor;
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor;
 import org.eclipse.aether.artifact.*;
 
 /**

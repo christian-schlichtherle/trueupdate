@@ -4,12 +4,12 @@
  */
 package com.stimulus.archiva.update.maven
 
-import com.stimulus.archiva.update.core.ArtifactDescriptor
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import java.io.File
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor
 
 private object MavenArtifactResolverIT {
 

@@ -14,6 +14,7 @@ import javax.ws.rs.ext.ContextResolver
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
+import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
 
 private object ConfiguredUpdateServiceITSuite {
 

@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.core
 
+import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
+
 /** @author Christian Schlichtherle */
 trait TestContext {
   def artifactResolver: ArtifactResolver
