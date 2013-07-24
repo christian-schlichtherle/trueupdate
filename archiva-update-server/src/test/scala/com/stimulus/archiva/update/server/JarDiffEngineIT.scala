@@ -22,8 +22,6 @@ class JarDiffEngineIT extends WordSpec {
 
   "A JAR diff engine" when {
     "diffing the test JAR files" should {
-      val file1 = new JarFile(file("test1.jar"))
-      val file2 = new JarFile(file("test2.jar"))
       val comparator = new Comparator {
         def equals(entryInFile1: EntryInFile, entryInFile2: EntryInFile) = {
           val entry1 = entryInFile1.entry
@@ -35,6 +33,8 @@ class JarDiffEngineIT extends WordSpec {
         }
       }
       val diff = new JarDiff(comparator)
+      val file1 = new JarFile(file("test1.jar"))
+      val file2 = new JarFile(file("test2.jar"))
       val engine = new diff.Engine(file1, file2) {
         override def onEntryOnlyInFile1(entryInFile1: EntryInFile) {
           entryInFile1.entry.getName should equal ("entryOnlyInFile1")
