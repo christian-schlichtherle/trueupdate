@@ -198,6 +198,7 @@ public final class Diff {
          * Called for each pair of JAR entries with an equal name in
          * the first and second JAR file
          * and which are considered to be equal.
+         * This method is reserved for future use.
          *
          * @param entryInFile1 the JAR entry in the first JAR file.
          * @param entryInFile2 the JAR entry in the second JAR file.
