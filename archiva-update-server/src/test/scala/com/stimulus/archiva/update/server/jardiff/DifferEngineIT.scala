@@ -13,7 +13,7 @@ import org.scalatest.matchers.ShouldMatchers._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class DiffEngineIT extends WordSpec with DiffTestContext {
+class DifferEngineIT extends WordSpec with DifferTestContext {
 
   "A JAR diff engine" when {
     "diffing the test JAR files" should {
@@ -22,7 +22,7 @@ class DiffEngineIT extends WordSpec with DiffTestContext {
         try {
           val jar2 = jarFile2()
           try {
-            val diff = this.diff
+            val diff = this.differ
             val engine = new diff.Engine(jar1, jar2) {
               override def onEntryOnlyInFile1(entryInFile1: EntryInFile) {
                 entryInFile1.entry.getName should equal ("entryOnlyInFile1")

@@ -13,7 +13,7 @@ import org.scalatest.matchers.ShouldMatchers._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class DiffIT extends WordSpec with DiffTestContext {
+class DifferIT extends WordSpec with DifferTestContext {
 
   "A JAR diff" when {
     "diffing the test JAR files" should {
@@ -22,7 +22,7 @@ class DiffIT extends WordSpec with DiffTestContext {
         try {
           val jar2 = jarFile2()
           try {
-            val result = diff.compute(jar1, jar2)
+            val result = differ.compute(jar1, jar2)
             import collection.JavaConverters._
             result.entriesOnlyInFile1.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile1"))

@@ -24,7 +24,8 @@ public class ContentComparator implements Comparator {
      */
     public boolean equals(
             final EntryInFile entryInFile1,
-            final EntryInFile entryInFile2) {
+            final EntryInFile entryInFile2)
+    throws IOException {
         return fastPathCheck(entryInFile1.entry(), entryInFile2.entry()) &&
                 slowPathCheck(entryInFile1, entryInFile2);
     }
@@ -36,17 +37,11 @@ public class ContentComparator implements Comparator {
 
     private static boolean slowPathCheck(
             final EntryInFile entryInFile1,
-            final EntryInFile entryInFile2) {
+            final EntryInFile entryInFile2)
+    throws IOException {
         // CRC-32 has frequent collisions, so let's consider a
         // cryptographically strong message digest.
-        try {
-            return Arrays.equals(digest(entryInFile1), digest(entryInFile2));
-        } catch (IOException ex) {
-            assert false : "Can't read entry in JAR file.";
-            // Play it safe and leave it up to the client to re-discover and
-            // handle this exception.
-            return false;
-        }
+        return Arrays.equals(digest(entryInFile1), digest(entryInFile2));
     }
 
     private static byte[] digest(final EntryInFile entryInFile) throws IOException {

@@ -11,11 +11,12 @@ import edu.umd.cs.findbugs.annotations.CreatesObligation
 /**
  * @author Christian Schlichtherle
  */
-trait DiffTestContext {
+trait DifferTestContext {
   @CreatesObligation def jarFile1() = new JarFile(file("test1.jar"))
   @CreatesObligation def jarFile2() = new JarFile(file("test2.jar"))
 
-  private def file(name: String) = new File((classOf[DiffTestContext] getResource name).toURI)
+  private def file(name: String) =
+    new File((classOf[DifferTestContext] getResource name).toURI)
 
-  def diff = new Diff(MetadataComparator)
+  def differ = new Differ(MetadataComparator)
 }

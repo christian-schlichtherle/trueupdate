@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.server.jardiff;
 
+import java.io.IOException;
+
 /**
  * Compares two JAR entries in different JAR files.
  *
@@ -16,6 +18,9 @@ public interface Comparator {
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.
+     * @throws IOException at the discretion of the implementation, e.g. if
+     *         it's impossible to read the entry contents for some reason.
      */
-    boolean equals(EntryInFile entryInFile1, EntryInFile entryInFile2);
+    boolean equals(EntryInFile entryInFile1, EntryInFile entryInFile2)
+    throws IOException;
 }

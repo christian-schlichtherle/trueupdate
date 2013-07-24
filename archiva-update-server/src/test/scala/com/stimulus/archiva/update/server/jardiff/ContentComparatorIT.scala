@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server.jardiff
 
-import Diff.entryInFile
+import Differ.entryInFile
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
@@ -15,7 +15,7 @@ import org.scalatest.prop.PropertyChecks._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class ContentComparatorIT extends WordSpec with DiffTestContext {
+class ContentComparatorIT extends WordSpec with DifferTestContext {
 
   private val comparator = new ContentComparator
 
