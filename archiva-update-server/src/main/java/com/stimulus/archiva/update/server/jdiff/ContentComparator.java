@@ -46,7 +46,7 @@ public class ContentComparator implements Comparator {
     }
 
     private static byte[] digest(final MessageDigest digest, final EntryInFile entryInFile) throws IOException {
-        try (InputStream in = inputStream(entryInFile)) {
+        try (InputStream in = entryInFile.input()) {
             return digest(digest, in);
         }
     }
@@ -73,10 +73,5 @@ public class ContentComparator implements Comparator {
                     "JRE doesn't implement standard message digest SHA-1. See http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#MessageDigest .",
                     ex);
         }
-    }
-
-    private static InputStream inputStream(EntryInFile entryInFile)
-    throws IOException {
-        return entryInFile.file().getInputStream(entryInFile.entry());
     }
 }

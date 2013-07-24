@@ -5,6 +5,7 @@
 package com.stimulus.archiva.update.server.jdiff;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import static java.util.Objects.requireNonNull;
 import static java.util.Collections.unmodifiableCollection;
@@ -143,7 +144,9 @@ public final class JDiff {
             final JarFile file) {
         return new EntryInFile() {
             public JarEntry entry() { return entry; }
-            public JarFile file() { return file; }
+            public InputStream input() throws IOException {
+                return file.getInputStream(entry);
+            }
         };
     }
 

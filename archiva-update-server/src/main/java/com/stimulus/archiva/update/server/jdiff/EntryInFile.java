@@ -4,18 +4,16 @@
  */
 package com.stimulus.archiva.update.server.jdiff;
 
+import com.stimulus.archiva.update.core.io.Source;
+
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * A JAR entry in a JAR file.
  *
  * @author Christian Schlichtherle
  */
-public interface EntryInFile {
+public interface EntryInFile extends Source {
     /** Returns the JAR entry. */
     JarEntry entry();
-
-    /** Returns the JAR file. */
-    JarFile file();
 }
