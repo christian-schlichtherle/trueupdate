@@ -203,8 +203,8 @@ public final class JarDiff {
          * Returns {@code true} if and only if the two given JAR entries in
          * different JAR files should be considered to be equal.
          * Note that it's the client's responsibility to ensure that the entry
-         * names are equal so that the implementation doesn't need to test this
-         * again.
+         * names are equal before calling this method so that the
+         * implementation can safely assume this without testing again.
          *
          * @param entryInFile1 the JAR entry in the first JAR file.
          * @param entryInFile2 the JAR entry in the second JAR file.
