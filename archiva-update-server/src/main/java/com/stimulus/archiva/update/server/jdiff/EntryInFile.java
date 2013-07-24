@@ -14,6 +14,9 @@ import java.util.jar.JarEntry;
  * @author Christian Schlichtherle
  */
 public interface EntryInFile extends Source {
-    /** Returns the JAR entry. */
+    /**
+     * Returns the JAR entry.
+     * Clients should not modify the returned entry.
+     */
     JarEntry entry();
 }
