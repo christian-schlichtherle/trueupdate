@@ -19,25 +19,34 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class JarDiff {
 
-    private JarDiff() { }
+    private final Comparator comparator;
 
     /**
-     *  Computes a diff of two JAR files.
+     * Constructs a JAR diff.
+     *
+     * @param comparator the comparator for testing two JAR entries in
+     *                   different JAR files for equality.
+     */
+    public JarDiff(final Comparator comparator) {
+        this.comparator = requireNonNull(comparator);
+    }
+
+    /**
+     *  Computes a diff of the two given JAR files.
      *
      *  @param file1 the first JAR file.
      *  @param file2 the second JAR file.
      *  @return the diff result.
      */
-    public static Result compute(
+    public Result compute(
             final @WillNotClose JarFile file1,
-            final @WillNotClose JarFile file2,
-            final Comparator comparator) {
+            final @WillNotClose JarFile file2) {
         final SortedMap<String, EntryInFile>
                 entriesOnlyInFile1 = new TreeMap<>(),
                 entriesOnlyInFile2 = new TreeMap<>();
         final SortedMap<String, PairOfEntriesInFiles>
                 differentEntries = new TreeMap<>();
-        new Engine(file1, file2, comparator) {
+        new Engine(file1, file2) {
             @Override void onEntryOnlyInFile1(EntryInFile entryInFile1) {
                 entriesOnlyInFile1.put(
                         entryInFile1.entry().getName(),
@@ -84,23 +93,29 @@ public final class JarDiff {
         };
     }
 
+    private static EntryInFile entryInFile(
+            final JarEntry entry,
+            final JarFile file) {
+        return new EntryInFile() {
+            public JarEntry entry() { return entry; }
+            public JarFile file() { return file; }
+        };
+    }
+
     /**
      * Computes a diff of two JAR files.
      * Clients need to override some of the template methods {@code on...()} in
      * order to implement the actions.
      */
     @Immutable
-    abstract static class Engine {
+    abstract class Engine {
 
         final @WillNotClose JarFile file1, file2;
-        final Comparator comparator;
 
         Engine( final @WillNotClose JarFile file1,
-                final @WillNotClose JarFile file2,
-                final Comparator comparator) {
+                final @WillNotClose JarFile file2) {
             this.file1 = requireNonNull(file1);
             this.file2 = requireNonNull(file2);
-            this.comparator = requireNonNull(comparator);
         }
 
         /**
@@ -133,15 +148,6 @@ public final class JarDiff {
                 if (null == entry1)
                     onEntryOnlyInFile2(entryInFile(entry2, file2));
             }
-        }
-
-        private static EntryInFile entryInFile(
-                final JarEntry entry,
-                final JarFile file) {
-            return new EntryInFile() {
-                public JarEntry entry() { return entry; }
-                public JarFile file() { return file; }
-            };
         }
 
         /**
@@ -194,10 +200,11 @@ public final class JarDiff {
     /** Compares two JAR entries in different JAR files. */
     public interface Comparator {
         /**
-         * Returns {@code true} if and only if the two JAR entries in different
-         * JAR files should be considered to be equal, too.
-         * Note that the client needs to make sure that the JAR entry names are
-         * equal, so that the implementation doesn't need to test this again.
+         * Returns {@code true} if and only if the two given JAR entries in
+         * different JAR files should be considered to be equal.
+         * Note that it's the client's responsibility to ensure that the entry
+         * names are equal so that the implementation doesn't need to test this
+         * again.
          *
          * @param entryInFile1 the JAR entry in the first JAR file.
          * @param entryInFile2 the JAR entry in the second JAR file.

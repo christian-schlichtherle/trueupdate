@@ -34,7 +34,8 @@ class JarDiffEngineIT extends WordSpec {
             entry1.getCrc == entry2.getCrc
         }
       }
-      val engine = new JarDiff.Engine(file1, file2, comparator) {
+      val diff = new JarDiff(comparator)
+      val engine = new diff.Engine(file1, file2) {
         override def onEntryOnlyInFile1(entryInFile1: EntryInFile) {
           entryInFile1.entry.getName should equal ("entryOnlyInFile1")
         }
