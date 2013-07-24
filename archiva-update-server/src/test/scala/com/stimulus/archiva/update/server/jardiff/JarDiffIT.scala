@@ -24,9 +24,9 @@ class JarDiffIT extends WordSpec with JarDiffTestContext {
           try {
             val diff = jarDiff.compute(jar1, jar2)
             import collection.JavaConverters._
-            diff.entriesOnlyInFile1.asScala map (_.entry.getName) should
+            diff.entriesInFile1.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile1"))
-            diff.entriesOnlyInFile2.asScala map (_.entry.getName) should
+            diff.entriesInFile2.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile2"))
             diff.equalEntries.asScala map (_.entryInFile1.entry.getName) should
               equal (List("equalEntry"))

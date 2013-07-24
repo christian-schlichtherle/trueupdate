@@ -14,7 +14,7 @@ import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Computes a diff of two JAR files.
+ * Computes a {@link Diff} from two JAR files.
  *
  * @author Christian Schlichtherle
  */
@@ -39,7 +39,7 @@ public final class JarDiff {
     }
 
     /**
-     * Computes a diff of the two given JAR files.
+     * Computes a {@link Diff} from the two given JAR files.
      *
      * @param file1 the first JAR file.
      * @param file2 the second JAR file.
@@ -52,20 +52,20 @@ public final class JarDiff {
             final @WillNotClose JarFile file2)
     throws IOException {
         final SortedMap<String, EntryInFile>
-                entriesOnlyInFile1 = new TreeMap<>(),
-                entriesOnlyInFile2 = new TreeMap<>();
+                entriesInFile1 = new TreeMap<>(),
+                entriesInFile2 = new TreeMap<>();
         final SortedMap<String, PairOfEntriesInFiles>
                 equalEntries = new TreeMap<>(),
                 differentEntries = new TreeMap<>();
         new Engine(file1, file2) {
-            @Override void onEntryOnlyInFile1(EntryInFile entryInFile1) {
-                entriesOnlyInFile1.put(
+            @Override void onEntryInFile1(EntryInFile entryInFile1) {
+                entriesInFile1.put(
                         entryInFile1.entry().getName(),
                         entryInFile1);
             }
 
-            @Override void onEntryOnlyInFile2(EntryInFile entryInFile2) {
-                entriesOnlyInFile2.put(
+            @Override void onEntryInFile2(EntryInFile entryInFile2) {
+                entriesInFile2.put(
                         entryInFile2.entry().getName(),
                         entryInFile2);
             }
@@ -91,24 +91,24 @@ public final class JarDiff {
             }
         }.run();
         return result(
-                unmodifiableCollection(entriesOnlyInFile1.values()),
-                unmodifiableCollection(entriesOnlyInFile2.values()),
+                unmodifiableCollection(entriesInFile1.values()),
+                unmodifiableCollection(entriesInFile2.values()),
                 unmodifiableCollection(equalEntries.values()),
                 unmodifiableCollection(differentEntries.values()));
     }
 
     private static Diff result(
-            final Collection<EntryInFile> entriesOnlyInFile1,
-            final Collection<EntryInFile> entriesOnlyInFile2,
+            final Collection<EntryInFile> entriesInFile1,
+            final Collection<EntryInFile> entriesInFile2,
             final Collection<PairOfEntriesInFiles> equalEntries,
             final Collection<PairOfEntriesInFiles> differentEntries) {
         return new Diff() {
-            @Override public Collection<EntryInFile> entriesOnlyInFile1() {
-                return entriesOnlyInFile1;
+            @Override public Collection<EntryInFile> entriesInFile1() {
+                return entriesInFile1;
             }
 
-            @Override public Collection<EntryInFile> entriesOnlyInFile2() {
-                return entriesOnlyInFile2;
+            @Override public Collection<EntryInFile> entriesInFile2() {
+                return entriesInFile2;
             }
 
             @Override public Collection<PairOfEntriesInFiles> equalEntries() {
@@ -180,7 +180,7 @@ public final class JarDiff {
                 final JarEntry entry1 = e1.nextElement();
                 final JarEntry entry2 = file2.getJarEntry(entry1.getName());
                 if (null == entry2) {
-                    onEntryOnlyInFile1(entryInFile(entry1, file1));
+                    onEntryInFile1(entryInFile(entry1, file1));
                 } else {
                     final EntryInFile entryInFile1 = entryInFile(entry1, file1);
                     final EntryInFile entryInFile2 = entryInFile(entry2, file2);
@@ -196,7 +196,7 @@ public final class JarDiff {
                 final JarEntry entry2 = e2.nextElement();
                 final JarEntry entry1 = file1.getJarEntry(entry2.getName());
                 if (null == entry1)
-                    onEntryOnlyInFile2(entryInFile(entry2, file2));
+                    onEntryInFile2(entryInFile(entry2, file2));
             }
         }
 
@@ -206,7 +206,7 @@ public final class JarDiff {
          *
          * @param entryInFile1 the JAR entry in the first JAR file.
          */
-        void onEntryOnlyInFile1(EntryInFile entryInFile1) {
+        void onEntryInFile1(EntryInFile entryInFile1) {
             assert null != entryInFile1;
         }
 
@@ -216,7 +216,7 @@ public final class JarDiff {
          *
          * @param entryInFile2 the JAR entry in the second JAR file.
          */
-        void onEntryOnlyInFile2(EntryInFile entryInFile2) {
+        void onEntryInFile2(EntryInFile entryInFile2) {
             assert null != entryInFile2;
         }
 

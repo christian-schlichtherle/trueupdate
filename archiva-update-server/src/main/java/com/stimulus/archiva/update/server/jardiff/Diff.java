@@ -18,7 +18,7 @@ public interface Diff {
      * The collection is sorted according to the natural order of the JAR
      * entry names.
      */
-    Collection<EntryInFile> entriesOnlyInFile1();
+    Collection<EntryInFile> entriesInFile1();
 
     /**
      * Returns an unmodifiable collection of JAR entries which are only
@@ -26,7 +26,7 @@ public interface Diff {
      * The collection is sorted according to the natural order of the JAR
      * entry names.
      */
-    Collection<EntryInFile> entriesOnlyInFile2();
+    Collection<EntryInFile> entriesInFile2();
 
     /**
      * Returns an unmodifiable collection of pairs of JAR entries with
