@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff;
+package com.stimulus.archiva.update.server.jdiff;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.*;
@@ -41,17 +41,21 @@ public class ContentComparator implements Comparator {
     throws IOException {
         // CRC-32 has frequent collisions, so let's consider a
         // cryptographically strong message digest.
-        return Arrays.equals(digest(entryInFile1), digest(entryInFile2));
-    }
-
-    private static byte[] digest(final EntryInFile entryInFile) throws IOException {
-        final InputStream in = inputStream(entryInFile);
-        try { return digest(in); }
-        finally { in.close(); }
-    }
-
-    private static byte[] digest(InputStream in) throws IOException {
         final MessageDigest digest = sha1();
+        return Arrays.equals(digest(digest, entryInFile1), digest(digest, entryInFile2));
+    }
+
+    private static byte[] digest(final MessageDigest digest, final EntryInFile entryInFile) throws IOException {
+        try (InputStream in = inputStream(entryInFile)) {
+            return digest(digest, in);
+        }
+    }
+
+    private static byte[] digest(
+            final MessageDigest digest,
+            final InputStream in)
+    throws IOException {
+        digest.reset();
         final byte[] buffer = new byte[8 * 1024];
         int read;
         do {
@@ -71,7 +75,7 @@ public class ContentComparator implements Comparator {
         }
     }
 
-    private static InputStream inputStream(final EntryInFile entryInFile)
+    private static InputStream inputStream(EntryInFile entryInFile)
     throws IOException {
         return entryInFile.file().getInputStream(entryInFile.entry());
     }

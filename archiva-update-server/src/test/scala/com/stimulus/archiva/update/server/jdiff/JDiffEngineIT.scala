@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff
+package com.stimulus.archiva.update.server.jdiff
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -13,7 +13,7 @@ import org.scalatest.matchers.ShouldMatchers._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class DifferEngineIT extends WordSpec with DifferTestContext {
+class JDiffEngineIT extends WordSpec with JDiffTestContext {
 
   "A JAR diff engine" when {
     "diffing the test JAR files" should {

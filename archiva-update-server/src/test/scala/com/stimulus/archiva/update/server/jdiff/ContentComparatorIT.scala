@@ -2,9 +2,9 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff
+package com.stimulus.archiva.update.server.jdiff
 
-import Differ.entryInFile
+import JDiff.entryInFile
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
@@ -15,7 +15,7 @@ import org.scalatest.prop.PropertyChecks._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class ContentComparatorIT extends WordSpec with DifferTestContext {
+class ContentComparatorIT extends WordSpec with JDiffTestContext {
 
   private val comparator = new ContentComparator
 

@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff;
+package com.stimulus.archiva.update.server.jdiff;
 
 import java.io.IOException;
 import java.util.*;
@@ -18,7 +18,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class Differ {
+public final class JDiff {
 
     private final Comparator comparator;
 
@@ -33,7 +33,7 @@ public final class Differ {
      *                   names are equal without testing.
      *
      */
-    public Differ(final Comparator comparator) {
+    public JDiff(final Comparator comparator) {
         this.comparator = requireNonNull(comparator);
     }
 

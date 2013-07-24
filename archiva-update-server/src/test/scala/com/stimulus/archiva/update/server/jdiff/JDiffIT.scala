@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff
+package com.stimulus.archiva.update.server.jdiff
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -13,7 +13,7 @@ import org.scalatest.matchers.ShouldMatchers._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class DifferIT extends WordSpec with DifferTestContext {
+class JDiffIT extends WordSpec with JDiffTestContext {
 
   "A JAR diff" when {
     "diffing the test JAR files" should {
@@ -30,7 +30,11 @@ class DifferIT extends WordSpec with DifferTestContext {
               equal (List("entryOnlyInFile2"))
             result.equalEntries.asScala map (_.entryInFile1.entry.getName) should
               equal (List("equalEntry"))
+            result.equalEntries.asScala map (_.entryInFile2.entry.getName) should
+              equal (List("equalEntry"))
             result.differentEntries.asScala map (_.entryInFile1.entry.getName) should
+              equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
+            result.differentEntries.asScala map (_.entryInFile2.entry.getName) should
               equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
           } finally {
             jar2 close ()
