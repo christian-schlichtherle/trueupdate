@@ -69,17 +69,27 @@ public final class JarDiff {
                         pairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
         }.run();
+        return result(
+                unmodifiableCollection(entriesOnlyInFile1.values()),
+                unmodifiableCollection(entriesOnlyInFile2.values()),
+                unmodifiableCollection(differentEntries.values()));
+    }
+
+    private static Result result(
+            final Collection<EntryInFile> entriesOnlyInFile1,
+            final Collection<EntryInFile> entriesOnlyInFile2,
+            final Collection<PairOfEntriesInFiles> differentEntries) {
         return new Result() {
             @Override public Collection<EntryInFile> entriesOnlyInFile1() {
-                return unmodifiableCollection(entriesOnlyInFile1.values());
+                return entriesOnlyInFile1;
             }
 
             @Override public Collection<EntryInFile> entriesOnlyInFile2() {
-                return unmodifiableCollection(entriesOnlyInFile2.values());
+                return entriesOnlyInFile2;
             }
 
             @Override public Collection<PairOfEntriesInFiles> differentEntries() {
-                return unmodifiableCollection(differentEntries.values());
+                return differentEntries;
             }
         };
     }
