@@ -54,6 +54,7 @@ public final class Differ {
                 entriesOnlyInFile1 = new TreeMap<>(),
                 entriesOnlyInFile2 = new TreeMap<>();
         final SortedMap<String, PairOfEntriesInFiles>
+                equalEntries = new TreeMap<>(),
                 differentEntries = new TreeMap<>();
         new Engine(file1, file2) {
             @Override void onEntryOnlyInFile1(EntryInFile entryInFile1) {
@@ -66,6 +67,16 @@ public final class Differ {
                 entriesOnlyInFile2.put(
                         entryInFile2.entry().getName(),
                         entryInFile2);
+            }
+
+            @Override void onEqualEntries(
+                    EntryInFile entryInFile1,
+                    EntryInFile entryInFile2) {
+                assert entryInFile1.entry().getName().equals(
+                        entryInFile2.entry().getName());
+                equalEntries.put(
+                        entryInFile1.entry().getName(),
+                        pairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
 
             @Override void onDifferentEntries(
@@ -81,12 +92,14 @@ public final class Differ {
         return result(
                 unmodifiableCollection(entriesOnlyInFile1.values()),
                 unmodifiableCollection(entriesOnlyInFile2.values()),
+                unmodifiableCollection(equalEntries.values()),
                 unmodifiableCollection(differentEntries.values()));
     }
 
     private static Diff result(
             final Collection<EntryInFile> entriesOnlyInFile1,
             final Collection<EntryInFile> entriesOnlyInFile2,
+            final Collection<PairOfEntriesInFiles> equalEntries,
             final Collection<PairOfEntriesInFiles> differentEntries) {
         return new Diff() {
             @Override public Collection<EntryInFile> entriesOnlyInFile1() {
@@ -95,6 +108,10 @@ public final class Differ {
 
             @Override public Collection<EntryInFile> entriesOnlyInFile2() {
                 return entriesOnlyInFile2;
+            }
+
+            @Override public Collection<PairOfEntriesInFiles> equalEntries() {
+                return equalEntries;
             }
 
             @Override public Collection<PairOfEntriesInFiles> differentEntries() {

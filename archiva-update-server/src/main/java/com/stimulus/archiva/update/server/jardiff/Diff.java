@@ -30,8 +30,17 @@ public interface Diff {
 
     /**
      * Returns an unmodifiable collection of pairs of JAR entries with
+     * equal names in both JAR files and which are considered to be
+     * equal according to the {@link Comparator}.
+     * The collection is sorted according to the natural order of the JAR
+     * entry names.
+     */
+    Collection<PairOfEntriesInFiles> equalEntries();
+
+    /**
+     * Returns an unmodifiable collection of pairs of JAR entries with
      * equal names in both JAR files, but which are considered to be
-     * different.
+     * different according to the {@link Comparator}.
      * The collection is sorted according to the natural order of the JAR
      * entry names.
      */

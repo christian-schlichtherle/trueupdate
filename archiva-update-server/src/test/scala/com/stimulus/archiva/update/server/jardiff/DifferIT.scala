@@ -28,6 +28,8 @@ class DifferIT extends WordSpec with DifferTestContext {
               equal (List("entryOnlyInFile1"))
             result.entriesOnlyInFile2.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile2"))
+            result.equalEntries.asScala map (_.entryInFile1.entry.getName) should
+              equal (List("equalEntry"))
             result.differentEntries.asScala map (_.entryInFile1.entry.getName) should
               equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
           } finally {
