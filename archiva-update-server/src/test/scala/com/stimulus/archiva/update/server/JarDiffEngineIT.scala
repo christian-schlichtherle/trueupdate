@@ -10,7 +10,7 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import java.io.File
 import java.util.jar.JarFile
-import JarDiffEngine.Fingerprint
+import JarDiff.Fingerprint
 
 /**
  * @author Christian Schlichtherle
@@ -22,9 +22,9 @@ class JarDiffEngineIT extends WordSpec {
 
   "A JAR diff engine" when {
     "diffing the test JAR files" should {
-      val engine = new JarDiffEngine {
-        override val file1 = new JarFile(file("test1.jar"))
-        override val file2 = new JarFile(file("test2.jar"))
+      val file1 = new JarFile(file("test1.jar"))
+      val file2 = new JarFile(file("test2.jar"))
+      val engine = new JarDiff.Engine(file1, file2) {
 
         override def onEntryOnlyInFile1(fingerprint1: Fingerprint) {
           fingerprint1.name should equal ("entryOnlyInFile1")
@@ -50,7 +50,7 @@ class JarDiffEngineIT extends WordSpec {
 
       "call the template methods with correct parameters" in {
         try {
-          engine call ()
+          engine run ()
         } finally {
           try {
             engine.file1 close ()
