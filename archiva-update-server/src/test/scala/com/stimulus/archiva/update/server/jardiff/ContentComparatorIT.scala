@@ -2,9 +2,9 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server
+package com.stimulus.archiva.update.server.jardiff
 
-import com.stimulus.archiva.update.server.JarDiff.entryInFile
+import Diff.entryInFile
 import java.io.File
 import java.util.jar.JarFile
 import org.junit.runner.RunWith
@@ -17,11 +17,11 @@ import org.scalatest.prop.PropertyChecks._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JarContentComparatorIT extends WordSpec {
+class ContentComparatorIT extends WordSpec {
 
   private def file(name: String) = new File((getClass getResource name).toURI)
 
-  private val comparator = new JarContentComparator
+  private val comparator = new ContentComparator
 
   "A JAR content comparator" when {
     "mutually comparing all entries in a JAR file" should {

@@ -2,9 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server;
-
-import com.stimulus.archiva.update.server.JarDiff.*;
+package com.stimulus.archiva.update.server.jardiff;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.*;
@@ -14,9 +12,11 @@ import java.util.jar.JarEntry;
 
 /**
  * Compares the contents of two JAR entries in two different JAR files.
+ *
+ * @author Christian Schlichtherle
  */
 @Immutable
-public class JarContentComparator implements Comparator {
+public class ContentComparator implements Comparator {
 
     /**
      * Returns {@code true} if and only if the contents of the two given JAR

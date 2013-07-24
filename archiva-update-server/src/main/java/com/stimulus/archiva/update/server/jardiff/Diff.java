@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server;
+package com.stimulus.archiva.update.server.jardiff;
 
 import java.util.*;
 import static java.util.Objects.requireNonNull;
@@ -17,12 +17,12 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class JarDiff {
+public final class Diff {
 
     private final Comparator comparator;
 
     /**
-     * Constructs a JAR diff.
+     * Constructs a diff.
      * Note that this class ensures that the entry names are equal before
      * calling {@link Comparator#equals(EntryInFile, EntryInFile)}.
      *
@@ -32,7 +32,7 @@ public final class JarDiff {
      *                   names are equal without testing.
      *
      */
-    public JarDiff(final Comparator comparator) {
+    public Diff(final Comparator comparator) {
         this.comparator = requireNonNull(comparator);
     }
 
@@ -220,62 +220,4 @@ public final class JarDiff {
                     entryInFile2.entry().getName());
         }
     } // Engine
-
-    /** Compares two JAR entries in different JAR files. */
-    public interface Comparator {
-        /**
-         * Returns {@code true} if and only if the two given JAR entries in
-         * different JAR files should be considered to be equal.
-         *
-         * @param entryInFile1 the JAR entry in the first JAR file.
-         * @param entryInFile2 the JAR entry in the second JAR file.
-         */
-        boolean equals(EntryInFile entryInFile1, EntryInFile entryInFile2);
-    } // Comparator
-
-    /** A result of diffing two JAR files. */
-    public interface Result {
-        /**
-         * Returns an unmodifiable collection of JAR entries which are only
-         * present in the first JAR file.
-         * The collection is sorted according to the natural order of the JAR
-         * entry names.
-         */
-        Collection<EntryInFile> entriesOnlyInFile1();
-
-        /**
-         * Returns an unmodifiable collection of JAR entries which are only
-         * present in the second JAR file.
-         * The collection is sorted according to the natural order of the JAR
-         * entry names.
-         */
-        Collection<EntryInFile> entriesOnlyInFile2();
-
-        /**
-         * Returns an unmodifiable collection of pairs of JAR entries with
-         * equal names in both JAR files, but which are considered to be
-         * different.
-         * The collection is sorted according to the natural order of the JAR
-         * entry names.
-         */
-        Collection<PairOfEntriesInFiles> differentEntries();
-    } // Result
-
-    /** A pair of JAR entries with equal names in different JAR files. */
-    public interface PairOfEntriesInFiles {
-        /** Returns the JAR entry in the first JAR file. */
-        EntryInFile entryInFile1();
-
-        /** Returns the JAR entry in the second JAR file. */
-        EntryInFile entryInFile2();
-    } // PairOfEntriesInFiles
-
-    /** A JAR entry in a JAR file. */
-    public interface EntryInFile {
-        /** Returns the JAR entry. */
-        JarEntry entry();
-
-        /** Returns the JAR file. */
-        JarFile file();
-    } // EntryInFile
 }

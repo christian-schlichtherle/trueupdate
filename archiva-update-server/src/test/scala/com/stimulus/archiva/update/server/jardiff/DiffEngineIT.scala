@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server
+package com.stimulus.archiva.update.server.jardiff
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -10,17 +10,16 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import java.io.File
 import java.util.jar.JarFile
-import com.stimulus.archiva.update.server.JarDiff._
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JarDiffEngineIT extends WordSpec {
+class DiffEngineIT extends WordSpec {
 
   private def file(name: String) = new File((getClass getResource name).toURI)
 
-  private val comparator = new Comparator {
+  private def comparator = new Comparator {
     def equals(entryInFile1: EntryInFile, entryInFile2: EntryInFile) = {
       val entry1 = entryInFile1.entry
       val entry2 = entryInFile2.entry
@@ -30,7 +29,8 @@ class JarDiffEngineIT extends WordSpec {
         entry1.getCrc == entry2.getCrc
     }
   }
-  private val diff = new JarDiff(comparator)
+
+  private val diff = new Diff(comparator)
 
   "A JAR diff engine" when {
     "diffing the test JAR files" should {
