@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jdiff;
+package com.stimulus.archiva.update.server.jardiff;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,12 +19,12 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class JDiff {
+public final class JarDiff {
 
     private final Comparator comparator;
 
     /**
-     * Constructs a diff.
+     * Constructs a JAR diff.
      * Note that this class ensures that the entry names are equal before
      * calling {@link Comparator#equals(EntryInFile, EntryInFile)}.
      *
@@ -34,7 +34,7 @@ public final class JDiff {
      *                   names are equal without testing.
      *
      */
-    public JDiff(final Comparator comparator) {
+    public JarDiff(final Comparator comparator) {
         this.comparator = requireNonNull(comparator);
     }
 

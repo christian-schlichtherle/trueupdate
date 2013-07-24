@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jdiff
+package com.stimulus.archiva.update.server.jardiff
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -13,7 +13,7 @@ import org.scalatest.matchers.ShouldMatchers._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JDiffIT extends WordSpec with JDiffTestContext {
+class JarDiffIT extends WordSpec with JarDiffTestContext {
 
   "A JAR diff" when {
     "diffing the test JAR files" should {
@@ -22,19 +22,19 @@ class JDiffIT extends WordSpec with JDiffTestContext {
         try {
           val jar2 = jarFile2()
           try {
-            val result = differ.compute(jar1, jar2)
+            val diff = jarDiff.compute(jar1, jar2)
             import collection.JavaConverters._
-            result.entriesOnlyInFile1.asScala map (_.entry.getName) should
+            diff.entriesOnlyInFile1.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile1"))
-            result.entriesOnlyInFile2.asScala map (_.entry.getName) should
+            diff.entriesOnlyInFile2.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile2"))
-            result.equalEntries.asScala map (_.entryInFile1.entry.getName) should
+            diff.equalEntries.asScala map (_.entryInFile1.entry.getName) should
               equal (List("equalEntry"))
-            result.equalEntries.asScala map (_.entryInFile2.entry.getName) should
+            diff.equalEntries.asScala map (_.entryInFile2.entry.getName) should
               equal (List("equalEntry"))
-            result.differentEntries.asScala map (_.entryInFile1.entry.getName) should
+            diff.differentEntries.asScala map (_.entryInFile1.entry.getName) should
               equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
-            result.differentEntries.asScala map (_.entryInFile2.entry.getName) should
+            diff.differentEntries.asScala map (_.entryInFile2.entry.getName) should
               equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
           } finally {
             jar2 close ()
