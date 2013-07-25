@@ -2,11 +2,11 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff;
+package com.stimulus.archiva.update.server.jardiff.dto;
 
-import static com.stimulus.archiva.update.server.jardiff.MessageDigests.digestToHexString;
+import com.stimulus.archiva.update.server.jardiff.model.*;
+import static com.stimulus.archiva.update.server.jardiff.util.MessageDigests.digestToHexString;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.SortedMap;
@@ -16,12 +16,12 @@ import java.util.TreeMap;
  * A Data Transfer Object which represents a JAR {@link Diff} as a set of maps
  * from entry names to message digests.
  * The message digests are represented as unsigned hex integer strings as
- * created by {@link MessageDigests#hexString}.
+ * created by {@link com.stimulus.archiva.update.server.jardiff.util.MessageDigests#hexString}.
  *
  * @author Christian Schlichtherle
  */
 @XmlRootElement
-final class Index {
+public final class Index {
 
     //@XmlJavaTypeAdapter(Foo.class)
     public final SortedMap<String, String>
@@ -35,7 +35,7 @@ final class Index {
      * Constructs an empty index.
      * Required by JAXB.
      */
-    Index() { }
+    public Index() { }
 
     /**
      * Constructs an index which is populated with the entry names from
@@ -43,7 +43,7 @@ final class Index {
      * @param digest
      * @throws IOException
      */
-    Index(final Diff diff, final MessageDigest digest) throws IOException {
+    public Index(final Diff diff, final MessageDigest digest) throws IOException {
         populateRemoved(diff, digest);
         populateAdded(diff, digest);
         populateUnchanged(diff, digest);
@@ -103,38 +103,3 @@ final class Index {
     }
 }
 
-/**
- * A Data Transfer Object which represents a message digest change.
- * The message digests are represented as unsigned hex integer strings as
- * created by {@link MessageDigests#hexString}.
- *
- * @author Christian Schlichtherle
- */
-final class Change {
-
-    Change() { }
-
-    Change(final String before, final String after) {
-        assert null != before;
-        this.before = before;
-        assert null != after;
-        this.after = after;
-    }
-
-    public String before, after;
-
-    @Override public boolean equals(final Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof Change)) return false;
-        final Change that = (Change) obj;
-        return this.before.equals(that.before) &&
-                this.after.equals(that.after);
-    }
-
-    @Override public int hashCode() {
-        int hashCode = 17;
-        hashCode = 31 * hashCode + before.hashCode();
-        hashCode = 31 * hashCode + after.hashCode();
-        return hashCode;
-    }
-}

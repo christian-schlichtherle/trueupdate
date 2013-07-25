@@ -3,7 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a class to compute a diff of two JAR files.
+ * Provides classes to compute a diff of two JAR files, generate a JAR patch
+ * file from the result and apply the patch to the first JAR file in order to
+ * reconstitute the second JAR file.
  *
  * @author Christian Schlichtherle
  */

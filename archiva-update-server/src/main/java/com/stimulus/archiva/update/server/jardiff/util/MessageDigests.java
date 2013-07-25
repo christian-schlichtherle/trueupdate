@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff;
+package com.stimulus.archiva.update.server.jardiff.util;
 
 import com.stimulus.archiva.update.core.io.*;
 import javax.annotation.concurrent.Immutable;
@@ -16,12 +16,12 @@ import java.security.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class MessageDigests {
+public final class MessageDigests {
 
     private MessageDigests() { }
 
     /** Returns a new SHA-1 digest. */
-    static MessageDigest sha1() { return newDigest("SHA-1"); }
+    public static MessageDigest sha1() { return newDigest("SHA-1"); }
 
     private static MessageDigest newDigest(final String algorithm) {
         try {
@@ -44,7 +44,7 @@ final class MessageDigests {
      * @return A string representing the message digest as an unsigned
      *         hexadecimal big integer.
      */
-    static String digestToHexString(MessageDigest digest, Source source)
+    public static String digestToHexString(MessageDigest digest, Source source)
     throws IOException {
         return hexString(digestToByteArray(digest, source));
     }
@@ -61,7 +61,7 @@ final class MessageDigests {
      * @param source the source for reading the binary data.
      * @return A byte array representing the message digest.
      */
-    static byte[] digestToByteArray(
+    public static byte[] digestToByteArray(
             final MessageDigest digest,
             final Source source)
     throws IOException {

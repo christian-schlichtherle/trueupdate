@@ -2,10 +2,11 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff
+package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.codec.JaxbTestCodec
 import com.stimulus.archiva.update.core.io.MemoryStore
+import com.stimulus.archiva.update.server.jardiff.dto.Index
 import java.nio.charset.Charset
 import javax.xml.bind.JAXBContext
 import org.junit.runner.RunWith

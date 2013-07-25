@@ -4,13 +4,14 @@
  */
 package com.stimulus.archiva.update.server.jardiff;
 
+import com.stimulus.archiva.update.server.jardiff.model.*;
+import static com.stimulus.archiva.update.server.jardiff.util.MessageDigests.*;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.jar.JarEntry;
-import static com.stimulus.archiva.update.server.jardiff.MessageDigests.*;
 
 /**
  * Compares the contents of two JAR entries in two different JAR files.

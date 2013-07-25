@@ -4,6 +4,9 @@
  */
 package com.stimulus.archiva.update.server.jardiff;
 
+import com.stimulus.archiva.update.server.jardiff.model.*;
+import com.stimulus.archiva.update.server.jardiff.model.Comparator;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -58,21 +61,20 @@ public final class JarDiff {
                 equalEntries = new TreeMap<>(),
                 differentEntries = new TreeMap<>();
         new Engine(file1, file2) {
-            @Override void onEntryInFile1(EntryInFile entryInFile1) {
+            @Override protected void onEntryInFile1(EntryInFile entryInFile1) {
                 entriesInFile1.put(
                         entryInFile1.entry().getName(),
                         entryInFile1);
             }
 
-            @Override void onEntryInFile2(EntryInFile entryInFile2) {
+            @Override protected void onEntryInFile2(EntryInFile entryInFile2) {
                 entriesInFile2.put(
                         entryInFile2.entry().getName(),
                         entryInFile2);
             }
 
-            @Override void onEqualEntries(
-                    EntryInFile entryInFile1,
-                    EntryInFile entryInFile2) {
+            @Override protected void onEqualEntries(EntryInFile entryInFile1,
+                                                    EntryInFile entryInFile2) {
                 assert entryInFile1.entry().getName().equals(
                         entryInFile2.entry().getName());
                 equalEntries.put(
@@ -80,9 +82,8 @@ public final class JarDiff {
                         pairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
 
-            @Override void onDifferentEntries(
-                    EntryInFile entryInFile1,
-                    EntryInFile entryInFile2) {
+            @Override protected void onDifferentEntries(EntryInFile entryInFile1,
+                                                        EntryInFile entryInFile2) {
                 assert entryInFile1.entry().getName().equals(
                         entryInFile2.entry().getName());
                 differentEntries.put(
@@ -138,7 +139,7 @@ public final class JarDiff {
      * @param file the JAR file.
      * @return the wrapped JAR entry and JAR file.
      */
-    static EntryInFile entryInFile(
+    public static EntryInFile entryInFile(
             final JarEntry entry,
             final JarFile file) {
         return new EntryInFile() {
@@ -155,12 +156,18 @@ public final class JarDiff {
      * order to implement the actions.
      */
     @Immutable
-    abstract class Engine {
+    public abstract class Engine {
 
         private final @WillNotClose JarFile file1, file2;
 
-        Engine( final @WillNotClose JarFile file1,
-                final @WillNotClose JarFile file2) {
+        /**
+         * Constructs a JAR diff engine which operates on the given JAR files.
+         *
+         * @param file1 the first JAR file.
+         * @param file2 the second JAR file.
+         */
+        protected Engine(final @WillNotClose JarFile file1,
+                         final @WillNotClose JarFile file2) {
             this.file1 = requireNonNull(file1);
             this.file2 = requireNonNull(file2);
         }
@@ -174,7 +181,7 @@ public final class JarDiff {
          * @throws IOException at the discretion of the comparator, e.g. if
          *         it's impossible to read the entry contents for some reason.
          */
-        final void run() throws IOException {
+        public final void run() throws IOException {
             for (final Enumeration<JarEntry> e1 = file1.entries();
                  e1.hasMoreElements(); ) {
                 final JarEntry entry1 = e1.nextElement();
@@ -206,7 +213,7 @@ public final class JarDiff {
          *
          * @param entryInFile1 the JAR entry in the first JAR file.
          */
-        void onEntryInFile1(EntryInFile entryInFile1) {
+        protected void onEntryInFile1(EntryInFile entryInFile1) {
             assert null != entryInFile1;
         }
 
@@ -216,7 +223,7 @@ public final class JarDiff {
          *
          * @param entryInFile2 the JAR entry in the second JAR file.
          */
-        void onEntryInFile2(EntryInFile entryInFile2) {
+        protected void onEntryInFile2(EntryInFile entryInFile2) {
             assert null != entryInFile2;
         }
 
@@ -229,7 +236,8 @@ public final class JarDiff {
          * @param entryInFile1 the JAR entry in the first JAR file.
          * @param entryInFile2 the JAR entry in the second JAR file.
          */
-        void onEqualEntries(EntryInFile entryInFile1, EntryInFile entryInFile2) {
+        protected void onEqualEntries(EntryInFile entryInFile1,
+                                      EntryInFile entryInFile2) {
             assert entryInFile1.entry().getName().equals(
                     entryInFile2.entry().getName());
         }
@@ -242,7 +250,8 @@ public final class JarDiff {
          * @param entryInFile1 the JAR entry in the first JAR file.
          * @param entryInFile2 the JAR entry in the second JAR file.
          */
-        void onDifferentEntries(EntryInFile entryInFile1, EntryInFile entryInFile2) {
+        protected void onDifferentEntries(EntryInFile entryInFile1,
+                                          EntryInFile entryInFile2) {
             assert entryInFile1.entry().getName().equals(
                     entryInFile2.entry().getName());
         }
