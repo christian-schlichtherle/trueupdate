@@ -32,6 +32,16 @@ public class ContentComparator implements Comparator {
         this.digest = Objects.requireNonNull(digest);
     }
 
+    /** Returns the message digest algorithm. */
+    public String messageDigestAlgorithm() { return digest.getAlgorithm(); }
+
+    /**
+     * Returns the length of the message digest in bytes, or 0 if this
+     * operation is not supported by the provider and the implementation is not
+     * cloneable.
+     */
+    public int messageDigestLength() { return digest.getDigestLength(); }
+
     /**
      * Returns {@code true} if and only if the contents of the two given JAR
      * entries in different JAR files should be considered to be equal.
@@ -53,8 +63,7 @@ public class ContentComparator implements Comparator {
             final EntryInFile entryInFile1,
             final EntryInFile entryInFile2)
     throws IOException {
-        // CRC-32 has frequent collisions, so let's consider a
-        // cryptographically strong message digest.
+        // CRC-32 has frequent collisions, so let's consider the message digest.
         return Arrays.equals(
                 digestToByteArray(digest, entryInFile1),
                 digestToByteArray(digest, entryInFile2));
