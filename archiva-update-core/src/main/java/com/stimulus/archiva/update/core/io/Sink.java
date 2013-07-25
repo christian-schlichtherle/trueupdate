@@ -12,7 +12,7 @@ import java.io.*;
  * An abstraction for writing binary data.
  *
  * @see    Source
- * @author Christian Schlichtherle (copied from TrueLicense Core)
+ * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
 public interface Sink {
     /**

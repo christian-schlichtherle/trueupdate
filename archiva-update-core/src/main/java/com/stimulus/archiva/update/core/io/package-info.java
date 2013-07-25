@@ -6,7 +6,7 @@
 /**
  * Specifies core I/O services.
  *
- * @author Christian Schlichtherle (copied from TrueLicense Core)
+ * @author Christian Schlichtherle (copied from TrueLicense Core 2.3.1)
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
 package com.stimulus.archiva.update.core.io;

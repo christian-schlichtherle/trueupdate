@@ -14,7 +14,7 @@ import javax.annotation.CheckForNull;
 /**
  * Static constructors for common sources.
  *
- * @author Christian Schlichtherle (copied from TrueLicense Core)
+ * @author Christian Schlichtherle (copied from TrueLicense Core 2.3.1)
  */
 public class Sources {
 
