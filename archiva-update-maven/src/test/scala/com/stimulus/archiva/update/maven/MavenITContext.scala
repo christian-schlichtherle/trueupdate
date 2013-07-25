@@ -10,7 +10,7 @@ import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
 
 /** @author Christian Schlichtherle */
-trait MavenTestContext extends TestContext {
+trait MavenITContext extends ITContext {
 
   override def artifactResolver: ArtifactResolver =
     new MavenArtifactResolver(testRepository, centralRepository)

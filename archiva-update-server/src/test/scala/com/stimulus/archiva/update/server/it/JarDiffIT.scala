@@ -13,7 +13,7 @@ import org.scalatest.matchers.ShouldMatchers._
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JarDiffIT extends WordSpec with JarDiffTestContext {
+class JarDiffIT extends WordSpec with JarDiffITContext {
 
   "A JAR diff" when {
     "diffing the test JAR files" should {

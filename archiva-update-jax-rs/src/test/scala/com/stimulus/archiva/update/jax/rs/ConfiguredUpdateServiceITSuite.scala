@@ -33,7 +33,7 @@ private object ConfiguredUpdateServiceITSuite {
 }
 
 /** @author Christian Schlichtherle */
-class ConfiguredUpdateServiceITSuite extends JerseyTest { this: TestContext =>
+class ConfiguredUpdateServiceITSuite extends JerseyTest { this: ITContext =>
 
   import ConfiguredUpdateServiceITSuite._
 

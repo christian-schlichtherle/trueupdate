@@ -14,7 +14,7 @@ import com.stimulus.archiva.update.server.jardiff.model.EntryInFile
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JarDiffEngineIT extends WordSpec with JarDiffTestContext {
+class JarDiffEngineIT extends WordSpec with JarDiffITContext {
 
   "A JAR diff engine" when {
     "diffing the test JAR files" should {

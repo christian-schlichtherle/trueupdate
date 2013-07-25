@@ -4,18 +4,18 @@
  */
 package com.stimulus.archiva.update.server.it
 
-import com.stimulus.archiva.update.server.jardiff.JarDiff._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
+import com.stimulus.archiva.update.server.jardiff.model.EntryInFile
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class ContentComparatorIT extends WordSpec with JarDiffTestContext {
+class ContentComparatorIT extends WordSpec with JarDiffITContext {
 
   "A JAR content comparator" when {
     "mutually comparing all entries in a JAR file" should {
@@ -33,8 +33,8 @@ class ContentComparatorIT extends WordSpec with JarDiffTestContext {
             }
             entries foreach { entry1 =>
               entries foreach { entry2 =>
-                val entry1InJar = entryInFile(entry1, jar)
-                val entry2InJar = entryInFile(entry2, jar)
+                val entry1InJar = new EntryInFile(entry1, jar)
+                val entry2InJar = new EntryInFile(entry2, jar)
                 val equalNames = entry1.getName == entry2.getName
                 comparator equals (entry1InJar, entry2InJar) should
                   be (equalNames)

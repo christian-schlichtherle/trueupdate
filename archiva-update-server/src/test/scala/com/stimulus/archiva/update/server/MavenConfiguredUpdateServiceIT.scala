@@ -5,9 +5,9 @@
 package com.stimulus.archiva.update.server
 
 import com.stimulus.archiva.update.jax.rs.ConfiguredUpdateServiceITSuite
-import com.stimulus.archiva.update.maven.MavenTestContext
+import com.stimulus.archiva.update.maven.MavenITContext
 
 /** @author Christian Schlichtherle */
 class MavenConfiguredUpdateServiceIT
 extends ConfiguredUpdateServiceITSuite
-with MavenTestContext
+with MavenITContext
