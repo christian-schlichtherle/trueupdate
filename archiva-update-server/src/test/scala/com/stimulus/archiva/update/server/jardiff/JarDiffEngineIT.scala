@@ -24,11 +24,11 @@ class JarDiffEngineIT extends WordSpec with JarDiffTestContext {
           try {
             val diff = jarDiff
             val engine = new diff.Engine(jar1, jar2) {
-              override def onEntryOnlyInFile1(entryInFile1: EntryInFile) {
+              override def onEntryInFile1(entryInFile1: EntryInFile) {
                 entryInFile1.entry.getName should equal ("entryOnlyInFile1")
               }
 
-              override def onEntryOnlyInFile2(entryInFile2: EntryInFile) {
+              override def onEntryInFile2(entryInFile2: EntryInFile) {
                 entryInFile2.entry.getName should equal ("entryOnlyInFile2")
               }
 
