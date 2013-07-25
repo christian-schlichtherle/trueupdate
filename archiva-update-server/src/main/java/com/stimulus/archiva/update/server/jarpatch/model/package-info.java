@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model classes for use within JAR patches.
+ * Provides model classes for use with JAR patches.
  *
  * @author Christian Schlichtherle
  */

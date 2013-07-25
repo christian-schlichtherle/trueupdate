@@ -6,29 +6,19 @@ package com.stimulus.archiva.update.server.jarpatch.model;
 
 import com.stimulus.archiva.update.server.jardiff.model.*;
 import static com.stimulus.archiva.update.server.util.MessageDigests.digestToHexString;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * A Data Transfer Object which represents a JAR {@link Diff} as a set of maps
- * from entry names to message digests.
- * The message digests are represented as unsigned hex integer strings as
- * created by {@link com.stimulus.archiva.update.server.util.MessageDigests#hexString}.
+ * Represents the meta data of a JAR patch.
  *
  * @author Christian Schlichtherle
  */
 @XmlRootElement
 public final class Index {
-
-    //@XmlJavaTypeAdapter(SortedMapXmlAdapter.class)
-    public final SortedMap<String, String>
-            removed = new TreeMap<>(),
-            added = new TreeMap<>(),
-            unchanged = new TreeMap<>();
-
-    public final SortedMap<String, Change> changed = new TreeMap<>();
 
     /**
      * Constructs an empty index.
@@ -37,67 +27,83 @@ public final class Index {
     public Index() { }
 
     /**
-     * Constructs an index which is populated with the entry names from
-     * @param diff
-     * @param digest
-     * @throws IOException
+     * Constructs an index which is populated from the given JAR diff.
+     *
+     * @param diff the JAR diff.
+     * @param digest the message digest to use.
      */
     public Index(final Diff diff, final MessageDigest digest) throws IOException {
-        populateRemoved(diff, digest);
-        populateAdded(diff, digest);
-        populateUnchanged(diff, digest);
-        populateChanged(diff, digest);
+        initRemoved(diff, digest);
+        initAdded(diff, digest);
+        initUnchanged(diff, digest);
+        initChanged(diff, digest);
     }
 
-    private void populateRemoved(final Diff diff, final MessageDigest digest) throws IOException {
-        for (final EntryInFile entryInFile1 : diff.entriesInFile1())
-            removed.put(entryInFile1.entry().getName(),
-                    digestToHexString(digest, entryInFile1));
-    }
-
-    private void populateAdded(final Diff diff, final MessageDigest digest) throws IOException {
-        for (final EntryInFile entryInFile2 : diff.entriesInFile2())
-            added.put(entryInFile2.entry().getName(),
-                    digestToHexString(digest, entryInFile2));
-    }
-
-    private void populateUnchanged(final Diff diff, final MessageDigest digest) throws IOException {
-        for (final PairOfEntriesInFiles pairOfEntriesInFiles : diff.equalEntries()) {
-            final EntryInFile entryInFile1 = pairOfEntriesInFiles.entryInFile1();
-            final EntryInFile entryInFile2 = pairOfEntriesInFiles.entryInFile2();
-            assert entryInFile1.entry().getName().equals(entryInFile2.entry().getName());
-            unchanged.put(entryInFile1.entry().getName(),
-                    digestToHexString(digest, entryInFile1));
+    private void initRemoved(final Diff diff, final MessageDigest digest) throws IOException {
+        removed = new TreeMap<>();
+        for (final EntryInFile entryInFile1 : diff.entriesInFile1()) {
+            final String name1 = entryInFile1.entry().getName();
+            removed.put(name1, new EntryDigest(name1,
+                    digestToHexString(digest, entryInFile1)));
         }
     }
 
-    private void populateChanged(final Diff diff, final MessageDigest digest) throws IOException {
+    private void initAdded(final Diff diff, final MessageDigest digest) throws IOException {
+        added = new TreeMap<>();
+        for (final EntryInFile entryInFile2 : diff.entriesInFile2()) {
+            final String name2 = entryInFile2.entry().getName();
+            added.put(name2, new EntryDigest(name2,
+                    digestToHexString(digest, entryInFile2)));
+        }
+    }
+
+    private void initUnchanged(final Diff diff, final MessageDigest digest) throws IOException {
+        unchanged = new TreeMap<>();
+        for (final PairOfEntriesInFiles pairOfEntriesInFiles : diff.equalEntries()) {
+            final EntryInFile entryInFile1 = pairOfEntriesInFiles.entryInFile1();
+            final EntryInFile entryInFile2 = pairOfEntriesInFiles.entryInFile2();
+            final String name1 = entryInFile1.entry().getName();
+            assert name1.equals(entryInFile2.entry().getName());
+            unchanged.put(name1, new EntryDigest(name1,
+                    digestToHexString(digest, entryInFile1)));
+        }
+    }
+
+    private void initChanged(final Diff diff, final MessageDigest digest) throws IOException {
+        changed = new TreeMap<>();
         for (final PairOfEntriesInFiles pairOfEntriesInFiles : diff.differentEntries()) {
             final EntryInFile entryInFile1 = pairOfEntriesInFiles.entryInFile1();
             final EntryInFile entryInFile2 = pairOfEntriesInFiles.entryInFile2();
-            assert entryInFile1.entry().getName().equals(entryInFile2.entry().getName());
-            changed.put(entryInFile1.entry().getName(), new Change(
+            final String name1 = entryInFile1.entry().getName();
+            assert name1.equals(entryInFile2.entry().getName());
+            changed.put(name1, new BeforeAndAfterEntryDigest(name1,
                     digestToHexString(digest, entryInFile1),
                     digestToHexString(digest, entryInFile2)));
         }
     }
 
+    @XmlJavaTypeAdapter(EntryDigestMapAdapter.class)
+    public SortedMap<String, EntryDigest> removed, added, unchanged;
+
+    @XmlJavaTypeAdapter(BeforeAndAfterEntryDigestMapAdapter.class)
+    public SortedMap<String, BeforeAndAfterEntryDigest> changed;
+
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof Index)) return false;
         final Index that = (Index) obj;
-        return this.removed.equals(that.removed) &&
-                this.added.equals(that.added) &&
-                this.unchanged.equals(that.unchanged) &&
-                this.changed.equals(that.changed);
+        return Objects.equals(this.removed, that.removed) &&
+                Objects.equals(this.added, that.added) &&
+                Objects.equals(this.unchanged, that.unchanged) &&
+                Objects.equals(this.changed, that.changed);
     }
 
     @Override public int hashCode() {
         int hashCode = 17;
-        hashCode = 31 * hashCode + removed.hashCode();
-        hashCode = 31 * hashCode + added.hashCode();
-        hashCode = 31 * hashCode + unchanged.hashCode();
-        hashCode = 31 * hashCode + changed.hashCode();
+        hashCode = 31 * hashCode + Objects.hashCode(removed);
+        hashCode = 31 * hashCode + Objects.hashCode(added);
+        hashCode = 31 * hashCode + Objects.hashCode(unchanged);
+        hashCode = 31 * hashCode + Objects.hashCode(changed);
         return hashCode;
     }
 }
