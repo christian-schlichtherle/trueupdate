@@ -14,7 +14,7 @@ import javax.annotation.CheckForNull;
 /**
  * Static constructors for common sources.
  *
- * @author Christian Schlichtherle (copied from TrueLicense Core 2.3.1)
+ * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
 public class Sources {
 
@@ -24,10 +24,8 @@ public class Sources {
     public static Source input() { return uncloseable(System.in); }
 
     /**
-     * Returns a source which reads from the given input stream without ever
-     * closing it.
-     * Instead, any call to the {@link InputStream#close} method provided
-     * by the returned source gets ignored.
+     * Returns a source which reads from the given input stream and ignores any
+     * call to the {@link InputStream#close} method of the input stream.
      *
      * @param in the input stream to use.
      */
