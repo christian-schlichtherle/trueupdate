@@ -29,13 +29,13 @@ class JarDiffIT extends WordSpec with JarDiffTestContext {
             diff.entriesInFile2.asScala map (_.entry.getName) should
               equal (List("entryOnlyInFile2"))
             diff.equalEntries.asScala map (_.entryInFile1.entry.getName) should
-              equal (List("equalEntry"))
+              equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntryTime", "equalEntry"))
             diff.equalEntries.asScala map (_.entryInFile2.entry.getName) should
-              equal (List("equalEntry"))
+              equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntryTime", "equalEntry"))
             diff.differentEntries.asScala map (_.entryInFile1.entry.getName) should
-              equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
+              equal (List("differentEntrySize"))
             diff.differentEntries.asScala map (_.entryInFile2.entry.getName) should
-              equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime"))
+              equal (List("differentEntrySize"))
           } finally {
             jar2 close ()
           }

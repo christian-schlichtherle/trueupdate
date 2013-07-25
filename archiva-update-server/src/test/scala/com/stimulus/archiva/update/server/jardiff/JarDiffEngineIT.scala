@@ -35,14 +35,14 @@ class JarDiffEngineIT extends WordSpec with JarDiffTestContext {
               override def onEqualEntries(entryInFile1: EntryInFile,
                                           entryInFile2: EntryInFile) {
                 entryInFile1.entry.getName should equal (entryInFile2.entry.getName)
-                entryInFile1.entry.getName should equal ("equalEntry")
+                Set("META-INF/", "META-INF/MANIFEST.MF", "differentEntryTime", "equalEntry") should
+                  contain (entryInFile1.entry.getName)
               }
 
               override def onDifferentEntries(entryInFile1: EntryInFile,
                                               entryInFile2: EntryInFile) {
                 entryInFile1.entry.getName should equal (entryInFile2.entry.getName)
-                Set("META-INF/", "META-INF/MANIFEST.MF", "differentEntrySize", "differentEntryTime") should
-                  contain (entryInFile1.entry.getName)
+                entryInFile1.entry.getName should equal ("differentEntrySize")
               }
             }
             engine run ()

@@ -18,5 +18,7 @@ trait JarDiffTestContext {
   private def file(resourceName: String) =
     new File((classOf[JarDiffTestContext] getResource resourceName).toURI)
 
-  def jarDiff = new JarDiff(MetadataComparator)
+  def jarDiff = new JarDiff(comparator)
+  def comparator = new ContentComparator(digest)
+  def digest = Digests.sha1
 }

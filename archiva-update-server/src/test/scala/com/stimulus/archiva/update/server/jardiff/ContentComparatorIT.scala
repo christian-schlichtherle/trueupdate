@@ -17,8 +17,6 @@ import org.scalatest.prop.PropertyChecks._
 @RunWith(classOf[JUnitRunner])
 class ContentComparatorIT extends WordSpec with JarDiffTestContext {
 
-  private val comparator = new ContentComparator
-
   "A JAR content comparator" when {
     "mutually comparing all entries in a JAR file" should {
       "find them to be equal if and only if comparing an equal named entry" in {

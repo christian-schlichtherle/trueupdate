@@ -8,6 +8,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import static com.stimulus.archiva.update.server.jardiff.Digests.*;
 
@@ -18,6 +19,17 @@ import static com.stimulus.archiva.update.server.jardiff.Digests.*;
  */
 @Immutable
 public class ContentComparator implements Comparator {
+
+    private final MessageDigest digest;
+
+    /**
+     * Constructs a content comparator which uses the given message digest.
+     *
+     * @param digest the message digest.
+     */
+    public ContentComparator(final MessageDigest digest) {
+        this.digest = Objects.requireNonNull(digest);
+    }
 
     /**
      * Returns {@code true} if and only if the contents of the two given JAR
@@ -36,13 +48,14 @@ public class ContentComparator implements Comparator {
                 entry1.getCrc() == entry2.getCrc();
     }
 
-    private static boolean slowPathCheck(
+    private boolean slowPathCheck(
             final EntryInFile entryInFile1,
             final EntryInFile entryInFile2)
     throws IOException {
         // CRC-32 has frequent collisions, so let's consider a
         // cryptographically strong message digest.
-        final MessageDigest digest = sha1();
-        return Arrays.equals(digest(digest, entryInFile1), digest(digest, entryInFile2));
+        return Arrays.equals(
+                digest(digest, entryInFile1),
+                digest(digest, entryInFile2));
     }
 }
