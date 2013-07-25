@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2005-2013 Schlichtherle IT Services.
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
@@ -11,7 +12,7 @@ import java.io.*;
  * An abstraction for reading binary data.
  *
  * @see    Sink
- * @author Christian Schlichtherle
+ * @author Christian Schlichtherle (copied from TrueLicense Core)
  */
 public interface Source {
     /**

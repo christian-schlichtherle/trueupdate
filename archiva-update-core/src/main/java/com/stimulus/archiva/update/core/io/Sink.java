@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005-2013 Schlichtherle IT Services.
+ * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.core.io;
@@ -11,7 +12,7 @@ import java.io.*;
  * An abstraction for writing binary data.
  *
  * @see    Source
- * @author Christian Schlichtherle
+ * @author Christian Schlichtherle (copied from TrueLicense Core)
  */
 public interface Sink {
     /**
