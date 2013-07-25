@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides Data Transfer Objects (DTO) for use within JAR patch files.
+ * Provides model classes for use within JAR patches.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.jardiff.dto;
+package com.stimulus.archiva.update.server.jarpatch.model;

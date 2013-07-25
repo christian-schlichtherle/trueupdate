@@ -8,7 +8,7 @@ import java.io.File
 import java.util.jar.JarFile
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import com.stimulus.archiva.update.server.jardiff.{ContentComparator, JarDiff}
-import com.stimulus.archiva.update.server.jardiff.util.MessageDigests
+import com.stimulus.archiva.update.server.util.MessageDigests
 
 /**
  * @author Christian Schlichtherle

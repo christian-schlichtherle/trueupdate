@@ -6,7 +6,6 @@ package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.codec.JaxbTestCodec
 import com.stimulus.archiva.update.core.io.MemoryStore
-import com.stimulus.archiva.update.server.jardiff.dto.Index
 import java.nio.charset.Charset
 import javax.xml.bind.JAXBContext
 import org.junit.runner.RunWith
@@ -14,6 +13,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
+import com.stimulus.archiva.update.server.jarpatch.model.Index
 
 private object IndexIT {
   val logger = LoggerFactory.getLogger(classOf[IndexIT])

@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff.util
+package com.stimulus.archiva.update.server.util
 
 import com.stimulus.archiva.update.core.io.Sources
 import org.scalatest.WordSpec

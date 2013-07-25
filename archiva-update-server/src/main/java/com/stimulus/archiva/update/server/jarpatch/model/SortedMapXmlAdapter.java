@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff.dto;
+package com.stimulus.archiva.update.server.jarpatch.model;
 
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -12,9 +12,8 @@ import java.util.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class Foo extends XmlAdapter<List<Entry>, SortedMap<String, String>> {
-    @Override
-    public SortedMap<String, String> unmarshal(final List<Entry> list) {
+public class SortedMapXmlAdapter extends XmlAdapter<List<Entry>, SortedMap<String, String>> {
+    @Override public SortedMap<String, String> unmarshal(final List<Entry> list) {
         final SortedMap<String, String> map = new TreeMap<>();
         for (final Entry entry : list)
             map.put(entry.name, entry.digest);

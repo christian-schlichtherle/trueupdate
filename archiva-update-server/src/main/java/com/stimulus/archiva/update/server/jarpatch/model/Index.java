@@ -2,28 +2,27 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff.dto;
+package com.stimulus.archiva.update.server.jarpatch.model;
 
 import com.stimulus.archiva.update.server.jardiff.model.*;
-import static com.stimulus.archiva.update.server.jardiff.util.MessageDigests.digestToHexString;
+import static com.stimulus.archiva.update.server.util.MessageDigests.digestToHexString;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.security.MessageDigest;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A Data Transfer Object which represents a JAR {@link Diff} as a set of maps
  * from entry names to message digests.
  * The message digests are represented as unsigned hex integer strings as
- * created by {@link com.stimulus.archiva.update.server.jardiff.util.MessageDigests#hexString}.
+ * created by {@link com.stimulus.archiva.update.server.util.MessageDigests#hexString}.
  *
  * @author Christian Schlichtherle
  */
 @XmlRootElement
 public final class Index {
 
-    //@XmlJavaTypeAdapter(Foo.class)
+    //@XmlJavaTypeAdapter(SortedMapXmlAdapter.class)
     public final SortedMap<String, String>
             removed = new TreeMap<>(),
             added = new TreeMap<>(),

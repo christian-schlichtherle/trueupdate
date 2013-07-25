@@ -2,12 +2,12 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff.dto;
+package com.stimulus.archiva.update.server.jarpatch.model;
 
 /**
  * A Data Transfer Object which represents a message digest change.
  * The message digests are represented as unsigned hex integer strings as
- * created by {@link com.stimulus.archiva.update.server.jardiff.util.MessageDigests#hexString}.
+ * created by {@link com.stimulus.archiva.update.server.util.MessageDigests#hexString}.
  *
  * @author Christian Schlichtherle
  */

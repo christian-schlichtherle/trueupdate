@@ -5,7 +5,7 @@
 package com.stimulus.archiva.update.server.jardiff;
 
 import com.stimulus.archiva.update.server.jardiff.model.*;
-import static com.stimulus.archiva.update.server.jardiff.util.MessageDigests.*;
+import static com.stimulus.archiva.update.server.util.MessageDigests.*;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.security.MessageDigest;
