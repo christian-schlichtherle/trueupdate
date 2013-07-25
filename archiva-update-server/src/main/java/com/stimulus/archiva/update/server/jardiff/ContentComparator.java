@@ -10,7 +10,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.jar.JarEntry;
-import static com.stimulus.archiva.update.server.jardiff.Digests.*;
+import static com.stimulus.archiva.update.server.jardiff.MessageDigests.*;
 
 /**
  * Compares the contents of two JAR entries in two different JAR files.
@@ -55,7 +55,7 @@ public class ContentComparator implements Comparator {
         // CRC-32 has frequent collisions, so let's consider a
         // cryptographically strong message digest.
         return Arrays.equals(
-                digest(digest, entryInFile1),
-                digest(digest, entryInFile2));
+                digestToByteArray(digest, entryInFile1),
+                digestToByteArray(digest, entryInFile2));
     }
 }

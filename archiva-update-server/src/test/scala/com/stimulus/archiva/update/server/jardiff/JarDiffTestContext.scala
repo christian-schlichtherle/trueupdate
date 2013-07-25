@@ -20,5 +20,5 @@ trait JarDiffTestContext {
 
   def jarDiff = new JarDiff(comparator)
   def comparator = new ContentComparator(digest)
-  def digest = Digests.sha1
+  def digest = MessageDigests.sha1
 }

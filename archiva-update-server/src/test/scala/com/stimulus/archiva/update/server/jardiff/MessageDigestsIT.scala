@@ -15,7 +15,7 @@ import com.stimulus.archiva.update.core.io.Sources
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class DigestsIT extends WordSpec {
+class MessageDigestsIT extends WordSpec {
 
   "Computation of digests" should {
     "work as expected" in {
@@ -27,8 +27,9 @@ class DigestsIT extends WordSpec {
         ("f3172822c7d08f23764aa5baee9d73ef32797b46", "twoTimesHelloWorld")
       )
       forAll(table) { (sha1, resourceName) =>
-        Digests.hexString(Digests.digest(Digests.sha1,
-          Sources.forResource(resourceName, classOf[DigestsIT]))) should equal (sha1)
+        MessageDigests.digestToHexString(MessageDigests.sha1,
+          Sources.forResource(resourceName, classOf[MessageDigestsIT])) should
+          equal (sha1)
       }
     }
   }
