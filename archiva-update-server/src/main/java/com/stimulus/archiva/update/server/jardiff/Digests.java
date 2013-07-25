@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server.jardiff;
 
-import com.stimulus.archiva.update.core.io.Source;
+import com.stimulus.archiva.update.core.io.*;
 import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.math.BigInteger;
@@ -37,7 +37,7 @@ final class Digests {
     static byte[] digest(final MessageDigest digest, final Source source)
     throws IOException {
         digest.reset();
-        final byte[] buffer = new byte[8 * 1024];
+        final byte[] buffer = new byte[Store.BUFSIZE];
         try (InputStream in = source.input()) {
             int read;
             do {
