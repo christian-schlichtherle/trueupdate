@@ -5,17 +5,16 @@
 package com.stimulus.archiva.update.server.jardiff;
 
 import com.stimulus.archiva.update.server.jardiff.model.*;
-
+import com.stimulus.archiva.update.server.jardiff.model.Comparator;
 import java.io.IOException;
 import java.util.*;
 import static java.util.Objects.requireNonNull;
-import static java.util.Collections.unmodifiableCollection;
 import java.util.jar.*;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Computes a {@link Diff} from two JAR files.
+ * Computes a {@link Diff} of two JAR files.
  *
  * @author Christian Schlichtherle
  */
@@ -40,7 +39,7 @@ public final class JarDiff {
     }
 
     /**
-     * Computes a {@link Diff} from the two given JAR files.
+     * Computes a {@link Diff} of the two given JAR files.
      *
      * @param file1 the first JAR file.
      * @param file2 the second JAR file.
@@ -89,8 +88,8 @@ public final class JarDiff {
                         new PairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
         }.run();
-        return new Diff(entriesInFile1, entriesInFile2,
-                equalEntries, differentEntries);
+        return new Diff(comparator,
+                entriesInFile1, entriesInFile2, equalEntries, differentEntries);
     }
 
     /**
