@@ -5,6 +5,8 @@
 package com.stimulus.archiva.update.server.jar.diff;
 
 import com.stimulus.archiva.update.server.jar.model.*;
+import com.stimulus.archiva.update.server.util.MessageDigests;
+
 import static com.stimulus.archiva.update.server.util.MessageDigests.digestToHexString;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -84,11 +86,24 @@ public final class JarDiff {
         }
         new Engine(file1, file2).accept(new JarVisitor());
         final Diff diff = new Diff();
+        diff.algorithm = digest.getAlgorithm();
+        diff.numBytes = numBytes(digest);
         diff.removed = nonEmptyOrNull(removed);
         diff.added = nonEmptyOrNull(added);
         diff.unchanged = nonEmptyOrNull(unchanged);
         diff.changed = nonEmptyOrNull(changed);
         return diff;
+    }
+
+    private Integer numBytes(final MessageDigest digest) {
+        try {
+            final MessageDigest
+                    clone = MessageDigests.newDigest(digest.getAlgorithm());
+            if (clone.getDigestLength() == digest.getDigestLength())
+                return null;
+        } catch (IllegalArgumentException fallThrough) {
+        }
+        return digest.getDigestLength();
     }
 
     private static @Nullable <X> SortedMap<String, X>

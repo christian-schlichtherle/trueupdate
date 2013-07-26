@@ -5,16 +5,23 @@
 package com.stimulus.archiva.update.server.jar.model;
 
 import java.util.*;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * Represents the meta data of a JAR patch.
+ * Represents the meta data in a JAR patch file.
  *
  * @author Christian Schlichtherle
  */
 @XmlRootElement
 public final class Diff {
+
+    @XmlAttribute
+    public String algorithm;
+
+    @XmlAttribute
+    public Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryDigestMapAdapter.class)
     public SortedMap<String, EntryDigest> removed, added, unchanged;
