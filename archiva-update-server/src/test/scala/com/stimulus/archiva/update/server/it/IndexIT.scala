@@ -13,13 +13,13 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
-import com.stimulus.archiva.update.server.jarpatch.model.Index
-import com.stimulus.archiva.update.server.jardiff.JarDiff2
+import com.stimulus.archiva.update.server.jarpatch.model.Diff
+import com.stimulus.archiva.update.server.jardiff.JarDiff
 
 private object IndexIT {
   val logger = LoggerFactory.getLogger(classOf[IndexIT])
 
-  val jaxbContext = JAXBContext.newInstance(classOf[Index])
+  val jaxbContext = JAXBContext.newInstance(classOf[Diff])
   val codec = new JaxbTestCodec(jaxbContext)
 
   def store = new MemoryStore
@@ -36,11 +36,11 @@ class IndexIT extends WordSpec with JarDiffITContext {
 
   import IndexIT._
 
-  def roundTrip(index: Index) {
+  def roundTrip(index: Diff) {
     val store = IndexIT.store
     codec encode (store, index)
     logger debug ("\n{}", xmlString(store))
-    val index2: Index = codec decode (store, classOf[Index])
+    val index2: Diff = codec decode (store, classOf[Diff])
     index2 should equal (index)
     index2 should not be theSameInstanceAs (index)
   }
@@ -48,7 +48,7 @@ class IndexIT extends WordSpec with JarDiffITContext {
   "An index" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        roundTrip(new Index)
+        roundTrip(new Diff)
       }
     }
 

@@ -16,12 +16,12 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Computes a diff of two JAR files.
+ * Computes a {@link Diff} from two JAR files.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class JarDiff2 {
+public final class JarDiff {
 
     private final @WillNotClose JarFile file1, file2;
 
@@ -31,14 +31,19 @@ public final class JarDiff2 {
      * @param file1 the first JAR file.
      * @param file2 the second JAR file.
      */
-    public JarDiff2(final @WillNotClose JarFile file1,
-                    final @WillNotClose JarFile file2) {
+    public JarDiff(final @WillNotClose JarFile file1,
+                   final @WillNotClose JarFile file2) {
         this.file1 = requireNonNull(file1);
         this.file2 = requireNonNull(file2);
     }
 
-    public Index compute(final MessageDigest digest)
-    throws IOException {
+    /**
+     * Computes a JAR diff of the two JAR files using the given message digest.
+     *
+     * @param digest the message digest to use.
+     * @return the computed JAR diff.
+     */
+    public Diff compute(final MessageDigest digest) throws IOException {
         final SortedMap<String, EntryDigest>
                 removed = new TreeMap<>(),
                 added = new TreeMap<>(),
@@ -63,7 +68,8 @@ public final class JarDiff2 {
             }
 
             @Override
-            public void visitEntriesInFiles(EntryInFile entryInFile1, EntryInFile entryInFile2)
+            public void visitEntriesInFiles(EntryInFile entryInFile1,
+                                            EntryInFile entryInFile2)
             throws IOException {
                 final String name1 = entryInFile1.entry().getName();
                 assert name1.equals(entryInFile2.entry().getName());
@@ -77,13 +83,13 @@ public final class JarDiff2 {
                             digest1, digest2));
             }
         }
-        new JarVisitorEngine(file1, file2).accept(new JarVisitor());
-        final Index index = new Index();
-        index.removed = nonEmptyOrNull(removed);
-        index.added = nonEmptyOrNull(added);
-        index.unchanged = nonEmptyOrNull(unchanged);
-        index.changed = nonEmptyOrNull(changed);
-        return index;
+        new Engine(file1, file2).accept(new JarVisitor());
+        final Diff diff = new Diff();
+        diff.removed = nonEmptyOrNull(removed);
+        diff.added = nonEmptyOrNull(added);
+        diff.unchanged = nonEmptyOrNull(unchanged);
+        diff.changed = nonEmptyOrNull(changed);
+        return diff;
     }
 
     private static @Nullable <X> SortedMap<String, X>

@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.it
 import java.io.File
 import java.util.jar.JarFile
 import edu.umd.cs.findbugs.annotations.CreatesObligation
-import com.stimulus.archiva.update.server.jardiff.JarDiff2
+import com.stimulus.archiva.update.server.jardiff.JarDiff
 import com.stimulus.archiva.update.server.util.MessageDigests
 
 /**
@@ -15,7 +15,7 @@ import com.stimulus.archiva.update.server.util.MessageDigests
  */
 trait JarDiffITContext {
 
-  def index() = withJars(new JarDiff2(_, _).compute(digest))
+  def index() = withJars(new JarDiff(_, _).compute(digest))
 
   def withJars[A](fun: (JarFile, JarFile) => A) = {
     val jar1 = jarFile1()

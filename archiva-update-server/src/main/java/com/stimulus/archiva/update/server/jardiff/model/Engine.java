@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff;
+package com.stimulus.archiva.update.server.jardiff.model;
 
 import com.stimulus.archiva.update.server.jardiff.model.*;
 import java.util.Enumeration;
@@ -17,7 +17,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class JarVisitorEngine {
+public final class Engine {
 
     private final @WillNotClose JarFile file1, file2;
 
@@ -27,8 +27,8 @@ public final class JarVisitorEngine {
      * @param file1 the first JAR file.
      * @param file2 the second JAR file.
      */
-    public JarVisitorEngine(final @WillNotClose JarFile file1,
-                            final @WillNotClose JarFile file2) {
+    public Engine(final @WillNotClose JarFile file1,
+                  final @WillNotClose JarFile file2) {
         this.file1 = requireNonNull(file1);
         this.file2 = requireNonNull(file2);
     }

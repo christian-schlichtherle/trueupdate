@@ -4,10 +4,6 @@
  */
 package com.stimulus.archiva.update.server.jarpatch.model;
 
-import com.stimulus.archiva.update.server.jardiff.model.*;
-import static com.stimulus.archiva.update.server.util.MessageDigests.digestToHexString;
-import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -18,7 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author Christian Schlichtherle
  */
 @XmlRootElement
-public final class Index {
+public final class Diff {
 
     @XmlJavaTypeAdapter(EntryDigestMapAdapter.class)
     public SortedMap<String, EntryDigest> removed, added, unchanged;
@@ -28,8 +24,8 @@ public final class Index {
 
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof Index)) return false;
-        final Index that = (Index) obj;
+        if (!(obj instanceof Diff)) return false;
+        final Diff that = (Diff) obj;
         return Objects.equals(this.removed, that.removed) &&
                 Objects.equals(this.added, that.added) &&
                 Objects.equals(this.unchanged, that.unchanged) &&
