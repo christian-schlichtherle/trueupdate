@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.server.jar.diff;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import static java.util.Objects.requireNonNull;
 import java.util.jar.*;
@@ -45,12 +47,12 @@ final class Engine {
              e1.hasMoreElements(); ) {
             final JarEntry entry1 = e1.nextElement();
             final JarEntry entry2 = file2.getJarEntry(entry1.getName());
-            final EntryInFile entryInFile1 = new EntryInFile(entry1, file1);
+            final EntryInFile entryInFile1 = entryInFile(entry1, file1);
             if (null == entry2)
                 visitor.visitEntryInFile1(entryInFile1);
             else
                 visitor.visitEntriesInFiles(entryInFile1,
-                        new EntryInFile(entry2, file2));
+                        entryInFile(entry2, file2));
         }
 
         for (final Enumeration<JarEntry> e2 = file2.entries();
@@ -58,7 +60,27 @@ final class Engine {
             final JarEntry entry2 = e2.nextElement();
             final JarEntry entry1 = file1.getJarEntry(entry2.getName());
             if (null == entry1)
-                visitor.visitEntryInFile2(new EntryInFile(entry2, file2));
+                visitor.visitEntryInFile2(entryInFile(entry2, file2));
         }
+    }
+
+    /**
+     * Constructs a JAR entry in a JAR file.
+     *
+     * @param entry the JAR entry.
+     *              Note that this gets shared with this object.
+     * @param file the JAR file.
+     */
+    private static EntryInFile entryInFile(
+            final JarEntry entry,
+            final JarFile file) {
+        assert null != entry;
+        assert null != file;
+        return new EntryInFile() {
+            @Override public JarEntry entry() { return entry; }
+            @Override public InputStream input() throws IOException {
+                return file.getInputStream(entry);
+            }
+        };
     }
 }
