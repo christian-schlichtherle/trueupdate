@@ -20,7 +20,7 @@ public interface Visitor<X extends Exception> {
      * but not in the second JAR file.
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
-     * @throws Exception at the discretion of the implementation.
+     * @throws X at the discretion of the implementation.
      */
     abstract void visitEntryInFile1(EntryInFile entryInFile1) throws X;
 
@@ -29,7 +29,7 @@ public interface Visitor<X extends Exception> {
      * but not in the first JAR file.
      *
      * @param entryInFile2 the JAR entry in the second JAR file.
-     * @throws Exception at the discretion of the implementation.
+     * @throws X at the discretion of the implementation.
      */
     abstract void visitEntryInFile2(EntryInFile entryInFile2) throws X;
 
@@ -40,7 +40,7 @@ public interface Visitor<X extends Exception> {
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.
-     * @throws Exception at the discretion of the implementation.
+     * @throws X at the discretion of the implementation.
      */
     abstract void visitEqualEntries(EntryInFile entryInFile1,
                                     EntryInFile entryInFile2)
@@ -53,7 +53,7 @@ public interface Visitor<X extends Exception> {
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.
-     * @throws Exception at the discretion of the implementation.
+     * @throws X at the discretion of the implementation.
      */
     abstract void visitDifferentEntries(EntryInFile entryInFile1,
                                         EntryInFile entryInFile2)

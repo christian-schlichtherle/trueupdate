@@ -6,7 +6,6 @@ package com.stimulus.archiva.update.server.jardiff;
 
 import com.stimulus.archiva.update.server.jardiff.model.*;
 import com.stimulus.archiva.update.server.jardiff.model.Comparator;
-import java.io.IOException;
 import java.util.*;
 import static java.util.Objects.requireNonNull;
 import java.util.jar.*;
@@ -44,8 +43,8 @@ public final class JarDiff<X extends Exception> {
      * @param file1 the first JAR file.
      * @param file2 the second JAR file.
      * @return the diff result.
-     * @throws IOException at the discretion of the comparator, e.g. if
-     *         it's impossible to read the entry contents for some reason.
+     * @throws X at the discretion of the {@link Comparator}, in which case the
+     *         diff gets aborted.
      */
     public Diff compute(
             final @WillNotClose JarFile file1,
@@ -87,7 +86,7 @@ public final class JarDiff<X extends Exception> {
                         entryInFile1.entry().getName(),
                         new PairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
-        };
+        }
         engine(file1, file2).accept(new JarVisitor());
         return new Diff(comparator,
                 entriesInFile1, entriesInFile2, equalEntries, differentEntries);
@@ -124,7 +123,7 @@ public final class JarDiff<X extends Exception> {
          * calling {@link Comparator#equals(EntryInFile, EntryInFile)}.
          *
          * @param visitor the visitor for the JAR entries in the JAR files.
-         * @throws Exception at the discretion of the {@link Comparator} or
+         * @throws X at the discretion of the {@link Comparator} or
          *         {@link Visitor}, in which case the diff gets aborted.
          */
         public void accept(final Visitor<X> visitor) throws X {
