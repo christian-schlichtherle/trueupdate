@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a class to compute a diff from two JAR files.
+ * Provides a class to compare two JAR files entry by entry.
  *
  * @author Christian Schlichtherle
  */
