@@ -22,10 +22,10 @@ trait JarDiffITContext {
     withJars { (jar1, jar2) => fun(
       new JarContext()
         .diff
-          .jar1(jar1)
-          .jar2(jar2)
-          .digest(digest)
-          .output(store)
+          .jarFile1(jar1)
+          .jarFile2(jar2)
+          .messageDigest(digest)
+          .patchFileSink(store)
           .build)
     }
   }

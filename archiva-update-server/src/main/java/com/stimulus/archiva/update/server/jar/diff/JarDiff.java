@@ -25,23 +25,21 @@ import javax.annotation.concurrent.Immutable;
 public abstract class JarDiff {
 
     /** Returns the first JAR file. */
-    protected abstract JarFile jar1();
+    public abstract JarFile jarFile1();
 
     /** Returns the second JAR file. */
-    protected abstract JarFile jar2();
+    public abstract JarFile jarFile2();
 
     /** Returns the sink for writing the JAR patch file. */
-    protected abstract Sink output();
+    public abstract Sink patchFileSink();
 
     /** Returns the message digest. */
-    protected abstract MessageDigest digest();
+    public abstract MessageDigest messageDigest();
 
-    /**
-     * Computes a JAR diff of the two JAR files and generates a JAR patch file to the given sink.
-     */
-    public void generate() throws IOException {
-        final Diff diff = compute();
-        try (ZipOutputStream out = new ZipOutputStream(output().output())) {
+    /** Writes the JAR patch file. */
+    public void writePatchFile() throws IOException {
+        final Diff diff = computeDiff();
+        try (ZipOutputStream out = new ZipOutputStream(patchFileSink().output())) {
             out.setLevel(Deflater.BEST_COMPRESSION);
             out.putNextEntry(new ZipEntry("diff"));
 
@@ -54,7 +52,7 @@ public abstract class JarDiff {
     }
 
     /** Computes a JAR diff of the two JAR files. */
-    public Diff compute() throws IOException {
+    public Diff computeDiff() throws IOException {
         final SortedMap<String, EntryDigest>
                 removed = new TreeMap<>(),
                 added = new TreeMap<>(),
@@ -94,7 +92,7 @@ public abstract class JarDiff {
                             digest1, digest2));
             }
         }
-        new Engine(jar1(), jar2()).accept(new JarVisitor());
+        new Engine(jarFile1(), jarFile2()).accept(new JarVisitor());
         {
             final Diff diff = new Diff();
             diff.algorithm = algorithm();
@@ -108,13 +106,13 @@ public abstract class JarDiff {
     }
 
     private String digestToHexString(Source source) throws IOException {
-        return MessageDigests.digestToHexString(digest(), source);
+        return MessageDigests.digestToHexString(messageDigest(), source);
     }
 
-    private String algorithm() { return digest().getAlgorithm(); }
+    private String algorithm() { return messageDigest().getAlgorithm(); }
 
     private Integer numBytes() {
-        final MessageDigest digest = digest();
+        final MessageDigest digest = messageDigest();
         try {
             final MessageDigest
                     clone = MessageDigests.newDigest(digest.getAlgorithm());
@@ -135,46 +133,50 @@ public abstract class JarDiff {
      * The default message digest is SHA-1.
      */
     public static class Builder {
-        private JarFile jar1, jar2;
-        private Sink output;
-        private MessageDigest digest = MessageDigests.sha1();
+        private JarFile jarFile1, jarFile2;
+        private Sink patchFileSink;
+        private MessageDigest messageDigest = MessageDigests.sha1();
 
-        public Builder jar1(final JarFile jar1) {
-            this.jar1 = requireNonNull(jar1);
+        public Builder jarFile1(final JarFile jarFile1) {
+            this.jarFile1 = requireNonNull(jarFile1);
             return this;
         }
 
-        public Builder jar2(final JarFile jar2) {
-            this.jar2 = requireNonNull(jar2);
+        public Builder jarFile2(final JarFile jarFile2) {
+            this.jarFile2 = requireNonNull(jarFile2);
             return this;
         }
 
-        public Builder output(final Sink output) {
-            this.output = requireNonNull(output);
+        public Builder patchFileSink(final Sink patchFileSink) {
+            this.patchFileSink = requireNonNull(patchFileSink);
             return this;
         }
 
-        public Builder digest(final MessageDigest digest) {
-            this.digest = requireNonNull(digest);
+        public Builder messageDigest(final MessageDigest messageDigest) {
+            this.messageDigest = requireNonNull(messageDigest);
             return this;
         }
 
-        public JarDiff build() { return build(jar1, jar2, output, digest); }
+        public JarDiff build() {
+            return build(jarFile1, jarFile2, patchFileSink, messageDigest);
+        }
 
         private static JarDiff build(
-                final JarFile jar1,
-                final JarFile jar2,
-                final Sink output,
-                final MessageDigest digest) {
-            requireNonNull(jar1);
-            requireNonNull(jar2);
-            requireNonNull(output);
-            requireNonNull(digest);
+                final JarFile jarFile1,
+                final JarFile jarFile2,
+                final Sink patchFileSink,
+                final MessageDigest messageDigest) {
+            requireNonNull(jarFile1);
+            requireNonNull(jarFile2);
+            requireNonNull(patchFileSink);
+            requireNonNull(messageDigest);
             return new JarDiff() {
-                @Override protected JarFile jar1() { return jar1; }
-                @Override protected JarFile jar2() { return jar2; }
-                @Override protected Sink output() { return output; }
-                @Override protected MessageDigest digest() { return digest; }
+                @Override public JarFile jarFile1() { return jarFile1; }
+                @Override public JarFile jarFile2() { return jarFile2; }
+                @Override public Sink patchFileSink() { return patchFileSink; }
+                @Override public MessageDigest messageDigest() {
+                    return messageDigest;
+                }
             };
         }
     }
