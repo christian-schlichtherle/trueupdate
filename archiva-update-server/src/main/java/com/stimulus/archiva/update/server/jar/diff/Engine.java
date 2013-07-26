@@ -64,13 +64,6 @@ final class Engine {
         }
     }
 
-    /**
-     * Constructs a JAR entry in a JAR file.
-     *
-     * @param entry the JAR entry.
-     *              Note that this gets shared with this object.
-     * @param file the JAR file.
-     */
     private static EntryInFile entryInFile(
             final JarEntry entry,
             final JarFile file) {
