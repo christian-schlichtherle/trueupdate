@@ -10,6 +10,8 @@ package com.stimulus.archiva.update.server.jardiff.model;
  * undefined, so you should not depend on the behavior of a particular
  * implementation in order to ensure compatibility with future versions.
  *
+ * @param <X> the type of the exceptions to be thrown from the visitor methods.
+ * @see Comparator
  * @author Christian Schlichtherle
  */
 public interface Visitor<X extends Exception> {
@@ -33,8 +35,8 @@ public interface Visitor<X extends Exception> {
 
     /**
      * Visits a pair of JAR entries with an equal name in the first and
-     * second JAR file and which are considered to be equal according to some
-     * {@link Comparator}.
+     * second JAR file and which are considered to be equal according to
+     * the {@link Comparator}.
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.
@@ -47,7 +49,7 @@ public interface Visitor<X extends Exception> {
     /**
      * Visits a pair of JAR entries with an equal name in the first and
      * second JAR file, but which are considered to be different according to
-     * some {@link Comparator}.
+     * the {@link Comparator}.
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.

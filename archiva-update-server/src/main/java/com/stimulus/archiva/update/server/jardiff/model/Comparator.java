@@ -9,18 +9,20 @@ import java.io.IOException;
 /**
  * Compares two JAR entries in different JAR files.
  *
+ * @param <X> the type of the exceptions to be thrown from the
+ *        {@link #equals(EntryInFile, EntryInFile)} method.
+ * @see Visitor
  * @author Christian Schlichtherle
  */
-public interface Comparator {
+public interface Comparator<X extends Exception> {
     /**
      * Returns {@code true} if and only if the two given JAR entries in
      * different JAR files should be considered to be equal.
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.
-     * @throws IOException at the discretion of the implementation, e.g. if
-     *         it's impossible to read the entry contents for some reason.
+     * @throws Exception at the discretion of the implementation.
      */
     boolean equals(EntryInFile entryInFile1, EntryInFile entryInFile2)
-    throws IOException;
+    throws X;
 }
