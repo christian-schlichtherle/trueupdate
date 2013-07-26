@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.it
 import java.io.File
 import java.util.jar.JarFile
 import edu.umd.cs.findbugs.annotations.CreatesObligation
-import com.stimulus.archiva.update.server.jardiff.{ContentComparator, JarDiff}
+import com.stimulus.archiva.update.server.jardiff.{JarDiff2, ContentComparator, JarDiff}
 import com.stimulus.archiva.update.server.util.MessageDigests
 
 /**
@@ -23,4 +23,18 @@ trait JarDiffITContext {
   def jarDiff = new JarDiff(comparator)
   def comparator = new ContentComparator(digest)
   def digest = MessageDigests.sha1
+
+  def index() = {
+    val jar1 = jarFile1()
+    try {
+      val jar2 = jarFile2()
+      try {
+        new JarDiff2(jar1, jar2).compute(digest)
+      } finally {
+        jar2 close ()
+      }
+    } finally {
+      jar1 close ()
+    }
+  }
 }

@@ -14,6 +14,7 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
 import com.stimulus.archiva.update.server.jarpatch.model.Index
+import com.stimulus.archiva.update.server.jardiff.JarDiff2
 
 private object IndexIT {
   val logger = LoggerFactory.getLogger(classOf[IndexIT])
@@ -53,17 +54,7 @@ class IndexIT extends WordSpec with JarDiffITContext {
 
     "constructed from a JAR diff" should {
       "be round-trip XML-serializable" in {
-        val jar1 = jarFile1()
-        try {
-          val jar2 = jarFile2()
-          try {
-            roundTrip(new Index(jarDiff.compute(jar1, jar2), digest))
-          } finally {
-            jar2 close ()
-          }
-        } finally {
-          jar1 close ()
-        }
+        roundTrip(index())
       }
     }
   }
