@@ -2,9 +2,8 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jardiff.model;
+package com.stimulus.archiva.update.server.jar.engine;
 
-import com.stimulus.archiva.update.server.jardiff.model.*;
 import java.util.Enumeration;
 import static java.util.Objects.requireNonNull;
 import java.util.jar.*;

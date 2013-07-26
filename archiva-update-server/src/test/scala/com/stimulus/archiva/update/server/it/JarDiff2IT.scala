@@ -6,7 +6,7 @@ package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.codec.JaxbTestCodec
 import com.stimulus.archiva.update.core.io.MemoryStore
-import com.stimulus.archiva.update.server.jardiff.JarDiff
+import com.stimulus.archiva.update.server.jar.JarDiff
 import com.stimulus.archiva.update.server.jarpatch.model.Diff
 import com.stimulus.archiva.update.server.util.MessageDigests
 import java.lang.String

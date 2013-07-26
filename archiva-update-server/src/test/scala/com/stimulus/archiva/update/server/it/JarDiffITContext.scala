@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.it
 import java.io.File
 import java.util.jar.JarFile
 import edu.umd.cs.findbugs.annotations.CreatesObligation
-import com.stimulus.archiva.update.server.jardiff.JarDiff
+import com.stimulus.archiva.update.server.jar.JarDiff
 import com.stimulus.archiva.update.server.util.MessageDigests
 
 /**

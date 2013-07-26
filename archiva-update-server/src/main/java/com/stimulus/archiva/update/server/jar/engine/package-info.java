@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model classes for use with JAR diffs.
+ * Provides an engine for visiting two JAR files.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.jardiff.model;
+package com.stimulus.archiva.update.server.jar.engine;
