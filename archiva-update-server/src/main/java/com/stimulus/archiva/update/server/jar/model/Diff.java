@@ -29,6 +29,22 @@ public final class Diff {
     @XmlJavaTypeAdapter(BeforeAndAfterEntryDigestMapAdapter.class)
     public SortedMap<String, BeforeAndAfterEntryDigest> changed;
 
+    public EntryDigest removed(String name) {
+        return null == removed ? null : removed.get(name);
+    }
+
+    public EntryDigest added(String name) {
+        return null == added ? null : added.get(name);
+    }
+
+    public EntryDigest unchanged(String name) {
+        return null == unchanged ? null : unchanged.get(name);
+    }
+
+    public BeforeAndAfterEntryDigest changed(String name) {
+        return null == changed ? null : changed.get(name);
+    }
+
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof Diff)) return false;

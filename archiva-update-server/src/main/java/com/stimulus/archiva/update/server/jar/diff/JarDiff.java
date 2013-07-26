@@ -64,7 +64,7 @@ public abstract class JarDiff {
                     try {
                         new JaxbCodec(jaxbContext()).encode(
                                 new EntrySink("META-INF/diff.xml"), diff);
-                    } catch (IOException ex) {
+                    } catch (IOException | RuntimeException ex) {
                         throw ex;
                     } catch (Exception ex) {
                         throw new IOException(ex);
@@ -77,10 +77,17 @@ public abstract class JarDiff {
                     for (final Enumeration<JarEntry> e2 = jarFile2.entries();
                          e2.hasMoreElements(); ) {
                         final JarEntry entry2 = e2.nextElement();
-                        Copy.copy(new EntrySource(entry2, jarFile2),
-                                  new EntrySink(entry2.getName()));
+                        final String name2 = entry2.getName();
+                        if (addedOrChanged(name2))
+                            Copy.copy(new EntrySource(entry2, jarFile2),
+                                      new EntrySink(name2));
                     }
                     return this;
+                }
+
+                boolean addedOrChanged(String name) {
+                    return null != diff.added(name) ||
+                            null != diff.changed(name);
                 }
             } // WithZipOutputStream
 
