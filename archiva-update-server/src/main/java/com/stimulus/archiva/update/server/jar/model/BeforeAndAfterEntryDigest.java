@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jarpatch.model;
+package com.stimulus.archiva.update.server.jar.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;

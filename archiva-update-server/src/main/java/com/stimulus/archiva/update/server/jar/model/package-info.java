@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model classes for use with JAR patches.
+ * Provides model classes for use within JAR patch files.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.jarpatch.model;
+package com.stimulus.archiva.update.server.jar.model;

@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server.jar.diff;
 
-import com.stimulus.archiva.update.server.jarpatch.model.*;
+import com.stimulus.archiva.update.server.jar.model.*;
 import static com.stimulus.archiva.update.server.util.MessageDigests.digestToHexString;
 import java.io.IOException;
 import java.security.MessageDigest;
