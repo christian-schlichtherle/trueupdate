@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.engine;
+package com.stimulus.archiva.update.server.jar.diff;
 
 import java.util.Enumeration;
 import static java.util.Objects.requireNonNull;
@@ -16,18 +16,18 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class Engine {
+final class Engine {
 
     private final @WillNotClose JarFile file1, file2;
 
     /**
-     * Constructs a JAR visitor engine which operates on the given JAR files.
+     * Constructs an engine which operates on the given JAR files.
      *
      * @param file1 the first JAR file.
      * @param file2 the second JAR file.
      */
-    public Engine(final @WillNotClose JarFile file1,
-                  final @WillNotClose JarFile file2) {
+    Engine(final @WillNotClose JarFile file1,
+           final @WillNotClose JarFile file2) {
         this.file1 = requireNonNull(file1);
         this.file2 = requireNonNull(file2);
     }
@@ -40,8 +40,7 @@ public final class Engine {
      * @throws X at the discretion of the {@link Visitor}, in which case the
      *         engine aborts the visit.
      */
-    public <X extends Exception> void accept(final Visitor<X> visitor)
-    throws X {
+    <X extends Exception> void accept(final Visitor<X> visitor) throws X {
         for (final Enumeration<JarEntry> e1 = file1.entries();
              e1.hasMoreElements(); ) {
             final JarEntry entry1 = e1.nextElement();

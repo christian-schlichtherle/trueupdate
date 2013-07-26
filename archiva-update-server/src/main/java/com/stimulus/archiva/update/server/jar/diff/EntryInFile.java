@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.engine;
+package com.stimulus.archiva.update.server.jar.diff;
 
 import com.stimulus.archiva.update.core.io.Source;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.util.jar.*;
  *
  * @author Christian Schlichtherle
  */
-public final class EntryInFile implements Source {
+final class EntryInFile implements Source {
 
     private final JarEntry entry;
     private final JarFile file;

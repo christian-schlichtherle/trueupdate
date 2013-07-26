@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an engine for visiting two JAR files.
+ * Provides a class to compute a diff from two JAR files.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.jar.engine;
+package com.stimulus.archiva.update.server.jar.diff;

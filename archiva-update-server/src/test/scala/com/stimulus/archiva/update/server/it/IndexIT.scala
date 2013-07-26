@@ -14,7 +14,7 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
 import com.stimulus.archiva.update.server.jarpatch.model.Diff
-import com.stimulus.archiva.update.server.jar.JarDiff
+import com.stimulus.archiva.update.server.jar.diff.JarDiff
 
 private object IndexIT {
   val logger = LoggerFactory.getLogger(classOf[IndexIT])

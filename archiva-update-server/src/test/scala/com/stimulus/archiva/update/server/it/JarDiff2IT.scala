@@ -6,7 +6,6 @@ package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.codec.JaxbTestCodec
 import com.stimulus.archiva.update.core.io.MemoryStore
-import com.stimulus.archiva.update.server.jar.JarDiff
 import com.stimulus.archiva.update.server.jarpatch.model.Diff
 import com.stimulus.archiva.update.server.util.MessageDigests
 import java.lang.String
@@ -17,6 +16,7 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
+import com.stimulus.archiva.update.server.jar.diff.JarDiff
 
 /**
  * @author Christian Schlichtherle
