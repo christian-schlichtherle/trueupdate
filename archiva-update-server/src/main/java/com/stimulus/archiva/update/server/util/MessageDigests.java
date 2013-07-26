@@ -20,16 +20,21 @@ public final class MessageDigests {
 
     private MessageDigests() { }
 
-    /** Returns a new SHA-1 digest. */
+    /** Returns a new SHA-1 message digest. */
     public static MessageDigest sha1() { return newDigest("SHA-1"); }
 
-    private static MessageDigest newDigest(final String algorithm) {
+    /**
+     * Returns a new message digest with the given algorithm name.
+     *
+     * @param algorithm the algorithm name.
+     * @throws IllegalArgumentException if no implementation of the algorithm
+     *         is found.
+     */
+    public static MessageDigest newDigest(String algorithm) {
         try {
             return MessageDigest.getInstance(algorithm);
         } catch (NoSuchAlgorithmException ex) {
-            throw new AssertionError(
-                    "The JRE doesn't implement the standard message digest " + algorithm + ". See http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#MessageDigest .",
-                    ex);
+            throw new IllegalArgumentException(ex);
         }
     }
 
