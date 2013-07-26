@@ -4,25 +4,16 @@
  */
 package com.stimulus.archiva.update.server.it
 
-import com.stimulus.archiva.update.core.codec.JaxbTestCodec
-import com.stimulus.archiva.update.core.io.MemoryStore
-import com.stimulus.archiva.update.server.jarpatch.model.Diff
-import com.stimulus.archiva.update.server.util.MessageDigests
-import java.lang.String
-import java.nio.charset.Charset
-import javax.xml.bind.JAXBContext
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
-import org.slf4j.LoggerFactory
-import com.stimulus.archiva.update.server.jar.diff.JarDiff
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JarDiff2IT extends WordSpec with JarDiffITContext {
+class JarDiffIT extends WordSpec with JarDiffITContext {
 
   "A JAR diff" when {
     "diffing the test JAR files" should {

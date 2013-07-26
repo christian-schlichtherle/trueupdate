@@ -4,11 +4,11 @@
  */
 package com.stimulus.archiva.update.server.it
 
+import com.stimulus.archiva.update.server.jar.diff.JarDiff
+import com.stimulus.archiva.update.server.util.MessageDigests
+import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
-import edu.umd.cs.findbugs.annotations.CreatesObligation
-import com.stimulus.archiva.update.server.util.MessageDigests
-import com.stimulus.archiva.update.server.jar.diff.JarDiff
 
 /**
  * @author Christian Schlichtherle
