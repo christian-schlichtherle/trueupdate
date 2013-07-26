@@ -53,7 +53,7 @@ public class JaxbCodec implements Codec {
     @Override public String contentTransferEncoding() { return "8bit"; }
 
     @Override public void encode(final Sink sink, final Object obj)
-            throws Exception {
+    throws Exception {
         final OutputStream out = sink.output();
         try { marshaller().marshal(obj, out); }
         finally { out.close(); }
@@ -67,7 +67,7 @@ public class JaxbCodec implements Codec {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T decode(final Source source, final Type expected)
-            throws Exception {
+    throws Exception {
         final InputStream in = source.input();
         try { return (T) unmarshaller().unmarshal(in); }
         finally { in.close(); }
