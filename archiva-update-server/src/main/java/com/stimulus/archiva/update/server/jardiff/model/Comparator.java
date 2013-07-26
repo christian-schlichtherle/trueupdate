@@ -7,9 +7,8 @@ package com.stimulus.archiva.update.server.jardiff.model;
 /**
  * Compares two JAR entries in different JAR files.
  *
- * @param <X> the type of the exceptions to be thrown from the
- *        {@link #equals(EntryInFile, EntryInFile)} method.
- * @see Visitor
+ * @param <X> the type of the exceptions to be thrown from the comparison
+ *            method.
  * @author Christian Schlichtherle
  */
 public interface Comparator<X extends Exception> {

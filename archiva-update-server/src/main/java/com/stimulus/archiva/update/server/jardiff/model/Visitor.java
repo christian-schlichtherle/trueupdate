@@ -5,13 +5,12 @@
 package com.stimulus.archiva.update.server.jardiff.model;
 
 /**
- * A visitor of a JAR diff.
+ * A visitor of two JAR files.
  * Note that the order of the calls to the visitor methods is currently
  * undefined, so you should not depend on the behavior of a particular
  * implementation in order to ensure compatibility with future versions.
  *
  * @param <X> the type of the exceptions to be thrown from the visitor methods.
- * @see Comparator
  * @author Christian Schlichtherle
  */
 public interface Visitor<X extends Exception> {
@@ -34,28 +33,14 @@ public interface Visitor<X extends Exception> {
     abstract void visitEntryInFile2(EntryInFile entryInFile2) throws X;
 
     /**
-     * Visits a pair of JAR entries with an equal name in the first and
-     * second JAR file and which are considered to be equal according to
-     * the {@link Comparator}.
+     * Visits a pair of JAR entries with equal names in the first and
+     * second JAR file.
      *
      * @param entryInFile1 the JAR entry in the first JAR file.
      * @param entryInFile2 the JAR entry in the second JAR file.
      * @throws X at the discretion of the implementation.
      */
-    abstract void visitEqualEntries(EntryInFile entryInFile1,
-                                    EntryInFile entryInFile2)
-    throws X;
-
-    /**
-     * Visits a pair of JAR entries with an equal name in the first and
-     * second JAR file, but which are considered to be different according to
-     * the {@link Comparator}.
-     *
-     * @param entryInFile1 the JAR entry in the first JAR file.
-     * @param entryInFile2 the JAR entry in the second JAR file.
-     * @throws X at the discretion of the implementation.
-     */
-    abstract void visitDifferentEntries(EntryInFile entryInFile1,
-                                        EntryInFile entryInFile2)
+    abstract void visitEntriesInFiles(EntryInFile entryInFile1,
+                                      EntryInFile entryInFile2)
     throws X;
 }
