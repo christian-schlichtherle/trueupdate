@@ -18,29 +18,29 @@ interface Visitor<X extends Exception> {
      * Visits a JAR entry which is present in the first JAR file,
      * but not in the second JAR file.
      *
-     * @param entryInFile1 the JAR entry in the first JAR file.
+     * @param entrySource1 the JAR entry in the first JAR file.
      * @throws X at the discretion of the implementation.
      */
-    void visitEntryInFile1(EntryInFile entryInFile1) throws X;
+    void visitEntryInFile1(EntrySource entrySource1) throws X;
 
     /**
      * Visits a JAR entry which is present in the second JAR file,
      * but not in the first JAR file.
      *
-     * @param entryInFile2 the JAR entry in the second JAR file.
+     * @param entrySource2 the JAR entry in the second JAR file.
      * @throws X at the discretion of the implementation.
      */
-    void visitEntryInFile2(EntryInFile entryInFile2) throws X;
+    void visitEntryInFile2(EntrySource entrySource2) throws X;
 
     /**
      * Visits a pair of JAR entries with equal names in the first and
      * second JAR file.
      *
-     * @param entryInFile1 the JAR entry in the first JAR file.
-     * @param entryInFile2 the JAR entry in the second JAR file.
+     * @param entrySource1 the JAR entry in the first JAR file.
+     * @param entrySource2 the JAR entry in the second JAR file.
      * @throws X at the discretion of the implementation.
      */
-    void visitEntriesInFiles(EntryInFile entryInFile1,
-                             EntryInFile entryInFile2)
+    void visitEntriesInFiles(EntrySource entrySource1,
+                             EntrySource entrySource2)
     throws X;
 }
