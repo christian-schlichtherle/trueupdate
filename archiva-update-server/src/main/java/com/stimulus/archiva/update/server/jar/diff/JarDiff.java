@@ -26,16 +26,6 @@ import javax.xml.bind.*;
 @Immutable
 public abstract class JarDiff {
 
-    private static final JAXBContext JAXB_CONTEXT;
-
-    static {
-        try {
-            JAXB_CONTEXT = JAXBContext.newInstance(Diff.class);
-        } catch (JAXBException ex) {
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
-
     /** Returns the first JAR file. */
     abstract JarFile jarFile1();
 
@@ -44,6 +34,9 @@ public abstract class JarDiff {
 
     /** Returns the message digest. */
     abstract MessageDigest messageDigest();
+
+    /** Returns the JAXB context for marshalling the JAR diff. */
+    abstract JAXBContext jaxbContext();
 
     /** Writes a JAR patch file to the given sink. */
     public void writePatchFileTo(final Sink sink) throws IOException {
@@ -69,8 +62,8 @@ public abstract class JarDiff {
             class WithZipOutputStream {
                 WithZipOutputStream writeDiff() throws IOException {
                     try {
-                        new JaxbCodec(JAXB_CONTEXT)
-                                .encode(new EntrySink("diff"), diff);
+                        new JaxbCodec(jaxbContext()).encode(
+                                new EntrySink("META-INF/diff.xml"), diff);
                     } catch (IOException ex) {
                         throw ex;
                     } catch (Exception ex) {
@@ -202,42 +195,55 @@ public abstract class JarDiff {
 
     /**
      * A builder for a JAR diff.
-     * The default message digest is SHA-1.
+     * The default message digest is SHA-1 and the default JAXB context binds
+     * only the {@link Diff} class.
      */
     public static class Builder {
+
         private JarFile file1, file2;
-        private MessageDigest digest = MessageDigests.sha1();
+        private MessageDigest digest;
+        private JAXBContext context;
 
-        public Builder jarFile1(final JarFile jarFile1) {
-            this.file1 = requireNonNull(jarFile1);
+        public Builder jarFile1(final JarFile file1) {
+            this.file1 = requireNonNull(file1);
             return this;
         }
 
-        public Builder jarFile2(final JarFile jarFile2) {
-            this.file2 = requireNonNull(jarFile2);
+        public Builder jarFile2(final JarFile file2) {
+            this.file2 = requireNonNull(file2);
             return this;
         }
 
-        public Builder messageDigest(final MessageDigest messageDigest) {
-            this.digest = requireNonNull(messageDigest);
+        public Builder messageDigest(final MessageDigest digest) {
+            this.digest = requireNonNull(digest);
+            return this;
+        }
+
+        public Builder jaxbContext(final JAXBContext context) {
+            this.context = requireNonNull(context);
             return this;
         }
 
         public JarDiff build() {
-            return build(file1, file2, digest);
+            return build(file1, file2,
+                    null != digest ? digest : MessageDigests.sha1(),
+                    null != context ? context : Diffs.jaxbContext());
         }
 
         private static JarDiff build(
                 final JarFile file1,
                 final JarFile file2,
-                final MessageDigest digest) {
+                final MessageDigest digest,
+                final JAXBContext context) {
             requireNonNull(file1);
             requireNonNull(file2);
-            requireNonNull(digest);
+            assert null != digest;
+            assert null != context;
             return new JarDiff() {
                 @Override JarFile jarFile1() { return file1; }
                 @Override JarFile jarFile2() { return file2; }
                 @Override MessageDigest messageDigest() { return digest; }
+                @Override JAXBContext jaxbContext() { return context; }
             };
         }
     } // Builder
