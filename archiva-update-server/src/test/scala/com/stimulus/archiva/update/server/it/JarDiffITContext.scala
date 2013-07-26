@@ -4,18 +4,31 @@
  */
 package com.stimulus.archiva.update.server.it
 
-import com.stimulus.archiva.update.server.jar.diff.JarDiff
+import com.stimulus.archiva.update.core.io.MemoryStore
+import com.stimulus.archiva.update.server.jar.diff.JarDiff.Builder
 import com.stimulus.archiva.update.server.util.MessageDigests
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
+import com.stimulus.archiva.update.server.jar.JarContext
+import com.stimulus.archiva.update.server.jar.diff.JarDiff
 
 /**
  * @author Christian Schlichtherle
  */
 trait JarDiffITContext {
 
-  def index() = withJars(new JarDiff(_, _).compute(digest))
+  def withJarDiff[A](fun: JarDiff => A) = {
+    withJars { (jar1, jar2) => fun(
+      new JarContext()
+        .diff
+          .jar1(jar1)
+          .jar2(jar2)
+          .digest(digest)
+          .output(store)
+          .build)
+    }
+  }
 
   def withJars[A](fun: (JarFile, JarFile) => A) = {
     val jar1 = jarFile1()
@@ -37,6 +50,7 @@ trait JarDiffITContext {
   private def file(resourceName: String) =
     new File((classOf[JarDiffITContext] getResource resourceName).toURI)
 
-
   def digest = MessageDigests.sha1
+
+  def store = new MemoryStore
 }

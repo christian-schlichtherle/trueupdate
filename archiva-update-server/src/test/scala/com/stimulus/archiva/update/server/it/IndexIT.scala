@@ -53,7 +53,7 @@ class IndexIT extends WordSpec with JarDiffITContext {
 
     "constructed from a JAR diff" should {
       "be round-trip XML-serializable" in {
-        roundTrip(index())
+        roundTrip(withJarDiff(_ compute ()))
       }
     }
   }

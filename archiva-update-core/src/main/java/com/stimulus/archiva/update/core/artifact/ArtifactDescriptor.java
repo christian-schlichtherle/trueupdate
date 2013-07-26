@@ -52,8 +52,8 @@ public interface ArtifactDescriptor extends Serializable {
 
     /**
      * A builder for an artifact descriptor.
-     * The default value of the extension is {@code "jar"} and the default
-     * value of the classifier is {@code ""}.
+     * The default value for the property {@code extension} is {@code "jar"}
+     * and the default value for the property {@code classifier} is {@code ""}.
      */
     class Builder {
 
