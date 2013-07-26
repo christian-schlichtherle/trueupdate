@@ -17,7 +17,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Computes two JAR files entry by entry.
+ * Compares two JAR files entry by entry.
  *
  * @author Christian Schlichtherle
  */
@@ -30,16 +30,13 @@ public abstract class JarDiff {
     /** Returns the second JAR file. */
     public abstract JarFile jarFile2();
 
-    /** Returns the sink for writing the JAR patch file. */
-    public abstract Sink patchFileSink();
-
     /** Returns the message digest. */
     public abstract MessageDigest messageDigest();
 
-    /** Writes the JAR patch file. */
-    public void writePatchFile() throws IOException {
+    /** Writes a JAR patch file to the given sink. */
+    public void writePatchFileTo(final Sink sink) throws IOException {
         final Diff diff = computeDiff();
-        try (ZipOutputStream out = new ZipOutputStream(patchFileSink().output())) {
+        try (ZipOutputStream out = new ZipOutputStream(sink.output())) {
             out.setLevel(Deflater.BEST_COMPRESSION);
             out.putNextEntry(new ZipEntry("diff"));
 
@@ -51,7 +48,7 @@ public abstract class JarDiff {
 
     }
 
-    /** Computes a JAR diff of the two JAR files. */
+    /** Computes a JAR diff from the two JAR files. */
     public Diff computeDiff() throws IOException {
         final SortedMap<String, EntryDigest>
                 removed = new TreeMap<>(),
@@ -134,7 +131,6 @@ public abstract class JarDiff {
      */
     public static class Builder {
         private JarFile jarFile1, jarFile2;
-        private Sink patchFileSink;
         private MessageDigest messageDigest = MessageDigests.sha1();
 
         public Builder jarFile1(final JarFile jarFile1) {
@@ -147,33 +143,25 @@ public abstract class JarDiff {
             return this;
         }
 
-        public Builder patchFileSink(final Sink patchFileSink) {
-            this.patchFileSink = requireNonNull(patchFileSink);
-            return this;
-        }
-
         public Builder messageDigest(final MessageDigest messageDigest) {
             this.messageDigest = requireNonNull(messageDigest);
             return this;
         }
 
         public JarDiff build() {
-            return build(jarFile1, jarFile2, patchFileSink, messageDigest);
+            return build(jarFile1, jarFile2, messageDigest);
         }
 
         private static JarDiff build(
                 final JarFile jarFile1,
                 final JarFile jarFile2,
-                final Sink patchFileSink,
                 final MessageDigest messageDigest) {
             requireNonNull(jarFile1);
             requireNonNull(jarFile2);
-            requireNonNull(patchFileSink);
             requireNonNull(messageDigest);
             return new JarDiff() {
                 @Override public JarFile jarFile1() { return jarFile1; }
                 @Override public JarFile jarFile2() { return jarFile2; }
-                @Override public Sink patchFileSink() { return patchFileSink; }
                 @Override public MessageDigest messageDigest() {
                     return messageDigest;
                 }

@@ -16,7 +16,7 @@ import org.scalatest.matchers.ShouldMatchers._
 class JarDiffIT extends WordSpec with JarDiffITContext {
 
   "A JAR diff" when {
-    "diffing the test JAR files" should {
+    "computing  the test JAR files" should {
       "partition the entry names and digests correctly" in {
         val diff = withJarDiff(_ computeDiff ())
         import collection.JavaConverters._
