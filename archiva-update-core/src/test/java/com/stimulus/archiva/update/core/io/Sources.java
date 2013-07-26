@@ -12,7 +12,7 @@ import java.io.InputStream;
 import javax.annotation.CheckForNull;
 
 /**
- * Static constructors for common sources.
+ * Provides common {@link Source}s.
  *
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
