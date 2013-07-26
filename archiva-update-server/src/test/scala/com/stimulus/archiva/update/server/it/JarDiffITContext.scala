@@ -7,29 +7,22 @@ package com.stimulus.archiva.update.server.it
 import java.io.File
 import java.util.jar.JarFile
 import edu.umd.cs.findbugs.annotations.CreatesObligation
-import com.stimulus.archiva.update.server.jardiff.{JarDiff2, ContentComparator, JarDiff}
+import com.stimulus.archiva.update.server.jardiff.JarDiff2
 import com.stimulus.archiva.update.server.util.MessageDigests
 
 /**
  * @author Christian Schlichtherle
  */
 trait JarDiffITContext {
-  @CreatesObligation def jarFile1() = new JarFile(file("test1.jar"))
-  @CreatesObligation def jarFile2() = new JarFile(file("test2.jar"))
 
-  private def file(resourceName: String) =
-    new File((classOf[JarDiffITContext] getResource resourceName).toURI)
+  def index() = withJars(new JarDiff2(_, _).compute(digest))
 
-  def jarDiff = new JarDiff(comparator)
-  def comparator = new ContentComparator(digest)
-  def digest = MessageDigests.sha1
-
-  def index() = {
+  def withJars[A](fun: (JarFile, JarFile) => A) = {
     val jar1 = jarFile1()
     try {
       val jar2 = jarFile2()
       try {
-        new JarDiff2(jar1, jar2).compute(digest)
+        fun(jar1, jar2)
       } finally {
         jar2 close ()
       }
@@ -37,4 +30,13 @@ trait JarDiffITContext {
       jar1 close ()
     }
   }
+
+  @CreatesObligation def jarFile1() = new JarFile(file("test1.jar"))
+  @CreatesObligation def jarFile2() = new JarFile(file("test2.jar"))
+
+  private def file(resourceName: String) =
+    new File((classOf[JarDiffITContext] getResource resourceName).toURI)
+
+
+  def digest = MessageDigests.sha1
 }
