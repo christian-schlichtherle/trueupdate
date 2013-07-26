@@ -85,17 +85,19 @@ public final class JarDiff {
             }
         }
         new Engine(file1, file2).accept(new JarVisitor());
-        final Diff diff = new Diff();
-        diff.algorithm = digest.getAlgorithm();
-        diff.numBytes = numBytes(digest);
-        diff.removed = nonEmptyOrNull(removed);
-        diff.added = nonEmptyOrNull(added);
-        diff.unchanged = nonEmptyOrNull(unchanged);
-        diff.changed = nonEmptyOrNull(changed);
-        return diff;
+        {
+            final Diff diff = new Diff();
+            diff.algorithm = digest.getAlgorithm();
+            diff.numBytes = numBytes(digest);
+            diff.removed = nonEmptyOrNull(removed);
+            diff.added = nonEmptyOrNull(added);
+            diff.unchanged = nonEmptyOrNull(unchanged);
+            diff.changed = nonEmptyOrNull(changed);
+            return diff;
+        }
     }
 
-    private Integer numBytes(final MessageDigest digest) {
+    private static Integer numBytes(final MessageDigest digest) {
         try {
             final MessageDigest
                     clone = MessageDigests.newDigest(digest.getAlgorithm());
