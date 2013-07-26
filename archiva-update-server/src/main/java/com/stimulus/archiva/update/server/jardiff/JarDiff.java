@@ -57,20 +57,20 @@ public final class JarDiff {
         final SortedMap<String, PairOfEntriesInFiles>
                 equalEntries = new TreeMap<>(),
                 differentEntries = new TreeMap<>();
-        new Engine(file1, file2) {
-            @Override protected void onEntryInFile1(EntryInFile entryInFile1) {
+        class JarVisitor implements Visitor<RuntimeException> {
+            @Override public void visitEntryInFile1(EntryInFile entryInFile1) {
                 entriesInFile1.put(
                         entryInFile1.entry().getName(),
                         entryInFile1);
             }
 
-            @Override protected void onEntryInFile2(EntryInFile entryInFile2) {
+            @Override public void visitEntryInFile2(EntryInFile entryInFile2) {
                 entriesInFile2.put(
                         entryInFile2.entry().getName(),
                         entryInFile2);
             }
 
-            @Override protected void onEqualEntries(EntryInFile entryInFile1,
+            @Override public void visitEqualEntries(EntryInFile entryInFile1,
                                                     EntryInFile entryInFile2) {
                 assert entryInFile1.entry().getName().equals(
                         entryInFile2.entry().getName());
@@ -79,7 +79,7 @@ public final class JarDiff {
                         new PairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
 
-            @Override protected void onDifferentEntries(EntryInFile entryInFile1,
+            @Override public void visitDifferentEntries(EntryInFile entryInFile1,
                                                         EntryInFile entryInFile2) {
                 assert entryInFile1.entry().getName().equals(
                         entryInFile2.entry().getName());
@@ -87,7 +87,8 @@ public final class JarDiff {
                         entryInFile1.entry().getName(),
                         new PairOfEntriesInFiles(entryInFile1, entryInFile2));
             }
-        }.run();
+        };
+        new Engine(file1, file2).accept(new JarVisitor());
         return new Diff(comparator,
                 entriesInFile1, entriesInFile2, equalEntries, differentEntries);
     }
@@ -97,7 +98,7 @@ public final class JarDiff {
      * Clients need to implement the abstract methods {@code on...()}.
      */
     @Immutable
-    abstract class Engine {
+    final class Engine {
 
         private final @WillNotClose JarFile file1, file2;
 
@@ -109,33 +110,34 @@ public final class JarDiff {
          */
         Engine(final @WillNotClose JarFile file1,
                final @WillNotClose JarFile file2) {
-            this.file1 = requireNonNull(file1);
-            this.file2 = requireNonNull(file2);
+            assert null != file1;
+            this.file1 = file1;
+            assert null != file2;
+            this.file2 = file2;
         }
 
         /**
-         * Computes the diff and calls the template methods where appropriate.
-         * Note that the order of the calls to the template methods is
-         * undefined, so you should not depend on the behavior of the current
-         * implementation in order to ensure compatibility with future versions.
+         * Computes the diff and calls the visitor methods where appropriate.
          *
+         * @param visitor the visitor.
          * @throws IOException at the discretion of the comparator, e.g. if
          *         it's impossible to read the entry contents for some reason.
          */
-        final void run() throws IOException {
+        public <X extends Exception> void accept(final Visitor<X> visitor)
+        throws X, IOException {
             for (final Enumeration<JarEntry> e1 = file1.entries();
                  e1.hasMoreElements(); ) {
                 final JarEntry entry1 = e1.nextElement();
                 final JarEntry entry2 = file2.getJarEntry(entry1.getName());
                 if (null == entry2) {
-                    onEntryInFile1(new EntryInFile(entry1, file1));
+                    visitor.visitEntryInFile1(new EntryInFile(entry1, file1));
                 } else {
                     final EntryInFile entryInFile1 = new EntryInFile(entry1, file1);
                     final EntryInFile entryInFile2 = new EntryInFile(entry2, file2);
                     if (comparator.equals(entryInFile1, entryInFile2))
-                        onEqualEntries(entryInFile1, entryInFile2);
+                        visitor.visitEqualEntries(entryInFile1, entryInFile2);
                     else
-                        onDifferentEntries(entryInFile1, entryInFile2);
+                        visitor.visitDifferentEntries(entryInFile1, entryInFile2);
                 }
             }
 
@@ -144,47 +146,8 @@ public final class JarDiff {
                 final JarEntry entry2 = e2.nextElement();
                 final JarEntry entry1 = file1.getJarEntry(entry2.getName());
                 if (null == entry1)
-                    onEntryInFile2(new EntryInFile(entry2, file2));
+                    visitor.visitEntryInFile2(new EntryInFile(entry2, file2));
             }
         }
-
-        /**
-         * Called for each JAR entry which is present in the first JAR file,
-         * but not in the second JAR file.
-         *
-         * @param entryInFile1 the JAR entry in the first JAR file.
-         */
-        abstract void onEntryInFile1(EntryInFile entryInFile1);
-
-        /**
-         * Called for each JAR entry which is present in the second JAR file,
-         * but not in the first JAR file.
-         *
-         * @param entryInFile2 the JAR entry in the second JAR file.
-         */
-        abstract void onEntryInFile2(EntryInFile entryInFile2);
-
-        /**
-         * Called for each pair of JAR entries with an equal name in
-         * the first and second JAR file
-         * and which are considered to be equal.
-         * This method is reserved for future use.
-         *
-         * @param entryInFile1 the JAR entry in the first JAR file.
-         * @param entryInFile2 the JAR entry in the second JAR file.
-         */
-        abstract void onEqualEntries(EntryInFile entryInFile1,
-                                     EntryInFile entryInFile2);
-
-        /**
-         * Called for each pair of JAR entries with an equal name in
-         * the first and second JAR file,
-         * but which are considered to be different.
-         *
-         * @param entryInFile1 the JAR entry in the first JAR file.
-         * @param entryInFile2 the JAR entry in the second JAR file.
-         */
-        abstract void onDifferentEntries(EntryInFile entryInFile1,
-                                         EntryInFile entryInFile2);
     } // Engine
 }
