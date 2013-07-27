@@ -38,10 +38,14 @@ public abstract class JarDiff {
     /** Returns the JAXB context for marshalling the JAR diff. */
     abstract JAXBContext jaxbContext();
 
-    /** Writes a JAR patch file to the given sink. */
-    public void writePatchFileTo(final Sink sink) throws IOException {
+    /**
+     * Writes a JAR patch file to the given sink.
+     *
+     * @param patch the sink for writing the JAR patch file.
+     */
+    public void writePatchFileTo(final Sink patch) throws IOException {
         final Diff diff = computeDiff();
-        try (ZipOutputStream out = new ZipOutputStream(sink.output())) {
+        try (ZipOutputStream out = new ZipOutputStream(patch.output())) {
             out.setLevel(Deflater.BEST_COMPRESSION);
 
             class EntrySink implements Sink {
