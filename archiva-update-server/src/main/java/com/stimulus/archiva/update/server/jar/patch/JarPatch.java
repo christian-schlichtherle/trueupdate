@@ -44,6 +44,7 @@ public abstract class JarPatch {
              ZipOutputStream jarOut = new ZipOutputStream(output.output())) {
 
             class EntrySource implements Source {
+
                 final ZipInputStream in;
 
                 EntrySource(final ZipInputStream in) { this.in = in;}
@@ -58,6 +59,7 @@ public abstract class JarPatch {
             } // EntrySource
 
             class EntrySink implements Sink {
+
                 final String name;
 
                 EntrySink(final String name) { this.name = name; }
@@ -73,6 +75,7 @@ public abstract class JarPatch {
             } // EntrySink
 
             class WithStreams {
+
                 final Diff diff;
 
                 WithStreams() throws IOException {

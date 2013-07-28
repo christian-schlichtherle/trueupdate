@@ -49,6 +49,7 @@ public abstract class JarDiff {
             out.setLevel(Deflater.BEST_COMPRESSION);
 
             class EntrySink implements Sink {
+
                 final String name;
 
                 EntrySink(final String name) { this.name = name; }
@@ -64,6 +65,7 @@ public abstract class JarDiff {
             } // EntrySink
 
             class WithZipOutputStream {
+
                 WithZipOutputStream writeDiff() throws IOException {
                     try {
                         new JaxbCodec(jaxbContext()).encode(
@@ -136,6 +138,7 @@ public abstract class JarDiff {
     }
 
     private class Engine {
+
         <X extends Exception> void accept(final Visitor<X> visitor) throws X {
             for (final Enumeration<JarEntry> e1 = jarFile1().entries();
                  e1.hasMoreElements(); ) {
@@ -160,6 +163,7 @@ public abstract class JarDiff {
     } // Engine
 
     private class Computer implements Visitor<IOException> {
+
         final SortedMap<String, EntryDigest>
                 removed = new TreeMap<>(),
                 added = new TreeMap<>(),
