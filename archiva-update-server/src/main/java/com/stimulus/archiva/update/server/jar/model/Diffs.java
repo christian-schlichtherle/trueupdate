@@ -16,6 +16,12 @@ public final class Diffs {
 
     private Diffs() { }
 
+    /**
+     * The name of the diff entry.
+     * This must be the first entry in the JAR patch file.
+     */
+    public static final String DIFF_ENTRY_NAME = "META-INF/diff.xml";
+
     /** Returns a JAXB context which binds only the {@link Diff} class. */
     public static JAXBContext jaxbContext() { return Lazy.JAXB_CONTEXT; }
 

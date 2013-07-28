@@ -67,7 +67,7 @@ public abstract class JarDiff {
                 WithZipOutputStream writeDiff() throws IOException {
                     try {
                         new JaxbCodec(jaxbContext()).encode(
-                                new EntrySink("META-INF/diff.xml"), diff);
+                                new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
                     } catch (IOException | RuntimeException ex) {
                         throw ex;
                     } catch (Exception ex) {

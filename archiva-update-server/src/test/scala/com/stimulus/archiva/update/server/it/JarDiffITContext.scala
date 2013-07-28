@@ -4,12 +4,13 @@
  */
 package com.stimulus.archiva.update.server.it
 
-import com.stimulus.archiva.update.core.io.MemoryStore
+import com.stimulus.archiva.update.core.io._
 import com.stimulus.archiva.update.server.jar.diff.JarDiff
 import com.stimulus.archiva.update.server.util.MessageDigests
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
+import com.stimulus.archiva.update.server.jar.patch.JarPatch
 
 /**
  * @author Christian Schlichtherle
@@ -26,18 +27,24 @@ trait JarDiffITContext {
     }
 
   def withJars[A](fun: (JarFile, JarFile) => A) = {
-    val jar1 = jarFile1()
+    val jarFile1 = this.jarFile1
     try {
-      val jar2 = jarFile2()
+      val jarFile2 = this.jarFile2
       try {
-        fun(jar1, jar2)
+        fun(jarFile1, jarFile2)
       } finally {
-        jar2 close ()
+        jarFile2 close ()
       }
     } finally {
-      jar1 close ()
+      jarFile1 close ()
     }
   }
+
+  def withJarPatch[A](patch: Source)(fun: JarPatch => A) =
+    fun(new JarPatch.Builder()
+      .patch(patch)
+      .input(Sources.forResource("test1.jar", classOf[JarDiffITContext]))
+      .build)
 
   @CreatesObligation def jarFile1() = new JarFile(file("test1.jar"))
   @CreatesObligation def jarFile2() = new JarFile(file("test2.jar"))
