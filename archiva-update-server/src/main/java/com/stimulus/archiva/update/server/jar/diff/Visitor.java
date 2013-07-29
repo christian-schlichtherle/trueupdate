@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.server.jar.diff;
 
+import com.stimulus.archiva.update.server.jar.commons.EntrySource;
+
 /**
  * A visitor of two JAR files.
  * Note that the order of the calls to the visitor methods is currently

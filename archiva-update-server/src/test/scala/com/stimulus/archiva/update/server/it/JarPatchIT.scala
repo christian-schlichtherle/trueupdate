@@ -12,6 +12,7 @@ import com.stimulus.archiva.update.server.jar.diff.JarDiff
 import com.stimulus.archiva.update.core.io.FileStore
 import java.io.File
 import java.util.jar.JarFile
+import java.util.zip.ZipFile
 
 /**
  * @author Christian Schlichtherle
@@ -19,39 +20,46 @@ import java.util.jar.JarFile
 @RunWith(classOf[JUnitRunner])
 class JarPatchIT extends WordSpec with JarDiffITContext {
 
-  def tempFile() = File.createTempFile("tmp", "jar")
+  def tempFile() = File.createTempFile("tmp", null)
 
   "A JAR patch" when {
-    "generating and applying the JAR patch file to the first test JAR file" should {
+    "generating and applying the JAR diff file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
-        val temp = tempFile ()
+        val diffTemp = tempFile ()
         try {
-          val patch = this.store
-          withJarDiff { _ writePatchFileTo patch }
-          withJarPatch(patch) { _ applyPatchFileTo new FileStore(temp) }
-          ;{
-            val jarFile1 = this.jarFile2
+          withJarDiff { _ writeDiffFileTo new FileStore(diffTemp) }
+          val diffZip = new ZipFile(diffTemp)
+          try {
+            val jarTemp = tempFile ()
             try {
-              val jarFile2 = new JarFile(temp)
+              withJarPatch(diffZip) { _ applyDiffFileTo new FileStore(jarTemp) }
+              val inJar1 = new JarFile(jarTemp)
               try {
-                val diff = new JarDiff.Builder()
-                  .jarFile1(jarFile1)
-                  .jarFile2(jarFile2)
-                  .build
-                  .computeDiff ()
-                diff.removed should be (null)
-                diff.added should be (null)
-                diff.changed should be (null)
-                diff.unchanged should not be 'empty
+                val inJar2 = this.jarFile2
+                try {
+                  val diff = new JarDiff.Builder()
+                    .jarFile1(inJar1)
+                    .jarFile2(inJar2)
+                    .build
+                    .computeDiff ()
+                  diff.removed should be (null)
+                  diff.added should be (null)
+                  diff.changed should be (null)
+                  diff.unchanged should not be 'empty
+                } finally {
+                  inJar2 close ()
+                }
               } finally {
-                jarFile2 close ()
+                inJar1 close ()
               }
             } finally {
-              jarFile1 close ()
+              jarTemp delete ()
             }
+          } finally {
+            diffZip close ()
           }
         } finally {
-          temp delete ()
+          diffTemp delete ()
         }
       }
     }

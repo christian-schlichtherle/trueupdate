@@ -6,6 +6,7 @@ package com.stimulus.archiva.update.server.jar.diff;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.io.*;
+import com.stimulus.archiva.update.server.jar.commons.EntrySource;
 import com.stimulus.archiva.update.server.jar.model.*;
 import com.stimulus.archiva.update.server.util.MessageDigests;
 import java.io.*;
@@ -27,10 +28,10 @@ import javax.xml.bind.*;
 public abstract class JarDiff {
 
     /** Returns the first JAR file. */
-    abstract JarFile jarFile1();
+    abstract @WillNotClose JarFile jarFile1();
 
     /** Returns the second JAR file. */
-    abstract JarFile jarFile2();
+    abstract @WillNotClose JarFile jarFile2();
 
     /** Returns the message digest. */
     abstract MessageDigest messageDigest();
@@ -43,7 +44,7 @@ public abstract class JarDiff {
      *
      * @param patch the sink for writing the JAR diff file.
      */
-    public void writePatchFileTo(final Sink patch) throws IOException {
+    public void writeDiffFileTo(final Sink patch) throws IOException {
         final Diff diff = computeDiff();
         try (ZipOutputStream out = new ZipOutputStream(patch.output())) {
             out.setLevel(Deflater.BEST_COMPRESSION);

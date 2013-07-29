@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
 import com.stimulus.archiva.update.server.jar.patch.JarPatch
+import java.util.zip.ZipFile
 
 /**
  * @author Christian Schlichtherle
@@ -23,6 +24,14 @@ trait JarDiffITContext {
         .jarFile1(jarFile1)
         .jarFile2(jarFile2)
         .messageDigest(digest)
+        .build)
+    }
+
+  def withJarPatch[A](diff: ZipFile)(fun: JarPatch => A) =
+    withJars { (jarFile1, jarFile2) =>
+      fun(new JarPatch.Builder()
+        .diff(diff)
+        .input(jarFile1)
         .build)
     }
 
@@ -39,12 +48,6 @@ trait JarDiffITContext {
       jarFile1 close ()
     }
   }
-
-  def withJarPatch[A](patch: Source)(fun: JarPatch => A) =
-    fun(new JarPatch.Builder()
-      .patch(patch)
-      .input(Sources.forResource("test1.jar", classOf[JarDiffITContext]))
-      .build)
 
   @CreatesObligation def jarFile1() = new JarFile(file("test1.jar"))
   @CreatesObligation def jarFile2() = new JarFile(file("test2.jar"))
