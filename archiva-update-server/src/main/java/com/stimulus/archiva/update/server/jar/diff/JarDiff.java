@@ -103,7 +103,7 @@ public abstract class JarDiff {
         }
     }
 
-    /** Computes a JAR diff from the two JAR files. */
+    /** Computes a JAR diff bean from the two JAR files. */
     public Diff computeDiff() throws IOException {
         final Computer computer = new Computer();
         new Engine().accept(computer);

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * Represents the meta data in a JAR patch file.
+ * The JAR diff bean represents the meta data in a JAR diff file.
  *
  * @author Christian Schlichtherle
  */
