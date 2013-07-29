@@ -39,9 +39,9 @@ public abstract class JarDiff {
     abstract JAXBContext jaxbContext();
 
     /**
-     * Writes a JAR patch file to the given sink.
+     * Writes a JAR diff file to the given sink.
      *
-     * @param patch the sink for writing the JAR patch file.
+     * @param patch the sink for writing the JAR diff file.
      */
     public void writePatchFileTo(final Sink patch) throws IOException {
         final Diff diff = computeDiff();
@@ -66,7 +66,9 @@ public abstract class JarDiff {
 
             class WithZipOutputStream {
 
-                WithZipOutputStream writeDiff() throws IOException {
+                final Diff diff;
+
+                WithZipOutputStream(final Diff diff) throws IOException {
                     try {
                         new JaxbCodec(jaxbContext()).encode(
                                 new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
@@ -75,7 +77,7 @@ public abstract class JarDiff {
                     } catch (Exception ex) {
                         throw new IOException(ex);
                     }
-                    return this;
+                    this.diff = diff;
                 }
 
                 WithZipOutputStream writeAddedOrChanged() throws IOException {
@@ -97,7 +99,7 @@ public abstract class JarDiff {
                 }
             } // WithZipOutputStream
 
-            new WithZipOutputStream().writeDiff().writeAddedOrChanged();
+            new WithZipOutputStream(diff).writeAddedOrChanged();
         }
     }
 

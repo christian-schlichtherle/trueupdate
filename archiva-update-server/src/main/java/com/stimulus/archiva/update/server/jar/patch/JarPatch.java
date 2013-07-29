@@ -7,9 +7,7 @@ package com.stimulus.archiva.update.server.jar.patch;
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.server.jar.model.*;
-
 import java.io.*;
-
 import static java.util.Objects.requireNonNull;
 import java.util.jar.*;
 import java.util.zip.*;
@@ -17,31 +15,34 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
 
 /**
- * Applies a JAR patch file to an input JAR file.
+ * Applies a JAR diff file to an input JAR file.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
 public abstract class JarPatch {
 
-    /** Returns the source for reading the JAR patch file. */
+    /** Returns the source for reading the JAR diff file. */
     abstract Source patch();
 
     /** Returns the source for reading the input JAR file. */
     abstract Source input();
 
-    /** Returns the JAXB context for unmarshalling the JAR diff. */
+    /** Returns the JAXB context for unmarshalling the JAR {@link Diff}. */
     abstract JAXBContext jaxbContext();
 
     /**
-     * Applies the configured JAR patch file.
+     * Applies the configured JAR diff file.
      *
      * @param output the sink for writing the output JAR file.
      */
     public void applyPatchFileTo(final Sink output) throws IOException {
+        // Reading the input() JAR file as a JarInputStream would suppress the
+        // META-INF/MANIFEST.MF entries, so we need to process it as a plain
+        // ZipInputStream.
         try (ZipInputStream patchIn = new ZipInputStream(patch().input());
-             ZipInputStream jarIn = new ZipInputStream(input().input());
-             ZipOutputStream jarOut = new ZipOutputStream(output.output())) {
+             ZipInputStream zipIn = new ZipInputStream(input().input());
+             JarOutputStream jarOut = new JarOutputStream(output.output())) {
 
             class EntrySource implements Source {
 
@@ -65,10 +66,10 @@ public abstract class JarPatch {
                 EntrySink(final String name) { this.name = name; }
 
                 @Override public OutputStream output() throws IOException {
-                    jarOut.putNextEntry(new ZipEntry(name));
+                    jarOut.putNextEntry(new JarEntry(name));
                     return new FilterOutputStream(jarOut) {
                         @Override public void close() throws IOException {
-                            ((ZipOutputStream) out).closeEntry();
+                            ((JarOutputStream) out).closeEntry();
                         }
                     };
                 }
@@ -93,11 +94,11 @@ public abstract class JarPatch {
                 }
 
                 WithStreams copyUnchanged() throws IOException {
-                    for (ZipEntry entry = null;
-                         null != (entry = jarIn.getNextEntry()); ) {
+                    for (ZipEntry entry;
+                         null != (entry = zipIn.getNextEntry()); ) {
                         final String name = entry.getName();
                         if (unchanged(name))
-                            Copy.copy(new EntrySource(jarIn),
+                            Copy.copy(new EntrySource(zipIn),
                                       new EntrySink(name));
                     }
                     return this;
@@ -108,7 +109,7 @@ public abstract class JarPatch {
                 }
 
                 WithStreams copyAddedOrChanged() throws IOException {
-                    for (ZipEntry entry = null;
+                    for (ZipEntry entry;
                          null != (entry = patchIn.getNextEntry()); ) {
                         final String name = entry.getName();
                         assert addedOrChanged(name);
