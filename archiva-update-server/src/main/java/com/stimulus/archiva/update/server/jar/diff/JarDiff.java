@@ -36,71 +36,78 @@ public abstract class JarDiff {
     /** Returns the message digest. */
     abstract MessageDigest messageDigest();
 
-    /** Returns the JAXB context for marshalling the JAR diff. */
+    /** Returns the JAXB context for marshalling the JAR diff bean. */
     abstract JAXBContext jaxbContext();
 
     /**
      * Writes a JAR diff file to the given sink.
      *
-     * @param patch the sink for writing the JAR diff file.
+     * @param jarDiffFile the sink for writing the JAR diff file.
      */
-    public void writeDiffFileTo(final Sink patch) throws IOException {
+    public void writeDiffFileTo(final Sink jarDiffFile) throws IOException {
         final Diff diff = computeDiff();
-        try (ZipOutputStream out = new ZipOutputStream(patch.output())) {
-            out.setLevel(Deflater.BEST_COMPRESSION);
-
-            class EntrySink implements Sink {
-
-                final String name;
-
-                EntrySink(final String name) { this.name = name; }
-
-                @Override public OutputStream output() throws IOException {
-                    out.putNextEntry(new ZipEntry(name));
-                    return new FilterOutputStream(out) {
-                        @Override public void close() throws IOException {
-                            ((ZipOutputStream) out).closeEntry();
-                        }
-                    };
-                }
-            } // EntrySink
-
-            class WithZipOutputStream {
-
-                final Diff diff;
-
-                WithZipOutputStream(final Diff diff) throws IOException {
-                    try {
-                        new JaxbCodec(jaxbContext()).encode(
-                                new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
-                    } catch (IOException | RuntimeException ex) {
-                        throw ex;
-                    } catch (Exception ex) {
-                        throw new IOException(ex);
-                    }
-                    this.diff = diff;
-                }
-
-                WithZipOutputStream writeAddedOrChanged() throws IOException {
-                    for (final Enumeration<JarEntry> e2 = jarFile2().entries();
-                         e2.hasMoreElements(); ) {
-                        final JarEntry entry2 = e2.nextElement();
-                        final String name2 = entry2.getName();
-                        if (addedOrChanged(name2))
-                            Copy.copy(new EntrySource(entry2, jarFile2()),
-                                      new EntrySink(name2));
-                    }
-                    return this;
-                }
-
-                boolean addedOrChanged(String name) {
-                    return null != diff.added(name) ||
-                            null != diff.changed(name);
-                }
-            } // WithZipOutputStream
-
-            new WithZipOutputStream(diff).writeAddedOrChanged();
+        try (ZipOutputStream out = new ZipOutputStream(jarDiffFile.output())) {
+            writeDiffFileTo(diff, out);
         }
+    }
+
+    private void writeDiffFileTo(
+            final Diff diff,
+            final @WillNotClose ZipOutputStream out)
+    throws IOException {
+        out.setLevel(Deflater.BEST_COMPRESSION);
+
+        class EntrySink implements Sink {
+
+            final String name;
+
+            EntrySink(final String name) { this.name = name; }
+
+            @Override public OutputStream output() throws IOException {
+                out.putNextEntry(new ZipEntry(name));
+                return new FilterOutputStream(out) {
+                    @Override public void close() throws IOException {
+                        ((ZipOutputStream) out).closeEntry();
+                    }
+                };
+            }
+        } // EntrySink
+
+        class JarDiffFileWriter {
+
+            final Diff diff;
+
+            JarDiffFileWriter(final Diff diff) throws IOException {
+                try {
+                    new JaxbCodec(jaxbContext()).encode(
+                            new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
+                } catch (IOException | RuntimeException ex) {
+                    throw ex;
+                } catch (Exception ex) {
+                    throw new IOException(ex);
+                }
+                this.diff = diff;
+            }
+
+            JarDiffFileWriter writeAddedOrChanged() throws IOException {
+                for (final Enumeration<JarEntry> e2 = jarFile2().entries();
+                     e2.hasMoreElements(); ) {
+                    final JarEntry entry2 = e2.nextElement();
+                    final String name2 = entry2.getName();
+                    if (addedOrChanged(name2))
+                        Copy.copy(new EntrySource(entry2, jarFile2()),
+                                new EntrySink(name2));
+                }
+                return this;
+            }
+
+            boolean addedOrChanged(String name) {
+                return null != diff.added(name) ||
+                        null != diff.changed(name);
+            }
+        } // JarDiffFileWriter
+
+        new JarDiffFileWriter(diff).writeAddedOrChanged();
     }
 
     /** Computes a JAR diff bean from the two JAR files. */
@@ -217,50 +224,50 @@ public abstract class JarDiff {
      */
     public static class Builder {
 
-        private JarFile file1, file2;
-        private MessageDigest digest;
-        private JAXBContext context;
+        private JarFile jarFile1, jarFile2;
+        private MessageDigest messageDigest;
+        private JAXBContext jaxbContext;
 
         public Builder jarFile1(final JarFile file1) {
-            this.file1 = requireNonNull(file1);
+            this.jarFile1 = requireNonNull(file1);
             return this;
         }
 
         public Builder jarFile2(final JarFile file2) {
-            this.file2 = requireNonNull(file2);
+            this.jarFile2 = requireNonNull(file2);
             return this;
         }
 
         public Builder messageDigest(final MessageDigest digest) {
-            this.digest = requireNonNull(digest);
+            this.messageDigest = requireNonNull(digest);
             return this;
         }
 
-        public Builder jaxbContext(final JAXBContext context) {
-            this.context = requireNonNull(context);
+        public Builder jaxbContext(final JAXBContext jaxbContext) {
+            this.jaxbContext = requireNonNull(jaxbContext);
             return this;
         }
 
         public JarDiff build() {
-            return build(file1, file2,
-                    null != digest ? digest : MessageDigests.sha1(),
-                    null != context ? context : Diffs.jaxbContext());
+            return build(jarFile1, jarFile2,
+                    null != messageDigest ? messageDigest : MessageDigests.sha1(),
+                    null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
         private static JarDiff build(
-                final JarFile file1,
-                final JarFile file2,
-                final MessageDigest digest,
-                final JAXBContext context) {
-            requireNonNull(file1);
-            requireNonNull(file2);
-            assert null != digest;
-            assert null != context;
+                final JarFile jarFile1,
+                final JarFile jarFile2,
+                final MessageDigest messageDigest,
+                final JAXBContext jaxbContext) {
+            requireNonNull(jarFile1);
+            requireNonNull(jarFile2);
+            assert null != messageDigest;
+            assert null != jaxbContext;
             return new JarDiff() {
-                @Override JarFile jarFile1() { return file1; }
-                @Override JarFile jarFile2() { return file2; }
-                @Override MessageDigest messageDigest() { return digest; }
-                @Override JAXBContext jaxbContext() { return context; }
+                @Override JarFile jarFile1() { return jarFile1; }
+                @Override JarFile jarFile2() { return jarFile2; }
+                @Override MessageDigest messageDigest() { return messageDigest; }
+                @Override JAXBContext jaxbContext() { return jaxbContext; }
             };
         }
     } // Builder

@@ -30,15 +30,15 @@ trait JarDiffITContext {
   def withJarPatch[A](diff: ZipFile)(fun: JarPatch => A) =
     withJars { (jarFile1, jarFile2) =>
       fun(new JarPatch.Builder()
-        .diff(diff)
-        .input(jarFile1)
+        .jarDiffFile(diff)
+        .inputJarFile(jarFile1)
         .build)
     }
 
   def withJars[A](fun: (JarFile, JarFile) => A) = {
-    val jarFile1 = this.jarFile1
+    val jarFile1 = this jarFile1 ()
     try {
-      val jarFile2 = this.jarFile2
+      val jarFile2 = this jarFile2 ()
       try {
         fun(jarFile1, jarFile2)
       } finally {

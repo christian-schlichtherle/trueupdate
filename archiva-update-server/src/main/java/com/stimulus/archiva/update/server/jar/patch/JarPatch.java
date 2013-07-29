@@ -26,35 +26,38 @@ import javax.xml.bind.*;
 @Immutable
 public abstract class JarPatch {
 
+    private volatile Diff diff;
+
     /** Returns the JAR diff file. */
-    abstract @WillNotClose ZipFile diff();
+    abstract @WillNotClose ZipFile jarDiffFile();
 
     /** Returns the input JAR file. */
-    abstract @WillNotClose JarFile input();
+    abstract @WillNotClose JarFile inputJarFile();
 
-    /** Returns the JAXB context for unmarshalling the JAR {@link Diff}. */
+    /** Returns the JAXB context for unmarshalling the JAR diff bean. */
     abstract JAXBContext jaxbContext();
 
     /**
      * Applies the configured JAR diff file.
      *
-     * @param output the sink for writing the output JAR file.
+     * @param outputJarFile the sink for writing the output JAR file.
      */
-    public void applyDiffFileTo(final Sink output) throws IOException {
-        try (JarOutputStream jarOut = new JarOutputStream(output.output())) {
+    public final void applyDiffFileTo(final Sink outputJarFile)
+    throws IOException {
+        try (JarOutputStream out = new JarOutputStream(outputJarFile.output())) {
             // The JarInputStream class requires that the entry with the name
             // "META-INF/MANIFEST.MF" and the optional entry with the name
             // "META-INF/" are the first two entries, so we need to process the
             // JAR diff file in two passes with a corresponding filter.
             final Filter manifestFilter = new ManifestFilter();
-            applyDiffFileTo(jarOut, manifestFilter);
-            applyDiffFileTo(jarOut, new InverseFilter(manifestFilter));
+            applyDiffFileTo(manifestFilter, out);
+            applyDiffFileTo(new InverseFilter(manifestFilter), out);
         }
     }
 
-    public void applyDiffFileTo(
-            final @WillNotClose JarOutputStream jarOut,
-            final Filter filter)
+    private void applyDiffFileTo(
+            final Filter filter,
+            final @WillNotClose JarOutputStream out)
     throws IOException {
 
         class EntrySink implements Sink {
@@ -64,8 +67,8 @@ public abstract class JarPatch {
             EntrySink(final String name) { this.name = name; }
 
             @Override public OutputStream output() throws IOException {
-                jarOut.putNextEntry(new JarEntry(name));
-                return new FilterOutputStream(jarOut) {
+                out.putNextEntry(new JarEntry(name));
+                return new FilterOutputStream(out) {
                     @Override public void close() throws IOException {
                         ((JarOutputStream) out).closeEntry();
                     }
@@ -73,65 +76,72 @@ public abstract class JarPatch {
             }
         } // EntrySink
 
-        class WithStreams {
+        class OutputJarFileWriter {
 
-            final Diff diff;
-
-            WithStreams() throws IOException {
-                final ZipEntry entry = diff().getEntry(Diffs.DIFF_ENTRY_NAME);
-                if (null == entry)
-                    throw new IOException("Missing " + Diffs.DIFF_ENTRY_NAME);
-                try {
-                    diff = new JaxbCodec(jaxbContext()).decode(
-                            new EntrySource(entry, diff()), Diff.class);
-                } catch (IOException | RuntimeException ex) {
-                    throw ex;
-                } catch (Exception ex) {
-                    throw new IOException(ex);
-                }
-            }
-
-            WithStreams copyUnchanged() throws IOException {
-                for (final Enumeration<JarEntry> e = input().entries();
-                     e.hasMoreElements(); ) {
-                    final JarEntry entry = e.nextElement();
+            OutputJarFileWriter writeUnchanged() throws IOException {
+                for (final Enumeration<JarEntry>
+                             entries = inputJarFile().entries();
+                     entries.hasMoreElements(); ) {
+                    final JarEntry entry = entries.nextElement();
                     final String name = entry.getName();
-                    if (unchanged(name)) {
-                        final EntrySource
-                                entrySource = new EntrySource(entry, input());
-                        if (filter.accept(entrySource))
-                            Copy.copy(entrySource, new EntrySink(name));
-                    }
+                    if (unchanged(name))
+                        copyIfAcceptedByFilter(
+                                new EntrySource(entry, inputJarFile()),
+                                new EntrySink(name));
                 }
                 return this;
             }
 
-            boolean unchanged(String name) {
-                return null != diff.unchanged(name);
+            boolean unchanged(String name) throws IOException {
+                return null != diff().unchanged(name);
             }
 
-            WithStreams copyAddedOrChanged() throws IOException {
-                for (final Enumeration<? extends ZipEntry> e = diff().entries();
-                     e.hasMoreElements(); ) {
-                    final ZipEntry entry = e.nextElement();
+            OutputJarFileWriter writeAddedOrChanged() throws IOException {
+                for (final Enumeration<? extends ZipEntry>
+                             entries = jarDiffFile().entries();
+                     entries.hasMoreElements(); ) {
+                    final ZipEntry entry = entries.nextElement();
                     final String name = entry.getName();
-                    if (addedOrChanged(name)) {
-                        final EntrySource
-                                entrySource = new EntrySource(entry, diff());
-                        if (filter.accept(entrySource))
-                            Copy.copy(entrySource, new EntrySink(name));
-                    }
+                    if (addedOrChanged(name))
+                        copyIfAcceptedByFilter(
+                                new EntrySource(entry, jarDiffFile()),
+                                new EntrySink(name));
                 }
                 return this;
             }
 
-            boolean addedOrChanged(String name) {
-                return null != diff.added(name) ||
-                        null != diff.changed(name);
+            boolean addedOrChanged(String name) throws IOException {
+                return null != diff().added(name) ||
+                        null != diff().changed(name);
             }
-        } // WithStreams
 
-        new WithStreams().copyUnchanged().copyAddedOrChanged();
+            void copyIfAcceptedByFilter(EntrySource source, EntrySink sink)
+            throws IOException {
+                if (filter.accept(source)) Copy.copy(source, sink);
+            }
+        } // OutputJarFileWriter
+
+        new OutputJarFileWriter().writeUnchanged().writeAddedOrChanged();
+    }
+
+    /** Returns the JAR diff bean. */
+    private Diff diff() throws IOException {
+        final Diff diff = this.diff;
+        return null != diff ? diff : (this.diff = loadDiff());
+    }
+
+    private Diff loadDiff() throws IOException {
+        final ZipEntry entry = jarDiffFile().getEntry(Diffs.DIFF_ENTRY_NAME);
+        if (null == entry)
+            throw new IOException(Diffs.DIFF_ENTRY_NAME + " (entry not found)");
+        try {
+            return new JaxbCodec(jaxbContext()).decode(
+                    new EntrySource(entry, jarDiffFile()), Diff.class);
+        } catch (IOException | RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new IOException(ex);
+        }
     }
 
     /**
@@ -140,41 +150,41 @@ public abstract class JarPatch {
      */
     public static class Builder {
 
-        private ZipFile diff;
-        private JarFile input;
-        private JAXBContext context;
+        private ZipFile jarDiffFile;
+        private JarFile inputJarFile;
+        private JAXBContext jaxbContext;
 
-        public Builder diff(final ZipFile diff) {
-            this.diff = requireNonNull(diff);
+        public Builder jarDiffFile(final ZipFile jarDiffFile) {
+            this.jarDiffFile = requireNonNull(jarDiffFile);
             return this;
         }
 
-        public Builder input(final JarFile input) {
-            this.input = requireNonNull(input);
+        public Builder inputJarFile(final JarFile inputJarFile) {
+            this.inputJarFile = requireNonNull(inputJarFile);
             return this;
         }
 
-        public Builder jaxbContext(final JAXBContext context) {
-            this.context = requireNonNull(context);
+        public Builder jaxbContext(final JAXBContext jaxbContext) {
+            this.jaxbContext = requireNonNull(jaxbContext);
             return this;
         }
 
         public JarPatch build() {
-            return build(diff, input,
-                    null != context ? context : Diffs.jaxbContext());
+            return build(jarDiffFile, inputJarFile,
+                    null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
         private static JarPatch build(
-                final ZipFile diff,
-                final JarFile input,
-                final JAXBContext context) {
-            requireNonNull(diff);
-            requireNonNull(input);
-            assert null != context;
+                final ZipFile jarDiffFile,
+                final JarFile inputJarFile,
+                final JAXBContext jaxbContext) {
+            requireNonNull(jarDiffFile);
+            requireNonNull(inputJarFile);
+            assert null != jaxbContext;
             return new JarPatch() {
-                @Override ZipFile diff() { return diff; }
-                @Override JarFile input() { return input; }
-                @Override JAXBContext jaxbContext() { return context; }
+                @Override ZipFile jarDiffFile() { return jarDiffFile; }
+                @Override JarFile inputJarFile() { return inputJarFile; }
+                @Override JAXBContext jaxbContext() { return jaxbContext; }
             };
         }
     } // Builder
