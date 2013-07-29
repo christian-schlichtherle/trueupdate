@@ -81,13 +81,12 @@ public abstract class JarDiff {
                 }
 
                 WithZipOutputStream writeAddedOrChanged() throws IOException {
-                    final JarFile jarFile2 = jarFile2();
-                    for (final Enumeration<JarEntry> e2 = jarFile2.entries();
+                    for (final Enumeration<JarEntry> e2 = jarFile2().entries();
                          e2.hasMoreElements(); ) {
                         final JarEntry entry2 = e2.nextElement();
                         final String name2 = entry2.getName();
                         if (addedOrChanged(name2))
-                            Copy.copy(new EntrySource(entry2, jarFile2),
+                            Copy.copy(new EntrySource(entry2, jarFile2()),
                                       new EntrySink(name2));
                     }
                     return this;
