@@ -12,6 +12,7 @@ import java.io.File
 import java.util.jar.JarFile
 import com.stimulus.archiva.update.server.jar.patch.JarPatch
 import java.util.zip.ZipFile
+import javax.annotation.WillNotClose
 
 /**
  * @author Christian Schlichtherle
@@ -27,11 +28,11 @@ trait JarDiffITContext {
         .build)
     }
 
-  def withJarPatch[A](diff: ZipFile)(fun: JarPatch => A) =
-    withJars { (jarFile1, jarFile2) =>
+  def withJarPatch[A](@WillNotClose jarDiffFile: ZipFile)(fun: JarPatch => A) =
+    withJars { (inputJarFile, unused) =>
       fun(new JarPatch.Builder()
-        .jarDiffFile(diff)
-        .inputJarFile(jarFile1)
+        .jarDiffFile(jarDiffFile)
+        .inputJarFile(inputJarFile)
         .build)
     }
 

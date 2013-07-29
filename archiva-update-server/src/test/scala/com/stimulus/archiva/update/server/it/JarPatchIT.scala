@@ -13,6 +13,8 @@ import com.stimulus.archiva.update.core.io.FileStore
 import java.io.File
 import java.util.jar.JarFile
 import java.util.zip.ZipFile
+import scala.collection.JavaConverters._
+import scala.collection.SortedSet
 
 /**
  * @author Christian Schlichtherle
@@ -33,24 +35,25 @@ class JarPatchIT extends WordSpec with JarDiffITContext {
             val jarTemp = tempFile ()
             try {
               withJarPatch(diffZip) { _ applyDiffFileTo new FileStore(jarTemp) }
-              val inJar1 = new JarFile(jarTemp)
+              val jarFile1 = new JarFile(jarTemp)
               try {
-                val inJar2 = this.jarFile2
+                val jarFile2 = this jarFile2 ()
                 try {
                   val diff = new JarDiff.Builder()
-                    .jarFile1(inJar1)
-                    .jarFile2(inJar2)
+                    .jarFile1(jarFile1)
+                    .jarFile2(jarFile2)
                     .build
                     .computeDiff ()
                   diff.removed should be (null)
                   diff.added should be (null)
                   diff.changed should be (null)
-                  diff.unchanged should not be 'empty
+                  val ref = SortedSet.empty[String] ++ (jarFile2.entries.asScala map (_.getName))
+                  diff.unchanged.keySet.asScala should equal (ref)
                 } finally {
-                  inJar2 close ()
+                  jarFile2 close ()
                 }
               } finally {
-                inJar1 close ()
+                jarFile1 close ()
               }
             } finally {
               jarTemp delete ()
