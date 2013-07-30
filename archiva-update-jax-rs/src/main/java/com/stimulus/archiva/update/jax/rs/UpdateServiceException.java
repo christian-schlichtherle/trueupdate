@@ -30,7 +30,7 @@ public class UpdateServiceException extends Exception {
      */
     UpdateServiceException(
             final int status,
-            final @CheckForNull Exception cause) {
+            final @CheckForNull Throwable cause) {
         super(null == cause ? null : cause.getMessage(), cause);
         this.status = status;
     }
