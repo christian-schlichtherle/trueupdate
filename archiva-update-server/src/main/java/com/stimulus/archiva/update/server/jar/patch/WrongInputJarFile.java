@@ -7,16 +7,16 @@ package com.stimulus.archiva.update.server.jar.patch;
 import java.io.IOException;
 
 /**
- * Indicates that a computed {@link java.security.MessageDigest} did not match
- * an expected message digest.
+ * Indicates that the input JAR file provided for patching doesn't match the
+ * first JAR file when generating the JAR diff file.
  *
  * @author Christian Schlichtherle
  */
-public final class UnexpectedMessageDigestException extends IOException {
+public final class WrongInputJarFile extends IOException {
 
     private static final long serialVersionUID = 0L;
 
-    public UnexpectedMessageDigestException(String message) {
-        super(message);
+    WrongInputJarFile(String message, Throwable cause) {
+        super(message, cause);
     }
 }

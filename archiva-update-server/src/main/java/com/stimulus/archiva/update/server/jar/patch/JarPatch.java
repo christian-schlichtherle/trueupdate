@@ -12,7 +12,7 @@ import com.stimulus.archiva.update.server.util.MessageDigests;
 import java.io.*;
 import static java.util.Objects.requireNonNull;
 import java.security.*;
-import java.util.Enumeration;
+import java.util.SortedMap;
 import java.util.jar.*;
 import java.util.zip.*;
 import javax.annotation.*;
@@ -67,7 +67,7 @@ public abstract class JarPatch {
             final @WillNotClose JarOutputStream out)
     throws IOException {
 
-        abstract class EntrySink implements Sink {
+        final class EntrySink implements Sink {
 
             final EntryDigest entryDigest;
 
@@ -75,7 +75,7 @@ public abstract class JarPatch {
                 this.entryDigest = entryDigest;
             }
 
-            @Override public final OutputStream output() throws IOException {
+            @Override public OutputStream output() throws IOException {
                 out.putNextEntry(new JarEntry(entryDigest.name));
                 return new DigestOutputStream(out, messageDigest()) {
 
@@ -84,8 +84,8 @@ public abstract class JarPatch {
                     @Override public void close() throws IOException {
                         ((JarOutputStream) out).closeEntry();
                         if (!digestToHexString().equals(entryDigest.digest))
-                            throw new UnexpectedMessageDigestException(
-                                    exceptionMessage());
+                            throw new WrongMessageDigestException(
+                                    entryDigest.name);
                     }
 
                     String digestToHexString() {
@@ -93,77 +93,87 @@ public abstract class JarPatch {
                     }
                 };
             }
-
-            abstract String exceptionMessage();
         } // EntrySink
 
-        final class OutputJarFileWriter {
+        abstract class Selection<T> {
 
-            OutputJarFileWriter writeUnchanged() throws IOException {
-                for (final Enumeration<JarEntry>
-                             entries = inputJarFile().entries();
-                     entries.hasMoreElements(); ) {
-                    final JarEntry entry = entries.nextElement();
-                    final String name = entry.getName();
-                    final EntryDigest entryDigest = unchanged(name);
-                    if (null != entryDigest)
-                        copyIfAcceptedByFilter(
-                                new EntrySource(entry, inputJarFile()),
-                                new EntrySink(entryDigest) {
-                                    @Override String exceptionMessage() {
-                                        return entryDigest.name +
-                                                " (the JAR file to patch doesn't match the first JAR file when generating the JAR diff file)";
-                                    }
-                                });
-                }
-                return this;
-            }
+            abstract EntryDigest apply(T t);
+        } // Selection
 
-            @CheckForNull EntryDigest unchanged(String name)
-            throws IOException {
-                return diff().unchanged(name);
-            }
+        final class EntryDigestSelection extends Selection<EntryDigest> {
 
-            OutputJarFileWriter writeAddedOrChanged() throws IOException {
-                for (final Enumeration<? extends ZipEntry>
-                             entries = jarDiffFile().entries();
-                     entries.hasMoreElements(); ) {
-                    final ZipEntry entry = entries.nextElement();
-                    final String name = entry.getName();
-                    final EntryDigest entryDigest = addedOrChanged(name);
-                    if (null != entryDigest)
-                        copyIfAcceptedByFilter(
-                                new EntrySource(entry, jarDiffFile()),
-                                new EntrySink(entryDigest) {
-                                    @Override String exceptionMessage() {
-                                        return entryDigest.name +
-                                                " (the integrity of the JAR diff file seems to be violated during the transmission)";
-                                    }
-                                });
-                }
-                return this;
-            }
-
-            @CheckForNull EntryDigest addedOrChanged(String name)
-            throws IOException {
-                EntryDigest entryDigest = diff().added(name);
-                if (null == entryDigest) {
-                    final FirstAndSecondEntryDigest firstAndSecondEntryDigest =
-                            diff().changed(name);
-                    if (null != firstAndSecondEntryDigest)
-                        entryDigest = firstAndSecondEntryDigest
-                                .secondEntryDigest();
-                }
+            @Override EntryDigest apply(EntryDigest entryDigest) {
                 return entryDigest;
             }
+        } // EntryDigestSelection
 
-            void copyIfAcceptedByFilter(EntrySource source, EntrySink sink)
+        final class FirstAndSecondEntryDigestSelection
+                extends Selection<FirstAndSecondEntryDigest> {
+
+            @Override
+            EntryDigest apply(FirstAndSecondEntryDigest firstAndSecondEntryDigest) {
+                return firstAndSecondEntryDigest.secondEntryDigest();
+            }
+        } // FirstAndSecondEntryDigestSelection
+
+        abstract class CopyToOutputJarFile {
+
+            abstract ZipFile source();
+
+            abstract IOException ioException(Throwable cause);
+
+            final <T> CopyToOutputJarFile copy(
+                    final Selection<T> selection,
+                    final @CheckForNull SortedMap<String, T> subject)
+            throws IOException {
+                if (null == subject) return this;
+                for (final T item : subject.values()) {
+                    final EntryDigest entryDigest = selection.apply(item);
+                    final String name = entryDigest.name;
+                    final ZipEntry entry = source().getEntry(name);
+                    if (null == entry)
+                        throw ioException(new MissingJarEntryException(name));
+                    try {
+                        copyIfAcceptedByFilter(
+                                new EntrySource(entry, source()),
+                                new EntrySink(entryDigest));
+                    } catch (WrongMessageDigestException ex) {
+                        throw ioException(ex);
+                    }
+                }
+                return this;
+            }
+
+            final void copyIfAcceptedByFilter(EntrySource source, EntrySink sink)
             throws IOException {
                 if (filter.accept(source)) Copy.copy(source, sink);
             }
-        } // OutputJarFileWriter
+        } // CopyToOutputJarFile
 
-        new OutputJarFileWriter().writeUnchanged().writeAddedOrChanged();
+        final class CopyFromInputJarFile extends CopyToOutputJarFile {
+
+            @Override ZipFile source() { return inputJarFile(); }
+
+            @Override IOException ioException(Throwable cause) {
+                return new WrongInputJarFile(source().getName(), cause);
+            }
+        } // CopyFromInputJarFile
+
+        final class CopyFromJarDiffFile extends CopyToOutputJarFile {
+
+            @Override ZipFile source() { return jarDiffFile(); }
+
+            @Override IOException ioException(Throwable cause) {
+                return new InvalidJarDiffFileException(source().getName(), cause);
+            }
+        } // CopyFromJarDiffFile
+
+        new CopyFromInputJarFile().copy(new EntryDigestSelection(),
+                diff().unchanged);
+        new CopyFromJarDiffFile().copy(new EntryDigestSelection(),
+                diff().added);
+        new CopyFromJarDiffFile().copy(new FirstAndSecondEntryDigestSelection(),
+                diff().changed);
     }
 
     /**
