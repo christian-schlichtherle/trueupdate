@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.jar.*;
 import java.util.zip.*;
 import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.*;
 
 /**
@@ -24,7 +24,7 @@ import javax.xml.bind.*;
  *
  * @author Christian Schlichtherle
  */
-@Immutable
+@NotThreadSafe
 public abstract class JarDiff {
 
     /** Returns the first JAR file. */
@@ -57,7 +57,7 @@ public abstract class JarDiff {
     throws IOException {
         out.setLevel(Deflater.BEST_COMPRESSION);
 
-        class EntrySink implements Sink {
+        final class EntrySink implements Sink {
 
             final String name;
 
@@ -73,7 +73,7 @@ public abstract class JarDiff {
             }
         } // EntrySink
 
-        class JarDiffFileWriter {
+        final class JarDiffFileWriter {
 
             final Diff diff;
 

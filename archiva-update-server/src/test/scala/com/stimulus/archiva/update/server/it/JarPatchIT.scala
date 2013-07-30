@@ -15,6 +15,7 @@ import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
 import scala.collection.SortedSet
+import com.stimulus.archiva.update.server.jar.model.{EntryDigest, Diff}
 
 /**
  * @author Christian Schlichtherle
@@ -27,42 +28,43 @@ class JarPatchIT extends WordSpec with JarDiffITContext {
   "A JAR patch" when {
     "generating and applying the JAR diff file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
-        val diffTemp = tempFile ()
+        val jarDiffTemp = tempFile ()
         try {
-          withJarDiff { _ writeDiffFileTo new FileStore(diffTemp) }
-          val diffZip = new ZipFile(diffTemp)
+          withJarDiff { _ writeDiffFileTo new FileStore(jarDiffTemp) }
+          val jarDiffFile = new ZipFile(jarDiffTemp)
           try {
-            val jarTemp = tempFile ()
+            val firstJarTemp = tempFile ()
             try {
-              withJarPatch(diffZip) { _ applyDiffFileTo new FileStore(jarTemp) }
-              val jarFile1 = new JarFile(jarTemp)
+              withJarPatch(jarDiffFile) { _ applyDiffFileTo new FileStore(firstJarTemp) }
+              val firstJarFile = new JarFile(firstJarTemp)
               try {
-                val jarFile2 = this jarFile2 ()
+                val secondJarFile = this secondJarFile ()
                 try {
+                  val ref = SortedSet.empty[String] ++
+                    secondJarFile.entries.asScala.map(_.getName)
                   val diff = new JarDiff.Builder()
-                    .firstJarFile(jarFile1)
-                    .secondJarFile(jarFile2)
+                    .firstJarFile(firstJarFile)
+                    .secondJarFile(secondJarFile)
                     .build
                     .computeDiff ()
-                  diff.removed should be (null)
                   diff.added should be (null)
-                  diff.changed should be (null)
-                  val ref = SortedSet.empty[String] ++ jarFile2.entries.asScala.map(_.getName)
+                  diff.removed should be (null)
                   diff.unchanged.keySet.asScala should equal (ref)
+                  diff.changed should be (null)
                 } finally {
-                  jarFile2 close ()
+                  secondJarFile close ()
                 }
               } finally {
-                jarFile1 close ()
+                firstJarFile close ()
               }
             } finally {
-              jarTemp delete ()
+              firstJarTemp delete ()
             }
           } finally {
-            diffZip close ()
+            jarDiffFile close ()
           }
         } finally {
-          diffTemp delete ()
+          jarDiffTemp delete ()
         }
       }
     }

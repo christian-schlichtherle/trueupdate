@@ -54,8 +54,17 @@ public final class MessageDigests {
         return hexString(digestToByteArray(digest, source));
     }
 
-    private static String hexString(byte[] data) {
-        return new BigInteger(1, data).toString(16);
+    /**
+     * Transforms the given byte array to a positive, big-endian integer in
+     * hexadecimal string notation.
+     * This is the canonical representation of message digests.
+     *
+     * @param digest an array of bytes representing the message digest.
+     * @return a positive, big-endian integer in hexadecimal string notation
+     *         representing the message digest.
+     */
+    public static String hexString(byte[] digest) {
+        return new BigInteger(1, digest).toString(16);
     }
 
     /**

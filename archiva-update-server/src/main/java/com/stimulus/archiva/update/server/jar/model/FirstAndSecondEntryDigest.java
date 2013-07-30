@@ -10,16 +10,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
 
 /**
- * Represents the digests of two equal named JAR entries in different JAR files.
+ * Represents different digests of two equal named JAR entries.
  *
  * @author Christian Schlichtherle
  */
 public final class FirstAndSecondEntryDigest {
 
-    /** Constructor for use with JAXB. */
+    /** Used by JAXB. */
     public FirstAndSecondEntryDigest() { }
 
-    /** Default constructor. */
+    /**
+     * Default constructor.
+     * The first and second digest should not be equal.
+     */
     public FirstAndSecondEntryDigest(
             final @CheckForNull String name,
             final @CheckForNull String first,
@@ -33,6 +36,16 @@ public final class FirstAndSecondEntryDigest {
     @XmlAttribute
     public @Nullable
     String name, first, second;
+
+    /** Returns a first entry digest. */
+    public EntryDigest firstEntryDigest() {
+        return new EntryDigest(name, first);
+    }
+
+    /** Returns a second entry digest. */
+    public EntryDigest secondEntryDigest() {
+        return new EntryDigest(name, second);
+    }
 
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;

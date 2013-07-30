@@ -5,6 +5,7 @@
 package com.stimulus.archiva.update.server.jar.model;
 
 import java.util.*;
+import javax.annotation.CheckForNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -29,19 +30,19 @@ public final class Diff {
     @XmlJavaTypeAdapter(FirstAndSecondEntryDigestMapAdapter.class)
     public SortedMap<String, FirstAndSecondEntryDigest> changed;
 
-    public EntryDigest removed(String name) {
+    public @CheckForNull EntryDigest removed(String name) {
         return null == removed ? null : removed.get(name);
     }
 
-    public EntryDigest added(String name) {
+    public @CheckForNull EntryDigest added(String name) {
         return null == added ? null : added.get(name);
     }
 
-    public EntryDigest unchanged(String name) {
+    public @CheckForNull EntryDigest unchanged(String name) {
         return null == unchanged ? null : unchanged.get(name);
     }
 
-    public FirstAndSecondEntryDigest changed(String name) {
+    public @CheckForNull FirstAndSecondEntryDigest changed(String name) {
         return null == changed ? null : changed.get(name);
     }
 

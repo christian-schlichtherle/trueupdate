@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public final class EntryDigest {
 
-    /** Constructor for use with JAXB. */
+    /** Used by JAXB. */
     public EntryDigest() { }
 
     /** Default constructor. */

@@ -20,10 +20,10 @@ import javax.annotation.WillNotClose
 trait JarDiffITContext {
 
   def withJarDiff[A](fun: JarDiff => A) =
-    withJars { (jarFile1, jarFile2) =>
+    withJars { (firstJarFile, secondJarFile) =>
       fun(new JarDiff.Builder()
-        .firstJarFile(jarFile1)
-        .secondJarFile(jarFile2)
+        .firstJarFile(firstJarFile)
+        .secondJarFile(secondJarFile)
         .messageDigest(digest)
         .build)
     }
@@ -37,21 +37,21 @@ trait JarDiffITContext {
     }
 
   def withJars[A](fun: (JarFile, JarFile) => A) = {
-    val jarFile1 = this jarFile1 ()
+    val firstJarFile = this firstJarFile ()
     try {
-      val jarFile2 = this jarFile2 ()
+      val secondJarFile = this secondJarFile ()
       try {
-        fun(jarFile1, jarFile2)
+        fun(firstJarFile, secondJarFile)
       } finally {
-        jarFile2 close ()
+        secondJarFile close ()
       }
     } finally {
-      jarFile1 close ()
+      firstJarFile close ()
     }
   }
 
-  @CreatesObligation def jarFile1() = new JarFile(file("test1.jar"))
-  @CreatesObligation def jarFile2() = new JarFile(file("test2.jar"))
+  @CreatesObligation def firstJarFile() = new JarFile(file("test1.jar"))
+  @CreatesObligation def secondJarFile() = new JarFile(file("test2.jar"))
 
   private def file(resourceName: String) =
     new File((classOf[JarDiffITContext] getResource resourceName).toURI)
