@@ -4,9 +4,9 @@
  */
 package com.stimulus.archiva.update.server.it
 
+import com.stimulus.archiva.update.core.digest.MessageDigests
 import com.stimulus.archiva.update.core.io._
 import com.stimulus.archiva.update.server.zip.diff.ZipDiff
-import com.stimulus.archiva.update.server.util.MessageDigests
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile

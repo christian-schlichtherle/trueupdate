@@ -8,4 +8,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.zip.model;
+package com.stimulus.archiva.update.core.zip.model;

@@ -6,9 +6,12 @@ package com.stimulus.archiva.update.server.zip.diff;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.io.*;
-import com.stimulus.archiva.update.server.zip.commons.EntrySource;
-import com.stimulus.archiva.update.server.zip.model.*;
-import com.stimulus.archiva.update.server.util.MessageDigests;
+import com.stimulus.archiva.update.core.zip.commons.EntrySource;
+import com.stimulus.archiva.update.core.zip.model.Diff;
+import com.stimulus.archiva.update.core.zip.model.Diffs;
+import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameWithTwoDigests;
+import com.stimulus.archiva.update.core.digest.MessageDigests;
 import java.io.*;
 import java.security.MessageDigest;
 import java.util.*;

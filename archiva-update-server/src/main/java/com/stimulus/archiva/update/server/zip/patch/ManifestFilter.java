@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server.zip.patch;
 
-import com.stimulus.archiva.update.server.zip.commons.EntrySource;
+import com.stimulus.archiva.update.core.zip.commons.EntrySource;
 
 /**
  * Accepts only entry sources with the name "META-INF/" or

@@ -4,8 +4,8 @@
  */
 package com.stimulus.archiva.update.server.zip.patch;
 
-import com.stimulus.archiva.update.server.zip.model.EntryNameWithDigest;
-import com.stimulus.archiva.update.server.zip.model.EntryNameWithTwoDigests;
+import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameWithTwoDigests;
 
 /**
  * Selects the second entry name with digest from the given entry name with

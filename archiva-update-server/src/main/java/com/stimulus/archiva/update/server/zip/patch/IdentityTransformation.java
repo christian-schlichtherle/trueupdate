@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server.zip.patch;
 
-import com.stimulus.archiva.update.server.zip.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
 
 /**
  * The identity transformation.

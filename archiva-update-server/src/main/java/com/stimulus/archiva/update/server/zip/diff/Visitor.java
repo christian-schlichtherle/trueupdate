@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.server.zip.diff;
 
-import com.stimulus.archiva.update.server.zip.commons.EntrySource;
+import com.stimulus.archiva.update.core.zip.commons.EntrySource;
 
 /**
  * A visitor of two ZIP files.

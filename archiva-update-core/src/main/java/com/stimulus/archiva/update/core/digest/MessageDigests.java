@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.util;
+package com.stimulus.archiva.update.core.digest;
 
 import com.stimulus.archiva.update.core.io.*;
 import javax.annotation.concurrent.Immutable;
@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.security.*;
 
 /**
- * Provides digest functions.
+ * Provides message digest functions.
  *
  * @author Christian Schlichtherle
  */

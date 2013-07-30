@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.util
+package com.stimulus.archiva.update.core.digest
 
 import com.stimulus.archiva.update.core.io.Sources
 import org.scalatest.WordSpec
@@ -18,7 +18,7 @@ import org.scalatest.prop.PropertyChecks._
 class MessageDigestsTest extends WordSpec {
 
   "Computation of digests" should {
-    "work as expected" in {
+    "yield correct results" in {
       val sha1 = MessageDigests.sha1
       val table = Table(
         ("SHA-1 digest", "resource name"),

@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.zip.model;
+package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.*;
 import javax.annotation.CheckForNull;
@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * The ZIP diff bean represents the meta data in a ZIP diff file.
+ * A ZIP diff bean represents the meta data in a ZIP patch file.
  *
  * @author Christian Schlichtherle
  */
