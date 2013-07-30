@@ -30,7 +30,7 @@ private object MavenArtifactResolverIT {
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class MavenArtifactResolverIT extends WordSpec with MavenITContext {
+class MavenArtifactResolverIT extends WordSpec with MavenArtifactITContext {
 
   import MavenArtifactResolverIT._
 

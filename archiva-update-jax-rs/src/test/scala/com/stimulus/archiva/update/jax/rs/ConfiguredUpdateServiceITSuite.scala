@@ -15,6 +15,7 @@ import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
 import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
+import com.stimulus.archiva.update.core.it.ArtifactITContext
 
 private object ConfiguredUpdateServiceITSuite {
 
@@ -33,7 +34,7 @@ private object ConfiguredUpdateServiceITSuite {
 }
 
 /** @author Christian Schlichtherle */
-class ConfiguredUpdateServiceITSuite extends JerseyTest { this: ITContext =>
+class ConfiguredUpdateServiceITSuite extends JerseyTest { this: ArtifactITContext =>
 
   import ConfiguredUpdateServiceITSuite._
 
