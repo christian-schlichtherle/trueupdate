@@ -11,11 +11,11 @@ import java.io.IOException;
  *
  * @author Christian Schlichtherle
  */
-public final class InvalidJarDiffFileException extends IOException {
+public final class InvalidJarPatchFileException extends IOException {
 
     private static final long serialVersionUID = 0L;
 
-    InvalidJarDiffFileException(String message, Throwable cause) {
+    InvalidJarPatchFileException(String message, Throwable cause) {
         super(message, cause);
     }
 }

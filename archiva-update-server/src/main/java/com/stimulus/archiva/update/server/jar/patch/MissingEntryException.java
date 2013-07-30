@@ -7,13 +7,13 @@ package com.stimulus.archiva.update.server.jar.patch;
 import java.io.IOException;
 
 /**
- * Indicates that a JAR entry is missing.
+ * Indicates that a ZIP entry is missing.
  *
  * @author Christian Schlichtherle
  */
-public final class MissingJarEntryException extends IOException {
+public final class MissingEntryException extends IOException {
 
     private static final long serialVersionUID = 0L;
 
-    MissingJarEntryException(String message) { super(message); }
+    MissingEntryException(String message) { super(message); }
 }

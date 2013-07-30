@@ -10,20 +10,20 @@ import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
 
 /**
- * Represents different digests of two equal named JAR entries.
+ * Represents a ZIP entry name with two message digests.
  *
  * @author Christian Schlichtherle
  */
-public final class FirstAndSecondEntryDigest {
+public final class EntryNameWithTwoDigests {
 
     /** Used by JAXB. */
-    public FirstAndSecondEntryDigest() { }
+    public EntryNameWithTwoDigests() { }
 
     /**
      * Default constructor.
      * The first and second digest should not be equal.
      */
-    public FirstAndSecondEntryDigest(
+    public EntryNameWithTwoDigests(
             final @CheckForNull String name,
             final @CheckForNull String first,
             final @CheckForNull String second) {
@@ -37,20 +37,21 @@ public final class FirstAndSecondEntryDigest {
     public @Nullable
     String name, first, second;
 
-    /** Returns a first entry digest. */
-    public EntryDigest firstEntryDigest() {
-        return new EntryDigest(name, first);
+    /** Returns the entry name with the first digest. */
+    @Deprecated
+    public EntryNameWithDigest entryNameWithFirstDigest() {
+        return new EntryNameWithDigest(name, first);
     }
 
-    /** Returns a second entry digest. */
-    public EntryDigest secondEntryDigest() {
-        return new EntryDigest(name, second);
+    /** Returns the entry name with the second digest. */
+    public EntryNameWithDigest entryNameWithSecondDigest() {
+        return new EntryNameWithDigest(name, second);
     }
 
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof FirstAndSecondEntryDigest)) return false;
-        final FirstAndSecondEntryDigest that = (FirstAndSecondEntryDigest) obj;
+        if (!(obj instanceof EntryNameWithTwoDigests)) return false;
+        final EntryNameWithTwoDigests that = (EntryNameWithTwoDigests) obj;
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.first, that.first) &&
                 Objects.equals(this.second, that.second);

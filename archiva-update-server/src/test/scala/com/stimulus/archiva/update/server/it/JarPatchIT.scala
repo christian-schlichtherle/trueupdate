@@ -15,7 +15,6 @@ import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
 import scala.collection.SortedSet
-import com.stimulus.archiva.update.server.jar.model.{EntryDigest, Diff}
 
 /**
  * @author Christian Schlichtherle

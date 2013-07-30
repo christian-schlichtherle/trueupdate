@@ -24,25 +24,31 @@ public final class Diff {
     @XmlAttribute
     public Integer numBytes;
 
-    @XmlJavaTypeAdapter(EntryDigestMapAdapter.class)
-    public SortedMap<String, EntryDigest> removed, added, unchanged;
+    @XmlJavaTypeAdapter(EntryNameWithDigestMapAdapter.class)
+    public SortedMap<String, EntryNameWithDigest> removed, added, unchanged;
 
-    @XmlJavaTypeAdapter(FirstAndSecondEntryDigestMapAdapter.class)
-    public SortedMap<String, FirstAndSecondEntryDigest> changed;
+    @XmlJavaTypeAdapter(EntryNameWithTwoDigestsMapAdapter.class)
+    public SortedMap<String, EntryNameWithTwoDigests> changed;
 
-    public @CheckForNull EntryDigest removed(String name) {
+    @Deprecated
+    public @CheckForNull
+    EntryNameWithDigest removed(String name) {
         return null == removed ? null : removed.get(name);
     }
 
-    public @CheckForNull EntryDigest added(String name) {
+    public @CheckForNull
+    EntryNameWithDigest added(String name) {
         return null == added ? null : added.get(name);
     }
 
-    public @CheckForNull EntryDigest unchanged(String name) {
+    @Deprecated
+    public @CheckForNull
+    EntryNameWithDigest unchanged(String name) {
         return null == unchanged ? null : unchanged.get(name);
     }
 
-    public @CheckForNull FirstAndSecondEntryDigest changed(String name) {
+    public @CheckForNull
+    EntryNameWithTwoDigests changed(String name) {
         return null == changed ? null : changed.get(name);
     }
 

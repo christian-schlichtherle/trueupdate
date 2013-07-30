@@ -10,17 +10,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
 
 /**
- * Represents the digest of a JAR entry.
+ * Represents a ZIP entry name and its message digest.
  *
  * @author Christian Schlichtherle
  */
-public final class EntryDigest {
+public final class EntryNameWithDigest {
 
     /** Used by JAXB. */
-    public EntryDigest() { }
+    public EntryNameWithDigest() { }
 
     /** Default constructor. */
-    public EntryDigest(
+    public EntryNameWithDigest(
             final @CheckForNull String name,
             final @CheckForNull String digest) {
         this.name = name;
@@ -32,8 +32,8 @@ public final class EntryDigest {
 
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof EntryDigest)) return false;
-        final EntryDigest that = (EntryDigest) obj;
+        if (!(obj instanceof EntryNameWithDigest)) return false;
+        final EntryNameWithDigest that = (EntryNameWithDigest) obj;
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.digest, that.digest);
     }

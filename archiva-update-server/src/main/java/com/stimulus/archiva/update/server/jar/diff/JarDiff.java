@@ -42,11 +42,11 @@ public abstract class JarDiff {
     /**
      * Writes a JAR diff file to the given sink.
      *
-     * @param jarDiffFile the sink for writing the JAR diff file.
+     * @param jarPatchFile the sink for writing the JAR patch file.
      */
-    public void writeDiffFileTo(final Sink jarDiffFile) throws IOException {
+    public void writeDiffFileTo(final Sink jarPatchFile) throws IOException {
         final Diff diff = computeDiff();
-        try (ZipOutputStream out = new ZipOutputStream(jarDiffFile.output())) {
+        try (ZipOutputStream out = new ZipOutputStream(jarPatchFile.output())) {
             writeDiffFileTo(diff, out);
         }
     }
@@ -73,11 +73,11 @@ public abstract class JarDiff {
             }
         } // EntrySink
 
-        final class JarDiffFileWriter {
+        final class JarPatchFileWriter {
 
             final Diff diff;
 
-            JarDiffFileWriter(final Diff diff) throws IOException {
+            JarPatchFileWriter(final Diff diff) throws IOException {
                 try {
                     new JaxbCodec(jaxbContext()).encode(
                             new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
@@ -89,7 +89,7 @@ public abstract class JarDiff {
                 this.diff = diff;
             }
 
-            JarDiffFileWriter writeAddedOrChanged() throws IOException {
+            JarPatchFileWriter writeAddedOrChanged() throws IOException {
                 for (final Enumeration<JarEntry> entries = secondJarFile().entries();
                      entries.hasMoreElements(); ) {
                     final JarEntry entry = entries.nextElement();
@@ -105,9 +105,9 @@ public abstract class JarDiff {
                 return null != diff.added(name) ||
                         null != diff.changed(name);
             }
-        } // JarDiffFileWriter
+        } // JarPatchFileWriter
 
-        new JarDiffFileWriter(diff).writeAddedOrChanged();
+        new JarPatchFileWriter(diff).writeAddedOrChanged();
     }
 
     /** Computes a JAR diff bean from the two JAR files. */
@@ -177,19 +177,19 @@ public abstract class JarDiff {
 
     private class Computer implements Visitor<IOException> {
 
-        final SortedMap<String, EntryDigest>
+        final SortedMap<String, EntryNameWithDigest>
                 removed = new TreeMap<>(),
                 added = new TreeMap<>(),
                 unchanged = new TreeMap<>();
 
-        final SortedMap<String, FirstAndSecondEntryDigest>
+        final SortedMap<String, EntryNameWithTwoDigests>
                 changed = new TreeMap<>();
 
         @Override
         public void visitEntryInFirstFile(EntrySource entrySource)
         throws IOException {
             final String name = entrySource.name();
-            removed.put(name, new EntryDigest(name,
+            removed.put(name, new EntryNameWithDigest(name,
                     digestToHexString(entrySource)));
         }
 
@@ -197,7 +197,7 @@ public abstract class JarDiff {
         public void visitEntryInSecondFile(EntrySource entrySource)
         throws IOException {
             final String name = entrySource.name();
-            added.put(name, new EntryDigest(name,
+            added.put(name, new EntryNameWithDigest(name,
                     digestToHexString(entrySource)));
         }
 
@@ -210,10 +210,10 @@ public abstract class JarDiff {
             final String firstDigest = digestToHexString(firstEntrySource);
             final String secondDigest = digestToHexString(secondEntrySource);
             if (firstDigest.equals(secondDigest))
-                unchanged.put(firstName, new EntryDigest(firstName, firstDigest));
+                unchanged.put(firstName, new EntryNameWithDigest(firstName, firstDigest));
             else
                 changed.put(firstName,
-                        new FirstAndSecondEntryDigest(firstName, firstDigest, secondDigest));
+                        new EntryNameWithTwoDigests(firstName, firstDigest, secondDigest));
         }
 
         String digestToHexString(Source source) throws IOException {
@@ -247,6 +247,7 @@ public abstract class JarDiff {
             return this;
         }
 
+        @Deprecated
         public Builder jaxbContext(final JAXBContext jaxbContext) {
             this.jaxbContext = requireNonNull(jaxbContext);
             return this;

@@ -31,7 +31,7 @@ trait JarDiffITContext {
   def withJarPatch[A](@WillNotClose jarDiffFile: ZipFile)(fun: JarPatch => A) =
     withJars { (inputJarFile, unused) =>
       fun(new JarPatch.Builder()
-        .jarDiffFile(jarDiffFile)
+        .jarPatchFile(jarDiffFile)
         .inputJarFile(inputJarFile)
         .build)
     }

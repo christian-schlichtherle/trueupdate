@@ -6,6 +6,7 @@ package com.stimulus.archiva.update.server.jar.commons;
 
 import com.stimulus.archiva.update.core.io.Source;
 import java.io.*;
+import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 
 /**
@@ -19,10 +20,8 @@ public final class EntrySource implements Source {
     private final ZipFile file;
 
     public EntrySource(final ZipEntry entry, final ZipFile file) {
-        assert null != entry;
-        this.entry = entry;
-        assert null != file;
-        this.file = file;
+        this.entry = requireNonNull(entry);
+        this.file = requireNonNull(file);
     }
 
     /** Returns the entry name. */

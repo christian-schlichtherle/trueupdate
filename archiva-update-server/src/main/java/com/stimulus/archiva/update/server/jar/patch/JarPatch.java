@@ -20,7 +20,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.*;
 
 /**
- * Applies a JAR diff file to an input JAR file.
+ * Applies a ZIP patch file to an input ZIP file.
  *
  * @author Christian Schlichtherle
  */
@@ -29,23 +29,23 @@ public abstract class JarPatch {
 
     private Diff diff;
 
-    /** Returns the JAR diff file. */
-    abstract @WillNotClose ZipFile jarDiffFile();
+    /** Returns the ZIP patch file. */
+    abstract @WillNotClose ZipFile zipPatchFile();
 
-    /** Returns the input JAR file. */
-    abstract @WillNotClose JarFile inputJarFile();
+    /** Returns the input ZIP file. */
+    abstract @WillNotClose ZipFile inputZipFile();
 
-    /** Returns the JAXB context for unmarshalling the JAR diff bean. */
+    /** Returns the JAXB context for unmarshalling the ZIP diff bean. */
     abstract JAXBContext jaxbContext();
 
     /**
-     * Applies the configured JAR diff file.
+     * Applies the configured ZIP diff file.
      *
-     * @param outputJarFile the sink for writing the output JAR file.
+     * @param outputZipFile the sink for writing the output ZIP file.
      */
-    public final void applyDiffFileTo(final Sink outputJarFile)
+    public final void applyDiffFileTo(final Sink outputZipFile)
     throws IOException {
-        try (JarOutputStream out = new JarOutputStream(outputJarFile.output())) {
+        try (ZipOutputStream out = newZipOutputStream(outputZipFile)) {
             // The JarInputStream class assumes that the file entry
             // "META-INF/MANIFEST.MF" should be either the first or the second
             // entry (if preceded by the directory entry "META-INF/"), so we
@@ -62,21 +62,30 @@ public abstract class JarPatch {
         }
     }
 
+    ZipOutputStream newZipOutputStream(final Sink outputZipFile)
+    throws IOException {
+        return new JarOutputStream(outputZipFile.output());
+    }
+
+    ZipEntry newZipEntry(String name) {
+        return new JarEntry(name);
+    }
+
     private void applyDiffFileTo(
             final Filter filter,
-            final @WillNotClose JarOutputStream out)
+            final @WillNotClose ZipOutputStream out)
     throws IOException {
 
-        final class EntrySink implements Sink {
+        class EntrySink implements Sink {
 
-            final EntryDigest entryDigest;
+            final EntryNameWithDigest entryDigest;
 
-            EntrySink(final EntryDigest entryDigest) {
+            EntrySink(final EntryNameWithDigest entryDigest) {
                 this.entryDigest = entryDigest;
             }
 
             @Override public OutputStream output() throws IOException {
-                out.putNextEntry(new JarEntry(entryDigest.name));
+                out.putNextEntry(newZipEntry(entryDigest.name));
                 return new DigestOutputStream(out, messageDigest()) {
 
                     { digest.reset(); }
@@ -95,48 +104,28 @@ public abstract class JarPatch {
             }
         } // EntrySink
 
-        abstract class Selection<T> {
-
-            abstract EntryDigest apply(T t);
-        } // Selection
-
-        final class EntryDigestSelection extends Selection<EntryDigest> {
-
-            @Override EntryDigest apply(EntryDigest entryDigest) {
-                return entryDigest;
-            }
-        } // EntryDigestSelection
-
-        final class FirstAndSecondEntryDigestSelection
-                extends Selection<FirstAndSecondEntryDigest> {
-
-            @Override
-            EntryDigest apply(FirstAndSecondEntryDigest firstAndSecondEntryDigest) {
-                return firstAndSecondEntryDigest.secondEntryDigest();
-            }
-        } // FirstAndSecondEntryDigestSelection
-
-        abstract class CopyToOutputJarFile {
+        abstract class PatchSet {
 
             abstract ZipFile source();
 
             abstract IOException ioException(Throwable cause);
 
-            final <T> CopyToOutputJarFile copy(
-                    final Selection<T> selection,
-                    final @CheckForNull SortedMap<String, T> subject)
+            final <T> PatchSet apply(
+                    final Transformation<T> transformation,
+                    final @CheckForNull SortedMap<String, T> selection)
             throws IOException {
-                if (null == subject) return this;
-                for (final T item : subject.values()) {
-                    final EntryDigest entryDigest = selection.apply(item);
-                    final String name = entryDigest.name;
+                if (null == selection) return this;
+                for (final T item : selection.values()) {
+                    final EntryNameWithDigest
+                            entryNameWithDigest = transformation.apply(item);
+                    final String name = entryNameWithDigest.name;
                     final ZipEntry entry = source().getEntry(name);
                     if (null == entry)
-                        throw ioException(new MissingJarEntryException(name));
+                        throw ioException(new MissingEntryException(name));
                     try {
                         copyIfAcceptedByFilter(
                                 new EntrySource(entry, source()),
-                                new EntrySink(entryDigest));
+                                new EntrySink(entryNameWithDigest));
                     } catch (WrongMessageDigestException ex) {
                         throw ioException(ex);
                     }
@@ -148,58 +137,58 @@ public abstract class JarPatch {
             throws IOException {
                 if (filter.accept(source)) Copy.copy(source, sink);
             }
-        } // CopyToOutputJarFile
+        } // PatchSet
 
-        final class CopyFromInputJarFile extends CopyToOutputJarFile {
+        class InputJarFilePatchSet extends PatchSet {
 
-            @Override ZipFile source() { return inputJarFile(); }
+            @Override ZipFile source() { return inputZipFile(); }
 
             @Override IOException ioException(Throwable cause) {
                 return new WrongInputJarFile(source().getName(), cause);
             }
-        } // CopyFromInputJarFile
+        } // InputJarFilePatchSet
 
-        final class CopyFromJarDiffFile extends CopyToOutputJarFile {
+        class JarPatchFilePatchSet extends PatchSet {
 
-            @Override ZipFile source() { return jarDiffFile(); }
+            @Override ZipFile source() { return zipPatchFile(); }
 
             @Override IOException ioException(Throwable cause) {
-                return new InvalidJarDiffFileException(source().getName(), cause);
+                return new InvalidJarPatchFileException(source().getName(), cause);
             }
-        } // CopyFromJarDiffFile
+        } // JarPatchFilePatchSet
 
-        new CopyFromInputJarFile().copy(new EntryDigestSelection(),
+        new InputJarFilePatchSet().apply(
+                new IdentityTransformation(),
                 diff().unchanged);
-        new CopyFromJarDiffFile().copy(new EntryDigestSelection(),
-                diff().added);
-        new CopyFromJarDiffFile().copy(new FirstAndSecondEntryDigestSelection(),
+        new JarPatchFilePatchSet().apply(
+                new EntryNameWithTwoDigestsTransformation(),
                 diff().changed);
+        new JarPatchFilePatchSet().apply(
+                new IdentityTransformation(),
+                diff().added);
     }
 
-    /**
-     * Returns a message digest for comparison with the mutable JAR diff bean.
-     */
     private MessageDigest messageDigest() throws IOException {
         return MessageDigests.newDigest(diff().algorithm);
     }
 
-    /** Returns the mutable JAR diff bean. */
     private Diff diff() throws IOException {
         final Diff diff = this.diff;
         return null != diff ? diff : (this.diff = loadDiff());
     }
 
     private Diff loadDiff() throws IOException {
-        final ZipEntry entry = jarDiffFile().getEntry(Diffs.DIFF_ENTRY_NAME);
+        final ZipEntry entry = zipPatchFile().getEntry(Diffs.DIFF_ENTRY_NAME);
         if (null == entry)
-            throw new IOException(Diffs.DIFF_ENTRY_NAME + " (entry not found)");
+            throw new InvalidJarPatchFileException(zipPatchFile().getName(),
+                    new MissingEntryException(Diffs.DIFF_ENTRY_NAME));
         try {
             return new JaxbCodec(jaxbContext()).decode(
-                    new EntrySource(entry, jarDiffFile()), Diff.class);
+                    new EntrySource(entry, zipPatchFile()), Diff.class);
         } catch (IOException | RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new IOException(ex);
+            throw new InvalidJarPatchFileException(zipPatchFile().getName(), ex);
         }
     }
 
@@ -209,12 +198,12 @@ public abstract class JarPatch {
      */
     public static class Builder {
 
-        private ZipFile jarDiffFile;
+        private ZipFile jarPatchFile;
         private JarFile inputJarFile;
         private JAXBContext jaxbContext;
 
-        public Builder jarDiffFile(final ZipFile jarDiffFile) {
-            this.jarDiffFile = requireNonNull(jarDiffFile);
+        public Builder jarPatchFile(final ZipFile jarPatchFile) {
+            this.jarPatchFile = requireNonNull(jarPatchFile);
             return this;
         }
 
@@ -223,26 +212,27 @@ public abstract class JarPatch {
             return this;
         }
 
+        @Deprecated
         public Builder jaxbContext(final JAXBContext jaxbContext) {
             this.jaxbContext = requireNonNull(jaxbContext);
             return this;
         }
 
         public JarPatch build() {
-            return build(jarDiffFile, inputJarFile,
+            return build(jarPatchFile, inputJarFile,
                     null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
         private static JarPatch build(
-                final ZipFile jarDiffFile,
+                final ZipFile jarPatchFile,
                 final JarFile inputJarFile,
                 final JAXBContext jaxbContext) {
-            requireNonNull(jarDiffFile);
+            requireNonNull(jarPatchFile);
             requireNonNull(inputJarFile);
             assert null != jaxbContext;
             return new JarPatch() {
-                @Override ZipFile jarDiffFile() { return jarDiffFile; }
-                @Override JarFile inputJarFile() { return inputJarFile; }
+                @Override ZipFile zipPatchFile() { return jarPatchFile; }
+                @Override JarFile inputZipFile() { return inputJarFile; }
                 @Override JAXBContext jaxbContext() { return jaxbContext; }
             };
         }
