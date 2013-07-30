@@ -6,7 +6,7 @@ package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.codec.JaxbTestCodec
 import com.stimulus.archiva.update.core.io.MemoryStore
-import com.stimulus.archiva.update.server.jar.model.Diff
+import com.stimulus.archiva.update.server.zip.model.Diff
 import java.nio.charset.Charset
 import javax.xml.bind.JAXBContext
 import org.junit.runner.RunWith

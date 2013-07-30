@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.commons;
+package com.stimulus.archiva.update.server.zip.commons;
 
 import com.stimulus.archiva.update.core.io.Source;
 import java.io.*;

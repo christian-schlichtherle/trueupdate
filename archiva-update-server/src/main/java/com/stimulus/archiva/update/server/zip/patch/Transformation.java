@@ -2,9 +2,9 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.patch;
+package com.stimulus.archiva.update.server.zip.patch;
 
-import com.stimulus.archiva.update.server.jar.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.server.zip.model.EntryNameWithDigest;
 
 /**
  * Transforms an object into an {@link EntryNameWithDigest}.

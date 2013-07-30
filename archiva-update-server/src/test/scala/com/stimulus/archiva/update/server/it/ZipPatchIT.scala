@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
-import com.stimulus.archiva.update.server.jar.diff.ZipDiff
+import com.stimulus.archiva.update.server.zip.diff.ZipDiff
 import com.stimulus.archiva.update.core.io.FileStore
 import java.io.File
 import java.util.jar.JarFile

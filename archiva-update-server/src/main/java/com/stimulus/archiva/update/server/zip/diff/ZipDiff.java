@@ -2,12 +2,12 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.diff;
+package com.stimulus.archiva.update.server.zip.diff;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.io.*;
-import com.stimulus.archiva.update.server.jar.commons.EntrySource;
-import com.stimulus.archiva.update.server.jar.model.*;
+import com.stimulus.archiva.update.server.zip.commons.EntrySource;
+import com.stimulus.archiva.update.server.zip.model.*;
 import com.stimulus.archiva.update.server.util.MessageDigests;
 import java.io.*;
 import java.security.MessageDigest;

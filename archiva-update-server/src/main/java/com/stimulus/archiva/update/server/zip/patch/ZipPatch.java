@@ -2,25 +2,24 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.patch;
+package com.stimulus.archiva.update.server.zip.patch;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.io.*;
-import com.stimulus.archiva.update.server.jar.commons.EntrySource;
-import com.stimulus.archiva.update.server.jar.model.*;
+import com.stimulus.archiva.update.server.zip.commons.EntrySource;
+import com.stimulus.archiva.update.server.zip.model.*;
 import com.stimulus.archiva.update.server.util.MessageDigests;
 import java.io.*;
 import static java.util.Objects.requireNonNull;
 import java.security.*;
 import java.util.SortedMap;
-import java.util.jar.*;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.*;
 
 /**
- * Applies a ZIP patch file to an input ZIP file.
+ * Applies a ZIP patch file to an input ZIP file and writes an output ZIP file.
  *
  * @author Christian Schlichtherle
  */
@@ -45,38 +44,31 @@ public abstract class ZipPatch {
      */
     public final void applyDiffFileTo(final Sink outputZipFile)
     throws IOException {
+        final Filter[] passFilters = passFilters();
+        if (null == passFilters || 0 >= passFilters.length)
+            throw new IllegalStateException("At least one pass filter is required to output anything.");
         try (ZipOutputStream out = newZipOutputStream(outputZipFile)) {
-            for (final Filter filter : filters())
+            for (Filter filter : passFilters)
                 applyDiffFileTo(filter, out);
         }
     }
 
-    ZipOutputStream newZipOutputStream(final Sink outputZipFile)
-    throws IOException {
-        return new JarOutputStream(outputZipFile.output());
+    /** Returns a new ZIP output stream which writes to the given sink. */
+    ZipOutputStream newZipOutputStream(Sink outputZipFile) throws IOException {
+        return new ZipOutputStream(outputZipFile.output());
     }
 
-    ZipEntry newZipEntry(String name) {
-        return new JarEntry(name);
-    }
+    /** Returns a new ZIP entry with the given name. */
+    ZipEntry newZipEntry(String name) { return new ZipEntry(name); }
 
-    Filter[] filters() {
-        // The JarInputStream class assumes that the file entry
-        // "META-INF/MANIFEST.MF" should be either the first or the second
-        // entry (if preceded by the directory entry "META-INF/"), so we
-        // need to process the ZIP patch file in two passes with a
-        // corresponding filter to ensure this order.
-        // Note that the directory entry "META-INF/" is always part of the
-        // unchanged map because it's content is always empty.
-        // Thus, by copying the unchanged entries before the changed
-        // entries, the directory entry "META-INF/" will always appear
-        // before the file entry "META-INF/MANIFEST.MF".
-        final Filter manifestFilter = new ManifestFilter();
-        return new Filter[] {
-                manifestFilter,
-                new InverseFilter(manifestFilter)
-        };
-    }
+    /**
+     * Returns a list of filters for the different passes required to process
+     * the output ZIP file.
+     * At least one filter is required to output anything.
+     * The filters should properly partition the set of entry sources,
+     * i.e. each entry source should be accepted by exactly one filter.
+     */
+    Filter[] passFilters() { return new Filter[] { new AcceptAllFilter() }; }
 
     private void applyDiffFileTo(
             final Filter filter,
@@ -164,6 +156,7 @@ public abstract class ZipPatch {
             }
         } // ZipPatchFilePatchSet
 
+        // Order is important here!
         new InputZipFilePatchSet().apply(
                 new IdentityTransformation(),
                 diff().unchanged);
@@ -205,8 +198,8 @@ public abstract class ZipPatch {
      */
     public static class Builder {
 
-        private ZipFile zipPatchFile;
-        private ZipFile inputZipFile;
+        private ZipFile zipPatchFile, inputZipFile;
+        private boolean outputJarFile;
         private JAXBContext jaxbContext;
 
         public Builder zipPatchFile(final ZipFile zipPatchFile) {
@@ -219,6 +212,11 @@ public abstract class ZipPatch {
             return this;
         }
 
+        public Builder outputJarFile(final boolean outputJarFile) {
+            this.outputJarFile = outputJarFile;
+            return this;
+        }
+
         @Deprecated
         public Builder jaxbContext(final JAXBContext jaxbContext) {
             this.jaxbContext = requireNonNull(jaxbContext);
@@ -226,22 +224,32 @@ public abstract class ZipPatch {
         }
 
         public ZipPatch build() {
-            return build(zipPatchFile, inputZipFile,
-                    null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
+            return build(zipPatchFile, inputZipFile, outputJarFile,
+                    null != jaxbContext ? jaxbContext : Diffs.jaxbContext()
+            );
         }
 
         private static ZipPatch build(
                 final ZipFile zipPatchFile,
                 final ZipFile inputZipFile,
+                final boolean outputJarFile,
                 final JAXBContext jaxbContext) {
             requireNonNull(zipPatchFile);
             requireNonNull(inputZipFile);
             assert null != jaxbContext;
-            return new ZipPatch() {
-                @Override ZipFile zipPatchFile() { return zipPatchFile; }
-                @Override ZipFile inputZipFile() { return inputZipFile; }
-                @Override JAXBContext jaxbContext() { return jaxbContext; }
-            };
+            if (outputJarFile) {
+                return new JarPatch() {
+                    @Override ZipFile zipPatchFile() { return zipPatchFile; }
+                    @Override ZipFile inputZipFile() { return inputZipFile; }
+                    @Override JAXBContext jaxbContext() { return jaxbContext; }
+                };
+            } else {
+                return new ZipPatch() {
+                    @Override ZipFile zipPatchFile() { return zipPatchFile; }
+                    @Override ZipFile inputZipFile() { return inputZipFile; }
+                    @Override JAXBContext jaxbContext() { return jaxbContext; }
+                };
+            }
         }
     } // Builder
 }

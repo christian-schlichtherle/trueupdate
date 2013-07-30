@@ -5,12 +5,12 @@
 package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.io._
-import com.stimulus.archiva.update.server.jar.diff.ZipDiff
+import com.stimulus.archiva.update.server.zip.diff.ZipDiff
 import com.stimulus.archiva.update.server.util.MessageDigests
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
-import com.stimulus.archiva.update.server.jar.patch.ZipPatch
+import com.stimulus.archiva.update.server.zip.patch.ZipPatch
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 
@@ -33,6 +33,7 @@ trait ZipDiffITContext {
       fun(new ZipPatch.Builder()
         .zipPatchFile(zipPatchFile)
         .inputZipFile(inputZipFile)
+        .outputJarFile(true)
         .build)
     }
 

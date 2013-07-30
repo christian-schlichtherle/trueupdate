@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a class to generate and apply a ZIP patch file.
+ * Provides common functionality to compare two ZIP files entry by entry.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package com.stimulus.archiva.update.server.jar.patch;
+package com.stimulus.archiva.update.server.zip.commons;

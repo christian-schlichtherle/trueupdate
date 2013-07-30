@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.server.jar.model;
+package com.stimulus.archiva.update.server.zip.model;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
