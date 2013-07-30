@@ -2,13 +2,13 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.maven
+package com.stimulus.archiva.update.maven.it
 
-import com.stimulus.archiva.update.core._
 import java.io.File
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
 import com.stimulus.archiva.update.core.it.ArtifactITContext
+import com.stimulus.archiva.update.maven.MavenArtifactResolver
 
 /** @author Christian Schlichtherle */
 trait MavenArtifactITContext extends ArtifactITContext {

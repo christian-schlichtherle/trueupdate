@@ -2,9 +2,11 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.jax.rs
+package com.stimulus.archiva.update.jax.rs.it
 
-import com.stimulus.archiva.update.core._
+import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
+import com.stimulus.archiva.update.core.it.ArtifactITContext
+import com.stimulus.archiva.update.jax.rs._
 import com.sun.jersey.api.core._
 import com.sun.jersey.core.util.MultivaluedMapImpl
 import com.sun.jersey.test.framework._
@@ -14,8 +16,6 @@ import javax.ws.rs.ext.ContextResolver
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
-import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
-import com.stimulus.archiva.update.core.it.ArtifactITContext
 
 private object ConfiguredUpdateServiceITSuite {
 

@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model classes for use within ZIP patch files.
+ * Provides model bean classes for use within ZIP patch files.
  *
  * @author Christian Schlichtherle
  */

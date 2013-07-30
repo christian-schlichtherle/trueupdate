@@ -2,14 +2,14 @@
  * Copyright (C) 2005-2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.maven
+package com.stimulus.archiva.update.maven.it
 
+import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor
+import java.io.File
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
-import java.io.File
-import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor
+import org.scalatest.WordSpec
 
 private object MavenArtifactResolverIT {
 
