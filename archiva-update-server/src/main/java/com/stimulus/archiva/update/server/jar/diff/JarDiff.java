@@ -28,10 +28,10 @@ import javax.xml.bind.*;
 public abstract class JarDiff {
 
     /** Returns the first JAR file. */
-    abstract @WillNotClose JarFile jarFile1();
+    abstract @WillNotClose JarFile firstJarFile();
 
     /** Returns the second JAR file. */
-    abstract @WillNotClose JarFile jarFile2();
+    abstract @WillNotClose JarFile secondJarFile();
 
     /** Returns the message digest. */
     abstract MessageDigest messageDigest();
@@ -90,13 +90,13 @@ public abstract class JarDiff {
             }
 
             JarDiffFileWriter writeAddedOrChanged() throws IOException {
-                for (final Enumeration<JarEntry> e2 = jarFile2().entries();
-                     e2.hasMoreElements(); ) {
-                    final JarEntry entry2 = e2.nextElement();
-                    final String name2 = entry2.getName();
-                    if (addedOrChanged(name2))
-                        Copy.copy(new EntrySource(entry2, jarFile2()),
-                                new EntrySink(name2));
+                for (final Enumeration<JarEntry> entries = secondJarFile().entries();
+                     entries.hasMoreElements(); ) {
+                    final JarEntry entry = entries.nextElement();
+                    final String name = entry.getName();
+                    if (addedOrChanged(name))
+                        Copy.copy(new EntrySource(entry, secondJarFile()),
+                                new EntrySink(name));
                 }
                 return this;
             }
@@ -149,24 +149,28 @@ public abstract class JarDiff {
     private class Engine {
 
         <X extends Exception> void accept(final Visitor<X> visitor) throws X {
-            for (final Enumeration<JarEntry> e1 = jarFile1().entries();
-                 e1.hasMoreElements(); ) {
-                final JarEntry entry1 = e1.nextElement();
-                final JarEntry entry2 = jarFile2().getJarEntry(entry1.getName());
-                final EntrySource entrySource1 = new EntrySource(entry1, jarFile1());
-                if (null == entry2)
-                    visitor.visitEntryInFile1(entrySource1);
+            for (final Enumeration<JarEntry> entries = firstJarFile().entries();
+                 entries.hasMoreElements(); ) {
+                final JarEntry firstEntry = entries.nextElement();
+                final JarEntry secondEntry =
+                        secondJarFile().getJarEntry(firstEntry.getName());
+                final EntrySource firstEntrySource =
+                        new EntrySource(firstEntry, firstJarFile());
+                if (null == secondEntry)
+                    visitor.visitEntryInFirstFile(firstEntrySource);
                 else
-                    visitor.visitEntriesInFiles(entrySource1,
-                            new EntrySource(entry2, jarFile2()));
+                    visitor.visitEntriesInBothFiles(firstEntrySource,
+                            new EntrySource(secondEntry, secondJarFile()));
             }
 
-            for (final Enumeration<JarEntry> e2 = jarFile2().entries();
-                 e2.hasMoreElements(); ) {
-                final JarEntry entry2 = e2.nextElement();
-                final JarEntry entry1 = jarFile1().getJarEntry(entry2.getName());
-                if (null == entry1)
-                    visitor.visitEntryInFile2(new EntrySource(entry2, jarFile2()));
+            for (final Enumeration<JarEntry> entries = secondJarFile().entries();
+                 entries.hasMoreElements(); ) {
+                final JarEntry secondEntry = entries.nextElement();
+                final JarEntry firstEntry =
+                        firstJarFile().getJarEntry(secondEntry.getName());
+                if (null == firstEntry)
+                    visitor.visitEntryInSecondFile(
+                            new EntrySource(secondEntry, secondJarFile()));
             }
         }
     } // Engine
@@ -178,38 +182,38 @@ public abstract class JarDiff {
                 added = new TreeMap<>(),
                 unchanged = new TreeMap<>();
 
-        final SortedMap<String, BeforeAndAfterEntryDigest>
+        final SortedMap<String, FirstAndSecondEntryDigest>
                 changed = new TreeMap<>();
 
         @Override
-        public void visitEntryInFile1(EntrySource entrySource1)
+        public void visitEntryInFirstFile(EntrySource entrySource)
         throws IOException {
-            final String name1 = entrySource1.name();
-            removed.put(name1, new EntryDigest(name1,
-                    digestToHexString(entrySource1)));
+            final String name = entrySource.name();
+            removed.put(name, new EntryDigest(name,
+                    digestToHexString(entrySource)));
         }
 
         @Override
-        public void visitEntryInFile2(EntrySource entrySource2)
+        public void visitEntryInSecondFile(EntrySource entrySource)
         throws IOException {
-            final String name2 = entrySource2.name();
-            added.put(name2, new EntryDigest(name2,
-                    digestToHexString(entrySource2)));
+            final String name = entrySource.name();
+            added.put(name, new EntryDigest(name,
+                    digestToHexString(entrySource)));
         }
 
         @Override
-        public void visitEntriesInFiles(EntrySource entrySource1,
-                                        EntrySource entrySource2)
+        public void visitEntriesInBothFiles(EntrySource firstEntrySource,
+                                            EntrySource secondEntrySource)
         throws IOException {
-            final String name1 = entrySource1.name();
-            assert name1.equals(entrySource2.name());
-            final String digest1 = digestToHexString(entrySource1);
-            final String digest2 = digestToHexString(entrySource2);
-            if (digest1.equals(digest2))
-                unchanged.put(name1, new EntryDigest(name1, digest1));
+            final String firstName = firstEntrySource.name();
+            assert firstName.equals(secondEntrySource.name());
+            final String firstDigest = digestToHexString(firstEntrySource);
+            final String secondDigest = digestToHexString(secondEntrySource);
+            if (firstDigest.equals(secondDigest))
+                unchanged.put(firstName, new EntryDigest(firstName, firstDigest));
             else
-                changed.put(name1,
-                        new BeforeAndAfterEntryDigest(name1, digest1, digest2));
+                changed.put(firstName,
+                        new FirstAndSecondEntryDigest(firstName, firstDigest, secondDigest));
         }
 
         String digestToHexString(Source source) throws IOException {
@@ -224,22 +228,22 @@ public abstract class JarDiff {
      */
     public static class Builder {
 
-        private JarFile jarFile1, jarFile2;
+        private JarFile firstJarFile, secondJarFile;
         private MessageDigest messageDigest;
         private JAXBContext jaxbContext;
 
-        public Builder jarFile1(final JarFile file1) {
-            this.jarFile1 = requireNonNull(file1);
+        public Builder firstJarFile(final JarFile firstJarFile) {
+            this.firstJarFile = requireNonNull(firstJarFile);
             return this;
         }
 
-        public Builder jarFile2(final JarFile file2) {
-            this.jarFile2 = requireNonNull(file2);
+        public Builder secondJarFile(final JarFile secondJarFile) {
+            this.secondJarFile = requireNonNull(secondJarFile);
             return this;
         }
 
-        public Builder messageDigest(final MessageDigest digest) {
-            this.messageDigest = requireNonNull(digest);
+        public Builder messageDigest(final MessageDigest messageDigest) {
+            this.messageDigest = requireNonNull(messageDigest);
             return this;
         }
 
@@ -249,23 +253,23 @@ public abstract class JarDiff {
         }
 
         public JarDiff build() {
-            return build(jarFile1, jarFile2,
+            return build(firstJarFile, secondJarFile,
                     null != messageDigest ? messageDigest : MessageDigests.sha1(),
                     null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
         private static JarDiff build(
-                final JarFile jarFile1,
-                final JarFile jarFile2,
+                final JarFile firstJarFile,
+                final JarFile secondJarFile,
                 final MessageDigest messageDigest,
                 final JAXBContext jaxbContext) {
-            requireNonNull(jarFile1);
-            requireNonNull(jarFile2);
+            requireNonNull(firstJarFile);
+            requireNonNull(secondJarFile);
             assert null != messageDigest;
             assert null != jaxbContext;
             return new JarDiff() {
-                @Override JarFile jarFile1() { return jarFile1; }
-                @Override JarFile jarFile2() { return jarFile2; }
+                @Override JarFile firstJarFile() { return firstJarFile; }
+                @Override JarFile secondJarFile() { return secondJarFile; }
                 @Override MessageDigest messageDigest() { return messageDigest; }
                 @Override JAXBContext jaxbContext() { return jaxbContext; }
             };

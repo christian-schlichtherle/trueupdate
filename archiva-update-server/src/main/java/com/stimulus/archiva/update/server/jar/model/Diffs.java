@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 /**
- * Provides utilities for {@link Diff}s.
+ * Provides utilities for JAR {@link Diff} beans.
  *
  * @author Christian Schlichtherle
  */
@@ -17,8 +17,9 @@ public final class Diffs {
     private Diffs() { }
 
     /**
-     * The name of the diff entry.
-     * This must be the first entry in the JAR patch file.
+     * The name of the entry which contains the serialized JAR diff bean in a
+     * JAR diff file.
+     * This should be the first entry in the JAR diff file.
      */
     public static final String DIFF_ENTRY_NAME = "META-INF/diff.xml";
 
@@ -26,6 +27,7 @@ public final class Diffs {
     public static JAXBContext jaxbContext() { return Lazy.JAXB_CONTEXT; }
 
     private static class Lazy {
+
         static final JAXBContext JAXB_CONTEXT;
 
         static {

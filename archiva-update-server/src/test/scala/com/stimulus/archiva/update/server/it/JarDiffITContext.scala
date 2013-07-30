@@ -22,8 +22,8 @@ trait JarDiffITContext {
   def withJarDiff[A](fun: JarDiff => A) =
     withJars { (jarFile1, jarFile2) =>
       fun(new JarDiff.Builder()
-        .jarFile1(jarFile1)
-        .jarFile2(jarFile2)
+        .firstJarFile(jarFile1)
+        .secondJarFile(jarFile2)
         .messageDigest(digest)
         .build)
     }

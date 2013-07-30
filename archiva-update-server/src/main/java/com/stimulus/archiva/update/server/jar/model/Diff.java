@@ -26,8 +26,8 @@ public final class Diff {
     @XmlJavaTypeAdapter(EntryDigestMapAdapter.class)
     public SortedMap<String, EntryDigest> removed, added, unchanged;
 
-    @XmlJavaTypeAdapter(BeforeAndAfterEntryDigestMapAdapter.class)
-    public SortedMap<String, BeforeAndAfterEntryDigest> changed;
+    @XmlJavaTypeAdapter(FirstAndSecondEntryDigestMapAdapter.class)
+    public SortedMap<String, FirstAndSecondEntryDigest> changed;
 
     public EntryDigest removed(String name) {
         return null == removed ? null : removed.get(name);
@@ -41,7 +41,7 @@ public final class Diff {
         return null == unchanged ? null : unchanged.get(name);
     }
 
-    public BeforeAndAfterEntryDigest changed(String name) {
+    public FirstAndSecondEntryDigest changed(String name) {
         return null == changed ? null : changed.get(name);
     }
 

@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.server.jar.model;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
 
@@ -18,13 +20,15 @@ public final class EntryDigest {
     public EntryDigest() { }
 
     /** Default constructor. */
-    public EntryDigest(final String name, final String digest) {
+    public EntryDigest(
+            final @CheckForNull String name,
+            final @CheckForNull String digest) {
         this.name = name;
         this.digest = digest;
     }
 
     @XmlAttribute
-    public String name, digest;
+    public @Nullable String name, digest;
 
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;

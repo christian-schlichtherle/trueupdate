@@ -40,14 +40,14 @@ class JarPatchIT extends WordSpec with JarDiffITContext {
                 val jarFile2 = this jarFile2 ()
                 try {
                   val diff = new JarDiff.Builder()
-                    .jarFile1(jarFile1)
-                    .jarFile2(jarFile2)
+                    .firstJarFile(jarFile1)
+                    .secondJarFile(jarFile2)
                     .build
                     .computeDiff ()
                   diff.removed should be (null)
                   diff.added should be (null)
                   diff.changed should be (null)
-                  val ref = SortedSet.empty[String] ++ (jarFile2.entries.asScala map (_.getName))
+                  val ref = SortedSet.empty[String] ++ jarFile2.entries.asScala.map(_.getName)
                   diff.unchanged.keySet.asScala should equal (ref)
                 } finally {
                   jarFile2 close ()

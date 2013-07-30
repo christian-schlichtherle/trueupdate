@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 @Immutable
 final class EntryDigestMapAdapter
 extends XmlAdapter<EntryDigestCollectionHolder, SortedMap<String, EntryDigest>> {
+
     @Override
     public SortedMap<String, EntryDigest> unmarshal(final EntryDigestCollectionHolder holder) {
         if (null == holder) return null;
