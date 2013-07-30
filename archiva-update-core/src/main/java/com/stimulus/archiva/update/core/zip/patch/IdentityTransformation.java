@@ -13,7 +13,8 @@ import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
  */
 final class IdentityTransformation
 implements Transformation<EntryNameWithDigest> {
-    @Override public EntryNameWithDigest apply(EntryNameWithDigest entryDigest) {
-        return entryDigest;
+    @Override public EntryNameWithDigest apply(
+            EntryNameWithDigest entryNameWithDigest) {
+        return entryNameWithDigest;
     }
 }

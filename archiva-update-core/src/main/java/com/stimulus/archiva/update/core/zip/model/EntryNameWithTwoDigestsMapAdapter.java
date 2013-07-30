@@ -46,6 +46,7 @@ extends XmlAdapter<EntryNameWithTwoDigestsCollectionHolder,
 
 /**
  * A Data Transfer Object (DTO) for JAXB.
+ * Mind you that this class is mutable.
  *
  * @author Christian Schlichtherle
  */

@@ -13,5 +13,5 @@ import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
  * @author Christian Schlichtherle
  */
 interface Transformation<T> {
-    EntryNameWithDigest apply(T t);
+    EntryNameWithDigest apply(T item);
 }

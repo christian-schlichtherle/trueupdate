@@ -11,6 +11,7 @@ import java.util.Objects;
 
 /**
  * Represents a ZIP entry name and its message digest.
+ * Mind you that this class is mutable.
  *
  * @author Christian Schlichtherle
  */
