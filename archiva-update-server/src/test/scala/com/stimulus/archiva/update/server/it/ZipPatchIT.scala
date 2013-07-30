@@ -20,7 +20,7 @@ import scala.collection.SortedSet
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class JarPatchIT extends WordSpec with JarDiffITContext {
+class ZipPatchIT extends WordSpec with ZipDiffITContext {
 
   def tempFile() = File.createTempFile("tmp", null)
 

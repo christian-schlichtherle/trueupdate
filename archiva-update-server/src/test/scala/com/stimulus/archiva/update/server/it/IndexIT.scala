@@ -31,7 +31,7 @@ private object IndexIT {
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class IndexIT extends WordSpec with JarDiffITContext {
+class IndexIT extends WordSpec with ZipDiffITContext {
 
   import IndexIT._
 

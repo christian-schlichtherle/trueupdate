@@ -17,7 +17,7 @@ import javax.annotation.WillNotClose
 /**
  * @author Christian Schlichtherle
  */
-trait JarDiffITContext {
+trait ZipDiffITContext {
 
   def withZipDiff[A](fun: ZipDiff => A) =
     withZipFiles { (firstZipFile, secondZipFile) =>
@@ -54,7 +54,7 @@ trait JarDiffITContext {
   @CreatesObligation def secondZipFile() = new JarFile(file("test2.jar"))
 
   private def file(resourceName: String) =
-    new File((classOf[JarDiffITContext] getResource resourceName).toURI)
+    new File((classOf[ZipDiffITContext] getResource resourceName).toURI)
 
   def digest = MessageDigests.sha1
 
