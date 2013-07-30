@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a class to compare two JAR files entry by entry.
+ * Provides a class to compare two ZIP files entry by entry.
  *
  * @author Christian Schlichtherle
  */

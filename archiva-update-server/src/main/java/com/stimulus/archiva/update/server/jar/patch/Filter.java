@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.jar.patch;
 import com.stimulus.archiva.update.server.jar.commons.EntrySource;
 
 /**
- * A filter for entry sources.
+ * A filter for ZIP entry sources.
  *
  * @author Christian Schlichtherle
  */

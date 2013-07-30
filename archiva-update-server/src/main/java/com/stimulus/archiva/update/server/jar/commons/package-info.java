@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides common functionality to compare two JAR files entry by entry.
+ * Provides common functionality to compare two ZIP files entry by entry.
  *
  * @author Christian Schlichtherle
  */

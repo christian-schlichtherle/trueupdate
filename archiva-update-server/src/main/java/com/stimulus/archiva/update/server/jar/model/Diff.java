@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * The JAR diff bean represents the meta data in a JAR diff file.
+ * The ZIP diff bean represents the meta data in a ZIP diff file.
  *
  * @author Christian Schlichtherle
  */

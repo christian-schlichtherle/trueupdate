@@ -25,7 +25,7 @@ import javax.xml.bind.*;
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class JarPatch {
+public abstract class ZipPatch {
 
     private Diff diff;
 
@@ -46,19 +46,8 @@ public abstract class JarPatch {
     public final void applyDiffFileTo(final Sink outputZipFile)
     throws IOException {
         try (ZipOutputStream out = newZipOutputStream(outputZipFile)) {
-            // The JarInputStream class assumes that the file entry
-            // "META-INF/MANIFEST.MF" should be either the first or the second
-            // entry (if preceded by the directory entry "META-INF/"), so we
-            // need to process the JAR diff file in two passes with a
-            // corresponding filter to ensure this order.
-            // Note that the directory entry "META-INF/" is always part of the
-            // unchanged map because it's content is always empty.
-            // Thus, by copying the unchanged entries before the changed
-            // entries, the directory entry "META-INF/" will always appear
-            // before the file entry "META-INF/MANIFEST.MF".
-            final Filter manifestFilter = new ManifestFilter();
-            applyDiffFileTo(manifestFilter, out);
-            applyDiffFileTo(new InverseFilter(manifestFilter), out);
+            for (final Filter filter : filters())
+                applyDiffFileTo(filter, out);
         }
     }
 
@@ -69,6 +58,24 @@ public abstract class JarPatch {
 
     ZipEntry newZipEntry(String name) {
         return new JarEntry(name);
+    }
+
+    Filter[] filters() {
+        // The JarInputStream class assumes that the file entry
+        // "META-INF/MANIFEST.MF" should be either the first or the second
+        // entry (if preceded by the directory entry "META-INF/"), so we
+        // need to process the ZIP patch file in two passes with a
+        // corresponding filter to ensure this order.
+        // Note that the directory entry "META-INF/" is always part of the
+        // unchanged map because it's content is always empty.
+        // Thus, by copying the unchanged entries before the changed
+        // entries, the directory entry "META-INF/" will always appear
+        // before the file entry "META-INF/MANIFEST.MF".
+        final Filter manifestFilter = new ManifestFilter();
+        return new Filter[] {
+                manifestFilter,
+                new InverseFilter(manifestFilter)
+        };
     }
 
     private void applyDiffFileTo(
@@ -91,7 +98,7 @@ public abstract class JarPatch {
                     { digest.reset(); }
 
                     @Override public void close() throws IOException {
-                        ((JarOutputStream) out).closeEntry();
+                        ((ZipOutputStream) out).closeEntry();
                         if (!digestToHexString().equals(entryDigest.digest))
                             throw new WrongMessageDigestException(
                                     entryDigest.name);
@@ -121,7 +128,7 @@ public abstract class JarPatch {
                     final String name = entryNameWithDigest.name;
                     final ZipEntry entry = source().getEntry(name);
                     if (null == entry)
-                        throw ioException(new MissingEntryException(name));
+                        throw ioException(new MissingZipEntryException(name));
                     try {
                         copyIfAcceptedByFilter(
                                 new EntrySource(entry, source()),
@@ -139,31 +146,31 @@ public abstract class JarPatch {
             }
         } // PatchSet
 
-        class InputJarFilePatchSet extends PatchSet {
+        class InputZipFilePatchSet extends PatchSet {
 
             @Override ZipFile source() { return inputZipFile(); }
 
             @Override IOException ioException(Throwable cause) {
-                return new WrongInputJarFile(source().getName(), cause);
+                return new WrongInputZipFile(source().getName(), cause);
             }
-        } // InputJarFilePatchSet
+        } // InputZipFilePatchSet
 
-        class JarPatchFilePatchSet extends PatchSet {
+        class ZipPatchFilePatchSet extends PatchSet {
 
             @Override ZipFile source() { return zipPatchFile(); }
 
             @Override IOException ioException(Throwable cause) {
-                return new InvalidJarPatchFileException(source().getName(), cause);
+                return new InvalidZipPatchFileException(source().getName(), cause);
             }
-        } // JarPatchFilePatchSet
+        } // ZipPatchFilePatchSet
 
-        new InputJarFilePatchSet().apply(
+        new InputZipFilePatchSet().apply(
                 new IdentityTransformation(),
                 diff().unchanged);
-        new JarPatchFilePatchSet().apply(
+        new ZipPatchFilePatchSet().apply(
                 new EntryNameWithTwoDigestsTransformation(),
                 diff().changed);
-        new JarPatchFilePatchSet().apply(
+        new ZipPatchFilePatchSet().apply(
                 new IdentityTransformation(),
                 diff().added);
     }
@@ -180,35 +187,35 @@ public abstract class JarPatch {
     private Diff loadDiff() throws IOException {
         final ZipEntry entry = zipPatchFile().getEntry(Diffs.DIFF_ENTRY_NAME);
         if (null == entry)
-            throw new InvalidJarPatchFileException(zipPatchFile().getName(),
-                    new MissingEntryException(Diffs.DIFF_ENTRY_NAME));
+            throw new InvalidZipPatchFileException(zipPatchFile().getName(),
+                    new MissingZipEntryException(Diffs.DIFF_ENTRY_NAME));
         try {
             return new JaxbCodec(jaxbContext()).decode(
                     new EntrySource(entry, zipPatchFile()), Diff.class);
         } catch (IOException | RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new InvalidJarPatchFileException(zipPatchFile().getName(), ex);
+            throw new InvalidZipPatchFileException(zipPatchFile().getName(), ex);
         }
     }
 
     /**
-     * A builder for a JAR patch.
+     * A builder for a ZIP patch.
      * The default JAXB context binds only the {@link Diff} class.
      */
     public static class Builder {
 
-        private ZipFile jarPatchFile;
-        private JarFile inputJarFile;
+        private ZipFile zipPatchFile;
+        private ZipFile inputZipFile;
         private JAXBContext jaxbContext;
 
-        public Builder jarPatchFile(final ZipFile jarPatchFile) {
-            this.jarPatchFile = requireNonNull(jarPatchFile);
+        public Builder zipPatchFile(final ZipFile zipPatchFile) {
+            this.zipPatchFile = requireNonNull(zipPatchFile);
             return this;
         }
 
-        public Builder inputJarFile(final JarFile inputJarFile) {
-            this.inputJarFile = requireNonNull(inputJarFile);
+        public Builder inputZipFile(final ZipFile inputZipFile) {
+            this.inputZipFile = requireNonNull(inputZipFile);
             return this;
         }
 
@@ -218,21 +225,21 @@ public abstract class JarPatch {
             return this;
         }
 
-        public JarPatch build() {
-            return build(jarPatchFile, inputJarFile,
+        public ZipPatch build() {
+            return build(zipPatchFile, inputZipFile,
                     null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
-        private static JarPatch build(
-                final ZipFile jarPatchFile,
-                final JarFile inputJarFile,
+        private static ZipPatch build(
+                final ZipFile zipPatchFile,
+                final ZipFile inputZipFile,
                 final JAXBContext jaxbContext) {
-            requireNonNull(jarPatchFile);
-            requireNonNull(inputJarFile);
+            requireNonNull(zipPatchFile);
+            requireNonNull(inputZipFile);
             assert null != jaxbContext;
-            return new JarPatch() {
-                @Override ZipFile zipPatchFile() { return jarPatchFile; }
-                @Override JarFile inputZipFile() { return inputJarFile; }
+            return new ZipPatch() {
+                @Override ZipFile zipPatchFile() { return zipPatchFile; }
+                @Override ZipFile inputZipFile() { return inputZipFile; }
                 @Override JAXBContext jaxbContext() { return jaxbContext; }
             };
         }

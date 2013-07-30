@@ -5,12 +5,12 @@
 package com.stimulus.archiva.update.server.it
 
 import com.stimulus.archiva.update.core.io._
-import com.stimulus.archiva.update.server.jar.diff.JarDiff
+import com.stimulus.archiva.update.server.jar.diff.ZipDiff
 import com.stimulus.archiva.update.server.util.MessageDigests
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
-import com.stimulus.archiva.update.server.jar.patch.JarPatch
+import com.stimulus.archiva.update.server.jar.patch.ZipPatch
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 
@@ -19,39 +19,39 @@ import javax.annotation.WillNotClose
  */
 trait JarDiffITContext {
 
-  def withJarDiff[A](fun: JarDiff => A) =
-    withJars { (firstJarFile, secondJarFile) =>
-      fun(new JarDiff.Builder()
-        .firstJarFile(firstJarFile)
-        .secondJarFile(secondJarFile)
+  def withZipDiff[A](fun: ZipDiff => A) =
+    withZipFiles { (firstZipFile, secondZipFile) =>
+      fun(new ZipDiff.Builder()
+        .firstZipFile(firstZipFile)
+        .secondZipFile(secondZipFile)
         .messageDigest(digest)
         .build)
     }
 
-  def withJarPatch[A](@WillNotClose jarDiffFile: ZipFile)(fun: JarPatch => A) =
-    withJars { (inputJarFile, unused) =>
-      fun(new JarPatch.Builder()
-        .jarPatchFile(jarDiffFile)
-        .inputJarFile(inputJarFile)
+  def withZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) =
+    withZipFiles { (inputZipFile, unused) =>
+      fun(new ZipPatch.Builder()
+        .zipPatchFile(zipPatchFile)
+        .inputZipFile(inputZipFile)
         .build)
     }
 
-  def withJars[A](fun: (JarFile, JarFile) => A) = {
-    val firstJarFile = this firstJarFile ()
+  def withZipFiles[A](fun: (ZipFile, ZipFile) => A) = {
+    val firstZipFile = this firstZipFile ()
     try {
-      val secondJarFile = this secondJarFile ()
+      val secondZipFile = this secondZipFile ()
       try {
-        fun(firstJarFile, secondJarFile)
+        fun(firstZipFile, secondZipFile)
       } finally {
-        secondJarFile close ()
+        secondZipFile close ()
       }
     } finally {
-      firstJarFile close ()
+      firstZipFile close ()
     }
   }
 
-  @CreatesObligation def firstJarFile() = new JarFile(file("test1.jar"))
-  @CreatesObligation def secondJarFile() = new JarFile(file("test2.jar"))
+  @CreatesObligation def firstZipFile() = new JarFile(file("test1.jar"))
+  @CreatesObligation def secondZipFile() = new JarFile(file("test2.jar"))
 
   private def file(resourceName: String) =
     new File((classOf[JarDiffITContext] getResource resourceName).toURI)

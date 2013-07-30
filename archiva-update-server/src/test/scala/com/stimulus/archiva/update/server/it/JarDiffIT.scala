@@ -18,7 +18,7 @@ class JarDiffIT extends WordSpec with JarDiffITContext {
   "A JAR diff" when {
     "computing  the test JAR files" should {
       "partition the entry names and digests correctly" in {
-        val diff = withJarDiff(_ computeDiff ())
+        val diff = withZipDiff(_ computeDiff ())
         import collection.JavaConverters._
         import diff._
         removed.values.asScala map (_.name) should

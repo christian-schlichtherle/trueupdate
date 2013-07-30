@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 /**
- * Provides utilities for JAR {@link Diff} beans.
+ * Provides utilities for ZIP {@link Diff} beans.
  *
  * @author Christian Schlichtherle
  */
@@ -17,9 +17,9 @@ public final class Diffs {
     private Diffs() { }
 
     /**
-     * The name of the entry which contains the serialized JAR diff bean in a
-     * JAR diff file.
-     * This should be the first entry in the JAR diff file.
+     * The name of the entry which contains the serialized ZIP diff bean in a
+     * ZIP diff file.
+     * This should be the first entry in the ZIP diff file.
      */
     public static final String DIFF_ENTRY_NAME = "META-INF/diff.xml";
 

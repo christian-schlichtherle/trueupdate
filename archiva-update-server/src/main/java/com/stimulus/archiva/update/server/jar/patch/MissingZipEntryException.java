@@ -11,9 +11,9 @@ import java.io.IOException;
  *
  * @author Christian Schlichtherle
  */
-public final class MissingEntryException extends IOException {
+public final class MissingZipEntryException extends IOException {
 
     private static final long serialVersionUID = 0L;
 
-    MissingEntryException(String message) { super(message); }
+    MissingZipEntryException(String message) { super(message); }
 }

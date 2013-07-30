@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
-import com.stimulus.archiva.update.server.jar.diff.JarDiff
+import com.stimulus.archiva.update.server.jar.diff.ZipDiff
 import com.stimulus.archiva.update.core.io.FileStore
 import java.io.File
 import java.util.jar.JarFile
@@ -27,23 +27,23 @@ class JarPatchIT extends WordSpec with JarDiffITContext {
   "A JAR patch" when {
     "generating and applying the JAR diff file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
-        val jarDiffTemp = tempFile ()
+        val zipPatchTemp = tempFile ()
         try {
-          withJarDiff { _ writeDiffFileTo new FileStore(jarDiffTemp) }
-          val jarDiffFile = new ZipFile(jarDiffTemp)
+          withZipDiff { _ writeDiffFileTo new FileStore(zipPatchTemp) }
+          val zipPatchFile = new ZipFile(zipPatchTemp)
           try {
-            val firstJarTemp = tempFile ()
+            val firstZipTemp = tempFile ()
             try {
-              withJarPatch(jarDiffFile) { _ applyDiffFileTo new FileStore(firstJarTemp) }
-              val firstJarFile = new JarFile(firstJarTemp)
+              withZipPatch(zipPatchFile) { _ applyDiffFileTo new FileStore(firstZipTemp) }
+              val firstZipFile = new JarFile(firstZipTemp)
               try {
-                val secondJarFile = this secondJarFile ()
+                val secondZipFile = this secondZipFile ()
                 try {
                   val ref = SortedSet.empty[String] ++
-                    secondJarFile.entries.asScala.map(_.getName)
-                  val diff = new JarDiff.Builder()
-                    .firstJarFile(firstJarFile)
-                    .secondJarFile(secondJarFile)
+                    secondZipFile.entries.asScala.map(_.getName)
+                  val diff = new ZipDiff.Builder()
+                    .firstZipFile(firstZipFile)
+                    .secondZipFile(secondZipFile)
                     .build
                     .computeDiff ()
                   diff.added should be (null)
@@ -51,19 +51,19 @@ class JarPatchIT extends WordSpec with JarDiffITContext {
                   diff.unchanged.keySet.asScala should equal (ref)
                   diff.changed should be (null)
                 } finally {
-                  secondJarFile close ()
+                  secondZipFile close ()
                 }
               } finally {
-                firstJarFile close ()
+                firstZipFile close ()
               }
             } finally {
-              firstJarTemp delete ()
+              firstZipTemp delete ()
             }
           } finally {
-            jarDiffFile close ()
+            zipPatchFile close ()
           }
         } finally {
-          jarDiffTemp delete ()
+          zipPatchTemp delete ()
         }
       }
     }

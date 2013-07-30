@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.jar.patch;
 import com.stimulus.archiva.update.server.jar.commons.EntrySource;
 
 /**
- * Accepts only entries with the name "META-INF/" or "META-INF/MANIFEST.MF".
+ * Accepts only ZIP entries with the name "META-INF/" or "META-INF/MANIFEST.MF".
  *
  * @author Christian Schlichtherle
  */

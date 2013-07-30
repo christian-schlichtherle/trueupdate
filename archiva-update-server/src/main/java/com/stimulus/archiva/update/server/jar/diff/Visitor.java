@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.jar.diff;
 import com.stimulus.archiva.update.server.jar.commons.EntrySource;
 
 /**
- * A visitor of two JAR files.
+ * A visitor of two ZIP files.
  * Note that the order of the calls to the visitor methods is currently
  * undefined, so you should not depend on the behavior of a particular
  * implementation in order to ensure compatibility with future versions.
@@ -17,29 +17,29 @@ import com.stimulus.archiva.update.server.jar.commons.EntrySource;
  */
 interface Visitor<X extends Exception> {
     /**
-     * Visits a JAR entry which is present in the first JAR file,
-     * but not in the second JAR file.
+     * Visits a ZIP entry which is present in the first ZIP file,
+     * but not in the second ZIP file.
      *
-     * @param entrySource1 the JAR entry in the first JAR file.
+     * @param entrySource1 the ZIP entry in the first ZIP file.
      * @throws X at the discretion of the implementation.
      */
     void visitEntryInFirstFile(EntrySource entrySource1) throws X;
 
     /**
-     * Visits a JAR entry which is present in the second JAR file,
-     * but not in the first JAR file.
+     * Visits a ZIP entry which is present in the second ZIP file,
+     * but not in the first ZIP file.
      *
-     * @param entrySource2 the JAR entry in the second JAR file.
+     * @param entrySource2 the ZIP entry in the second ZIP file.
      * @throws X at the discretion of the implementation.
      */
     void visitEntryInSecondFile(EntrySource entrySource2) throws X;
 
     /**
-     * Visits a pair of JAR entries with equal names in the first and
-     * second JAR file.
+     * Visits a pair of ZIP entries with equal names in the first and
+     * second ZIP file.
      *
-     * @param firstEntrySource the JAR entry in the first JAR file.
-     * @param secondEntrySource the JAR entry in the second JAR file.
+     * @param firstEntrySource the ZIP entry in the first ZIP file.
+     * @param secondEntrySource the ZIP entry in the second ZIP file.
      * @throws X at the discretion of the implementation.
      */
     void visitEntriesInBothFiles(EntrySource firstEntrySource,

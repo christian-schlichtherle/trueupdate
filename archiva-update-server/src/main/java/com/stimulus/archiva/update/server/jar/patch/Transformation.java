@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.server.jar.patch;
 import com.stimulus.archiva.update.server.jar.model.EntryNameWithDigest;
 
 /**
- * Transforms an object into an {@link com.stimulus.archiva.update.server.jar.model.EntryNameWithDigest}.
+ * Transforms an object into an {@link EntryNameWithDigest}.
  *
  * @param <T> the type of the objects to transform.
  * @author Christian Schlichtherle

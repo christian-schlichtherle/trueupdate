@@ -13,40 +13,40 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.util.*;
 import static java.util.Objects.requireNonNull;
-import java.util.jar.*;
+
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.*;
 
 /**
- * Compares two JAR files entry by entry.
+ * Compares two ZIP files entry by entry.
  *
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class JarDiff {
+public abstract class ZipDiff {
 
-    /** Returns the first JAR file. */
-    abstract @WillNotClose JarFile firstJarFile();
+    /** Returns the first ZIP file. */
+    abstract @WillNotClose ZipFile firstZipFile();
 
-    /** Returns the second JAR file. */
-    abstract @WillNotClose JarFile secondJarFile();
+    /** Returns the second ZIP file. */
+    abstract @WillNotClose ZipFile secondZipFile();
 
     /** Returns the message digest. */
     abstract MessageDigest messageDigest();
 
-    /** Returns the JAXB context for marshalling the JAR diff bean. */
+    /** Returns the JAXB context for marshalling the ZIP diff bean. */
     abstract JAXBContext jaxbContext();
 
     /**
-     * Writes a JAR diff file to the given sink.
+     * Writes a ZIP patch file to the given sink.
      *
-     * @param jarPatchFile the sink for writing the JAR patch file.
+     * @param zipPatchFile the sink for writing the ZIP patch file.
      */
-    public void writeDiffFileTo(final Sink jarPatchFile) throws IOException {
+    public void writeDiffFileTo(final Sink zipPatchFile) throws IOException {
         final Diff diff = computeDiff();
-        try (ZipOutputStream out = new ZipOutputStream(jarPatchFile.output())) {
+        try (ZipOutputStream out = new ZipOutputStream(zipPatchFile.output())) {
             writeDiffFileTo(diff, out);
         }
     }
@@ -73,11 +73,11 @@ public abstract class JarDiff {
             }
         } // EntrySink
 
-        final class JarPatchFileWriter {
+        final class ZipPatchFileWriter {
 
             final Diff diff;
 
-            JarPatchFileWriter(final Diff diff) throws IOException {
+            ZipPatchFileWriter(final Diff diff) throws IOException {
                 try {
                     new JaxbCodec(jaxbContext()).encode(
                             new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
@@ -89,13 +89,14 @@ public abstract class JarDiff {
                 this.diff = diff;
             }
 
-            JarPatchFileWriter writeAddedOrChanged() throws IOException {
-                for (final Enumeration<JarEntry> entries = secondJarFile().entries();
+            ZipPatchFileWriter writeAddedOrChanged() throws IOException {
+                for (final Enumeration<? extends ZipEntry>
+                             entries = secondZipFile().entries();
                      entries.hasMoreElements(); ) {
-                    final JarEntry entry = entries.nextElement();
+                    final ZipEntry entry = entries.nextElement();
                     final String name = entry.getName();
                     if (addedOrChanged(name))
-                        Copy.copy(new EntrySource(entry, secondJarFile()),
+                        Copy.copy(new EntrySource(entry, secondZipFile()),
                                 new EntrySink(name));
                 }
                 return this;
@@ -105,12 +106,12 @@ public abstract class JarDiff {
                 return null != diff.added(name) ||
                         null != diff.changed(name);
             }
-        } // JarPatchFileWriter
+        } // ZipPatchFileWriter
 
-        new JarPatchFileWriter(diff).writeAddedOrChanged();
+        new ZipPatchFileWriter(diff).writeAddedOrChanged();
     }
 
-    /** Computes a JAR diff bean from the two JAR files. */
+    /** Computes a ZIP diff bean from the two ZIP files. */
     public Diff computeDiff() throws IOException {
         final Computer computer = new Computer();
         new Engine().accept(computer);
@@ -149,28 +150,30 @@ public abstract class JarDiff {
     private class Engine {
 
         <X extends Exception> void accept(final Visitor<X> visitor) throws X {
-            for (final Enumeration<JarEntry> entries = firstJarFile().entries();
+            for (final Enumeration<? extends ZipEntry>
+                         entries = firstZipFile().entries();
                  entries.hasMoreElements(); ) {
-                final JarEntry firstEntry = entries.nextElement();
-                final JarEntry secondEntry =
-                        secondJarFile().getJarEntry(firstEntry.getName());
+                final ZipEntry firstEntry = entries.nextElement();
+                final ZipEntry secondEntry =
+                        secondZipFile().getEntry(firstEntry.getName());
                 final EntrySource firstEntrySource =
-                        new EntrySource(firstEntry, firstJarFile());
+                        new EntrySource(firstEntry, firstZipFile());
                 if (null == secondEntry)
                     visitor.visitEntryInFirstFile(firstEntrySource);
                 else
                     visitor.visitEntriesInBothFiles(firstEntrySource,
-                            new EntrySource(secondEntry, secondJarFile()));
+                            new EntrySource(secondEntry, secondZipFile()));
             }
 
-            for (final Enumeration<JarEntry> entries = secondJarFile().entries();
+            for (final Enumeration<? extends ZipEntry>
+                         entries = secondZipFile().entries();
                  entries.hasMoreElements(); ) {
-                final JarEntry secondEntry = entries.nextElement();
-                final JarEntry firstEntry =
-                        firstJarFile().getJarEntry(secondEntry.getName());
+                final ZipEntry secondEntry = entries.nextElement();
+                final ZipEntry firstEntry =
+                        firstZipFile().getEntry(secondEntry.getName());
                 if (null == firstEntry)
                     visitor.visitEntryInSecondFile(
-                            new EntrySource(secondEntry, secondJarFile()));
+                            new EntrySource(secondEntry, secondZipFile()));
             }
         }
     } // Engine
@@ -222,23 +225,23 @@ public abstract class JarDiff {
     } // Computer
 
     /**
-     * A builder for a JAR diff.
+     * A builder for a ZIP diff.
      * The default message digest is SHA-1 and the default JAXB context binds
      * only the {@link Diff} class.
      */
     public static class Builder {
 
-        private JarFile firstJarFile, secondJarFile;
+        private ZipFile firstZipFile, secondZipFile;
         private MessageDigest messageDigest;
         private JAXBContext jaxbContext;
 
-        public Builder firstJarFile(final JarFile firstJarFile) {
-            this.firstJarFile = requireNonNull(firstJarFile);
+        public Builder firstZipFile(final ZipFile firstZipFile) {
+            this.firstZipFile = requireNonNull(firstZipFile);
             return this;
         }
 
-        public Builder secondJarFile(final JarFile secondJarFile) {
-            this.secondJarFile = requireNonNull(secondJarFile);
+        public Builder secondZipFile(final ZipFile secondZipFile) {
+            this.secondZipFile = requireNonNull(secondZipFile);
             return this;
         }
 
@@ -253,24 +256,24 @@ public abstract class JarDiff {
             return this;
         }
 
-        public JarDiff build() {
-            return build(firstJarFile, secondJarFile,
+        public ZipDiff build() {
+            return build(firstZipFile, secondZipFile,
                     null != messageDigest ? messageDigest : MessageDigests.sha1(),
                     null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
-        private static JarDiff build(
-                final JarFile firstJarFile,
-                final JarFile secondJarFile,
+        private static ZipDiff build(
+                final ZipFile firstZipFile,
+                final ZipFile secondZipFile,
                 final MessageDigest messageDigest,
                 final JAXBContext jaxbContext) {
-            requireNonNull(firstJarFile);
-            requireNonNull(secondJarFile);
+            requireNonNull(firstZipFile);
+            requireNonNull(secondZipFile);
             assert null != messageDigest;
             assert null != jaxbContext;
-            return new JarDiff() {
-                @Override JarFile firstJarFile() { return firstJarFile; }
-                @Override JarFile secondJarFile() { return secondJarFile; }
+            return new ZipDiff() {
+                @Override ZipFile firstZipFile() { return firstZipFile; }
+                @Override ZipFile secondZipFile() { return secondZipFile; }
                 @Override MessageDigest messageDigest() { return messageDigest; }
                 @Override JAXBContext jaxbContext() { return jaxbContext; }
             };
