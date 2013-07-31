@@ -6,150 +6,134 @@ package com.stimulus.archiva.update.core.artifact;
 
 import java.io.Serializable;
 import static java.util.Objects.requireNonNull;
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Describes an artifact by its Maven coordinates.
- * Implementations should be immutable.
+ * An immutable description of an artifact by its Maven coordinates.
  *
  * @see    <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven - POM Reference - Maven Coordinates</a>
  * @author Christian Schlichtherle
  */
-public interface ArtifactDescriptor extends Serializable {
+@Immutable
+public final class ArtifactDescriptor implements Serializable {
 
-    /** Returns the group id, e.g. {@code com.stimulus.archiva}. */
-    String groupId();
+    private static final long serialVersionUID = 0L;
+
+    private final String groupId, artifactId, version, classifier, extension;
+
+    public ArtifactDescriptor() {
+        this("", "", "", "", "jar");
+    }
+
+    private ArtifactDescriptor(
+            final String groupId,
+            final String artifactId,
+            final String version,
+            final String classifier,
+            final String extension
+    ) {
+        this.groupId = requireNonNull(groupId);
+        this.artifactId = requireNonNull(artifactId);
+        this.version = requireNonNull(version);
+        this.classifier = requireNonNull(classifier);
+        this.extension = requireNonNull(extension);
+    }
+
+    /**
+     * Returns the group id, e.g. {@code com.stimulus.archiva}.
+     * The default value of this property is {@code ""}.
+     */
+    public String groupId() { return groupId; }
 
     /** Returns a new artifact descriptor with the given group id. */
-    ArtifactDescriptor groupId(String groupId);
+    public ArtifactDescriptor groupId(String groupId) {
+        return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+    }
 
-    /** Returns the artifact id, e.g. {@code mailarchiva}. */
-    String artifactId();
+    /**
+     * Returns the artifact id, e.g. {@code mailarchiva}.
+     * The default value of this property is {@code ""}.
+     */
+    public String artifactId() { return artifactId; }
 
     /** Returns a new artifact descriptor with the given artifact id. */
-    ArtifactDescriptor artifactId(String artifactId);
+    public ArtifactDescriptor artifactId(String artifactId) {
+        return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+    }
 
-    /** Returns the version, e.g. {@code 3.2.1}. */
-    String version();
+    /**
+     * Returns the version, e.g. {@code 3.2.1}.
+     * The default value of this property is {@code ""}.
+     */
+    public String version() { return version; }
 
     /** Returns a new artifact descriptor with the given version. */
-    ArtifactDescriptor version(String version);
+    public ArtifactDescriptor version(String version) {
+        return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+    }
 
-    /** Returns the classifier, which may be empty. */
-    String classifier();
+    /**
+     * Returns the classifier.
+     * The default value of this property is {@code ""}.
+     */
+    public String classifier() { return classifier; }
 
     /** Returns a new artifact descriptor with the given classifier. */
-    ArtifactDescriptor classifier(String classifier);
+    public ArtifactDescriptor classifier(String classifier) {
+        return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+    }
 
     /**
      * Returns the extension, e.g. {@code war}.
      * In the Maven realm, this may also be referred to as the artifact
      * <i>type</i> or <i>extension</i>.
+     * The default value of this property is {@code "jar"}.
      */
-    String extension();
+    public String extension() { return extension; }
 
     /** Returns a new artifact descriptor with the given extension. */
-    ArtifactDescriptor extension(String extension);
+    public ArtifactDescriptor extension(String extension) {
+        return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+    }
 
     /**
      * Returns {@code true} if and only if the given object is an
      * {@link ArtifactDescriptor} with equal properties.
      */
-    @Override boolean equals(Object obj);
+    @Override public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof ArtifactDescriptor)) return false;
+        final ArtifactDescriptor that = (ArtifactDescriptor) obj;
+        return  this.groupId().equals(that.groupId()) &&
+                this.artifactId().equals(that.artifactId()) &&
+                this.version().equals(that.version()) &&
+                this.classifier().equals(that.classifier()) &&
+                this.extension().equals(that.extension());
+    }
 
     /**
      * Returns a hash code for this artifact descriptor which is consistent
      * with {@link #equals(Object)}.
      */
-    @Override int hashCode();
+    @Override public int hashCode() {
+        int hash = 17;
+        hash = hash * 31 + groupId().hashCode();
+        hash = hash * 31 + artifactId().hashCode();
+        hash = hash * 31 + version().hashCode();
+        hash = hash * 31 + classifier().hashCode();
+        hash = hash * 31 + extension().hashCode();
+        return hash;
+    }
 
     /** Returns a human readable string representation of this descriptor. */
-    @Override String toString();
-
-    /**
-     * A builder for an artifact descriptor.
-     * The default value for the property {@code classifier} is {@code ""} and
-     * the default value for the property {@code extension} is {@code "jar"}.
-     */
-    class Builder {
-
-        private String groupId, artifactId, version,
-                classifier = "", extension = "jar";
-
-        public Builder groupId(final String groupId) {
-            this.groupId = requireNonNull(groupId);
-            return this;
-        }
-
-        public Builder artifactId(final String artifactId) {
-            this.artifactId = requireNonNull(artifactId);
-            return this;
-        }
-
-        public Builder version(final String version) {
-            this.version = requireNonNull(version);
-            return this;
-        }
-
-        public Builder classifier(final String classifier) {
-            this.classifier = requireNonNull(classifier);
-            return this;
-        }
-
-        public Builder extension(final String packaging) {
-            this.extension = requireNonNull(packaging);
-            return this;
-        }
-
-        public ArtifactDescriptor build() {
-            return build(groupId, artifactId, version, classifier, extension);
-        }
-
-        private static ArtifactDescriptor build(
-                final String groupId,
-                final String artifactId,
-                final String version,
-                final String classifier,
-                final String extension) {
-            requireNonNull(groupId);
-            requireNonNull(artifactId);
-            requireNonNull(version);
-            requireNonNull(classifier);
-            requireNonNull(extension);
-
-            return new BasicArtifactDescriptor() {
-
-                private static final long serialVersionUID = 0L;
-
-                @Override public String groupId() { return groupId; }
-
-                @Override public ArtifactDescriptor groupId(String groupId) {
-                    return build(groupId, artifactId, version, classifier, extension);
-                }
-
-                @Override public String artifactId() { return artifactId; }
-
-                @Override public ArtifactDescriptor artifactId(String artifactId) {
-                    return build(groupId, artifactId, version, classifier, extension);
-                }
-
-                @Override public String version() { return version; }
-
-                @Override public ArtifactDescriptor version(String version) {
-                    return build(groupId, artifactId, version, classifier, extension);
-                }
-
-                @Override public String classifier() { return classifier; }
-
-                @Override public ArtifactDescriptor classifier(String classifier) {
-                    return build(groupId, artifactId, version, classifier, extension);
-                }
-
-                @Override public String extension() { return extension; }
-
-                @Override public ArtifactDescriptor extension(String extension) {
-                    return build(groupId, artifactId, version, classifier, extension);
-                }
-            };
-        }
+    @Override public String toString() {
+        StringBuilder sb = new StringBuilder(128);
+        sb      .append(groupId())
+                .append(':').append(artifactId())
+                .append(':').append(extension());
+        if (0 < classifier().length())
+            sb.append(':').append(classifier());
+        sb.append(':').append(version());
+        return sb.toString();
     }
 }
