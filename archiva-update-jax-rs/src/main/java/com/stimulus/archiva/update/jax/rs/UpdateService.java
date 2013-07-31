@@ -73,12 +73,11 @@ public final class UpdateService {
     /** Returns a configured update service. */
     @Path("/")
     public ConfiguredUpdateService configure(
-            final @QueryParam("groupId") String groupId,
-            final @QueryParam("artifactId") String artifactId,
-            final @QueryParam("version") String version,
-            final @QueryParam("classifier") String classifier,
-            final @QueryParam("extension") String extension)
-    throws UpdateServiceException {
+            @QueryParam("groupId") String groupId,
+            @QueryParam("artifactId") String artifactId,
+            @QueryParam("version") String version,
+            @QueryParam("classifier") String classifier,
+            @QueryParam("extension") String extension) {
         return new ConfiguredUpdateService(resolver,
                 new ArtifactDescriptor.Builder()
                         .groupId(groupId)
