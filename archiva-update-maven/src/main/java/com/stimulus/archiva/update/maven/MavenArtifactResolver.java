@@ -66,13 +66,14 @@ public class MavenArtifactResolver implements ArtifactResolver {
         return resolveArtifact(artifact(descriptor));
     }
 
-    private Artifact resolveArtifact(final Artifact artifact)
+    private Artifact resolveArtifact(Artifact artifact)
     throws RepositoryException {
         return resolveArtifact(artifactRequest(artifact)).getArtifact();
     }
 
     @Override
-    public ArtifactDescriptor resolveUpdateDescriptor(ArtifactDescriptor descriptor)
+    public ArtifactDescriptor resolveUpdateDescriptor(
+            ArtifactDescriptor descriptor)
     throws Exception {
         return descriptor(resolveUpdateArtifact(descriptor));
     }
@@ -92,21 +93,23 @@ public class MavenArtifactResolver implements ArtifactResolver {
 
     private VersionRangeResult resolveVersionRange(VersionRangeRequest request)
     throws VersionRangeResolutionException {
-        return repositorySystem().resolveVersionRange(repositorySystemSession(), request);
+        return repositorySystem().resolveVersionRange(repositorySystemSession(),
+                request);
     }
 
     private ArtifactResult resolveArtifact(ArtifactRequest request)
     throws ArtifactResolutionException {
-        return repositorySystem().resolveArtifact(repositorySystemSession(), request);
+        return repositorySystem().resolveArtifact(repositorySystemSession(),
+                request);
     }
 
-    private VersionRangeRequest versionRangeRequest(final Artifact artifact) {
+    private VersionRangeRequest versionRangeRequest(Artifact artifact) {
         return new VersionRangeRequest()
                 .setRepositories(remotes)
                 .setArtifact(artifact);
     }
 
-    private ArtifactRequest artifactRequest(final Artifact artifact) {
+    private ArtifactRequest artifactRequest(Artifact artifact) {
         return new ArtifactRequest()
                 .setRepositories(remotes)
                 .setArtifact(artifact);
@@ -121,11 +124,13 @@ public class MavenArtifactResolver implements ArtifactResolver {
 
     private RepositorySystemSession newRepositorySystemSession() {
         final LoggerFactory loggerFactory = loggerFactory();
-        final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
+        final DefaultRepositorySystemSession session =
+                MavenRepositorySystemUtils
                 .newSession()
                 .setTransferListener(new LogTransferListener(loggerFactory))
                 .setRepositoryListener(new LogRepositoryListener(loggerFactory));
-        session.setLocalRepositoryManager(repositorySystem().newLocalRepositoryManager(session, local));
+        session.setLocalRepositoryManager(
+                repositorySystem().newLocalRepositoryManager(session, local));
         return session;
     }
 
@@ -145,8 +150,10 @@ public class MavenArtifactResolver implements ArtifactResolver {
     private ServiceLocator newServiceLocator() {
         final DefaultServiceLocator sl = MavenRepositorySystemUtils
                 .newServiceLocator()
-                .addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class)
-                .addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class)
+                .addService(RepositoryConnectorFactory.class,
+                        FileRepositoryConnectorFactory.class)
+                .addService(RepositoryConnectorFactory.class,
+                        WagonRepositoryConnectorFactory.class)
                 .setServices(WagonProvider.class, new ManualWagonProvider());
         sl.setErrorHandler(errorHandler());
         return sl;
@@ -154,7 +161,10 @@ public class MavenArtifactResolver implements ArtifactResolver {
 
     private DefaultServiceLocator.ErrorHandler errorHandler() {
         return new DefaultServiceLocator.ErrorHandler() {
-            @Override public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
+            @Override public void serviceCreationFailed(
+                    Class<?> type,
+                    Class<?> impl,
+                    Throwable exception) {
                 throw new UndeclaredThrowableException(exception);
             }
         };
