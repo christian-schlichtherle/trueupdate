@@ -44,14 +44,14 @@ public abstract class ZipPatch {
      *
      * @param outputZipFile the sink for writing the output ZIP file.
      */
-    public final void applyPatchFileTo(final Sink outputZipFile)
+    public final void applyZipPatchFileTo(final Sink outputZipFile)
     throws IOException {
         final Filter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
         try (ZipOutputStream out = newZipOutputStream(outputZipFile)) {
             for (Filter filter : passFilters)
-                applyPatchFileTo(filter, out);
+                applyZipPatchFileTo(filter, out);
         }
     }
 
@@ -72,7 +72,7 @@ public abstract class ZipPatch {
      */
     Filter[] passFilters() { return new Filter[] { new AcceptAllFilter() }; }
 
-    private void applyPatchFileTo(
+    private void applyZipPatchFileTo(
             final Filter filter,
             final @WillNotClose ZipOutputStream out)
     throws IOException {

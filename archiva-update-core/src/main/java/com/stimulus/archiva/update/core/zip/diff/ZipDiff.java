@@ -44,20 +44,20 @@ public abstract class ZipDiff {
      *
      * @param zipPatchFile the sink for writing the ZIP patch file.
      */
-    public void writePatchFileTo(final Sink zipPatchFile) throws IOException {
+    public void writeZipPatchFileTo(final Sink zipPatchFile) throws IOException {
         final Diff diff = computeDiff();
         try (ZipOutputStream out = new ZipOutputStream(zipPatchFile.output())) {
-            writePatchFileTo(diff, out);
+            streamZipPatchFileTo(diff, out);
         }
     }
 
-    private void writePatchFileTo(
+    private void streamZipPatchFileTo(
             final Diff diff,
             final @WillNotClose ZipOutputStream out)
     throws IOException {
         out.setLevel(Deflater.BEST_COMPRESSION);
 
-        final class EntrySink implements Sink {
+        class EntrySink implements Sink {
 
             final String name;
 
@@ -73,11 +73,11 @@ public abstract class ZipDiff {
             }
         } // EntrySink
 
-        final class ZipPatchFileWriter {
+        class ZipPatchFileStreamer {
 
             final Diff diff;
 
-            ZipPatchFileWriter(final Diff diff) throws IOException {
+            ZipPatchFileStreamer(final Diff diff) throws IOException {
                 try {
                     new JaxbCodec(jaxbContext()).encode(
                             new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
@@ -89,7 +89,7 @@ public abstract class ZipDiff {
                 this.diff = diff;
             }
 
-            ZipPatchFileWriter writeAddedOrChanged() throws IOException {
+            ZipPatchFileStreamer streamAddedOrChanged() throws IOException {
                 for (final Enumeration<? extends ZipEntry>
                              entries = secondZipFile().entries();
                      entries.hasMoreElements(); ) {
@@ -106,9 +106,9 @@ public abstract class ZipDiff {
                 return null != diff.added(name) ||
                         null != diff.changed(name);
             }
-        } // ZipPatchFileWriter
+        } // ZipPatchFileStreamer
 
-        new ZipPatchFileWriter(diff).writeAddedOrChanged();
+        new ZipPatchFileStreamer(diff).streamAddedOrChanged();
     }
 
     /** Computes a ZIP diff bean from the two ZIP files. */

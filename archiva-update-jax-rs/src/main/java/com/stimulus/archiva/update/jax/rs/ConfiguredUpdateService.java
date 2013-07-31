@@ -5,6 +5,7 @@
 package com.stimulus.archiva.update.jax.rs;
 
 import com.stimulus.archiva.update.core.artifact.*;
+import com.stimulus.archiva.update.core.io.Sink;
 import com.stimulus.archiva.update.core.io.Sinks;
 import com.stimulus.archiva.update.core.zip.diff.ZipDiff;
 import java.io.*;
@@ -38,8 +39,8 @@ public final class ConfiguredUpdateService {
      * Constructs a configured update service with the given properties.
      *
      * @param resolver the artifact resolver.
-     * @param currentDescriptor the artifact descriptor for the client's current (!)
-     *                   version.
+     * @param currentDescriptor the artifact descriptor for the client's
+     *                          current version.
      */
     public ConfiguredUpdateService(
             final ArtifactResolver resolver,
@@ -73,58 +74,56 @@ public final class ConfiguredUpdateService {
         });
     }
 
+    private ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
+        return resolver.resolveUpdateDescriptor(currentDescriptor);
+    }
+
     @GET
-    @Path("to")
+    @Path("patch")
     @Produces(APPLICATION_OCTET_STREAM)
-    public StreamingOutput to(
+    public StreamingOutput patch(
             final @QueryParam("update-version") String updateVersion)
     throws UpdateServiceException {
         return wrap(new Callable<StreamingOutput>() {
+
             @Override public StreamingOutput call() throws Exception {
-                final ArtifactDescriptor
-                        updateDescriptor = updateDescriptor(updateVersion);
-                final File currentFile = resolveArtifactFile(currentDescriptor);
-                final File updateFile = resolveArtifactFile(updateDescriptor);
-                try (ZipFile currentZip = new ZipFile(currentFile);
-                     ZipFile updateZip = new ZipFile(updateFile)) {
-                    final ZipDiff zipDiff = new ZipDiff.Builder()
-                            .firstZipFile(currentZip)
-                            .secondZipFile(updateZip)
-                            .build();
-                    return new StreamingOutput() {
-                        @Override
-                        public void write(OutputStream out) throws IOException {
-                            zipDiff.writePatchFileTo(Sinks.uncloseable(out));
-                        }
-                    };
-                }
+                return streamingOutputWithZipPatchFile(
+                        resolveArtifactFile(currentDescriptor),
+                        resolveArtifactFile(updateDescriptor(updateVersion)));
             }
         });
     }
 
-    private ArtifactDescriptor updateDescriptor(final String updateVersion)
-    throws AlreadyUpToDateException {
-        if (updateVersion.equals(currentDescriptor.version()))
-            throw new AlreadyUpToDateException(currentDescriptor);
+    private ArtifactDescriptor updateDescriptor(String updateVersion) {
         return currentDescriptor.version(updateVersion);
-    }
-
-    private ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
-        final ArtifactDescriptor updateDescriptor =
-                resolver.resolveUpdateDescriptor(currentDescriptor);
-        assert updateDescriptor.groupId().equals(currentDescriptor.groupId());
-        assert updateDescriptor.artifactId().equals(currentDescriptor.artifactId());
-        assert updateDescriptor.classifier().equals(currentDescriptor.classifier());
-        assert updateDescriptor.extension().equals(currentDescriptor.extension());
-        return updateDescriptor;
     }
 
     private File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws Exception {
-        final File file = resolver.resolveArtifactFile(descriptor);
-        assert file.exists();
-        assert file.canRead();
-        return file;
+        return resolver.resolveArtifactFile(descriptor);
+    }
+
+    private static StreamingOutput streamingOutputWithZipPatchFile(
+            final File firstFile,
+            final File secondFile) {
+        return new StreamingOutput() {
+
+            @Override
+            public void write(final OutputStream output) throws IOException {
+                write(Sinks.uncloseable(output));
+            }
+
+            void write(final Sink output) throws IOException {
+                try (ZipFile firstZipFile = new ZipFile(firstFile);
+                     ZipFile secondZipFile = new ZipFile(secondFile)) {
+                    new ZipDiff.Builder()
+                            .firstZipFile(firstZipFile)
+                            .secondZipFile(secondZipFile)
+                            .build()
+                            .writeZipPatchFileTo(output);
+                }
+            }
+        };
     }
 
     private static <V> V wrap(final Callable<V> task)

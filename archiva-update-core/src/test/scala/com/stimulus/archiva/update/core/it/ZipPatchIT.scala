@@ -30,12 +30,12 @@ class ZipPatchIT extends WordSpec with ZipITContext {
       "reconstitute the second test JAR file" in {
         val zipPatchTemp = tempFile ()
         try {
-          withZipDiff { _ writePatchFileTo new FileStore(zipPatchTemp) }
+          withZipDiff { _ writeZipPatchFileTo new FileStore(zipPatchTemp) }
           loan(new ZipFile(zipPatchTemp)) to { zipPatchFile =>
             val firstZipTemp = tempFile ()
             try {
               withZipPatch(zipPatchFile) {
-                _ applyPatchFileTo new FileStore(firstZipTemp)
+                _ applyZipPatchFileTo new FileStore(firstZipTemp)
               }
               loan(new JarFile(firstZipTemp)) to { firstZipFile =>
                 loan(secondZipFile()) to { secondZipFile =>
