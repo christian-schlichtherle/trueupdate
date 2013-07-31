@@ -6,13 +6,14 @@ package com.stimulus.archiva.update.core.it
 
 import com.stimulus.archiva.update.core.digest.MessageDigests
 import com.stimulus.archiva.update.core.io._
+import com.stimulus.archiva.update.core.io.Loan._
+import com.stimulus.archiva.update.core.zip.diff.ZipDiff
+import com.stimulus.archiva.update.core.zip.patch.ZipPatch
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
-import com.stimulus.archiva.update.core.zip.diff.ZipDiff
-import com.stimulus.archiva.update.core.zip.patch.ZipPatch
 
 /**
  * @author Christian Schlichtherle
@@ -29,7 +30,7 @@ trait ZipITContext {
     }
 
   def withZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) =
-    withZipFiles { (inputZipFile, unused) =>
+    loan(firstZipFile()) to { inputZipFile =>
       fun(new ZipPatch.Builder()
         .zipPatchFile(zipPatchFile)
         .inputZipFile(inputZipFile)
@@ -37,19 +38,12 @@ trait ZipITContext {
         .build)
     }
 
-  def withZipFiles[A](fun: (ZipFile, ZipFile) => A) = {
-    val firstZipFile = this firstZipFile ()
-    try {
-      val secondZipFile = this secondZipFile ()
-      try {
+  def withZipFiles[A](fun: (ZipFile, ZipFile) => A) =
+    loan(firstZipFile()) to { firstZipFile =>
+      loan(secondZipFile()) to { secondZipFile =>
         fun(firstZipFile, secondZipFile)
-      } finally {
-        secondZipFile close ()
       }
-    } finally {
-      firstZipFile close ()
     }
-  }
 
   @CreatesObligation def firstZipFile() = new JarFile(file("test1.jar"))
   @CreatesObligation def secondZipFile() = new JarFile(file("test2.jar"))

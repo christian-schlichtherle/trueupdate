@@ -4,17 +4,18 @@
  */
 package com.stimulus.archiva.update.core.it
 
+import com.stimulus.archiva.update.core.io.FileStore
+import com.stimulus.archiva.update.core.io.Loan._
+import com.stimulus.archiva.update.core.zip.diff.ZipDiff
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
-import com.stimulus.archiva.update.core.io.FileStore
 import java.io.File
 import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
 import scala.collection.SortedSet
-import com.stimulus.archiva.update.core.zip.diff.ZipDiff
 
 /**
  * @author Christian Schlichtherle
@@ -30,15 +31,12 @@ class ZipPatchIT extends WordSpec with ZipITContext {
         val zipPatchTemp = tempFile ()
         try {
           withZipDiff { _ writeDiffFileTo new FileStore(zipPatchTemp) }
-          val zipPatchFile = new ZipFile(zipPatchTemp)
-          try {
+          loan(new ZipFile(zipPatchTemp)) to { zipPatchFile =>
             val firstZipTemp = tempFile ()
             try {
               withZipPatch(zipPatchFile) { _ applyDiffFileTo new FileStore(firstZipTemp) }
-              val firstZipFile = new JarFile(firstZipTemp)
-              try {
-                val secondZipFile = this secondZipFile ()
-                try {
+              loan(new JarFile(firstZipTemp)) to { firstZipFile =>
+                loan(secondZipFile()) to { secondZipFile =>
                   val ref = SortedSet.empty[String] ++
                     secondZipFile.entries.asScala.map(_.getName)
                   val diff = new ZipDiff.Builder()
@@ -50,17 +48,11 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                   diff.removed should be (null)
                   diff.unchanged.keySet.asScala should equal (ref)
                   diff.changed should be (null)
-                } finally {
-                  secondZipFile close ()
                 }
-              } finally {
-                firstZipFile close ()
               }
             } finally {
               firstZipTemp delete ()
             }
-          } finally {
-            zipPatchFile close ()
           }
         } finally {
           zipPatchTemp delete ()
