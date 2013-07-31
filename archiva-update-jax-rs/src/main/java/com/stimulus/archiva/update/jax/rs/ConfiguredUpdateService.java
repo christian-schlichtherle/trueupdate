@@ -74,13 +74,15 @@ public final class ConfiguredUpdateService {
     }
 
     @GET
-    @Path("patch")
+    @Path("to")
     @Produces(APPLICATION_OCTET_STREAM)
-    public StreamingOutput patch() throws UpdateServiceException {
+    public StreamingOutput to(
+            final @QueryParam("update-version") String updateVersion)
+    throws UpdateServiceException {
         return wrap(new Callable<StreamingOutput>() {
             @Override public StreamingOutput call() throws Exception {
                 final ArtifactDescriptor
-                        updateDescriptor = checkedUpdateDescriptor();
+                        updateDescriptor = updateDescriptor(updateVersion);
                 final File currentFile = resolveArtifactFile(currentDescriptor);
                 final File updateFile = resolveArtifactFile(updateDescriptor);
                 try (ZipFile currentZip = new ZipFile(currentFile);
@@ -100,12 +102,11 @@ public final class ConfiguredUpdateService {
         });
     }
 
-    private ArtifactDescriptor checkedUpdateDescriptor() throws Exception {
-        final ArtifactDescriptor
-                updateDescriptor = resolveUpdateDescriptor();
-        if (currentDescriptor.version().equals(updateDescriptor.version()))
+    private ArtifactDescriptor updateDescriptor(final String updateVersion)
+    throws AlreadyUpToDateException {
+        if (updateVersion.equals(currentDescriptor.version()))
             throw new AlreadyUpToDateException(currentDescriptor);
-        return updateDescriptor;
+        return currentDescriptor.version(updateVersion);
     }
 
     private ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
