@@ -40,18 +40,18 @@ public abstract class ZipPatch {
     abstract JAXBContext jaxbContext();
 
     /**
-     * Applies the configured ZIP diff file.
+     * Applies the configured ZIP patch file.
      *
      * @param outputZipFile the sink for writing the output ZIP file.
      */
-    public final void applyDiffFileTo(final Sink outputZipFile)
+    public final void applyPatchFileTo(final Sink outputZipFile)
     throws IOException {
         final Filter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
         try (ZipOutputStream out = newZipOutputStream(outputZipFile)) {
             for (Filter filter : passFilters)
-                applyDiffFileTo(filter, out);
+                applyPatchFileTo(filter, out);
         }
     }
 
@@ -72,7 +72,7 @@ public abstract class ZipPatch {
      */
     Filter[] passFilters() { return new Filter[] { new AcceptAllFilter() }; }
 
-    private void applyDiffFileTo(
+    private void applyPatchFileTo(
             final Filter filter,
             final @WillNotClose ZipOutputStream out)
     throws IOException {

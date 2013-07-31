@@ -5,7 +5,7 @@
 package com.stimulus.archiva.update.jax.rs;
 
 import com.stimulus.archiva.update.core.artifact.*;
-import com.stimulus.archiva.update.core.io.MemoryStore;
+import com.stimulus.archiva.update.core.io.Sinks;
 import com.stimulus.archiva.update.core.zip.diff.ZipDiff;
 import java.io.*;
 import java.util.concurrent.Callable;
@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;
+import javax.ws.rs.core.StreamingOutput;
 import static javax.ws.rs.core.MediaType.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -75,27 +76,36 @@ public final class ConfiguredUpdateService {
     @GET
     @Path("patch")
     @Produces(APPLICATION_OCTET_STREAM)
-    public InputStream patch() throws UpdateServiceException {
-        return wrap(new Callable<InputStream>() {
-            @Override public InputStream call() throws Exception {
+    public StreamingOutput patch() throws UpdateServiceException {
+        return wrap(new Callable<StreamingOutput>() {
+            @Override public StreamingOutput call() throws Exception {
                 final ArtifactDescriptor
-                        updateDescriptor = resolveUpdateDescriptor();
-                if (currentDescriptor.version().equals(updateDescriptor.version()))
-                    throw new AlreadyUpToDateException(currentDescriptor);
+                        updateDescriptor = checkedUpdateDescriptor();
                 final File currentFile = resolveArtifactFile(currentDescriptor);
                 final File updateFile = resolveArtifactFile(updateDescriptor);
                 try (ZipFile currentZip = new ZipFile(currentFile);
                      ZipFile updateZip = new ZipFile(updateFile)) {
-                    final MemoryStore store = new MemoryStore();
-                    new ZipDiff.Builder()
+                    final ZipDiff zipDiff = new ZipDiff.Builder()
                             .firstZipFile(currentZip)
                             .secondZipFile(updateZip)
-                            .build()
-                            .writeDiffFileTo(store);
-                    return store.input();
+                            .build();
+                    return new StreamingOutput() {
+                        @Override
+                        public void write(OutputStream out) throws IOException {
+                            zipDiff.writePatchFileTo(Sinks.uncloseable(out));
+                        }
+                    };
                 }
             }
         });
+    }
+
+    private ArtifactDescriptor checkedUpdateDescriptor() throws Exception {
+        final ArtifactDescriptor
+                updateDescriptor = resolveUpdateDescriptor();
+        if (currentDescriptor.version().equals(updateDescriptor.version()))
+            throw new AlreadyUpToDateException(currentDescriptor);
+        return updateDescriptor;
     }
 
     private ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
@@ -110,7 +120,10 @@ public final class ConfiguredUpdateService {
 
     private File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws Exception {
-        return resolver.resolveArtifactFile(descriptor);
+        final File file = resolver.resolveArtifactFile(descriptor);
+        assert file.exists();
+        assert file.canRead();
+        return file;
     }
 
     private static <V> V wrap(final Callable<V> task)

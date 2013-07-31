@@ -44,14 +44,14 @@ public abstract class ZipDiff {
      *
      * @param zipPatchFile the sink for writing the ZIP patch file.
      */
-    public void writeDiffFileTo(final Sink zipPatchFile) throws IOException {
+    public void writePatchFileTo(final Sink zipPatchFile) throws IOException {
         final Diff diff = computeDiff();
         try (ZipOutputStream out = new ZipOutputStream(zipPatchFile.output())) {
-            writeDiffFileTo(diff, out);
+            writePatchFileTo(diff, out);
         }
     }
 
-    private void writeDiffFileTo(
+    private void writePatchFileTo(
             final Diff diff,
             final @WillNotClose ZipOutputStream out)
     throws IOException {
