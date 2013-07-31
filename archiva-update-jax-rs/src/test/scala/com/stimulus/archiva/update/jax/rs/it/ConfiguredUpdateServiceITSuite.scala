@@ -16,6 +16,7 @@ import javax.ws.rs.ext.ContextResolver
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
+import ConfiguredUpdateServiceITSuite._
 
 private object ConfiguredUpdateServiceITSuite {
 
@@ -34,17 +35,16 @@ private object ConfiguredUpdateServiceITSuite {
 }
 
 /** @author Christian Schlichtherle */
-class ConfiguredUpdateServiceITSuite extends JerseyTest { this: ArtifactITContext =>
-
-  import ConfiguredUpdateServiceITSuite._
+class ConfiguredUpdateServiceITSuite
+extends JerseyTest { this: ArtifactITContext =>
 
   @Test def testLifeCycle() {
-    assertUpdateVersionTo()
+    assertUpdateVersion()
   }
 
-  private def assertUpdateVersionTo() {
+  private def assertUpdateVersion() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
-    logger.info("Resolved update for artifact {} to version {}.",
+    logger info ("Resolved update for artifact {} to version {}.",
       artifactDescriptor, updateVersion)
     updateVersionAs(APPLICATION_JSON_TYPE) should
       be ('"' + updateVersion + '"')
