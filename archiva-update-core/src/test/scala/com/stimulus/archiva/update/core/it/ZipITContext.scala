@@ -45,8 +45,8 @@ trait ZipITContext {
       }
     }
 
-  @CreatesObligation def firstZipFile() = new JarFile(file("test1.jar"))
-  @CreatesObligation def secondZipFile() = new JarFile(file("test2.jar"))
+  @CreatesObligation def firstZipFile() = new JarFile(file("test1.jar"), false)
+  @CreatesObligation def secondZipFile() = new JarFile(file("test2.jar"), false)
 
   private def file(resourceName: String) =
     new File((classOf[ZipITContext] getResource resourceName).toURI)
