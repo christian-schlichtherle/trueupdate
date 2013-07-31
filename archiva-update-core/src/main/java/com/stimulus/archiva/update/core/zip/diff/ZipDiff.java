@@ -229,7 +229,7 @@ public abstract class ZipDiff {
      * The default message digest is SHA-1 and the default JAXB context binds
      * only the {@link Diff} class.
      */
-    public static class Builder {
+    public static final class Builder {
 
         private ZipFile firstZipFile, secondZipFile;
         private MessageDigest messageDigest;
@@ -257,12 +257,12 @@ public abstract class ZipDiff {
         }
 
         public ZipDiff build() {
-            return build(firstZipFile, secondZipFile,
+            return create(firstZipFile, secondZipFile,
                     null != messageDigest ? messageDigest : MessageDigests.sha1(),
                     null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
         }
 
-        private static ZipDiff build(
+        private static ZipDiff create(
                 final ZipFile firstZipFile,
                 final ZipFile secondZipFile,
                 final MessageDigest messageDigest,

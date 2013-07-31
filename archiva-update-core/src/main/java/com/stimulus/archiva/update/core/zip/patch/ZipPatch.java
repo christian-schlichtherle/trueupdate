@@ -198,7 +198,7 @@ public abstract class ZipPatch {
      * A builder for a ZIP patch.
      * The default JAXB context binds only the {@link Diff} class.
      */
-    public static class Builder {
+    public static final class Builder {
 
         private ZipFile zipPatchFile, inputZipFile;
         private boolean outputJarFile;
@@ -226,12 +226,12 @@ public abstract class ZipPatch {
         }
 
         public ZipPatch build() {
-            return build(zipPatchFile, inputZipFile, outputJarFile,
+            return create(zipPatchFile, inputZipFile, outputJarFile,
                     null != jaxbContext ? jaxbContext : Diffs.jaxbContext()
             );
         }
 
-        private static ZipPatch build(
+        private static ZipPatch create(
                 final ZipFile zipPatchFile,
                 final ZipFile inputZipFile,
                 final boolean outputJarFile,
