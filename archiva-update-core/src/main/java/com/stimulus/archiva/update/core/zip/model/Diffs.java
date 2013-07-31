@@ -8,8 +8,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 /**
- * Provides utilities for ZIP {@link Diff} beans.
+ * Provides utilities for ZIP diff beans.
  *
+ * @see Diff
  * @author Christian Schlichtherle
  */
 public final class Diffs {
