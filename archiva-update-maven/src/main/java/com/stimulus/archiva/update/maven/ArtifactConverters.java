@@ -12,9 +12,9 @@ import org.eclipse.aether.artifact.*;
  *
  * @author Christian Schlichtherle
  */
-final class ArtifactConversion {
+final class ArtifactConverters {
 
-    private ArtifactConversion() { }
+    private ArtifactConverters() { }
 
     /**
      * Converts an artifact descriptor to a ranged artifact which covers all

@@ -15,7 +15,7 @@ import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class ArtifactConversionTest extends WordSpec {
+class ArtifactConvertersTest extends WordSpec {
 
   "The artifact conversion should comply to the identity productions" in {
     val table = Table(
@@ -30,9 +30,9 @@ class ArtifactConversionTest extends WordSpec {
         .classifier(classifier)
         .extension(extension)
         .build
-      val artifact = ArtifactConversion artifact descriptor
-      val descriptor2 = ArtifactConversion descriptor artifact
-      val artifact2 = ArtifactConversion artifact descriptor2
+      val artifact = ArtifactConverters artifact descriptor
+      val descriptor2 = ArtifactConverters descriptor artifact
+      val artifact2 = ArtifactConverters artifact descriptor2
 
       descriptor should equal (descriptor2)
       descriptor should not be theSameInstanceAs (descriptor2)
