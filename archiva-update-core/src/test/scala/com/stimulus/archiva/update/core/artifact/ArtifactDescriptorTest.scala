@@ -13,7 +13,7 @@ import ArtifactDescriptor.Builder
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class ArtifactDescriptorBuilderTest extends WordSpec {
+class ArtifactDescriptorTest extends WordSpec {
 
   "An artifact descriptor" when {
     "build" should {
@@ -37,7 +37,7 @@ class ArtifactDescriptorBuilderTest extends WordSpec {
           descriptor2 should not be theSameInstanceAs (descriptor1)
           descriptor2 should equal (descriptor1)
           descriptor2.hashCode should equal (descriptor1.hashCode)
-          descriptor2.toString should not be (null)
+          descriptor2.toString should not be 'empty
           descriptor2.toString should equal (descriptor1.toString)
         }
       }
