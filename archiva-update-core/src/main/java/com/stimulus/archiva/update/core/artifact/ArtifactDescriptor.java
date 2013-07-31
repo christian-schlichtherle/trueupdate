@@ -19,14 +19,26 @@ public interface ArtifactDescriptor extends Serializable {
     /** Returns the group id, e.g. {@code com.stimulus.archiva}. */
     String groupId();
 
+    /** Returns a new artifact descriptor with the given group id. */
+    ArtifactDescriptor groupId(String groupId);
+
     /** Returns the artifact id, e.g. {@code mailarchiva}. */
     String artifactId();
+
+    /** Returns a new artifact descriptor with the given artifact id. */
+    ArtifactDescriptor artifactId(String artifactId);
 
     /** Returns the version, e.g. {@code 3.2.1}. */
     String version();
 
+    /** Returns a new artifact descriptor with the given version. */
+    ArtifactDescriptor version(String version);
+
     /** Returns the classifier, which may be empty. */
     String classifier();
+
+    /** Returns a new artifact descriptor with the given classifier. */
+    ArtifactDescriptor classifier(String classifier);
 
     /**
      * Returns the extension, e.g. {@code war}.
@@ -34,6 +46,9 @@ public interface ArtifactDescriptor extends Serializable {
      * <i>type</i> or <i>extension</i>.
      */
     String extension();
+
+    /** Returns a new artifact descriptor with the given extension. */
+    ArtifactDescriptor extension(String extension);
 
     /**
      * Returns {@code true} if and only if the given object is an
@@ -52,13 +67,13 @@ public interface ArtifactDescriptor extends Serializable {
 
     /**
      * A builder for an artifact descriptor.
-     * The default value for the property {@code extension} is {@code "jar"}
-     * and the default value for the property {@code classifier} is {@code ""}.
+     * The default value for the property {@code classifier} is {@code ""} and
+     * the default value for the property {@code extension} is {@code "jar"}.
      */
     class Builder {
 
         private String groupId, artifactId, version,
-                extension = "jar", classifier = "";
+                classifier = "", extension = "jar";
 
         public Builder groupId(final String groupId) {
             this.groupId = requireNonNull(groupId);
@@ -86,28 +101,54 @@ public interface ArtifactDescriptor extends Serializable {
         }
 
         public ArtifactDescriptor build() {
-            return build(groupId, artifactId, version, extension, classifier);
+            return build(groupId, artifactId, version, classifier, extension);
         }
 
         private static ArtifactDescriptor build(
                 final String groupId,
                 final String artifactId,
                 final String version,
-                final String extension,
-                final String classifier) {
+                final String classifier,
+                final String extension) {
             requireNonNull(groupId);
             requireNonNull(artifactId);
             requireNonNull(version);
             requireNonNull(classifier);
             requireNonNull(extension);
+
             return new BasicArtifactDescriptor() {
+
                 private static final long serialVersionUID = 0L;
 
                 @Override public String groupId() { return groupId; }
+
+                @Override public ArtifactDescriptor groupId(String groupId) {
+                    return build(groupId, artifactId, version, classifier, extension);
+                }
+
                 @Override public String artifactId() { return artifactId; }
+
+                @Override public ArtifactDescriptor artifactId(String artifactId) {
+                    return build(groupId, artifactId, version, classifier, extension);
+                }
+
                 @Override public String version() { return version; }
+
+                @Override public ArtifactDescriptor version(String version) {
+                    return build(groupId, artifactId, version, classifier, extension);
+                }
+
                 @Override public String classifier() { return classifier; }
+
+                @Override public ArtifactDescriptor classifier(String classifier) {
+                    return build(groupId, artifactId, version, classifier, extension);
+                }
+
                 @Override public String extension() { return extension; }
+
+                @Override public ArtifactDescriptor extension(String extension) {
+                    return build(groupId, artifactId, version, classifier, extension);
+                }
             };
         }
     }

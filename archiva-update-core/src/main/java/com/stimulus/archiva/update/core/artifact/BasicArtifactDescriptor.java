@@ -9,7 +9,7 @@ package com.stimulus.archiva.update.core.artifact;
  *
  * @author Christian Schlichtherle
  */
-public abstract class BasicArtifactDescriptor implements ArtifactDescriptor {
+abstract class BasicArtifactDescriptor implements ArtifactDescriptor {
 
     @Override public final boolean equals(final Object obj) {
         if (this == obj) return true;
