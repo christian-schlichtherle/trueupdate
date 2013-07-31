@@ -21,22 +21,22 @@ public final class ArtifactDescriptor implements Serializable {
 
     private final String groupId, artifactId, version, classifier, extension;
 
-    public ArtifactDescriptor() {
-        this("", "", "", "", "jar");
-    }
-
     private ArtifactDescriptor(
             final String groupId,
             final String artifactId,
             final String version,
             final String classifier,
-            final String extension
-    ) {
-        this.groupId = requireNonNull(groupId);
-        this.artifactId = requireNonNull(artifactId);
-        this.version = requireNonNull(version);
+            final String extension) {
+        this.groupId = requireNonEmpty(groupId);
+        this.artifactId = requireNonEmpty(artifactId);
+        this.version = requireNonEmpty(version);
         this.classifier = requireNonNull(classifier);
-        this.extension = requireNonNull(extension);
+        this.extension = requireNonEmpty(extension);
+    }
+
+    private static String requireNonEmpty(final String string) {
+        if (string.isEmpty()) throw new IllegalArgumentException();
+        return string;
     }
 
     /**
@@ -135,5 +135,45 @@ public final class ArtifactDescriptor implements Serializable {
             sb.append(':').append(classifier());
         sb.append(':').append(version());
         return sb.toString();
+    }
+
+    /**
+     * A builder for an artifact descriptor.
+     * The default value for the property {@code classifier} is {@code ""} and
+     * the default value for the property {@code extension} is {@code "jar"}.
+     */
+    public static final class Builder {
+
+        private String groupId, artifactId, version, classifier = "",
+                extension = "jar";
+
+        public Builder groupId(String groupId) {
+            this.groupId = requireNonEmpty(groupId);
+            return this;
+        }
+
+        public Builder artifactId(String artifactId) {
+            this.artifactId = requireNonEmpty(artifactId);
+            return this;
+        }
+
+        public Builder version(String version) {
+            this.version = requireNonEmpty(version);
+            return this;
+        }
+
+        public Builder classifier(String classifier) {
+            this.classifier = requireNonNull(classifier);
+            return this;
+        }
+
+        public Builder extension(String extension) {
+            this.extension = requireNonEmpty(extension);
+            return this;
+        }
+
+        public ArtifactDescriptor build() {
+            return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+        }
     }
 }
