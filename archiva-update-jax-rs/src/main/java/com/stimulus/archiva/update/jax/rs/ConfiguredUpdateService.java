@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.jax.rs;
@@ -8,14 +8,15 @@ import com.stimulus.archiva.update.core.artifact.*;
 import com.stimulus.archiva.update.core.io.Sink;
 import com.stimulus.archiva.update.core.io.Sinks;
 import com.stimulus.archiva.update.core.zip.diff.ZipDiff;
+import static com.stimulus.archiva.update.jax.rs.UpdateServices.wrap;
 import java.io.*;
+import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipFile;
-import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;
-import javax.ws.rs.core.StreamingOutput;
 import static javax.ws.rs.core.MediaType.*;
+import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -24,13 +25,10 @@ import javax.xml.namespace.QName;
  *
  * @author Christian Schlichtherle
  */
-@Produces({ APPLICATION_JSON, APPLICATION_XML, TEXT_XML })
 @Immutable
 public final class ConfiguredUpdateService {
 
     private static final QName VERSION_NAME = new QName("version");
-
-    private static final int NOT_FOUND = 404;
 
     private final ArtifactResolver resolver;
     private final ArtifactDescriptor currentDescriptor;
@@ -51,6 +49,17 @@ public final class ConfiguredUpdateService {
 
     @GET
     @Path("version")
+    @Produces(TEXT_PLAIN)
+    public String versionAsText() throws UpdateServiceException {
+        return wrap(new Callable<String>() {
+            @Override public String call() throws Exception {
+                return resolveUpdateDescriptor().version();
+            }
+        });
+    }
+
+    @GET
+    @Path("version")
     @Produces(APPLICATION_JSON)
     public String versionAsJson() throws UpdateServiceException {
         return '"' + versionAsText() + '"';
@@ -63,18 +72,7 @@ public final class ConfiguredUpdateService {
         return new JAXBElement<>(VERSION_NAME, String.class, versionAsText());
     }
 
-    @GET
-    @Path("version")
-    @Produces(TEXT_PLAIN)
-    public String versionAsText() throws UpdateServiceException {
-        return wrap(new Callable<String>() {
-            @Override public String call() throws Exception {
-                return resolveUpdateDescriptor().version();
-            }
-        });
-    }
-
-    private ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
+    ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
         return resolver.resolveUpdateDescriptor(currentDescriptor);
     }
 
@@ -85,7 +83,6 @@ public final class ConfiguredUpdateService {
             final @QueryParam("update-version") String updateVersion)
     throws UpdateServiceException {
         return wrap(new Callable<StreamingOutput>() {
-
             @Override public StreamingOutput call() throws Exception {
                 return streamingOutputWithZipPatchFile(
                         resolveArtifactFile(currentDescriptor),
@@ -94,16 +91,16 @@ public final class ConfiguredUpdateService {
         });
     }
 
-    private ArtifactDescriptor updateDescriptor(String updateVersion) {
+    ArtifactDescriptor updateDescriptor(String updateVersion) {
         return currentDescriptor.version(updateVersion);
     }
 
-    private File resolveArtifactFile(ArtifactDescriptor descriptor)
+    File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws Exception {
         return resolver.resolveArtifactFile(descriptor);
     }
 
-    private static StreamingOutput streamingOutputWithZipPatchFile(
+    static StreamingOutput streamingOutputWithZipPatchFile(
             final File firstFile,
             final File secondFile) {
         return new StreamingOutput() {
@@ -124,16 +121,5 @@ public final class ConfiguredUpdateService {
                 }
             }
         };
-    }
-
-    private static <V> V wrap(final Callable<V> task)
-    throws UpdateServiceException {
-        try {
-            return task.call();
-        } catch (RuntimeException | UpdateServiceException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new UpdateServiceException(NOT_FOUND, ex);
-        }
     }
 }

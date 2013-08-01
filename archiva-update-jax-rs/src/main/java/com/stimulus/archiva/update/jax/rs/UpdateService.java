@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.jax.rs;
 
-import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor;
-import com.stimulus.archiva.update.core.artifact.ArtifactResolver;
+import com.stimulus.archiva.update.core.artifact.*;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.*;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.*;
 
 /**
  * An (unconfigured) update service for *Archiva products.
@@ -75,18 +75,24 @@ public final class UpdateService {
     /** Returns a configured update service. */
     @Path("/")
     public ConfiguredUpdateService configure(
-            @QueryParam("groupId") String groupId,
-            @QueryParam("artifactId") String artifactId,
-            @QueryParam("version") String version,
-            @QueryParam("classifier") String classifier,
-            @QueryParam("extension") String extension) {
-        return new ConfiguredUpdateService(resolver,
-                new ArtifactDescriptor.Builder()
-                        .groupId(groupId)
-                        .artifactId(artifactId)
-                        .version(version)
-                        .classifier(classifier)
-                        .extension(extension)
-                        .build());
+            final @QueryParam("groupId") @Nullable String groupId,
+            final @QueryParam("artifactId") @Nullable String artifactId,
+            final @QueryParam("version") @Nullable  String version,
+            final @QueryParam("classifier") @DefaultValue("") String classifier,
+            final @QueryParam("extension") @DefaultValue("jar") String extension)
+    throws UpdateServiceException {
+        return UpdateServices.wrap(new Callable<ConfiguredUpdateService>() {
+            @Override
+            public ConfiguredUpdateService call() throws Exception {
+                return new ConfiguredUpdateService(resolver,
+                        new ArtifactDescriptor.Builder()
+                                .groupId(groupId)
+                                .artifactId(artifactId)
+                                .version(version)
+                                .classifier(classifier)
+                                .extension(extension)
+                                .build());
+            }
+        });
     }
 }
