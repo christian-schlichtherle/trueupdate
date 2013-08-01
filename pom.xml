@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright (C) 2005-2013 Stimulus Software. All Rights Reserved.
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -100,6 +101,7 @@
 
         <!-- For dependency management. -->
         <aether.version>0.9.0.M2</aether.version>
+        <jersey.version>1.17.1</jersey.version>
         <maven.version>3.1.0</maven.version>
         <slf4j.version>1.7.5</slf4j.version>
         <wagon.version>1.2.1</wagon.version>
@@ -159,9 +161,14 @@
                 <version>2.0.1</version>
             </dependency>
             <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-servlet</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.sun.jersey.jersey-test-framework</groupId>
                 <artifactId>jersey-test-framework-http</artifactId>
-                <version>1.17.1</version>
+                <version>${jersey.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
