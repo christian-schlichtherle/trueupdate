@@ -34,7 +34,7 @@ public final class ArtifactDescriptor implements Serializable {
         this.extension = requireNonEmpty(extension);
     }
 
-    private static String requireNonEmpty(final String string) {
+    static String requireNonEmpty(final String string) {
         if (string.isEmpty()) throw new IllegalArgumentException();
         return string;
     }
