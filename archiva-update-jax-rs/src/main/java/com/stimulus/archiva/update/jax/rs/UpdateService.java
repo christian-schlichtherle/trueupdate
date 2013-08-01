@@ -8,6 +8,7 @@ import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor;
 import com.stimulus.archiva.update.core.artifact.ArtifactResolver;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.*;
@@ -66,6 +67,7 @@ public final class UpdateService {
      *
      * @param resolver the artifact resolver.
      */
+    @Inject
     public UpdateService(final ArtifactResolver resolver) {
         this.resolver = Objects.requireNonNull(resolver);
     }
