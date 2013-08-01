@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2005-2013 Schlichtherle IT Services.
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 /**

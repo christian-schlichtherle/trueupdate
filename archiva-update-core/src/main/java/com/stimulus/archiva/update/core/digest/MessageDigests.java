@@ -1,14 +1,14 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.core.digest;
 
 import com.stimulus.archiva.update.core.io.*;
-import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Provides message digest functions.

@@ -1,11 +1,10 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.client;
 
 import com.stimulus.archiva.update.core.artifact.ArtifactDescriptor;
-
 import javax.annotation.CheckForNull;
 
 /**

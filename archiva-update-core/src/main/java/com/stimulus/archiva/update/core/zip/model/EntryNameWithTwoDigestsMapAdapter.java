@@ -1,15 +1,15 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.core.zip.model;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import javax.annotation.CheckForNull;
+import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Adapts a sorted map of pairs of entry digests to a collection so that JAXB

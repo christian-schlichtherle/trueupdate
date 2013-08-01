@@ -1,13 +1,13 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.core.zip.model;
 
+import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Objects;
 
 /**
  * Represents a ZIP entry name with two message digests.

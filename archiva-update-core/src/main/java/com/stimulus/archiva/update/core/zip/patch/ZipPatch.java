@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.core.zip.patch;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
+import com.stimulus.archiva.update.core.digest.MessageDigests;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
 import com.stimulus.archiva.update.core.zip.model.Diff;
 import com.stimulus.archiva.update.core.zip.model.Diffs;
 import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
-import com.stimulus.archiva.update.core.digest.MessageDigests;
 import java.io.*;
-import static java.util.Objects.requireNonNull;
 import java.security.*;
+import static java.util.Objects.requireNonNull;
 import java.util.SortedMap;
 import java.util.zip.*;
 import javax.annotation.*;

@@ -1,16 +1,15 @@
 /*
- * Copyright (C) 2005-2013 Schlichtherle IT Services.
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.core.codec;
 
+import com.stimulus.archiva.update.core.io.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
-import com.stimulus.archiva.update.core.io.*;
 
 /**
  * A codec which encodes/decodes objects to/from XML with a
