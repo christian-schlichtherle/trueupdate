@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.maven;
@@ -9,6 +9,8 @@ import static com.stimulus.archiva.update.maven.ArtifactConverters.*;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
+import static java.util.Arrays.asList;
+import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
@@ -51,42 +53,62 @@ public class MavenArtifactResolver implements ArtifactResolver {
             final LocalRepository local,
             final RemoteRepository... remotes) {
         this.local = Objects.requireNonNull(local);
-        this.remotes = Collections.unmodifiableList(Arrays.asList(remotes));
+        this.remotes = Collections.unmodifiableList(asList(remotes));
     }
 
     @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
-    throws Exception {
+    throws RepositoryException {
         return resolveArtifact(descriptor).getFile();
     }
 
     private Artifact resolveArtifact(ArtifactDescriptor descriptor)
-    throws Exception {
+    throws RepositoryException {
         return resolveArtifact(artifact(descriptor));
     }
 
-    private Artifact resolveArtifact(Artifact artifact)
+    private Artifact resolveArtifact(final Artifact artifact)
     throws RepositoryException {
-        return resolveArtifact(artifactRequest(artifact)).getArtifact();
+        final ArtifactResult artifactResult =
+                resolveArtifact(artifactRequest(artifact));
+        final @CheckForNull Artifact resolved = artifactResult.getArtifact();
+        if (null == resolved)
+            throw addSuppressed(
+                    new ArtifactResolutionException(asList(artifactResult),
+                            "Artifact not found."),
+                    artifactResult.getExceptions());
+        return resolved;
     }
 
-    @Override
-    public ArtifactDescriptor resolveUpdateDescriptor(
+    @Override public ArtifactDescriptor resolveUpdateDescriptor(
             ArtifactDescriptor descriptor)
-    throws Exception {
+    throws RepositoryException {
         return descriptor(resolveUpdateArtifact(descriptor));
     }
 
     private Artifact resolveUpdateArtifact(ArtifactDescriptor descriptor)
-    throws Exception {
-        return resolveUpdateArtifact(updateRangeArtifact(descriptor));
+    throws RepositoryException {
+        try {
+            return resolveUpdateArtifact(updateRangeArtifact(descriptor));
+        } catch (final VersionRangeResolutionException ex) {
+            // Try to throw a more specific exception, otherwise propagate ex.
+            resolveArtifact(descriptor);
+            throw ex;
+        }
     }
 
-    private Artifact resolveUpdateArtifact(final Artifact intervalArtifact)
+    private Artifact resolveUpdateArtifact(final Artifact updateRangeArtifact)
     throws RepositoryException {
-        final VersionRangeResult versionRangeResult = resolveVersionRange(
-                versionRangeRequest(intervalArtifact));
-        final Version highestVersion = versionRangeResult.getHighestVersion();
-        return intervalArtifact.setVersion(highestVersion.toString());
+        final VersionRangeResult result =
+                resolveVersionRange(versionRangeRequest(updateRangeArtifact));
+        final @CheckForNull Version highestVersion =
+                result.getHighestVersion();
+        if (null == highestVersion) {
+            throw addSuppressed(
+                    new VersionRangeResolutionException(result,
+                            "Update artifact not found."),
+                    result.getExceptions());
+        }
+        return updateRangeArtifact.setVersion(highestVersion.toString());
     }
 
     private VersionRangeResult resolveVersionRange(VersionRangeRequest request)
@@ -99,6 +121,13 @@ public class MavenArtifactResolver implements ArtifactResolver {
     throws ArtifactResolutionException {
         return repositorySystem().resolveArtifact(repositorySystemSession(),
                 request);
+    }
+
+    private static RepositoryException addSuppressed(
+            final RepositoryException head,
+            final List<Exception> exceptions) {
+        for (Exception ex : exceptions) head.addSuppressed(ex);
+        return head;
     }
 
     private VersionRangeRequest versionRangeRequest(Artifact artifact) {
