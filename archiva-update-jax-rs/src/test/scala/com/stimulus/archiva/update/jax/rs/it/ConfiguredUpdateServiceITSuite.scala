@@ -90,7 +90,7 @@ extends JerseyTest { this: ArtifactITContext =>
   override protected def configure =
     new LowLevelAppDescriptor.Builder(resourceConfig).contextPath("").build
 
-  private def resourceConfig: ResourceConfig = {
+  private def resourceConfig = {
     val rc = new DefaultResourceConfig
     rc.getClasses.add(classOf[UpdateService])
     rc.getClasses.add(classOf[UpdateServiceExceptionMapper])
@@ -98,7 +98,7 @@ extends JerseyTest { this: ArtifactITContext =>
     rc
   }
 
-  private final class ContextResolverForArtifactResolver
+  private class ContextResolverForArtifactResolver
     extends ContextResolver[ArtifactResolver] {
     override def getContext(ignored: Class[_]) = artifactResolver
   }
