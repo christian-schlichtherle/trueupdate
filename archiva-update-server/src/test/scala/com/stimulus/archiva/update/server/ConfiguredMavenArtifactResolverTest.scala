@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2013 Stimulus Software.
+ * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
 package com.stimulus.archiva.update.server
@@ -14,18 +14,18 @@ import java.io.File
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class ContextResolverForArtifactResolverTest extends WordSpec {
+class ConfiguredMavenArtifactResolverTest extends WordSpec {
 
   private def localRepositoryDir =
-    new File(System.getProperty("user.home"), ".m2/repository");
+    new File(System.getProperty("user.home"), ".m2/repository")
 
   "A context resolver for artifact resolver" when {
     "its system property is not set" should {
-      System.getProperty(ContextResolverForArtifactResolver.propertyKey) should
+      System.getProperty(ConfiguredMavenArtifactResolver.propertyKey) should
         be (null)
 
       "default to the user's local Maven repository" in {
-        ContextResolverForArtifactResolver.localRepository.getBasedir should
+        ConfiguredMavenArtifactResolver.localRepository.getBasedir should
           be (localRepositoryDir)
       }
     }
