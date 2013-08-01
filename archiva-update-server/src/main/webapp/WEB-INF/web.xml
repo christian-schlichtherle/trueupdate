@@ -12,12 +12,12 @@
     </session-config>
     <!-- http://jersey.java.net/nonav/apidocs/1.17/jersey/com/sun/jersey/spi/container/servlet/package-summary.html -->
     <servlet>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 </web-app>
