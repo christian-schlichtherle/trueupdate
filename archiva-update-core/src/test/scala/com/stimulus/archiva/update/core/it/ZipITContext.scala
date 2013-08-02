@@ -16,7 +16,7 @@ import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import com.stimulus.archiva.update.core.util.MessageDigests
 import javax.xml.bind.JAXBContext
-import com.stimulus.archiva.update.core.zip.model.Diff
+import com.stimulus.archiva.update.core.zip.model.{Diffs, Diff}
 import com.stimulus.archiva.update.core.TestContext
 
 /**
@@ -57,5 +57,5 @@ trait ZipITContext extends TestContext {
 
   def digest = MessageDigests.sha1
 
-  override lazy val jaxbContext = JAXBContext.newInstance(classOf[Diff])
+  override lazy val jaxbContext = Diffs.jaxbContext
 }
