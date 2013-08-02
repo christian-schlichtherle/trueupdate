@@ -4,9 +4,9 @@
  */
 package com.stimulus.archiva.update.core.codec;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import javax.xml.bind.*;
+import javax.xml.transform.Result;
+import java.io.IOException;
 
 /**
  * @author Christian Schlichtherle

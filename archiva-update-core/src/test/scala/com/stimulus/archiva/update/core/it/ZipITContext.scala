@@ -17,6 +17,7 @@ import javax.annotation.WillNotClose
 import com.stimulus.archiva.update.core.util.MessageDigests
 import javax.xml.bind.JAXBContext
 import com.stimulus.archiva.update.core.zip.model.Diff
+import com.stimulus.archiva.update.core.TestContext
 
 /**
  * @author Christian Schlichtherle
