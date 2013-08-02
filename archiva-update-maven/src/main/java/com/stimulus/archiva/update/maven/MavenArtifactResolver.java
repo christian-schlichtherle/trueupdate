@@ -47,13 +47,25 @@ public class MavenArtifactResolver implements ArtifactResolver {
      * update.
      *
      * @param local the local repository for artifacts.
-     * @param remotes the remote repositories for artifacts.
+     * @param remotes the array of remote repositories for artifacts.
      */
-    public MavenArtifactResolver(
-            final LocalRepository local,
-            final RemoteRepository... remotes) {
+    public MavenArtifactResolver(final LocalRepository local,
+                                 final RemoteRepository... remotes) {
+        this(local, asList(remotes));
+    }
+
+    /**
+     * Constructs a maven path resolver which uses the given local and remote
+     * Maven repositories for finding a described artifact and its latest
+     * update.
+     *
+     * @param local the local repository for artifacts.
+     * @param remotes the list of remote repositories for artifacts.
+     */
+    public MavenArtifactResolver(final LocalRepository local,
+                                 final List<RemoteRepository> remotes) {
         this.local = Objects.requireNonNull(local);
-        this.remotes = Collections.unmodifiableList(asList(remotes));
+        this.remotes = Collections.unmodifiableList(new ArrayList<>(remotes));
     }
 
     @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
