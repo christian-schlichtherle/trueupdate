@@ -24,7 +24,8 @@ import javax.xml.bind.*;
 @Immutable
 public class JaxbCodec implements Codec {
 
-    private final JAXBContext context;
+    /** The JAXB context provided to the constructor. */
+    protected final JAXBContext context;
 
     public JaxbCodec(final JAXBContext context) {
         this.context = Objects.requireNonNull(context);
