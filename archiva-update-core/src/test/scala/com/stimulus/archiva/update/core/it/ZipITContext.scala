@@ -4,9 +4,9 @@
  */
 package com.stimulus.archiva.update.core.it
 
-import com.stimulus.archiva.update.core.digest.MessageDigests
 import com.stimulus.archiva.update.core.io._
-import com.stimulus.archiva.update.core.io.Loan._
+import com.stimulus.archiva.update.core.util.{Loan, MessageDigests}
+import Loan._
 import com.stimulus.archiva.update.core.zip.diff.ZipDiff
 import com.stimulus.archiva.update.core.zip.patch.ZipPatch
 import edu.umd.cs.findbugs.annotations.CreatesObligation
@@ -14,6 +14,7 @@ import java.io.File
 import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
+import com.stimulus.archiva.update.core.util.MessageDigests
 
 /**
  * @author Christian Schlichtherle

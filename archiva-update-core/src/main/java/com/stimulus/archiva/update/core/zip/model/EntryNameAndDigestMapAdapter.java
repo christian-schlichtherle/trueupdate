@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.core.zip.model;
 
+import com.stimulus.archiva.update.core.util.HashMaps;
+
 import java.util.*;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
@@ -18,21 +20,23 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 @Immutable
 final class EntryNameAndDigestMapAdapter
 extends XmlAdapter<EntryNameAndDigestCollectionHolder,
-                   SortedMap<String, EntryNameAndDigest>> {
+                   Map<String, EntryNameAndDigest>> {
 
     @Override
-    public SortedMap<String, EntryNameAndDigest> unmarshal(
+    public Map<String, EntryNameAndDigest> unmarshal(
             final @CheckForNull EntryNameAndDigestCollectionHolder holder) {
         if (null == holder) return null;
-        final SortedMap<String, EntryNameAndDigest> map = new TreeMap<>();
-        for (EntryNameAndDigest entryNameAndDigest : holder.entry)
+        final Collection<EntryNameAndDigest> entries = holder.entry;
+        final Map<String, EntryNameAndDigest>
+                map = new LinkedHashMap<>(HashMaps.initialCapacity(entries.size()));
+        for (EntryNameAndDigest entryNameAndDigest : entries)
             map.put(entryNameAndDigest.name, entryNameAndDigest);
         return map;
     }
 
     @Override
     public EntryNameAndDigestCollectionHolder marshal(
-            final @CheckForNull SortedMap<String, EntryNameAndDigest> map) {
+            final @CheckForNull Map<String, EntryNameAndDigest> map) {
         if (null == map) return null;
         final EntryNameAndDigestCollectionHolder
                 holder = new EntryNameAndDigestCollectionHolder();

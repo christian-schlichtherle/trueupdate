@@ -5,7 +5,7 @@
 package com.stimulus.archiva.update.core.zip.diff;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
-import com.stimulus.archiva.update.core.digest.MessageDigests;
+import com.stimulus.archiva.update.core.util.MessageDigests;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
 import com.stimulus.archiva.update.core.zip.model.*;

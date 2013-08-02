@@ -4,9 +4,9 @@
  */
 package com.stimulus.archiva.update.core.zip.model;
 
-import java.util.Collection;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import com.stimulus.archiva.update.core.util.HashMaps;
+
+import java.util.*;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -20,22 +20,23 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 @Immutable
 final class EntryNameAndTwoDigestsMapAdapter
 extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
-                   SortedMap<String, EntryNameAndTwoDigests>> {
+                   Map<String, EntryNameAndTwoDigests>> {
 
     @Override
-    public SortedMap<String, EntryNameAndTwoDigests> unmarshal(
+    public Map<String, EntryNameAndTwoDigests> unmarshal(
             final @CheckForNull EntryNameAndTwoDigestsCollectionHolder holder) {
         if (null == holder) return null;
-        final SortedMap<String, EntryNameAndTwoDigests>
-                map = new TreeMap<>();
-        for (EntryNameAndTwoDigests entryNameAndTwoDigests : holder.entry)
+        final Collection<EntryNameAndTwoDigests> entries = holder.entry;
+        final Map<String, EntryNameAndTwoDigests>
+                map = new LinkedHashMap<>(HashMaps.initialCapacity(entries.size()));
+        for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
             map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
         return map;
     }
 
     @Override
     public EntryNameAndTwoDigestsCollectionHolder marshal(
-            final @CheckForNull SortedMap<String, EntryNameAndTwoDigests> map) {
+            final @CheckForNull Map<String, EntryNameAndTwoDigests> map) {
         if (null == map) return null;
         final EntryNameAndTwoDigestsCollectionHolder
                 holder = new EntryNameAndTwoDigestsCollectionHolder();

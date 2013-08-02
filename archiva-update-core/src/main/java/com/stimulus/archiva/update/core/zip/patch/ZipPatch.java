@@ -5,7 +5,7 @@
 package com.stimulus.archiva.update.core.zip.patch;
 
 import com.stimulus.archiva.update.core.codec.JaxbCodec;
-import com.stimulus.archiva.update.core.digest.MessageDigests;
+import com.stimulus.archiva.update.core.util.MessageDigests;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
 import com.stimulus.archiva.update.core.zip.model.Diff;
@@ -15,6 +15,8 @@ import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
 import java.io.*;
 import java.security.*;
 import static java.util.Objects.requireNonNull;
+
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.zip.*;
 import javax.annotation.*;
@@ -114,7 +116,7 @@ public abstract class ZipPatch {
 
             final <T> PatchSet apply(
                     final Transformation<T> transformation,
-                    final @CheckForNull SortedMap<String, T> selection)
+                    final @CheckForNull Map<String, T> selection)
             throws IOException {
                 if (null == selection) return this;
                 for (final T item : selection.values()) {

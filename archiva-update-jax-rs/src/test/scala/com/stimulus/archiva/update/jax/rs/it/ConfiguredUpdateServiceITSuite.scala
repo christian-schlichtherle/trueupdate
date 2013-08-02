@@ -6,7 +6,8 @@ package com.stimulus.archiva.update.jax.rs.it
 
 import com.stimulus.archiva.update.core.artifact._
 import com.stimulus.archiva.update.core.io._
-import com.stimulus.archiva.update.core.io.Loan._
+import com.stimulus.archiva.update.core.util
+import util.Loan._
 import com.stimulus.archiva.update.core.it.ArtifactITContext
 import com.stimulus.archiva.update.core.zip.model.Diffs
 import com.stimulus.archiva.update.jax.rs._

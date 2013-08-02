@@ -29,13 +29,13 @@ public final class Diff {
     public Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public SortedMap<String, EntryNameAndDigest> unchanged;
+    public Map<String, EntryNameAndDigest> unchanged;
 
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
-    public SortedMap<String, EntryNameAndTwoDigests> changed;
+    public Map<String, EntryNameAndTwoDigests> changed;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public SortedMap<String, EntryNameAndDigest> added, removed;
+    public Map<String, EntryNameAndDigest> added, removed;
 
     @Deprecated
     public @CheckForNull

@@ -6,6 +6,7 @@ package com.stimulus.archiva.update.core.zip.model;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.util.Collection;
 
 /**
  * Provides utilities for ZIP diff beans.

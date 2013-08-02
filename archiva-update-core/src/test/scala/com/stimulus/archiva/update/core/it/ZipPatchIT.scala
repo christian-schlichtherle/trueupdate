@@ -5,7 +5,8 @@
 package com.stimulus.archiva.update.core.it
 
 import com.stimulus.archiva.update.core.io.FileStore
-import com.stimulus.archiva.update.core.io.Loan._
+import com.stimulus.archiva.update.core.util.Loan
+import Loan._
 import com.stimulus.archiva.update.core.zip.diff.ZipDiff
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

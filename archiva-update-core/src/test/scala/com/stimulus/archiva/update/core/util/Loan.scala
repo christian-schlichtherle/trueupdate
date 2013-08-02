@@ -1,10 +1,44 @@
 /*
- * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+ * Copyright (C) 2005-2013 Schlichtherle IT Services.
+ * Copyright (C) 2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.core.io
+package com.stimulus.archiva.update.core.util
 
 import javax.annotation.concurrent._
+
+/** Simulates Java's basic `try`-with-resources statement to implement the loan
+  * pattern.
+  *
+  * When used like this
+  * {{{
+  * import net.java.truecommons.io.Loan._
+  * val out: OutputStream = ...
+  * loan (new PrintWriter(out)) to { w: PrintWriter => w.println("Hello world!") }
+  * }}}
+  * then `w.close()` is guaranteed to get called, even if the function block
+  * terminates with a [[java.lang.Throwable]].
+  *
+  * If the function block throws a `Throwable` `ex` and the `close` method
+  * throws another `Throwable` `ex2`, then the exception of the `close` method
+  * gets added to the exception of the function block using
+  * `ex.addSuppressed(ex2)`.
+  *
+  * If you prefer a more concise syntax, please check the companion class of
+  * this object.
+  *
+  * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.20.3.1">The Java Language Specification: Java SE 7 Edition: 14.20.3.1 Basic try-with-resources</a>
+  * @author Christian Schlichtherle (copied and edited from TrueCommons I/O 2.3.2)
+  */
+object Loan {
+  /** Constructs a new loan.
+    * @param resource the nullable resource to close upon a call to `to`.
+    */
+  def loan[A <: AutoCloseable](resource: A) = new Loan(resource)
+
+  /** Equivalent to `loan`. */
+  def apply[A <: AutoCloseable](resource: A) = loan(resource)
+}
 
 /** Simulates Java's basic `try`-with-resources statement to implement the loan
   * pattern.
@@ -63,37 +97,4 @@ final class Loan[A <: AutoCloseable](resource: A) {
 
   /** Equivalent to `to`. */
   def apply[B](block: A => B) = to(block)
-}
-
-/** Simulates Java's basic `try`-with-resources statement to implement the loan
-  * pattern.
-  *
-  * When used like this
-  * {{{
-  * import net.java.truecommons.io.Loan._
-  * val out: OutputStream = ...
-  * loan (new PrintWriter(out)) to { w: PrintWriter => w.println("Hello world!") }
-  * }}}
-  * then `w.close()` is guaranteed to get called, even if the function block
-  * terminates with a [[java.lang.Throwable]].
-  *
-  * If the function block throws a `Throwable` `ex` and the `close` method
-  * throws another `Throwable` `ex2`, then the exception of the `close` method
-  * gets added to the exception of the function block using
-  * `ex.addSuppressed(ex2)`.
-  *
-  * If you prefer a more concise syntax, please check the companion class of
-  * this object.
-  *
-  * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.20.3.1">The Java Language Specification: Java SE 7 Edition: 14.20.3.1 Basic try-with-resources</a>
-  * @author Christian Schlichtherle
-  */
-object Loan {
-  /** Constructs a new loan.
-    * @param resource the nullable resource to close upon a call to `to`.
-    */
-  def loan[A <: AutoCloseable](resource: A) = new Loan(resource)
-
-  /** Equivalent to `loan`. */
-  def apply[A <: AutoCloseable](resource: A) = loan(resource)
 }
