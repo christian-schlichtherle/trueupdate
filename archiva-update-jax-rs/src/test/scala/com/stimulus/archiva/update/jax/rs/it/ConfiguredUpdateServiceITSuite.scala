@@ -28,10 +28,9 @@ import ConfiguredUpdateServiceITSuite._
 
 private object ConfiguredUpdateServiceITSuite {
 
-  private val logger = LoggerFactory.getLogger(
-    classOf[ConfiguredUpdateServiceITSuite])
+  val logger = LoggerFactory.getLogger(classOf[ConfiguredUpdateServiceITSuite])
 
-  private def queryParams(descriptor: ArtifactDescriptor) = {
+  def queryParams(descriptor: ArtifactDescriptor) = {
     val map = new MultivaluedMapImpl
     map.putSingle("groupId", descriptor.groupId)
     map.putSingle("artifactId", descriptor.artifactId)
@@ -82,9 +81,9 @@ extends JerseyTest { this: ArtifactITContext =>
           override def close() { zipIn closeEntry () }
         }
       }
-      val store = new MemoryStore
+      val store = memoryStore
       Copy copy (source, store)
-      logger debug ("\n{}", new String(store.data, "UTF-8"))
+      logger debug ("\n{}", utf8String(store))
     }
   }
 

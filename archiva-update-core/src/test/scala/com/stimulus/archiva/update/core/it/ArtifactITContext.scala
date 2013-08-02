@@ -7,7 +7,7 @@ package com.stimulus.archiva.update.core.it
 import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
 
 /** @author Christian Schlichtherle */
-trait ArtifactITContext {
+trait ArtifactITContext extends TestContext {
   def artifactResolver: ArtifactResolver
   def artifactDescriptor: ArtifactDescriptor
 }

@@ -15,11 +15,13 @@ import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import com.stimulus.archiva.update.core.util.MessageDigests
+import javax.xml.bind.JAXBContext
+import com.stimulus.archiva.update.core.zip.model.Diff
 
 /**
  * @author Christian Schlichtherle
  */
-trait ZipITContext {
+trait ZipITContext extends TestContext {
 
   def withZipDiff[A](fun: ZipDiff => A) =
     withZipFiles { (firstZipFile, secondZipFile) =>
@@ -54,5 +56,5 @@ trait ZipITContext {
 
   def digest = MessageDigests.sha1
 
-  def store = new MemoryStore
+  override lazy val jaxbContext = JAXBContext.newInstance(classOf[Diff])
 }

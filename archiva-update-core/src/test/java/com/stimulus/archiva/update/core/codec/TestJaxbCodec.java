@@ -11,9 +11,9 @@ import javax.xml.bind.Marshaller;
 /**
  * @author Christian Schlichtherle
  */
-public class JaxbTestCodec extends JaxbCodec {
+public class TestJaxbCodec extends JaxbCodec {
 
-    public JaxbTestCodec(JAXBContext context) { super(context); }
+    public TestJaxbCodec(JAXBContext context) { super(context); }
 
     @Override protected Marshaller marshaller() throws JAXBException {
         final Marshaller marshaller = super.marshaller();
