@@ -14,7 +14,7 @@ import org.sonatype.maven.wagon.AhcWagon;
  *
  * @author Christian Schlichtherle (revision)
  */
-final class ManualWagonProvider implements WagonProvider {
+final class AhcWagonProvider implements WagonProvider {
 
     @Override public Wagon lookup(String roleHint) throws Exception {
         return "http".equals(roleHint) ? new AhcWagon() : null;

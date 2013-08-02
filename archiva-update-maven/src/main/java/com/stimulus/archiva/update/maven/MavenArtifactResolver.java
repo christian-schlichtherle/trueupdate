@@ -181,7 +181,7 @@ public class MavenArtifactResolver implements ArtifactResolver {
                         FileRepositoryConnectorFactory.class)
                 .addService(RepositoryConnectorFactory.class,
                         WagonRepositoryConnectorFactory.class)
-                .setServices(WagonProvider.class, new ManualWagonProvider());
+                .setServices(WagonProvider.class, new AhcWagonProvider());
         sl.setErrorHandler(errorHandler());
         return sl;
     }
