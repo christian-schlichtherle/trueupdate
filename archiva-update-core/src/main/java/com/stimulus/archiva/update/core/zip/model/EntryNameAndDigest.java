@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class EntryNameAndDigest {
 
     /** Used by JAXB. */
-    public EntryNameAndDigest() { }
+    private EntryNameAndDigest() { }
 
     /** Default constructor. */
     public EntryNameAndDigest(

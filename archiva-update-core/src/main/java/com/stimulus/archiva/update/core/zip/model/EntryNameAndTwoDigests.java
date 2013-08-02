@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class EntryNameAndTwoDigests {
 
     /** Used by JAXB. */
-    public EntryNameAndTwoDigests() { }
+    private EntryNameAndTwoDigests() { }
 
     /**
      * Default constructor.
