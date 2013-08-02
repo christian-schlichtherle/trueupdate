@@ -55,7 +55,7 @@ public final class Diff {
     }
 
     @Override public boolean equals(final Object obj) {
-        if (obj == this) return true;
+        if (this == obj) return true;
         if (!(obj instanceof Diff)) return false;
         final Diff that = (Diff) obj;
         return  Objects.equals(this.unchanged, that.unchanged) &&
@@ -65,11 +65,11 @@ public final class Diff {
     }
 
     @Override public int hashCode() {
-        int hashCode = 17;
-        hashCode = 31 * hashCode + Objects.hashCode(unchanged);
-        hashCode = 31 * hashCode + Objects.hashCode(changed);
-        hashCode = 31 * hashCode + Objects.hashCode(added);
-        hashCode = 31 * hashCode + Objects.hashCode(removed);
-        return hashCode;
+        int hash = 17;
+        hash = 31 * hash + Objects.hashCode(unchanged);
+        hash = 31 * hash + Objects.hashCode(changed);
+        hash = 31 * hash + Objects.hashCode(added);
+        hash = 31 * hash + Objects.hashCode(removed);
+        return hash;
     }
 }

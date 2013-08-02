@@ -32,17 +32,17 @@ public final class EntryNameAndDigest {
     public @Nullable String name, digest;
 
     @Override public boolean equals(final Object obj) {
-        if (obj == this) return true;
+        if (this == obj) return true;
         if (!(obj instanceof EntryNameAndDigest)) return false;
         final EntryNameAndDigest that = (EntryNameAndDigest) obj;
-        return Objects.equals(this.name, that.name) &&
+        return  Objects.equals(this.name, that.name) &&
                 Objects.equals(this.digest, that.digest);
     }
 
     @Override public int hashCode() {
-        int hashCode = 17;
-        hashCode = 31 * hashCode + Objects.hashCode(name);
-        hashCode = 31 * hashCode + Objects.hashCode(digest);
-        return hashCode;
+        int hash = 17;
+        hash = 31 * hash + Objects.hashCode(name);
+        hash = 31 * hash + Objects.hashCode(digest);
+        return hash;
     }
 }
