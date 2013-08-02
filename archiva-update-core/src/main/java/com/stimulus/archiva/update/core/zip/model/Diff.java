@@ -6,8 +6,7 @@ package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.*;
 import javax.annotation.CheckForNull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -38,24 +37,20 @@ public final class Diff {
     public Map<String, EntryNameAndDigest> added, removed;
 
     @Deprecated
-    public @CheckForNull
-    EntryNameAndDigest unchanged(String name) {
+    public @CheckForNull EntryNameAndDigest unchanged(String name) {
         return null == unchanged ? null : unchanged.get(name);
     }
 
-    public @CheckForNull
-    EntryNameAndTwoDigests changed(String name) {
+    public @CheckForNull EntryNameAndTwoDigests changed(String name) {
         return null == changed ? null : changed.get(name);
     }
 
-    public @CheckForNull
-    EntryNameAndDigest added(String name) {
+    public @CheckForNull EntryNameAndDigest added(String name) {
         return null == added ? null : added.get(name);
     }
 
     @Deprecated
-    public @CheckForNull
-    EntryNameAndDigest removed(String name) {
+    public @CheckForNull EntryNameAndDigest removed(String name) {
         return null == removed ? null : removed.get(name);
     }
 
