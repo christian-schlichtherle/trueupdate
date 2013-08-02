@@ -10,7 +10,8 @@ import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
 import com.stimulus.archiva.update.core.zip.model.Diff;
 import com.stimulus.archiva.update.core.zip.model.Diffs;
-import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
+
 import java.io.*;
 import java.security.*;
 import static java.util.Objects.requireNonNull;
@@ -36,7 +37,7 @@ public abstract class ZipPatch {
     /** Returns the input ZIP file. */
     abstract @WillNotClose ZipFile inputZipFile();
 
-    /** Returns the JAXB context for unmarshalling the ZIP diff bean. */
+    /** Returns the JAXB context for unmarshalling the diff model. */
     abstract JAXBContext jaxbContext();
 
     /**
@@ -79,9 +80,9 @@ public abstract class ZipPatch {
 
         class EntrySink implements Sink {
 
-            final EntryNameWithDigest entryDigest;
+            final EntryNameAndDigest entryDigest;
 
-            EntrySink(final EntryNameWithDigest entryDigest) {
+            EntrySink(final EntryNameAndDigest entryDigest) {
                 this.entryDigest = entryDigest;
             }
 
@@ -117,16 +118,16 @@ public abstract class ZipPatch {
             throws IOException {
                 if (null == selection) return this;
                 for (final T item : selection.values()) {
-                    final EntryNameWithDigest
-                            entryNameWithDigest = transformation.apply(item);
-                    final String name = entryNameWithDigest.name;
+                    final EntryNameAndDigest
+                            entryNameAndDigest = transformation.apply(item);
+                    final String name = entryNameAndDigest.name;
                     final ZipEntry entry = source().getEntry(name);
                     if (null == entry)
                         throw ioException(new MissingZipEntryException(name));
                     try {
                         copyIfAcceptedByFilter(
                                 new EntrySource(entry, source()),
-                                new EntrySink(entryNameWithDigest));
+                                new EntrySink(entryNameAndDigest));
                     } catch (WrongMessageDigestException ex) {
                         throw ioException(ex);
                     }

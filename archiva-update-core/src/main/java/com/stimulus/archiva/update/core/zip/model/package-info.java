@@ -3,8 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model bean classes for use within ZIP patch files.
+ * Provides model classes for use within ZIP patch files.
  *
+ * @see com.stimulus.archiva.update.core.zip.model.Diff
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull

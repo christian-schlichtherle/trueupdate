@@ -4,14 +4,14 @@
  */
 package com.stimulus.archiva.update.core.zip.patch;
 
-import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
 
 /**
- * Transforms an object into an {@link EntryNameWithDigest}.
+ * Transforms an object into an {@link com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest}.
  *
  * @param <T> the type of the objects to transform.
  * @author Christian Schlichtherle
  */
 interface Transformation<T> {
-    EntryNameWithDigest apply(T item);
+    EntryNameAndDigest apply(T item);
 }

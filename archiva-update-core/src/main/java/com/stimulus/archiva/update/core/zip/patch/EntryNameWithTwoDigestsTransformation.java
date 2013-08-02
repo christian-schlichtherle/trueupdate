@@ -4,8 +4,8 @@
  */
 package com.stimulus.archiva.update.core.zip.patch;
 
-import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
-import com.stimulus.archiva.update.core.zip.model.EntryNameWithTwoDigests;
+import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameAndTwoDigests;
 
 /**
  * Selects the second entry name with digest from the given entry name with
@@ -14,9 +14,9 @@ import com.stimulus.archiva.update.core.zip.model.EntryNameWithTwoDigests;
  * @author Christian Schlichtherle
  */
 final class EntryNameWithTwoDigestsTransformation
-implements Transformation<EntryNameWithTwoDigests> {
-    @Override public EntryNameWithDigest apply(
-            EntryNameWithTwoDigests entryNameWithTwoDigests) {
-        return entryNameWithTwoDigests.entryNameWithSecondDigest();
+implements Transformation<EntryNameAndTwoDigests> {
+    @Override public EntryNameAndDigest apply(
+            EntryNameAndTwoDigests entryNameAndTwoDigests) {
+        return entryNameAndTwoDigests.entryNameWithSecondDigest();
     }
 }

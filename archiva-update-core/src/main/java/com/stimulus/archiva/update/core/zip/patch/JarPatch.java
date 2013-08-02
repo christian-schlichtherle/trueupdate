@@ -12,8 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Applies a ZIP patch file to an input ZIP or JAR file and writes an output
- * JAR file.
+ * Applies a ZIP patch file to an input ZIP file and writes an output JAR file.
  *
  * @author Christian Schlichtherle
  */

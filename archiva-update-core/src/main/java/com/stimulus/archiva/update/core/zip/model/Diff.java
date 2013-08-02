@@ -11,7 +11,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * A ZIP diff bean represents the meta data in a ZIP patch file.
+ * Models an optional unchanged, changed, added and removed map of entry names
+ * and message digests in canonical string notation, attributed with the
+ * message digest algorithm name and byte length.
+ * This model class represents the meta data in a ZIP patch file.
  * Mind you that this class is mutable.
  *
  * @author Christian Schlichtherle
@@ -25,34 +28,34 @@ public final class Diff {
     @XmlAttribute
     public Integer numBytes;
 
-    @XmlJavaTypeAdapter(EntryNameWithDigestMapAdapter.class)
-    public SortedMap<String, EntryNameWithDigest> unchanged;
+    @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
+    public SortedMap<String, EntryNameAndDigest> unchanged;
 
-    @XmlJavaTypeAdapter(EntryNameWithTwoDigestsMapAdapter.class)
-    public SortedMap<String, EntryNameWithTwoDigests> changed;
+    @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
+    public SortedMap<String, EntryNameAndTwoDigests> changed;
 
-    @XmlJavaTypeAdapter(EntryNameWithDigestMapAdapter.class)
-    public SortedMap<String, EntryNameWithDigest> added, removed;
+    @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
+    public SortedMap<String, EntryNameAndDigest> added, removed;
 
     @Deprecated
     public @CheckForNull
-    EntryNameWithDigest unchanged(String name) {
+    EntryNameAndDigest unchanged(String name) {
         return null == unchanged ? null : unchanged.get(name);
     }
 
     public @CheckForNull
-    EntryNameWithTwoDigests changed(String name) {
+    EntryNameAndTwoDigests changed(String name) {
         return null == changed ? null : changed.get(name);
     }
 
     public @CheckForNull
-    EntryNameWithDigest added(String name) {
+    EntryNameAndDigest added(String name) {
         return null == added ? null : added.get(name);
     }
 
     @Deprecated
     public @CheckForNull
-    EntryNameWithDigest removed(String name) {
+    EntryNameAndDigest removed(String name) {
         return null == removed ? null : removed.get(name);
     }
 

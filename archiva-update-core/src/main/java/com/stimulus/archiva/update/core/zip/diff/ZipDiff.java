@@ -110,7 +110,7 @@ public abstract class ZipDiff {
         new ZipPatchFileStreamer(diff).streamAddedOrChanged();
     }
 
-    /** Computes a ZIP diff bean from the two ZIP files. */
+    /** Computes a diff model from the two ZIP files. */
     public Diff computeDiff() throws IOException {
         final Computer computer = new Computer();
         new Engine().accept(computer);
@@ -179,19 +179,19 @@ public abstract class ZipDiff {
 
     private class Computer implements Visitor<IOException> {
 
-        final SortedMap<String, EntryNameWithDigest>
+        final SortedMap<String, EntryNameAndDigest>
                 removed = new TreeMap<>(),
                 added = new TreeMap<>(),
                 unchanged = new TreeMap<>();
 
-        final SortedMap<String, EntryNameWithTwoDigests>
+        final SortedMap<String, EntryNameAndTwoDigests>
                 changed = new TreeMap<>();
 
         @Override
         public void visitEntryInFirstFile(EntrySource entrySource)
         throws IOException {
             final String name = entrySource.name();
-            removed.put(name, new EntryNameWithDigest(name,
+            removed.put(name, new EntryNameAndDigest(name,
                     digestToHexString(entrySource)));
         }
 
@@ -199,7 +199,7 @@ public abstract class ZipDiff {
         public void visitEntryInSecondFile(EntrySource entrySource)
         throws IOException {
             final String name = entrySource.name();
-            added.put(name, new EntryNameWithDigest(name,
+            added.put(name, new EntryNameAndDigest(name,
                     digestToHexString(entrySource)));
         }
 
@@ -212,10 +212,10 @@ public abstract class ZipDiff {
             final String firstDigest = digestToHexString(firstEntrySource);
             final String secondDigest = digestToHexString(secondEntrySource);
             if (firstDigest.equals(secondDigest))
-                unchanged.put(firstName, new EntryNameWithDigest(firstName, firstDigest));
+                unchanged.put(firstName, new EntryNameAndDigest(firstName, firstDigest));
             else
                 changed.put(firstName,
-                        new EntryNameWithTwoDigests(firstName, firstDigest, secondDigest));
+                        new EntryNameAndTwoDigests(firstName, firstDigest, secondDigest));
         }
 
         String digestToHexString(Source source) throws IOException {

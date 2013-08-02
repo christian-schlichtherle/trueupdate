@@ -4,7 +4,7 @@
  */
 package com.stimulus.archiva.update.core.zip.patch;
 
-import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
+import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
 
 /**
  * The identity transformation.
@@ -12,9 +12,9 @@ import com.stimulus.archiva.update.core.zip.model.EntryNameWithDigest;
  * @author Christian Schlichtherle
  */
 final class IdentityTransformation
-implements Transformation<EntryNameWithDigest> {
-    @Override public EntryNameWithDigest apply(
-            EntryNameWithDigest entryNameWithDigest) {
-        return entryNameWithDigest;
+implements Transformation<EntryNameAndDigest> {
+    @Override public EntryNameAndDigest apply(
+            EntryNameAndDigest entryNameAndDigest) {
+        return entryNameAndDigest;
     }
 }

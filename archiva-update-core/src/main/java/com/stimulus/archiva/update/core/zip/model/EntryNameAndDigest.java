@@ -10,18 +10,18 @@ import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Represents a ZIP entry name and its message digest.
+ * Models a ZIP entry name and message digest in canonical string notation.
  * Mind you that this class is mutable.
  *
  * @author Christian Schlichtherle
  */
-public final class EntryNameWithDigest {
+public final class EntryNameAndDigest {
 
     /** Used by JAXB. */
-    public EntryNameWithDigest() { }
+    public EntryNameAndDigest() { }
 
     /** Default constructor. */
-    public EntryNameWithDigest(
+    public EntryNameAndDigest(
             final @CheckForNull String name,
             final @CheckForNull String digest) {
         this.name = name;
@@ -33,8 +33,8 @@ public final class EntryNameWithDigest {
 
     @Override public boolean equals(final Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof EntryNameWithDigest)) return false;
-        final EntryNameWithDigest that = (EntryNameWithDigest) obj;
+        if (!(obj instanceof EntryNameAndDigest)) return false;
+        final EntryNameAndDigest that = (EntryNameAndDigest) obj;
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.digest, that.digest);
     }

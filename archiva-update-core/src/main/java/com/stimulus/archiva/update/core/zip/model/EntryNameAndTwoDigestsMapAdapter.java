@@ -18,27 +18,27 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class EntryNameWithTwoDigestsMapAdapter
-extends XmlAdapter<EntryNameWithTwoDigestsCollectionHolder,
-                   SortedMap<String, EntryNameWithTwoDigests>> {
+final class EntryNameAndTwoDigestsMapAdapter
+extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
+                   SortedMap<String, EntryNameAndTwoDigests>> {
 
     @Override
-    public SortedMap<String, EntryNameWithTwoDigests> unmarshal(
-            final @CheckForNull EntryNameWithTwoDigestsCollectionHolder holder) {
+    public SortedMap<String, EntryNameAndTwoDigests> unmarshal(
+            final @CheckForNull EntryNameAndTwoDigestsCollectionHolder holder) {
         if (null == holder) return null;
-        final SortedMap<String, EntryNameWithTwoDigests>
+        final SortedMap<String, EntryNameAndTwoDigests>
                 map = new TreeMap<>();
-        for (final EntryNameWithTwoDigests entryNameWithTwoDigests : holder.entry)
-            map.put(entryNameWithTwoDigests.name, entryNameWithTwoDigests);
+        for (EntryNameAndTwoDigests entryNameAndTwoDigests : holder.entry)
+            map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
         return map;
     }
 
     @Override
-    public EntryNameWithTwoDigestsCollectionHolder marshal(
-            final @CheckForNull SortedMap<String, EntryNameWithTwoDigests> map) {
+    public EntryNameAndTwoDigestsCollectionHolder marshal(
+            final @CheckForNull SortedMap<String, EntryNameAndTwoDigests> map) {
         if (null == map) return null;
-        final EntryNameWithTwoDigestsCollectionHolder
-                holder = new EntryNameWithTwoDigestsCollectionHolder();
+        final EntryNameAndTwoDigestsCollectionHolder
+                holder = new EntryNameAndTwoDigestsCollectionHolder();
         holder.entry = map.values();
         return holder;
     }
@@ -50,6 +50,6 @@ extends XmlAdapter<EntryNameWithTwoDigestsCollectionHolder,
  *
  * @author Christian Schlichtherle
  */
-final class EntryNameWithTwoDigestsCollectionHolder {
-    public Collection<EntryNameWithTwoDigests> entry;
+final class EntryNameAndTwoDigestsCollectionHolder {
+    public Collection<EntryNameAndTwoDigests> entry;
 }
