@@ -5,8 +5,6 @@
 package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.*;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -23,35 +21,35 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public final class Diff {
 
     @XmlAttribute(required = true)
-    public @Nullable String algorithm;
+    public String algorithm;
 
     @XmlAttribute
-    public @Nullable Integer numBytes;
+    public Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public @Nullable Map<String, EntryNameAndDigest> unchanged;
+    public Map<String, EntryNameAndDigest> unchanged;
 
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
-    public @Nullable Map<String, EntryNameAndTwoDigests> changed;
+    public Map<String, EntryNameAndTwoDigests> changed;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public @Nullable Map<String, EntryNameAndDigest> added, removed;
+    public Map<String, EntryNameAndDigest> added, removed;
 
     @Deprecated
-    public @CheckForNull EntryNameAndDigest unchanged(String name) {
+    public EntryNameAndDigest unchanged(String name) {
         return null == unchanged ? null : unchanged.get(name);
     }
 
-    public @CheckForNull EntryNameAndTwoDigests changed(String name) {
+    public EntryNameAndTwoDigests changed(String name) {
         return null == changed ? null : changed.get(name);
     }
 
-    public @CheckForNull EntryNameAndDigest added(String name) {
+    public EntryNameAndDigest added(String name) {
         return null == added ? null : added.get(name);
     }
 
     @Deprecated
-    public @CheckForNull EntryNameAndDigest removed(String name) {
+    public EntryNameAndDigest removed(String name) {
         return null == removed ? null : removed.get(name);
     }
 

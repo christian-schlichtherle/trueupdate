@@ -7,7 +7,6 @@ package com.stimulus.archiva.update.core.zip.model;
 import com.stimulus.archiva.update.core.util.HashMaps;
 
 import java.util.*;
-import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -24,9 +23,10 @@ extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
 
     @Override
     public Map<String, EntryNameAndTwoDigests> unmarshal(
-            final @CheckForNull EntryNameAndTwoDigestsCollectionHolder holder) {
+            final EntryNameAndTwoDigestsCollectionHolder holder) {
         if (null == holder) return null;
         final Collection<EntryNameAndTwoDigests> entries = holder.entry;
+        assert null != entries;
         final Map<String, EntryNameAndTwoDigests>
                 map = new LinkedHashMap<>(HashMaps.initialCapacity(entries.size()));
         for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
@@ -36,7 +36,7 @@ extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
 
     @Override
     public EntryNameAndTwoDigestsCollectionHolder marshal(
-            final @CheckForNull Map<String, EntryNameAndTwoDigests> map) {
+            final Map<String, EntryNameAndTwoDigests> map) {
         if (null == map) return null;
         final EntryNameAndTwoDigestsCollectionHolder
                 holder = new EntryNameAndTwoDigestsCollectionHolder();

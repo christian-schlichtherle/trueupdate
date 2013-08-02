@@ -5,8 +5,6 @@
 package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.Objects;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
@@ -17,19 +15,17 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public final class EntryNameAndDigest {
 
-    /** Used by JAXB. */
-    private EntryNameAndDigest() { }
+    /** Required by JAXB. */
+    public EntryNameAndDigest() { }
 
     /** Default constructor. */
-    public EntryNameAndDigest(
-            final @CheckForNull String name,
-            final @CheckForNull String digest) {
+    public EntryNameAndDigest(final String name, final String digest) {
         this.name = name;
         this.digest = digest;
     }
 
     @XmlAttribute(required = true)
-    public @Nullable String name, digest;
+    public String name, digest;
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;

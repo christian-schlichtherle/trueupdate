@@ -5,8 +5,6 @@
 package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.Objects;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
@@ -17,17 +15,17 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public final class EntryNameAndTwoDigests {
 
-    /** Used by JAXB. */
-    private EntryNameAndTwoDigests() { }
+    /** Required by JAXB. */
+    public EntryNameAndTwoDigests() { }
 
     /**
      * Default constructor.
      * The first and second digest should not be equal.
      */
     public EntryNameAndTwoDigests(
-            final @CheckForNull String name,
-            final @CheckForNull String first,
-            final @CheckForNull String second) {
+            final String name,
+            final String first,
+            final String second) {
         this.name = name;
         assert !Objects.equals(first, second);
         this.first = first;
@@ -35,7 +33,7 @@ public final class EntryNameAndTwoDigests {
     }
 
     @XmlAttribute(required = true)
-    public @Nullable String name, first, second;
+    public String name, first, second;
 
     /** Returns the entry name with the first digest. */
     @Deprecated
