@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Hosts the stuff that didn't fit anywhere else.
+ * The stuff that didn't fit anywhere else.
  *
  * @author Christian Schlichtherle
  */
