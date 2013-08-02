@@ -28,7 +28,7 @@ public final class EntryNameAndDigest {
         this.digest = digest;
     }
 
-    @XmlAttribute
+    @XmlAttribute(required = true)
     public @Nullable String name, digest;
 
     @Override public boolean equals(final Object obj) {

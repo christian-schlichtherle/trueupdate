@@ -34,9 +34,8 @@ public final class EntryNameAndTwoDigests {
         this.second = second;
     }
 
-    @XmlAttribute
-    public @Nullable
-    String name, first, second;
+    @XmlAttribute(required = true)
+    public @Nullable String name, first, second;
 
     /** Returns the entry name with the first digest. */
     @Deprecated

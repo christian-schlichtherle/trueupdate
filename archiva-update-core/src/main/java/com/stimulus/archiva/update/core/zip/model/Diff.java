@@ -6,6 +6,7 @@ package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.*;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -21,20 +22,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public final class Diff {
 
-    @XmlAttribute
-    public String algorithm;
+    @XmlAttribute(required = true)
+    public @Nullable String algorithm;
 
     @XmlAttribute
-    public Integer numBytes;
+    public @Nullable Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public Map<String, EntryNameAndDigest> unchanged;
+    public @Nullable Map<String, EntryNameAndDigest> unchanged;
 
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
-    public Map<String, EntryNameAndTwoDigests> changed;
+    public @Nullable Map<String, EntryNameAndTwoDigests> changed;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public Map<String, EntryNameAndDigest> added, removed;
+    public @Nullable Map<String, EntryNameAndDigest> added, removed;
 
     @Deprecated
     public @CheckForNull EntryNameAndDigest unchanged(String name) {
@@ -58,7 +59,9 @@ public final class Diff {
         if (this == obj) return true;
         if (!(obj instanceof Diff)) return false;
         final Diff that = (Diff) obj;
-        return  Objects.equals(this.unchanged, that.unchanged) &&
+        return  Objects.equals(this.algorithm, that.algorithm) &&
+                Objects.equals(this.numBytes, that.numBytes) &&
+                Objects.equals(this.unchanged, that.unchanged) &&
                 Objects.equals(this.changed, that.changed) &&
                 Objects.equals(this.added, that.added) &&
                 Objects.equals(this.removed, that.removed);
@@ -66,6 +69,8 @@ public final class Diff {
 
     @Override public int hashCode() {
         int hash = 17;
+        hash = 31 * hash + Objects.hashCode(algorithm);
+        hash = 31 * hash + Objects.hashCode(numBytes);
         hash = 31 * hash + Objects.hashCode(unchanged);
         hash = 31 * hash + Objects.hashCode(changed);
         hash = 31 * hash + Objects.hashCode(added);
