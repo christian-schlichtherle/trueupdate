@@ -8,5 +8,4 @@
  * @see com.stimulus.archiva.update.core.zip.model.Diff
  * @author Christian Schlichtherle
  */
-@javax.xml.bind.annotation.XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
 package com.stimulus.archiva.update.core.zip.model;

@@ -47,7 +47,7 @@ extends XmlAdapter<EntryNameAndDigestCollectionHolder,
 
 /**
  * A Data Transfer Object (DTO) for JAXB.
- * Mind you that this class is mutable.
+ * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
  */

@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Models a ZIP entry name and two message digests in canonical string notation.
- * Mind you that this class is mutable.
+ * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
  */

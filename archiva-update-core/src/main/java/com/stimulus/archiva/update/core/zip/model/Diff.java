@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * and message digests in canonical string notation, attributed with the
  * message digest algorithm name and byte length.
  * This model class represents the meta data in a ZIP patch file.
- * Mind you that this class is mutable.
+ * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
  */
