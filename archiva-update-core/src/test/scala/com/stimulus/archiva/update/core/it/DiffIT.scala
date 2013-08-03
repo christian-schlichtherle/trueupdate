@@ -14,25 +14,16 @@ import org.scalatest.matchers.ShouldMatchers._
 @RunWith(classOf[JUnitRunner])
 class DiffIT extends WordSpec with ZipITContext {
 
-  def roundTrip(original: Diff) {
-    val store = memoryStore
-    jaxbCodec encode (store, original)
-    logger debug ("\n{}", utf8String(store))
-    val clone: Diff = jaxbCodec decode (store, classOf[Diff])
-    clone should equal (original)
-    clone should not be theSameInstanceAs (original)
-  }
-
   "A diff model" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        roundTrip(new Diff)
+        assertRoundTripXmlSerializable(new Diff)
       }
     }
 
     "computed from a ZIP diff" should {
       "be round-trip XML-serializable" in {
-        roundTrip(withZipDiff(_ computeDiff ()))
+        assertRoundTripXmlSerializable(withZipDiff(_ computeDiff ()))
       }
     }
   }

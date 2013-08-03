@@ -4,12 +4,13 @@
  */
 package com.stimulus.archiva.update.core
 
+import com.stimulus.archiva.update.core.codec._
 import com.stimulus.archiva.update.core.io.MemoryStore
 import java.nio.charset.Charset
 import java.lang.String
-import com.stimulus.archiva.update.core.codec.{TestJaxbCodec, JaxbCodec}
-import org.slf4j.LoggerFactory
 import javax.xml.bind.JAXBContext
+import org.slf4j.LoggerFactory
+import org.scalatest.matchers.ShouldMatchers._
 
 /** @author Christian Schlichtherle */
 object TestContext {
@@ -28,7 +29,16 @@ trait TestContext {
 
   def memoryStore = new MemoryStore
 
-  def jaxbCodec = new TestJaxbCodec(jaxbContext)
+  def jaxbCodec: JaxbCodec = new TestJaxbCodec(jaxbContext)
 
   lazy val jaxbContext: JAXBContext = throw new UnsupportedOperationException
+
+  final def assertRoundTripXmlSerializable(original: AnyRef) {
+    val store = memoryStore
+    jaxbCodec encode (store, original)
+    logger debug ("\n{}", utf8String(store))
+    val clone: AnyRef = jaxbCodec decode (store, original.getClass)
+    clone should equal (original)
+    clone should not be theSameInstanceAs (original)
+  }
 }

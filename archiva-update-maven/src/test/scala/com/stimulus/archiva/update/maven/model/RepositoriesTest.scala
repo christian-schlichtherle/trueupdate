@@ -5,17 +5,13 @@
 package com.stimulus.archiva.update.maven.model
 
 import com.stimulus.archiva.update.core.TestContext
-import javax.xml.bind.JAXBContext
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
-import org.scalatest.matchers.ShouldMatchers._
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
 class RepositoriesTest extends WordSpec with TestContext {
-
-  override lazy val jaxbContext = Repositories.jaxbContext
 
   def empty = repositories(null)
 
@@ -31,25 +27,18 @@ class RepositoriesTest extends WordSpec with TestContext {
     new Repositories(local, remotes.asJava)
   }
 
-  def roundTrip(original: Repositories) {
-    val store = memoryStore
-    jaxbCodec encode (store, original)
-    logger debug ("\n{}", utf8String(store))
-    val clone: Repositories = jaxbCodec decode (store, classOf[Repositories])
-    clone should equal (original)
-    clone should not be theSameInstanceAs (original)
-  }
+  override lazy val jaxbContext = Repositories.jaxbContext
 
   "A repositories model" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        roundTrip(empty)
+        assertRoundTripXmlSerializable(empty)
       }
     }
 
     "constructed with all data populated" should {
       "be round-trip XML-serializable" in {
-        roundTrip(populated)
+        assertRoundTripXmlSerializable(populated)
       }
     }
   }

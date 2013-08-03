@@ -11,7 +11,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.CheckForNull;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
@@ -32,14 +32,14 @@ import org.eclipse.aether.version.Version;
  *
  * @author Christian Schlichtherle
  */
-@ThreadSafe
+@Immutable
 public class MavenArtifactResolver implements ArtifactResolver {
 
     private volatile ServiceLocator serviceLocator;
     private volatile RepositorySystemSession repositorySystemSession;
 
-    private final LocalRepository local;
-    private final List<RemoteRepository> remotes;
+    final LocalRepository local;
+    final List<RemoteRepository> remotes;
 
     /**
      * Constructs a maven path resolver which uses the given local and remote
@@ -49,8 +49,8 @@ public class MavenArtifactResolver implements ArtifactResolver {
      * @param local the local repository for artifacts.
      * @param remotes the array of remote repositories for artifacts.
      */
-    public MavenArtifactResolver(final LocalRepository local,
-                                 final RemoteRepository... remotes) {
+    public MavenArtifactResolver(LocalRepository local,
+                                 RemoteRepository... remotes) {
         this(local, asList(remotes));
     }
 
