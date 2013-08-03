@@ -8,6 +8,7 @@ import com.stimulus.archiva.update.core.util.HashMaps;
 
 import java.util.*;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
@@ -25,7 +26,7 @@ extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
     public Map<String, EntryNameAndTwoDigests> unmarshal(
             final EntryNameAndTwoDigestsCollectionHolder holder) {
         if (null == holder) return null;
-        final Collection<EntryNameAndTwoDigests> entries = holder.entry;
+        final Collection<EntryNameAndTwoDigests> entries = holder.entries;
         assert null != entries;
         final Map<String, EntryNameAndTwoDigests>
                 map = new LinkedHashMap<>(HashMaps.initialCapacity(entries.size()));
@@ -40,7 +41,7 @@ extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
         if (null == map) return null;
         final EntryNameAndTwoDigestsCollectionHolder
                 holder = new EntryNameAndTwoDigestsCollectionHolder();
-        holder.entry = map.values();
+        holder.entries = map.values();
         return holder;
     }
 }
@@ -52,5 +53,6 @@ extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
  * @author Christian Schlichtherle
  */
 final class EntryNameAndTwoDigestsCollectionHolder {
-    public Collection<EntryNameAndTwoDigests> entry;
+    @XmlElement(name = "entry")
+    public Collection<EntryNameAndTwoDigests> entries;
 }

@@ -3,9 +3,10 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model classes for configuring a maven artifact resolver.
+ * Provides model classes for configuring a local and some remote Maven
+ * repositories.
  *
+ * @see com.stimulus.archiva.update.maven.model.Repositories
  * @author Christian Schlichtherle
  */
-@javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
 package com.stimulus.archiva.update.maven.model;

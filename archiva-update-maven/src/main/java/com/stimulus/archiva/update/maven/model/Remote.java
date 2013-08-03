@@ -5,21 +5,30 @@
 package com.stimulus.archiva.update.maven.model;
 
 import java.util.Objects;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Models a remote repository.
- * Mind you that this class is mutable.
+ * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
  */
-public class Remote {
+public final class Remote {
 
-    public @Nullable String id, type;
+    public String id, type;
 
     @XmlElement(required = true)
-    public @Nullable String url;
+    public String url;
+
+    /** Required by JAXB. */
+    public Remote() { }
+
+    /** Courtesy constructor. */
+    public Remote(final String id, final String type, final String url) {
+        this.id = id;
+        this.type = type;
+        this.url = url;
+    }
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;

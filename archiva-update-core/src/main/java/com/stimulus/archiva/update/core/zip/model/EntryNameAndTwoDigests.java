@@ -15,11 +15,14 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public final class EntryNameAndTwoDigests {
 
+    @XmlAttribute(required = true)
+    public String name, first, second;
+
     /** Required by JAXB. */
     public EntryNameAndTwoDigests() { }
 
     /**
-     * Default constructor.
+     * Courtesy constructor.
      * The first and second digest should not be equal.
      */
     public EntryNameAndTwoDigests(
@@ -31,9 +34,6 @@ public final class EntryNameAndTwoDigests {
         this.first = first;
         this.second = second;
     }
-
-    @XmlAttribute(required = true)
-    public String name, first, second;
 
     /** Returns the entry name with the first digest. */
     @Deprecated

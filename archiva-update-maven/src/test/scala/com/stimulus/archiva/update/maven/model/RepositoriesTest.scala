@@ -15,30 +15,21 @@ import org.scalatest.matchers.ShouldMatchers._
 @RunWith(classOf[JUnitRunner])
 class RepositoriesTest extends WordSpec with TestContext {
 
-  override lazy val jaxbContext = JAXBContext.newInstance(classOf[Repositories])
+  override lazy val jaxbContext = Repositories.jaxbContext
 
-  def populated = {
-    val repositories = this.repositories
-    repositories.local = local("basedir")
-    repositories.remote.add(remote("url1"))
-    repositories.remote.add(remote("url2"))
-    repositories
+  def empty = repositories(null)
+
+  def populated =
+    repositories(local("basedir"), remote("url1"), remote("url2"))
+
+  def local(basedir: String) = new Local(basedir, "local")
+
+  def remote(url: String) = new Remote(null, "remote", url)
+
+  def repositories(local: Local, remotes: Remote*) = {
+    import collection.JavaConverters._
+    new Repositories(local, remotes.asJava)
   }
-
-  def local(basedir: String) = {
-    val local = new Local
-    local.basedir = basedir
-    local
-  }
-
-  def remote(url: String) = {
-    val remote = new Remote
-    remote.`type` = "remote"
-    remote.url = url
-    remote
-  }
-
-  def repositories = new Repositories
 
   def roundTrip(original: Repositories) {
     val store = memoryStore
@@ -52,7 +43,7 @@ class RepositoriesTest extends WordSpec with TestContext {
   "A repositories model" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        roundTrip(repositories)
+        roundTrip(empty)
       }
     }
 

@@ -15,17 +15,17 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public final class EntryNameAndDigest {
 
+    @XmlAttribute(required = true)
+    public String name, digest;
+
     /** Required by JAXB. */
     public EntryNameAndDigest() { }
 
-    /** Default constructor. */
+    /** Courtesy constructor. */
     public EntryNameAndDigest(final String name, final String digest) {
         this.name = name;
         this.digest = digest;
     }
-
-    @XmlAttribute(required = true)
-    public String name, digest;
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;

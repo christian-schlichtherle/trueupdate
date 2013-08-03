@@ -5,21 +5,29 @@
 package com.stimulus.archiva.update.maven.model;
 
 import java.util.Objects;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Models a local repository.
- * Mind you that this class is mutable.
+ * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
  */
 public final class Local {
 
     @XmlElement(required = true)
-    public @Nullable String basedir;
+    public String basedir;
 
-    public @Nullable String type;
+    public String type;
+
+    /** Required by JAXB. */
+    public Local() { }
+
+    /** Courtesy constructor. */
+    public Local(final String basedir, final String type) {
+        this.basedir = basedir;
+        this.type = type;
+    }
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
