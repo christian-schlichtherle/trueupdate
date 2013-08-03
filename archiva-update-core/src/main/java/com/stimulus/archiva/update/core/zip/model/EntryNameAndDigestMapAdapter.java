@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * Adapts a sorted map of entry digests to a collection so that JAXB can
+ * Adapts a map of entry names and digests to a collection so that JAXB can
  * marshall / unmarshall it.
  *
  * @author Christian Schlichtherle
@@ -22,8 +22,7 @@ final class EntryNameAndDigestMapAdapter
 extends XmlAdapter<EntryNameAndDigestCollectionHolder,
                    Map<String, EntryNameAndDigest>> {
 
-    @Override
-    public Map<String, EntryNameAndDigest> unmarshal(
+    @Override public Map<String, EntryNameAndDigest> unmarshal(
             final EntryNameAndDigestCollectionHolder holder) {
         if (null == holder) return null;
         final Collection<EntryNameAndDigest> entries = holder.entries;
@@ -35,8 +34,7 @@ extends XmlAdapter<EntryNameAndDigestCollectionHolder,
         return map;
     }
 
-    @Override
-    public EntryNameAndDigestCollectionHolder marshal(
+    @Override public EntryNameAndDigestCollectionHolder marshal(
             final Map<String, EntryNameAndDigest> map) {
         if (null == map) return null;
         final EntryNameAndDigestCollectionHolder
