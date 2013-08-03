@@ -9,7 +9,7 @@ import com.stimulus.archiva.update.core.io._
 import com.stimulus.archiva.update.core.util
 import util.Loan._
 import com.stimulus.archiva.update.core.it.ArtifactITContext
-import com.stimulus.archiva.update.core.zip.model.Diffs
+import com.stimulus.archiva.update.core.zip.model.Diff
 import com.stimulus.archiva.update.jax.rs._
 import com.sun.jersey.api.client.ClientResponse
 import com.sun.jersey.api.client.ClientResponse.Status
@@ -75,7 +75,7 @@ extends JerseyTest { this: ArtifactITContext =>
     response.getClientResponseStatus should be (Status.OK)
     loan(new ZipInputStream(response getEntityInputStream ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
-      entry.getName should be (Diffs.DIFF_ENTRY_NAME)
+      entry.getName should be (Diff.ENTRY_NAME)
       val source = new Source {
         def input() = new FilterInputStream(zipIn) {
           override def close() { zipIn closeEntry () }

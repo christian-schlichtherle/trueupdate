@@ -79,7 +79,7 @@ public abstract class ZipDiff {
             ZipPatchFileStreamer(final Diff diff) throws IOException {
                 try {
                     new JaxbCodec(jaxbContext()).encode(
-                            new EntrySink(Diffs.DIFF_ENTRY_NAME), diff);
+                            new EntrySink(Diff.ENTRY_NAME), diff);
                 } catch (IOException | RuntimeException ex) {
                     throw ex;
                 } catch (Exception ex) {
@@ -258,7 +258,7 @@ public abstract class ZipDiff {
         public ZipDiff build() {
             return create(firstZipFile, secondZipFile,
                     null != messageDigest ? messageDigest : MessageDigests.sha1(),
-                    null != jaxbContext ? jaxbContext : Diffs.jaxbContext());
+                    null != jaxbContext ? jaxbContext : Diff.jaxbContext());
         }
 
         private static ZipDiff create(

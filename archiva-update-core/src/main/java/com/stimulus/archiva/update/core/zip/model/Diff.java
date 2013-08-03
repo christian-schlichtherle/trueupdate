@@ -5,6 +5,8 @@
 package com.stimulus.archiva.update.core.zip.model;
 
 import java.util.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -19,6 +21,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlRootElement
 public final class Diff {
+
+    /**
+     * The name of the entry which contains the marshalled diff model in a
+     * ZIP patch file.
+     * This should be the first entry in the ZIP patch file.
+     */
+    public static final String ENTRY_NAME = "META-INF/diff.xml";
 
     @XmlAttribute(required = true)
     public String algorithm;
@@ -74,5 +83,18 @@ public final class Diff {
         hash = 31 * hash + Objects.hashCode(added);
         hash = 31 * hash + Objects.hashCode(removed);
         return hash;
+    }
+
+    /** Returns a JAXB context which binds only this class. */
+    public static JAXBContext jaxbContext() { return Lazy.JAXB_CONTEXT; }
+
+    private static class Lazy {
+
+        static final JAXBContext JAXB_CONTEXT;
+
+        static {
+            try { JAXB_CONTEXT = JAXBContext.newInstance(Diff.class); }
+            catch (JAXBException ex) { throw new AssertionError(ex); }
+        }
     }
 }

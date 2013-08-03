@@ -4,20 +4,17 @@
  */
 package com.stimulus.archiva.update.core.it
 
-import com.stimulus.archiva.update.core.io._
-import com.stimulus.archiva.update.core.util.{Loan, MessageDigests}
-import Loan._
+import com.stimulus.archiva.update.core.TestContext
+import com.stimulus.archiva.update.core.util.Loan._
+import com.stimulus.archiva.update.core.util.MessageDigests
 import com.stimulus.archiva.update.core.zip.diff.ZipDiff
+import com.stimulus.archiva.update.core.zip.model.Diff
 import com.stimulus.archiva.update.core.zip.patch.ZipPatch
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
-import com.stimulus.archiva.update.core.util.MessageDigests
-import javax.xml.bind.JAXBContext
-import com.stimulus.archiva.update.core.zip.model.{Diffs, Diff}
-import com.stimulus.archiva.update.core.TestContext
 
 /**
  * @author Christian Schlichtherle
@@ -57,5 +54,5 @@ trait ZipITContext extends TestContext {
 
   def digest = MessageDigests.sha1
 
-  override lazy val jaxbContext = Diffs.jaxbContext
+  override lazy val jaxbContext = Diff.jaxbContext
 }

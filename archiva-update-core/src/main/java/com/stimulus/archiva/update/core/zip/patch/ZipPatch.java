@@ -9,7 +9,6 @@ import com.stimulus.archiva.update.core.util.MessageDigests;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
 import com.stimulus.archiva.update.core.zip.model.Diff;
-import com.stimulus.archiva.update.core.zip.model.Diffs;
 import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
 
 import java.io.*;
@@ -17,7 +16,6 @@ import java.security.*;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -183,10 +181,10 @@ public abstract class ZipPatch {
     }
 
     private Diff loadDiff() throws IOException {
-        final ZipEntry entry = zipPatchFile().getEntry(Diffs.DIFF_ENTRY_NAME);
+        final ZipEntry entry = zipPatchFile().getEntry(Diff.ENTRY_NAME);
         if (null == entry)
             throw new InvalidZipPatchFileException(zipPatchFile().getName(),
-                    new MissingZipEntryException(Diffs.DIFF_ENTRY_NAME));
+                    new MissingZipEntryException(Diff.ENTRY_NAME));
         try {
             return new JaxbCodec(jaxbContext()).decode(
                     new EntrySource(entry, zipPatchFile()), Diff.class);
@@ -230,7 +228,7 @@ public abstract class ZipPatch {
 
         public ZipPatch build() {
             return create(zipPatchFile, inputZipFile, outputJarFile,
-                    null != jaxbContext ? jaxbContext : Diffs.jaxbContext()
+                    null != jaxbContext ? jaxbContext : Diff.jaxbContext()
             );
         }
 
