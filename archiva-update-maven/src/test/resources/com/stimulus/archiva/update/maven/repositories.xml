@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repositories>
+    <local>
+        <basedir>basedir</basedir>
+        <type>local</type>
+    </local>
+    <remote>
+        <type>remote</type>
+        <url>url1</url>
+    </remote>
+    <remote>
+        <type>remote</type>
+        <url>url2</url>
+    </remote>
+</repositories>
