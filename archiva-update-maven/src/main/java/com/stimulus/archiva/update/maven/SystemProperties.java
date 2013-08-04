@@ -36,7 +36,8 @@ final class SystemProperties {
         final String key = matcher.group(1);
         final String value = System.getProperty(key);
         if (null == value)
-            throw new IllegalArgumentException("Undefined system property for key \"" + key + "\".");
+            throw new IllegalArgumentException(
+                    "Undefined system property for key \"" + key + "\".");
         return value;
     }
 }
