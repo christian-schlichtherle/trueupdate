@@ -36,7 +36,8 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
     }
 
     private static LocalRepository localRepository(Local local) {
-        return new LocalRepository(new File(local.basedir), local.type);
+        return new LocalRepository(new File(replace(local.basedir)),
+                replace(local.type));
     }
 
     private static List<RemoteRepository> remoteRepositories(
@@ -50,7 +51,8 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
 
     private static RemoteRepository remoteRepository(Remote remote) {
         return new RemoteRepository
-                .Builder(remote.id, remote.type, remote.url)
+                .Builder(replace(remote.id), replace(remote.type),
+                         replace(remote.url))
                 .build();
     }
 
@@ -85,5 +87,9 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
 
     private static @Nullable String nonEmptyOrNull(String string) {
         return string.isEmpty() ? null : string;
+    }
+
+    private static @Nullable String replace(final @CheckForNull String string) {
+        return null == string ? null : SystemProperties.replace(string);
     }
 }
