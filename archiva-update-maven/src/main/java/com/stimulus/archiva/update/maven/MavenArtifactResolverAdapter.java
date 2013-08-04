@@ -24,11 +24,15 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
 
     @Override public @Nullable MavenArtifactResolver unmarshal(
             final @CheckForNull Repositories repositories) {
-        return null == repositories
-                ? null
-                : new MavenArtifactResolver(
-                    localRepository(repositories.local),
-                    remoteRepositories(repositories.remotes));
+        try {
+            return null == repositories
+                    ? null
+                    : new MavenArtifactResolver(
+                        localRepository(repositories.local),
+                        remoteRepositories(repositories.remotes));
+        } catch (NullPointerException ex) {
+            throw new IllegalArgumentException("Invalid repositories model.", ex);
+        }
     }
 
     private static LocalRepository localRepository(Local local) {
