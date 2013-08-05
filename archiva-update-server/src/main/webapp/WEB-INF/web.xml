@@ -37,11 +37,11 @@
             property with the specified key.
             E.g. "file://${user.home}/.repositories.xml".
 
-            The default value names a resource on the class path which contains
-            the XML to configure the local repository (~/.m2/repository) of the
-            user which runs the web app server and Maven Central
-            (http://repo1.maven.org/maven2/) as the repositories to use for
-            artifact resolution.
+            The default value specifies a resource on the class path which
+            contains the XML to configure the local repository
+            (~/.m2/repository) of the user which runs the web app server plus
+            Maven Central (http://repo1.maven.org/maven2/) as the repositories
+            to use for the artifact resolution.
         </description>
         <env-entry-name>maven/repositories/configuration-uri</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
