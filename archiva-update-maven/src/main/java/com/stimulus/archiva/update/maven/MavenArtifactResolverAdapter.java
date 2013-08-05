@@ -91,6 +91,6 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
     }
 
     private static @Nullable String replace(final @CheckForNull String string) {
-        return null == string ? null : SystemProperties.replace(string);
+        return null == string ? null : SystemProperties.resolve(string);
     }
 }

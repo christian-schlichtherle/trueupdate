@@ -24,7 +24,7 @@ class SystemPropertiesTest extends WordSpec {
         ("foo${user.home}bar", "foo" + userHome + "bar")
       )
       forAll(table) { (string, result) =>
-        SystemProperties.replace(string) should equal (result)
+        SystemProperties.resolve(string) should equal (result)
       }
     }
   }

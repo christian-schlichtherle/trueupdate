@@ -27,7 +27,7 @@ public final class SystemProperties {
      * @param string the string to process
      * @return the resulting string
      */
-    public static String replace(final String string) {
+    public static String resolve(final String string) {
         final StringBuffer result = new StringBuffer(string.length());
         final Matcher matcher = REFERENCE_PATTERN.matcher(string);
         while (matcher.find())
@@ -40,7 +40,7 @@ public final class SystemProperties {
         final String value = System.getProperty(key);
         if (null == value)
             throw new IllegalArgumentException(
-                    "Undefined system property key \"" + key + "\".");
+                    "Unknown system property key \"" + key + "\".");
         return value;
     }
 }
