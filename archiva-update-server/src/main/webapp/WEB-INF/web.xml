@@ -17,4 +17,13 @@
         <servlet-name>javax.ws.rs.core.Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+    <env-entry>
+        <description>
+            The name of the resource on the class path which contains the XML
+            to configure the local and optional remote Maven repositories.
+        </description>
+        <env-entry-name>repositories</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>com/stimulus/archiva/update/maven/default-repositories.xml</env-entry-value>
+    </env-entry>
 </web-app>
