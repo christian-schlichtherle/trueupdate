@@ -8,6 +8,7 @@ import com.stimulus.archiva.update.core.artifact.ArtifactResolver;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.maven.*;
 import com.stimulus.archiva.update.maven.model.Repositories;
+import java.net.URI;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.naming.InitialContext;
 import javax.ws.rs.ext.*;
@@ -47,12 +48,21 @@ implements ContextResolver<ArtifactResolver> {
         }
 
         static Source source() throws Exception {
-            return Sources.forResource(resourceName(),
-                    Thread.currentThread().getContextClassLoader());
+            final URI uri = configurationUri();
+            return uri.isAbsolute()
+                    ? Sources.forUrl(uri.toURL())
+                    : Sources.forResource(removeLeadingSlashes(uri.getPath()),
+                        Thread.currentThread().getContextClassLoader());
         }
 
-        static String resourceName() throws Exception {
-            return InitialContext.doLookup("java:comp/env/repositories");
+        static URI configurationUri() throws Exception {
+            return new URI((String) InitialContext.doLookup(
+                    "java:comp/env/repositories/configuration-uri"));
+        }
+
+        static String removeLeadingSlashes(String string) {
+            while (string.startsWith("/")) string = string.substring(1);
+            return string;
         }
     }
 }

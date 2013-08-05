@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import javax.annotation.CheckForNull;
 
 /**
@@ -79,6 +80,20 @@ public class Sources {
                 return check(null != loader
                         ? loader.getResourceAsStream(name)
                         : ClassLoader.getSystemResourceAsStream(name), name);
+            }
+        };
+    }
+
+    /**
+     * Returns a source which loads the entity of the given {@code url}.
+     *
+     * @param  url the URL.
+     * @return A source which loads the entity of the given {@code url}.
+     */
+    public static Source forUrl(final URL url) {
+        return new Source() {
+            @Override public InputStream input() throws IOException {
+                return url.openStream();
             }
         };
     }

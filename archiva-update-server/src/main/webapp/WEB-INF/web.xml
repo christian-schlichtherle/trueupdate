@@ -19,10 +19,25 @@
     </servlet-mapping>
     <env-entry>
         <description>
-            The name of the resource on the class path which contains the XML
-            to configure the local and optional remote Maven repositories.
+            The URI of the XML to configure the local and optional remote Maven
+            repositories to use for artifact resolution, encoded as a string.
+
+            If the decoded URI is absolute (i.e. if it has a scheme component),
+            then the URI gets converted to a URL and the XML gets loaded from
+            this URL.
+            E.g. "file:///directory/repositories.xml".
+
+            Otherwise, the URI is considered to specify the name of a resource
+            on the class path and the XML gets loaded from this resource.
+            E.g. "package/repositories.xml".
+
+            The default value names a resource on the class path which contains
+            the XML to configure the local repository (~/.m2/repository) of the
+            user which runs the web app server and Maven Central
+            (http://repo1.maven.org/maven2/) as the repositories to use for
+            artifact resolution.
         </description>
-        <env-entry-name>repositories</env-entry-name>
+        <env-entry-name>repositories/configuration-uri</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>com/stimulus/archiva/update/maven/default-repositories.xml</env-entry-value>
     </env-entry>
