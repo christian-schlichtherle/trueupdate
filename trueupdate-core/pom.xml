@@ -9,16 +9,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.stimulus.archiva</groupId>
-        <artifactId>archiva-parent</artifactId>
+        <groupId>net.java.trueupdate</groupId>
+        <artifactId>trueupdate</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-update-core</artifactId>
+    <artifactId>trueupdate-core</artifactId>
 
-    <name>*Archiva Update Core</name>
+    <name>TrueUpdate Core</name>
     <description>
-        Provides core functionality for updating *Archiva products.
+        Provides core functionality for updating web apps.
     </description>
 
     <dependencies>

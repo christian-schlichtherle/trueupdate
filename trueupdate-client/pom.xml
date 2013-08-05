@@ -9,21 +9,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.stimulus.archiva</groupId>
-        <artifactId>archiva-parent</artifactId>
+        <groupId>net.java.trueupdate</groupId>
+        <artifactId>trueupdate</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-update-client</artifactId>
+    <artifactId>trueupdate-client</artifactId>
     <packaging>war</packaging>
 
-    <name>*Archiva Update Client</name>
-    <description>Provides a RESTful web client for updating *Archiva products.</description>
+    <name>TrueUpdate Client</name>
+    <description>Provides a RESTful web client for updating web apps.</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-update-core</artifactId>
+            <artifactId>trueupdate-core</artifactId>
         </dependency>
     </dependencies>
 </project>

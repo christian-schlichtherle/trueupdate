@@ -16,6 +16,6 @@
         </description>
         <env-entry-name>server/base-url</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>http://localhost:8080/archiva-update-server/</env-entry-value>
+        <env-entry-value>http://localhost:8080/trueupdate-server/</env-entry-value>
     </env-entry>
 </web-app>

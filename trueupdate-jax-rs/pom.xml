@@ -9,26 +9,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.stimulus.archiva</groupId>
-        <artifactId>archiva-parent</artifactId>
+        <groupId>net.java.trueupdate</groupId>
+        <artifactId>trueupdate</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>archiva-update-maven</artifactId>
+    <artifactId>trueupdate-jax-rs</artifactId>
 
-    <name>*Archiva Update Maven</name>
-    <description>
-        Provides an artifact resolver which is based on a local Maven repository.
-    </description>
+    <name>TrueUpdate JAX-RS</name>
+    <description>Provides a RESTful web service for updating web apps.</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-update-core</artifactId>
+            <artifactId>trueupdate-core</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>archiva-update-core</artifactId>
+            <artifactId>trueupdate-core</artifactId>
             <type>test-jar</type>
         </dependency>
         <!--dependency>
@@ -37,25 +35,23 @@
             <scope>test</scope>
         </dependency-->
         <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-aether-provider</artifactId>
+            <groupId>com.sun.jersey.jersey-test-framework</groupId>
+            <artifactId>jersey-test-framework-http</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-connector-file</artifactId>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-connector-wagon</artifactId>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.sonatype.maven</groupId>
-            <artifactId>wagon-ahc</artifactId>
         </dependency>
     </dependencies>
 
