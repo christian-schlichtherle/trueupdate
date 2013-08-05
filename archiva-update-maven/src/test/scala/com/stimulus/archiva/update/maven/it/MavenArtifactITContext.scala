@@ -8,18 +8,23 @@ import java.io.File
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import com.stimulus.archiva.update.core.artifact.{ArtifactDescriptor, ArtifactResolver}
 import com.stimulus.archiva.update.core.it.ArtifactITContext
-import com.stimulus.archiva.update.maven.MavenArtifactResolver
+import com.stimulus.archiva.update.maven.{MavenArtifactResolverAdapter, MavenArtifactResolver}
+import com.stimulus.archiva.update.maven.model.Repositories
+import com.stimulus.archiva.update.core.io.Sources
 
 /** @author Christian Schlichtherle */
 trait MavenArtifactITContext extends ArtifactITContext {
 
   override def artifactResolver: ArtifactResolver =
-    new MavenArtifactResolver(testRepository, centralRepository)
+    new MavenArtifactResolverAdapter() unmarshal testRepositories()
 
-  def testRepository = new LocalRepository(baseDir)
-  private def baseDir = new File("target/repository").getAbsoluteFile
-  def centralRepository = new RemoteRepository.Builder(
-    "central", "default", "http://repo1.maven.org/maven2/").build
+  def testRepositories(): Repositories =
+    jaxbCodec decode (testRepositoriesSource, classOf[Repositories])
+
+  private def testRepositoriesSource = Sources.forResource("test-repositories.xml",
+    classOf[MavenArtifactITContext])
+
+  override lazy val jaxbContext = Repositories.jaxbContext
 
   override def artifactDescriptor =
     new ArtifactDescriptor.Builder()

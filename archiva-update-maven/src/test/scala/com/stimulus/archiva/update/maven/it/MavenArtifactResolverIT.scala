@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.WordSpec
+import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 
 private object MavenArtifactResolverIT {
 
@@ -34,13 +35,15 @@ class MavenArtifactResolverIT extends WordSpec with MavenArtifactITContext {
 
   import MavenArtifactResolverIT._
 
-  private def resolvedPath(descriptor: ArtifactDescriptor) =
-    new File(testRepository.getBasedir, relativePath(descriptor))
+  def resolvedPath(descriptor: ArtifactDescriptor) =
+    new File(baseDir, relativePath(descriptor))
+
+  def baseDir = new File(testRepositories().local.basedir).getAbsoluteFile
 
   "A maven artifact resolver" should {
     val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
 
-    "resolve the artifact path to a readable file" in {
+    "resolve the readable artifact file" in {
       artifactFile should equal (resolvedPath(artifactDescriptor))
       artifactFile canRead () should be (true)
     }

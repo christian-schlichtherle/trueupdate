@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repositories>
+    <local>
+        <basedir>${user.home}/.m2/repository</basedir>
+    </local>
+    <remote>
+        <id>central</id>
+        <type>default</type>
+        <url>http://repo1.maven.org/maven2/</url>
+    </remote>
+</repositories>
