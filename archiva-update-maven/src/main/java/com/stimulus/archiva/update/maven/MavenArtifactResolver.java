@@ -12,6 +12,10 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
+
+import com.stimulus.archiva.update.core.io.Source;
+import com.stimulus.archiva.update.core.io.Sources;
+import com.stimulus.archiva.update.maven.model.Repositories;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
@@ -35,11 +39,38 @@ import org.eclipse.aether.version.Version;
 @Immutable
 public class MavenArtifactResolver implements ArtifactResolver {
 
-    private volatile ServiceLocator serviceLocator;
-    private volatile RepositorySystemSession repositorySystemSession;
+    private static volatile MavenArtifactResolver INSTANCE;
+
+    public static MavenArtifactResolver getInstance() {
+        final MavenArtifactResolver instance = MavenArtifactResolver.INSTANCE;
+        return null != instance
+                ? instance
+                : (MavenArtifactResolver.INSTANCE = configuredMavenArtifactResolver());
+    }
+
+    private static MavenArtifactResolver configuredMavenArtifactResolver() {
+        return new MavenArtifactResolverAdapter().unmarshal(defaultRepositories());
+    }
+
+    private static Repositories defaultRepositories() {
+        return decodeRepositories(defaultRepositoriesSource());
+    }
+
+    private static Repositories decodeRepositories(final Source source) {
+        try { return Repositories.decode(source); }
+        catch (Exception ex) { throw new IllegalArgumentException(ex); }
+    }
+
+    private static Source defaultRepositoriesSource() {
+        return Sources.forResource("default-repositories.xml",
+                MavenArtifactResolver.class);
+    }
 
     final LocalRepository local;
     final List<RemoteRepository> remotes;
+
+    private volatile ServiceLocator serviceLocator;
+    private volatile RepositorySystemSession repositorySystemSession;
 
     /**
      * Constructs a maven path resolver which uses the given local and remote
