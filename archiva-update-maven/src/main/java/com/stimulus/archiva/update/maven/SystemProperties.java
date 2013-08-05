@@ -37,7 +37,7 @@ final class SystemProperties {
         final String value = System.getProperty(key);
         if (null == value)
             throw new IllegalArgumentException(
-                    "Undefined system property for key \"" + key + "\".");
+                    "Undefined system property key \"" + key + "\".");
         return value;
     }
 }
