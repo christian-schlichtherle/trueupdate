@@ -2,15 +2,18 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package com.stimulus.archiva.update.maven;
+package com.stimulus.archiva.update.core.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Replaces references to system properties of the form {@code ${key}} with
+ * their values.
+ *
  * @author Christian Schlichtherle
  */
-final class SystemProperties {
+public final class SystemProperties {
 
     private static Pattern
             REFERENCE_PATTERN = Pattern.compile("\\$\\{([^\\}]*)\\}");
@@ -24,7 +27,7 @@ final class SystemProperties {
      * @param string the string to process
      * @return the resulting string
      */
-    static String replace(final String string) {
+    public static String replace(final String string) {
         final StringBuffer result = new StringBuffer(string.length());
         final Matcher matcher = REFERENCE_PATTERN.matcher(string);
         while (matcher.find())

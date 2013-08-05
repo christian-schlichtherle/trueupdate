@@ -4,6 +4,7 @@
  */
 package com.stimulus.archiva.update.maven;
 
+import com.stimulus.archiva.update.core.util.SystemProperties;
 import com.stimulus.archiva.update.maven.model.*;
 import java.io.File;
 import java.util.*;
