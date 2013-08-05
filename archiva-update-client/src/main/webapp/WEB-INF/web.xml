@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright (C) 2005-2013 Stimulus Software. All Rights Reserved.
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
   -->
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,4 +10,12 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+    <env-entry>
+        <description>
+            The base URL of the server, including the context path.
+        </description>
+        <env-entry-name>server/base-url</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>http://localhost:8080/archiva-update-server/</env-entry-value>
+    </env-entry>
 </web-app>
