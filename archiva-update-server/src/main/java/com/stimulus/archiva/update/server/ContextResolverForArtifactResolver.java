@@ -59,7 +59,7 @@ implements ContextResolver<ArtifactResolver> {
         static URI configurationUri() throws Exception {
             return new URI(SystemProperties.resolve(
                     (String) InitialContext.doLookup(
-                            "java:comp/env/repositories/configuration-uri")));
+                        "java:comp/env/maven/repositories/configuration/uri")));
         }
 
         static String removeLeadingSlashes(String string) {
