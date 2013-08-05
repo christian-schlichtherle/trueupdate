@@ -6,6 +6,7 @@ package com.stimulus.archiva.update.server;
 
 import com.stimulus.archiva.update.core.artifact.ArtifactResolver;
 import com.stimulus.archiva.update.core.io.*;
+import com.stimulus.archiva.update.core.util.SystemProperties;
 import com.stimulus.archiva.update.maven.*;
 import com.stimulus.archiva.update.maven.model.Repositories;
 import java.net.URI;
@@ -56,8 +57,9 @@ implements ContextResolver<ArtifactResolver> {
         }
 
         static URI configurationUri() throws Exception {
-            return new URI((String) InitialContext.doLookup(
-                    "java:comp/env/repositories/configuration-uri"));
+            return new URI(SystemProperties.resolve(
+                    (String) InitialContext.doLookup(
+                            "java:comp/env/repositories/configuration-uri")));
         }
 
         static String removeLeadingSlashes(String string) {

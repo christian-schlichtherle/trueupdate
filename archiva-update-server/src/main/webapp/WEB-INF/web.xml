@@ -31,6 +31,11 @@
             on the class path and the XML gets loaded from this resource.
             E.g. "package/repositories.xml".
 
+            In either case, if the string contains references of the form
+            {@code ${key}}, then they get replaced by the value of the system
+            property with the specified key.
+            E.g. "file://${user.home}/.repositories.xml".
+
             The default value names a resource on the class path which contains
             the XML to configure the local repository (~/.m2/repository) of the
             user which runs the web app server and Maven Central
