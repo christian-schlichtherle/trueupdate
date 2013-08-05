@@ -4,6 +4,8 @@
  */
 package com.stimulus.archiva.update.maven.model;
 
+import com.stimulus.archiva.update.core.codec.JaxbCodec;
+import com.stimulus.archiva.update.core.io.Source;
 import java.util.*;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
@@ -47,6 +49,18 @@ public final class Repositories {
         hash = 31 * hash + Objects.hashCode(local);
         hash = 31 * hash + Objects.hashCode(remotes);
         return hash;
+    }
+
+    /**
+     * Decodes repositories from XML.
+     *
+     * @param source the source for reading the XML.
+     * @return the decoded repositories.
+     * @throws Exception at the discretion of the JAXB codec, e.g. if the
+     *         source isn't readable.
+     */
+    public static Repositories decode(Source source) throws Exception {
+        return new JaxbCodec(jaxbContext()).decode(source, Repositories.class);
     }
 
     /** Returns a JAXB context which binds only this class. */
