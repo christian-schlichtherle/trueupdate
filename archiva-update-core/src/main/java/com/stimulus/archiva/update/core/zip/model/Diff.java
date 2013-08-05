@@ -4,6 +4,10 @@
  */
 package com.stimulus.archiva.update.core.zip.model;
 
+import com.stimulus.archiva.update.core.codec.JaxbCodec;
+import com.stimulus.archiva.update.core.io.Sink;
+import com.stimulus.archiva.update.core.io.Source;
+
 import java.util.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -83,6 +87,29 @@ public final class Diff {
         hash = 31 * hash + Objects.hashCode(added);
         hash = 31 * hash + Objects.hashCode(removed);
         return hash;
+    }
+
+    /**
+     * Decodes a diff model from XML.
+     *
+     * @param source the source for reading the XML.
+     * @return the decoded diff model.
+     * @throws Exception at the discretion of the JAXB codec, e.g. if the
+     *         source isn't readable.
+     */
+    public static Diff decodeFromXml(Source source) throws Exception {
+        return new JaxbCodec(jaxbContext()).decode(source, Diff.class);
+    }
+
+    /**
+     * Encodes this diff model to XML.
+     *
+     * @param sink the sink for writing the XML.
+     * @throws Exception at the discretion of the JAXB codec, e.g. if the
+     *         sink isn't writable.
+     */
+    public void encodeToXml(Sink sink) throws Exception {
+        new JaxbCodec(jaxbContext()).encode(sink, this);
     }
 
     /** Returns a JAXB context which binds only this class. */

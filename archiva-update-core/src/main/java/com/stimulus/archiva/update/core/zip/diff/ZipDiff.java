@@ -4,7 +4,6 @@
  */
 package com.stimulus.archiva.update.core.zip.diff;
 
-import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.util.MessageDigests;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
@@ -16,7 +15,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.*;
 
 /**
  * Compares two ZIP files entry by entry.
@@ -34,9 +32,6 @@ public abstract class ZipDiff {
 
     /** Returns the message digest. */
     abstract MessageDigest messageDigest();
-
-    /** Returns the JAXB context for marshalling the ZIP diff bean. */
-    abstract JAXBContext jaxbContext();
 
     /**
      * Writes a ZIP patch file to the given sink.
@@ -78,8 +73,7 @@ public abstract class ZipDiff {
 
             ZipPatchFileStreamer(final Diff diff) throws IOException {
                 try {
-                    new JaxbCodec(jaxbContext()).encode(
-                            new EntrySink(Diff.ENTRY_NAME), diff);
+                    diff.encodeToXml(new EntrySink(Diff.ENTRY_NAME));
                 } catch (IOException | RuntimeException ex) {
                     throw ex;
                 } catch (Exception ex) {
@@ -232,7 +226,6 @@ public abstract class ZipDiff {
 
         private ZipFile firstZipFile, secondZipFile;
         private MessageDigest messageDigest;
-        private JAXBContext jaxbContext;
 
         public Builder firstZipFile(final ZipFile firstZipFile) {
             this.firstZipFile = requireNonNull(firstZipFile);
@@ -249,32 +242,22 @@ public abstract class ZipDiff {
             return this;
         }
 
-        @Deprecated
-        public Builder jaxbContext(final JAXBContext jaxbContext) {
-            this.jaxbContext = requireNonNull(jaxbContext);
-            return this;
-        }
-
         public ZipDiff build() {
             return create(firstZipFile, secondZipFile,
-                    null != messageDigest ? messageDigest : MessageDigests.sha1(),
-                    null != jaxbContext ? jaxbContext : Diff.jaxbContext());
+                    null != messageDigest ? messageDigest : MessageDigests.sha1());
         }
 
         private static ZipDiff create(
                 final ZipFile firstZipFile,
                 final ZipFile secondZipFile,
-                final MessageDigest messageDigest,
-                final JAXBContext jaxbContext) {
+                final MessageDigest messageDigest) {
             requireNonNull(firstZipFile);
             requireNonNull(secondZipFile);
             assert null != messageDigest;
-            assert null != jaxbContext;
             return new ZipDiff() {
                 @Override ZipFile firstZipFile() { return firstZipFile; }
                 @Override ZipFile secondZipFile() { return secondZipFile; }
                 @Override MessageDigest messageDigest() { return messageDigest; }
-                @Override JAXBContext jaxbContext() { return jaxbContext; }
             };
         }
     } // Builder

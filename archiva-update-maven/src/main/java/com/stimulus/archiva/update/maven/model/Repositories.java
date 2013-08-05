@@ -59,7 +59,7 @@ public final class Repositories {
      * @throws Exception at the discretion of the JAXB codec, e.g. if the
      *         source isn't readable.
      */
-    public static Repositories decode(Source source) throws Exception {
+    public static Repositories decodeFromXml(Source source) throws Exception {
         return new JaxbCodec(jaxbContext()).decode(source, Repositories.class);
     }
 

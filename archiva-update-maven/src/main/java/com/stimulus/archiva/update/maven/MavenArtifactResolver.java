@@ -229,7 +229,7 @@ public class MavenArtifactResolver implements ArtifactResolver {
         static Repositories repositories() { return repositories(source()); }
 
         static Repositories repositories(final Source source) {
-            try { return Repositories.decode(source); }
+            try { return Repositories.decodeFromXml(source); }
             catch (Exception ex) { throw new AssertionError(ex); }
         }
 

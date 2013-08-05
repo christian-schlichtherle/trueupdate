@@ -4,22 +4,18 @@
  */
 package com.stimulus.archiva.update.core.zip.patch;
 
-import com.stimulus.archiva.update.core.codec.JaxbCodec;
 import com.stimulus.archiva.update.core.util.MessageDigests;
 import com.stimulus.archiva.update.core.io.*;
 import com.stimulus.archiva.update.core.zip.EntrySource;
 import com.stimulus.archiva.update.core.zip.model.Diff;
 import com.stimulus.archiva.update.core.zip.model.EntryNameAndDigest;
-
 import java.io.*;
 import java.security.*;
 import static java.util.Objects.requireNonNull;
-
 import java.util.Map;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.*;
 
 /**
  * Applies a ZIP patch file to an input ZIP file and writes an output ZIP file.
@@ -36,9 +32,6 @@ public abstract class ZipPatch {
 
     /** Returns the input ZIP file. */
     abstract @WillNotClose ZipFile inputZipFile();
-
-    /** Returns the JAXB context for unmarshalling the diff model. */
-    abstract JAXBContext jaxbContext();
 
     /**
      * Applies the configured ZIP patch file.
@@ -186,8 +179,7 @@ public abstract class ZipPatch {
             throw new InvalidZipPatchFileException(zipPatchFile().getName(),
                     new MissingZipEntryException(Diff.ENTRY_NAME));
         try {
-            return new JaxbCodec(jaxbContext()).decode(
-                    new EntrySource(entry, zipPatchFile()), Diff.class);
+            return Diff.decodeFromXml(new EntrySource(entry, zipPatchFile()));
         } catch (IOException | RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -203,7 +195,6 @@ public abstract class ZipPatch {
 
         private ZipFile zipPatchFile, inputZipFile;
         private boolean outputJarFile;
-        private JAXBContext jaxbContext;
 
         public Builder zipPatchFile(final ZipFile zipPatchFile) {
             this.zipPatchFile = requireNonNull(zipPatchFile);
@@ -220,37 +211,25 @@ public abstract class ZipPatch {
             return this;
         }
 
-        @Deprecated
-        public Builder jaxbContext(final JAXBContext jaxbContext) {
-            this.jaxbContext = requireNonNull(jaxbContext);
-            return this;
-        }
-
         public ZipPatch build() {
-            return create(zipPatchFile, inputZipFile, outputJarFile,
-                    null != jaxbContext ? jaxbContext : Diff.jaxbContext()
-            );
+            return create(zipPatchFile, inputZipFile, outputJarFile);
         }
 
         private static ZipPatch create(
                 final ZipFile zipPatchFile,
                 final ZipFile inputZipFile,
-                final boolean outputJarFile,
-                final JAXBContext jaxbContext) {
+                final boolean outputJarFile) {
             requireNonNull(zipPatchFile);
             requireNonNull(inputZipFile);
-            assert null != jaxbContext;
             if (outputJarFile) {
                 return new JarPatch() {
                     @Override ZipFile zipPatchFile() { return zipPatchFile; }
                     @Override ZipFile inputZipFile() { return inputZipFile; }
-                    @Override JAXBContext jaxbContext() { return jaxbContext; }
                 };
             } else {
                 return new ZipPatch() {
                     @Override ZipFile zipPatchFile() { return zipPatchFile; }
                     @Override ZipFile inputZipFile() { return inputZipFile; }
-                    @Override JAXBContext jaxbContext() { return jaxbContext; }
                 };
             }
         }
