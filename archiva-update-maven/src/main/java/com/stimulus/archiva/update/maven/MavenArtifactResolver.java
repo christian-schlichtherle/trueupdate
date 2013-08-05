@@ -5,17 +5,15 @@
 package com.stimulus.archiva.update.maven;
 
 import com.stimulus.archiva.update.core.artifact.*;
+import com.stimulus.archiva.update.core.io.*;
 import static com.stimulus.archiva.update.maven.ArtifactConverters.*;
+import com.stimulus.archiva.update.maven.model.Repositories;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-
-import com.stimulus.archiva.update.core.io.Source;
-import com.stimulus.archiva.update.core.io.Sources;
-import com.stimulus.archiva.update.maven.model.Repositories;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
@@ -31,40 +29,12 @@ import org.eclipse.aether.version.Version;
 
 /**
  * Resolves paths to described artifacts and their latest update by looking
- * them up in a local Maven repository and, optionally, some remote Maven
- * repositories.
+ * them up in a local repository and, optionally, some remote repositories.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
 public class MavenArtifactResolver implements ArtifactResolver {
-
-    private static volatile MavenArtifactResolver INSTANCE;
-
-    public static MavenArtifactResolver getInstance() {
-        final MavenArtifactResolver instance = MavenArtifactResolver.INSTANCE;
-        return null != instance
-                ? instance
-                : (MavenArtifactResolver.INSTANCE = configuredMavenArtifactResolver());
-    }
-
-    private static MavenArtifactResolver configuredMavenArtifactResolver() {
-        return new MavenArtifactResolverAdapter().unmarshal(defaultRepositories());
-    }
-
-    private static Repositories defaultRepositories() {
-        return decodeRepositories(defaultRepositoriesSource());
-    }
-
-    private static Repositories decodeRepositories(final Source source) {
-        try { return Repositories.decode(source); }
-        catch (Exception ex) { throw new IllegalArgumentException(ex); }
-    }
-
-    private static Source defaultRepositoriesSource() {
-        return Sources.forResource("default-repositories.xml",
-                MavenArtifactResolver.class);
-    }
 
     final LocalRepository local;
     final List<RemoteRepository> remotes;
@@ -73,9 +43,8 @@ public class MavenArtifactResolver implements ArtifactResolver {
     private volatile RepositorySystemSession repositorySystemSession;
 
     /**
-     * Constructs a maven path resolver which uses the given local and remote
-     * Maven repositories for finding a described artifact and its latest
-     * update.
+     * Constructs a Maven artifact resolver which uses the given local and
+     * remote repositories.
      *
      * @param local the local repository for artifacts.
      * @param remotes the array of remote repositories for artifacts.
@@ -86,9 +55,8 @@ public class MavenArtifactResolver implements ArtifactResolver {
     }
 
     /**
-     * Constructs a maven path resolver which uses the given local and remote
-     * Maven repositories for finding a described artifact and its latest
-     * update.
+     * Constructs a Maven artifact resolver which uses the given local and
+     * remote repositories.
      *
      * @param local the local repository for artifacts.
      * @param remotes the list of remote repositories for artifacts.
@@ -238,5 +206,36 @@ public class MavenArtifactResolver implements ArtifactResolver {
                 throw new UndeclaredThrowableException(exception);
             }
         };
+    }
+
+    /**
+     * Returns a Maven artifact resolver which uses the user's local repository
+     * at {@code ~/.m2/repository} plus Maven Central at
+     * {@code http://repo1.maven.org/maven2/}.
+     */
+    public static MavenArtifactResolver getDefaultInstance() {
+        return Lazy.INSTANCE;
+    }
+
+    private static class Lazy {
+
+        static final MavenArtifactResolver
+                INSTANCE = configuredMavenArtifactResolver();
+
+        static MavenArtifactResolver configuredMavenArtifactResolver() {
+            return new MavenArtifactResolverAdapter().unmarshal(repositories());
+        }
+
+        static Repositories repositories() { return repositories(source()); }
+
+        static Repositories repositories(final Source source) {
+            try { return Repositories.decode(source); }
+            catch (Exception ex) { throw new AssertionError(ex); }
+        }
+
+        static Source source() {
+            return Sources.forResource("default-repositories.xml",
+                    MavenArtifactResolver.class);
+        }
     }
 }

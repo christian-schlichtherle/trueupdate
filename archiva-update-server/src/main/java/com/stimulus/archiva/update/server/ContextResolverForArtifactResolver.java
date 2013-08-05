@@ -19,6 +19,6 @@ public class ContextResolverForArtifactResolver
 implements ContextResolver<ArtifactResolver> {
 
     @Override public ArtifactResolver getContext(Class<?> type) {
-        return MavenArtifactResolver.getInstance();
+        return MavenArtifactResolver.getDefaultInstance();
     }
 }
