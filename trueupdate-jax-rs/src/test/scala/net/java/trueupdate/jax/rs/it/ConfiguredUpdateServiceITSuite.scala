@@ -60,7 +60,8 @@ extends JerseyTest { this: ArtifactITContext =>
   }
 
   private def updateVersionAs(mediaType: MediaType) =
-    resource.path("update/version")
+    resource
+      .path("update/version")
       .queryParams(queryParams(artifactDescriptor))
       .accept(mediaType)
       .get(classOf[String])
@@ -70,6 +71,7 @@ extends JerseyTest { this: ArtifactITContext =>
     val response = resource.path("update/patch")
       .queryParams(queryParams(artifactDescriptor))
       .queryParam("update-version", updateVersion)
+      .accept(APPLICATION_OCTET_STREAM_TYPE)
       .get(classOf[ClientResponse])
     response.getClientResponseStatus should be (Status.OK)
     loan(new ZipInputStream(response getEntityInputStream ())) to { zipIn =>
