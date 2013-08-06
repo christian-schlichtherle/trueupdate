@@ -2,7 +2,9 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jax.rs;
+package net.java.trueupdate.jax.rs.server;
+
+import net.java.trueupdate.jax.rs.UpdateServiceException;
 
 import java.util.concurrent.Callable;
 

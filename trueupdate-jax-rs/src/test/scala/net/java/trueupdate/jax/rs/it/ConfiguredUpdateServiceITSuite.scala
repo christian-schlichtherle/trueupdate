@@ -4,10 +4,7 @@
  */
 package net.java.trueupdate.jax.rs.it
 
-import com.sun.jersey.api.client.ClientResponse
-import com.sun.jersey.api.client.ClientResponse.Status
 import com.sun.jersey.api.core._
-import com.sun.jersey.core.util.MultivaluedMapImpl
 import com.sun.jersey.test.framework._
 import java.io.FilterInputStream
 import java.util.zip.ZipInputStream
@@ -17,27 +14,17 @@ import javax.ws.rs.ext.ContextResolver
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
-import ConfiguredUpdateServiceITSuite._
 import net.java.trueupdate.core.artifact._
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.it.ArtifactITContext
 import net.java.trueupdate.core.util.Loan._
 import net.java.trueupdate.core.zip.model.Diff
-import net.java.trueupdate.jax.rs._
+import net.java.trueupdate.jax.rs.server.{UpdateServiceExceptionMapper, UpdateService}
+import net.java.trueupdate.jax.rs.client.ConfiguredUpdateServiceClient
 
 private object ConfiguredUpdateServiceITSuite {
 
   val logger = LoggerFactory.getLogger(classOf[ConfiguredUpdateServiceITSuite])
-
-  def queryParams(descriptor: ArtifactDescriptor) = {
-    val map = new MultivaluedMapImpl
-    map.putSingle("groupId", descriptor.groupId)
-    map.putSingle("artifactId", descriptor.artifactId)
-    map.putSingle("version", descriptor.version)
-    map.putSingle("classifier", descriptor.classifier)
-    map.putSingle("extension", descriptor.extension)
-    map
-  }
 }
 
 /** @author Christian Schlichtherle */
@@ -60,21 +47,12 @@ extends JerseyTest { this: ArtifactITContext =>
   }
 
   private def updateVersionAs(mediaType: MediaType) =
-    resource
-      .path("update/version")
-      .queryParams(queryParams(artifactDescriptor))
-      .accept(mediaType)
-      .get(classOf[String])
+    updateServiceClient.version(artifactDescriptor, mediaType)
 
   private def assertUpdatePatch() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
-    val response = resource.path("update/patch")
-      .queryParams(queryParams(artifactDescriptor))
-      .queryParam("update-version", updateVersion)
-      .accept(APPLICATION_OCTET_STREAM_TYPE)
-      .get(classOf[ClientResponse])
-    response.getClientResponseStatus should be (Status.OK)
-    loan(new ZipInputStream(response getEntityInputStream ())) to { zipIn =>
+    val source = updateServiceClient.patch(artifactDescriptor, updateVersion)
+    loan(new ZipInputStream(source input ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
       entry.getName should be (Diff.ENTRY_NAME)
       val source = new Source {
@@ -87,6 +65,9 @@ extends JerseyTest { this: ArtifactITContext =>
       logger debug ("\n{}", utf8String(store))
     }
   }
+
+  private def updateServiceClient =
+    new ConfiguredUpdateServiceClient(getBaseURI, client)
 
   override protected def configure =
     new LowLevelAppDescriptor.Builder(resourceConfig).contextPath("").build

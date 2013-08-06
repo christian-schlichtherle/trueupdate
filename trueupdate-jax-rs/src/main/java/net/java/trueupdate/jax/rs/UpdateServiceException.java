@@ -6,15 +6,16 @@ package net.java.trueupdate.jax.rs;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
+import java.io.IOException;
 
 /**
- * Wraps an {@link Exception} in order to decorate it with additional meta data
- * for generating an HTTP response.
+ * Wraps a {@link Throwable} in order to decorate it with additional meta data
+ * for producing or consuming a HTTP response.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public class UpdateServiceException extends Exception {
+public class UpdateServiceException extends IOException {
 
     private static final long serialVersionUID = 0L;
 
@@ -28,7 +29,7 @@ public class UpdateServiceException extends Exception {
      * @param cause the causing exception.
      * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html</a>
      */
-    UpdateServiceException(
+    public UpdateServiceException(
             final int status,
             final @CheckForNull Throwable cause) {
         super(null == cause ? null : cause.getMessage(), cause);

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jax.rs;
+package net.java.trueupdate.jax.rs.server;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -15,6 +15,7 @@ import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.ext.*;
 import net.java.trueupdate.core.artifact.ArtifactDescriptor;
 import net.java.trueupdate.core.artifact.ArtifactResolver;
+import net.java.trueupdate.jax.rs.UpdateServiceException;
 
 /**
  * An (unconfigured) update service for web apps.

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jax.rs;
+package net.java.trueupdate.jax.rs.server;
 
 import java.io.*;
 import static java.util.Objects.requireNonNull;
@@ -19,7 +19,9 @@ import net.java.trueupdate.core.artifact.ArtifactResolver;
 import net.java.trueupdate.core.io.Sink;
 import net.java.trueupdate.core.io.Sinks;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
-import static net.java.trueupdate.jax.rs.UpdateServices.wrap;
+import net.java.trueupdate.jax.rs.UpdateServiceException;
+
+import static net.java.trueupdate.jax.rs.server.UpdateServices.wrap;
 
 /**
  * A configured update service for web apps.
