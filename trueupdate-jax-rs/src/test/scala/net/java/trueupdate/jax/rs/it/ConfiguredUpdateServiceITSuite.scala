@@ -19,8 +19,8 @@ import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.it.ArtifactITContext
 import net.java.trueupdate.core.util.Loan._
 import net.java.trueupdate.core.zip.model.Diff
-import net.java.trueupdate.jax.rs.server.{UpdateServiceExceptionMapper, UpdateService}
-import net.java.trueupdate.jax.rs.client.ConfiguredUpdateServiceClient
+import net.java.trueupdate.jax.rs.server.{UpdateServiceExceptionMapper, UpdateServer}
+import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
 
 private object ConfiguredUpdateServiceITSuite {
 
@@ -47,11 +47,11 @@ extends JerseyTest { this: ArtifactITContext =>
   }
 
   private def updateVersionAs(mediaType: MediaType) =
-    updateServiceClient.version(artifactDescriptor, mediaType)
+    updateClient.version(artifactDescriptor, mediaType)
 
   private def assertUpdatePatch() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
-    val source = updateServiceClient.patch(artifactDescriptor, updateVersion)
+    val source = updateClient.patch(artifactDescriptor, updateVersion)
     loan(new ZipInputStream(source input ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
       entry.getName should be (Diff.ENTRY_NAME)
@@ -66,15 +66,15 @@ extends JerseyTest { this: ArtifactITContext =>
     }
   }
 
-  private def updateServiceClient =
-    new ConfiguredUpdateServiceClient(getBaseURI, client)
+  private def updateClient =
+    new ConfiguredUpdateClient(getBaseURI, client)
 
   override protected def configure =
     new LowLevelAppDescriptor.Builder(resourceConfig).contextPath("").build
 
   private def resourceConfig = {
     val rc = new DefaultResourceConfig
-    rc.getClasses.add(classOf[UpdateService])
+    rc.getClasses.add(classOf[UpdateServer])
     rc.getClasses.add(classOf[UpdateServiceExceptionMapper])
     rc.getSingletons.add(new ContextResolverForArtifactResolver)
     rc

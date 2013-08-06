@@ -18,13 +18,14 @@ import net.java.trueupdate.core.artifact.ArtifactResolver;
 import net.java.trueupdate.jax.rs.UpdateServiceException;
 
 /**
- * An (unconfigured) update service for web apps.
+ * The (unconfigured) client-side implementation of an update service for
+ * artifacts.
  *
  * @author Christian Schlichtherle
  */
 @Path("update")
 @Immutable
-public final class UpdateService {
+public final class UpdateServer {
 
     private final ArtifactResolver resolver;
 
@@ -51,7 +52,7 @@ public final class UpdateService {
      *
      * @param providers the providers.
      */
-    public UpdateService(@Context Providers providers) {
+    public UpdateServer(@Context Providers providers) {
         this(resolver(providers));
     }
 
@@ -70,23 +71,23 @@ public final class UpdateService {
      * @param resolver the artifact resolver.
      */
     @Inject
-    public UpdateService(final ArtifactResolver resolver) {
+    public UpdateServer(final ArtifactResolver resolver) {
         this.resolver = Objects.requireNonNull(resolver);
     }
 
     /** Returns a configured update service. */
     @Path("/")
-    public ConfiguredUpdateService configure(
+    public ConfiguredUpdateServer configure(
             final @QueryParam("groupId") @Nullable String groupId,
             final @QueryParam("artifactId") @Nullable String artifactId,
             final @QueryParam("version") @Nullable  String version,
             final @QueryParam("classifier") @DefaultValue("") String classifier,
             final @QueryParam("extension") @DefaultValue("jar") String extension)
     throws UpdateServiceException {
-        return UpdateServices.wrap(new Callable<ConfiguredUpdateService>() {
+        return UpdateServers.wrap(new Callable<ConfiguredUpdateServer>() {
             @Override
-            public ConfiguredUpdateService call() throws Exception {
-                return new ConfiguredUpdateService(resolver,
+            public ConfiguredUpdateServer call() throws Exception {
+                return new ConfiguredUpdateServer(resolver,
                         new ArtifactDescriptor.Builder()
                                 .groupId(groupId)
                                 .artifactId(artifactId)

@@ -19,21 +19,20 @@ import net.java.trueupdate.jax.rs.UpdateServiceException;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
 
 /**
- * RESTful web client based implementation of an update service.
+ * RESTful web client based implementation of an update client.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ConfiguredUpdateServiceClient
-implements UpdateServiceClient {
+public final class ConfiguredUpdateClient implements UpdateClient {
 
     private final URI baseUri;
     private final Client client;
 
-    public ConfiguredUpdateServiceClient(URI baseUri) { this(baseUri, null); }
+    public ConfiguredUpdateClient(URI baseUri) { this(baseUri, null); }
 
-    public ConfiguredUpdateServiceClient(final URI baseUri,
-                                         final @CheckForNull Client client) {
+    public ConfiguredUpdateClient(final URI baseUri,
+                                  final @CheckForNull Client client) {
         this.baseUri = Objects.requireNonNull(baseUri);
         this.client = null != client ? client : Client.create();
     }

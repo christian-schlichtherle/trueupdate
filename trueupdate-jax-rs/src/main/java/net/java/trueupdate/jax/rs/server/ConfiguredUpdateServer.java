@@ -21,15 +21,15 @@ import net.java.trueupdate.core.io.Sinks;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
 import net.java.trueupdate.jax.rs.UpdateServiceException;
 
-import static net.java.trueupdate.jax.rs.server.UpdateServices.wrap;
+import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
 
 /**
- * A configured update service for web apps.
+ * The configured client-side implementation of an update service for artifacts.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ConfiguredUpdateService {
+public final class ConfiguredUpdateServer {
 
     private static final QName VERSION_NAME = new QName("version");
 
@@ -43,7 +43,7 @@ public final class ConfiguredUpdateService {
      * @param currentDescriptor the artifact descriptor for the client's
      *                          current version.
      */
-    public ConfiguredUpdateService(
+    public ConfiguredUpdateServer(
             final ArtifactResolver resolver,
             final ArtifactDescriptor currentDescriptor) {
         this.resolver = requireNonNull(resolver);

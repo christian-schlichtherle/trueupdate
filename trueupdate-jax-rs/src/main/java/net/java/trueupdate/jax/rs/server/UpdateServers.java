@@ -9,17 +9,17 @@ import net.java.trueupdate.jax.rs.UpdateServiceException;
 import java.util.concurrent.Callable;
 
 /**
- * Utility functions for update services.
+ * Utility functions for update servers.
  *
- * @see UpdateService
- * @see ConfiguredUpdateService
+ * @see UpdateServer
+ * @see ConfiguredUpdateServer
  * @author Christian Schlichtherle
  */
-final class UpdateServices {
+final class UpdateServers {
 
     private static final int BAD_REQUEST = 400, NOT_FOUND = 404;
 
-    private UpdateServices() { }
+    private UpdateServers() { }
 
     static <V> V wrap(final Callable<V> task) throws UpdateServiceException {
         try {
