@@ -7,7 +7,7 @@ package net.java.trueupdate.jax.rs;
 import java.util.concurrent.Callable;
 
 /**
- * Provides utility methods for update services.
+ * Utility functions for update services.
  *
  * @see UpdateService
  * @see ConfiguredUpdateService
