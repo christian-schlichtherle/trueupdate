@@ -4,18 +4,15 @@
  */
 package net.java.trueupdate.server;
 
-import net.java.trueupdate.core.artifact.ArtifactResolver;
-import net.java.trueupdate.core.util.SystemProperties;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.io.Sources;
-import net.java.trueupdate.maven.model.Repositories;
-import net.java.trueupdate.maven.MavenArtifactResolver;
-import net.java.trueupdate.maven.MavenArtifactResolverAdapter;
-
 import java.net.URI;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.naming.InitialContext;
 import javax.ws.rs.ext.*;
+import net.java.trueupdate.core.artifact.ArtifactResolver;
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.util.SystemProperties;
+import net.java.trueupdate.maven.*;
+import net.java.trueupdate.maven.model.Repositories;
 
 /**
  * A context resolver which resolves {@link ArtifactResolver}s to a singleton
@@ -62,7 +59,7 @@ implements ContextResolver<ArtifactResolver> {
         static URI configurationUri() throws Exception {
             return new URI(SystemProperties.resolve(
                     (String) InitialContext.doLookup(
-                        "java:comp/env/maven/repositories/configuration-uri")));
+                        "java:comp/env/maven-repositories/configuration-uri")));
         }
 
         static String removeLeadingSlashes(String string) {

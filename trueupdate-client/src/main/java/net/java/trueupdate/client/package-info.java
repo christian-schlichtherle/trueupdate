@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a web app for updating web apps.
+ * Provides a RESTful web client for updating web apps.
  *
  * @author Christian Schlichtherle
  */

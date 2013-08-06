@@ -43,7 +43,7 @@
             Maven Central (http://repo1.maven.org/maven2/) as the repositories
             to use for the artifact resolution.
         </description>
-        <env-entry-name>maven/repositories/configuration-uri</env-entry-name>
+        <env-entry-name>maven-repositories/configuration-uri</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>net/java/trueupdate/maven/default-repositories.xml</env-entry-value>
     </env-entry>
