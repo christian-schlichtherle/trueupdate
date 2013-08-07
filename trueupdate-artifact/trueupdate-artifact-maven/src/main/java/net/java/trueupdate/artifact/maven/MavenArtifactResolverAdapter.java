@@ -9,10 +9,7 @@ import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import net.java.trueupdate.artifact.maven.model.Local;
-import net.java.trueupdate.artifact.maven.model.Remote;
-import net.java.trueupdate.artifact.maven.model.Repositories;
+import net.java.trueupdate.artifact.maven.model.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import org.eclipse.aether.repository.*;
 
@@ -42,7 +39,7 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
 
     private static LocalRepository localRepository(Local local) {
         return new LocalRepository(new File(replace(local.basedir)),
-                replace(local.type));
+                                            replace(local.type));
     }
 
     private static List<RemoteRepository> remoteRepositories(
@@ -56,7 +53,8 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
 
     private static RemoteRepository remoteRepository(Remote remote) {
         return new RemoteRepository
-                .Builder(replace(remote.id), replace(remote.type),
+                .Builder(replace(remote.id),
+                         replace(remote.type),
                          replace(remote.url))
                 .build();
     }
