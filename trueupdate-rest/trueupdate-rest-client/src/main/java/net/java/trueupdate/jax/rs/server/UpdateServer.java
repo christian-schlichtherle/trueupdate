@@ -14,7 +14,7 @@ import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.ext.*;
 import net.java.trueupdate.artifact.ArtifactDescriptor;
-import net.java.trueupdate.repository.spec.ArtifactRepository;
+import net.java.trueupdate.repository.spec.ArtifactResolver;
 import net.java.trueupdate.jax.rs.UpdateServiceException;
 
 /**
@@ -27,24 +27,24 @@ import net.java.trueupdate.jax.rs.UpdateServiceException;
 @Immutable
 public final class UpdateServer {
 
-    private final ArtifactRepository resolver;
+    private final ArtifactResolver resolver;
 
     /**
      * Constructs an update service.
      * This constructor immediately resolves the artifact resolver by
-     * looking up a {@code ContextResolver<ArtifactRepository>} in the
+     * looking up a {@code ContextResolver<ArtifactResolver>} in the
      * given providers.
      * You can provide a context resolver for this class like this:
      * <pre>{@code
      * package ...;
      *
      * import javax.ws.rs.ext.*;
-     * import net.java.trueupdate.core.artifact.ArtifactRepository;
+     * import net.java.trueupdate.core.artifact.ArtifactResolver;
      *
      * &#64;Provider
      * public class ArtifactResolverResolver
-     * implements ContextResolver<ArtifactRepository> {
-     *     &#64;Override public ArtifactRepository getContext(Class<?> type) {
+     * implements ContextResolver<ArtifactResolver> {
+     *     &#64;Override public ArtifactResolver getContext(Class<?> type) {
      *         return ...;
      *     }
      * }
@@ -56,12 +56,12 @@ public final class UpdateServer {
         this(resolver(providers));
     }
 
-    private static ArtifactRepository resolver(final Providers providers) {
-        final ContextResolver<ArtifactRepository>
-                resolver = providers.getContextResolver(ArtifactRepository.class, WILDCARD_TYPE);
+    private static ArtifactResolver resolver(final Providers providers) {
+        final ContextResolver<ArtifactResolver>
+                resolver = providers.getContextResolver(ArtifactResolver.class, WILDCARD_TYPE);
         if (null == resolver)
-            throw new IllegalArgumentException("No @Provider annotated ContextResolver<ArtifactRepository> available.");
-        return resolver.getContext(ArtifactRepository.class);
+            throw new IllegalArgumentException("No @Provider annotated ContextResolver<ArtifactResolver> available.");
+        return resolver.getContext(ArtifactResolver.class);
     }
 
     /**
@@ -71,7 +71,7 @@ public final class UpdateServer {
      * @param resolver the artifact resolver.
      */
     @Inject
-    public UpdateServer(final ArtifactRepository resolver) {
+    public UpdateServer(final ArtifactResolver resolver) {
         this.resolver = Objects.requireNonNull(resolver);
     }
 

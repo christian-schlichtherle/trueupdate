@@ -9,28 +9,28 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.naming.InitialContext;
 import javax.ws.rs.ext.*;
 
-import net.java.trueupdate.repository.spec.ArtifactRepository;
+import net.java.trueupdate.repository.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.maven.*;
 import net.java.trueupdate.maven.model.Repositories;
 
 /**
- * A context resolver which resolves {@link net.java.trueupdate.repository.spec.ArtifactRepository}s to a singleton
- * {@link net.java.trueupdate.maven.MavenArtifactRepository}.
+ * A context resolver which resolves {@link net.java.trueupdate.repository.spec.ArtifactResolver}s to a singleton
+ * {@link net.java.trueupdate.maven.MavenArtifactResolver}.
  */
 @ThreadSafe
 @Provider
 public class ContextResolverForArtifactResolver
-implements ContextResolver<ArtifactRepository> {
+implements ContextResolver<ArtifactResolver> {
 
-    @Override public ArtifactRepository getContext(Class<?> type) {
+    @Override public ArtifactResolver getContext(Class<?> type) {
         return Lazy.INSTANCE;
     }
 
     private static class Lazy {
 
-        static final MavenArtifactRepository INSTANCE;
+        static final MavenArtifactResolver INSTANCE;
 
         static {
             try {
@@ -40,9 +40,9 @@ implements ContextResolver<ArtifactRepository> {
             }
         }
 
-        static MavenArtifactRepository configuredMavenArtifactResolver()
+        static MavenArtifactResolver configuredMavenArtifactResolver()
         throws Exception {
-            return new MavenArtifactRepositoryAdapter().unmarshal(repositories());
+            return new MavenArtifactResolverAdapter().unmarshal(repositories());
         }
 
         static Repositories repositories() throws Exception {

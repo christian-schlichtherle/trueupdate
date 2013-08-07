@@ -20,16 +20,16 @@ import org.eclipse.aether.repository.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class MavenArtifactRepositoryAdapter
-extends XmlAdapter<Repositories, MavenArtifactRepository> {
+public final class MavenArtifactResolverAdapter
+extends XmlAdapter<Repositories, MavenArtifactResolver> {
 
     @Override public @Nullable
-    MavenArtifactRepository unmarshal(
+    MavenArtifactResolver unmarshal(
             final @CheckForNull Repositories repositories) {
         try {
             return null == repositories
                     ? null
-                    : new MavenArtifactRepository(
+                    : new MavenArtifactResolver(
                         localRepository(repositories.local),
                         remoteRepositories(repositories.remotes));
         } catch (NullPointerException ex) {
@@ -59,7 +59,7 @@ extends XmlAdapter<Repositories, MavenArtifactRepository> {
     }
 
     @Override public @Nullable Repositories marshal(
-            @CheckForNull MavenArtifactRepository mavenArtifactRepository) {
+            @CheckForNull MavenArtifactResolver mavenArtifactRepository) {
         return null == mavenArtifactRepository
                 ? null
                 : new Repositories(

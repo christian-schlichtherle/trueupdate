@@ -12,7 +12,7 @@ import org.scalatest.WordSpec
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import net.java.trueupdate.artifact.ArtifactDescriptor
 
-private object MavenArtifactRepositoryTest {
+private object MavenArtifactResolverIT {
 
   private def relativePath(descriptor: ArtifactDescriptor) =
     "%1$s/%2$s/%3$s/%2$s-%3$s%4$s.%5$s".format(
@@ -31,10 +31,10 @@ private object MavenArtifactRepositoryTest {
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class MavenArtifactRepositoryTest extends WordSpec
-with MavenArtifactRepositoryTestContext {
+class MavenArtifactResolverIT extends WordSpec
+with MavenArtifactResolverTestContext {
 
-  import MavenArtifactRepositoryTest._
+  import MavenArtifactResolverIT._
 
   def resolvedPath(descriptor: ArtifactDescriptor) =
     new File(baseDir, relativePath(descriptor))
@@ -42,7 +42,7 @@ with MavenArtifactRepositoryTestContext {
   def baseDir = new File(testRepositories().local.basedir).getAbsoluteFile
 
   "A maven artifact resolver" should {
-    val artifactFile = artifactRepository resolveArtifactFile artifactDescriptor
+    val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
 
     "resolve the readable artifact file" in {
       artifactFile should equal (resolvedPath(artifactDescriptor))
@@ -50,14 +50,14 @@ with MavenArtifactRepositoryTestContext {
     }
 
     "resolve the update descriptor and path to a readable file" in {
-      val updateDescriptor = artifactRepository resolveUpdateDescriptor artifactDescriptor
+      val updateDescriptor = artifactResolver resolveUpdateDescriptor artifactDescriptor
       updateDescriptor.groupId should equal (artifactDescriptor.groupId)
       updateDescriptor.artifactId should equal (artifactDescriptor.artifactId)
       // The version may change over time.
       updateDescriptor.version should not equal (artifactDescriptor.version)
       updateDescriptor.classifier should equal (artifactDescriptor.classifier)
       updateDescriptor.extension should equal (artifactDescriptor.extension)
-      val updateFile = artifactRepository resolveArtifactFile updateDescriptor
+      val updateFile = artifactResolver resolveArtifactFile updateDescriptor
       updateFile canRead () should be (true)
     }
   }

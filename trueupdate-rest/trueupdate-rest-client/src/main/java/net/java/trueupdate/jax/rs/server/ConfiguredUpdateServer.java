@@ -15,7 +15,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import net.java.trueupdate.artifact.ArtifactDescriptor;
-import net.java.trueupdate.repository.spec.ArtifactRepository;
+import net.java.trueupdate.repository.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.Sink;
 import net.java.trueupdate.core.io.Sinks;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
@@ -33,7 +33,7 @@ public final class ConfiguredUpdateServer {
 
     private static final QName VERSION_NAME = new QName("version");
 
-    private final ArtifactRepository resolver;
+    private final ArtifactResolver resolver;
     private final ArtifactDescriptor currentDescriptor;
 
     /**
@@ -44,7 +44,7 @@ public final class ConfiguredUpdateServer {
      *                          current version.
      */
     public ConfiguredUpdateServer(
-            final ArtifactRepository resolver,
+            final ArtifactResolver resolver,
             final ArtifactDescriptor currentDescriptor) {
         this.resolver = requireNonNull(resolver);
         this.currentDescriptor = requireNonNull(currentDescriptor);

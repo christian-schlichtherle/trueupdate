@@ -11,7 +11,7 @@ import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 
 /**
- * Models a local repository and some remote repositories.
+ * Models a local repository plus some optional remote repositories.
  * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
@@ -26,9 +26,7 @@ public final class Repositories {
     public List<Remote> remotes;
 
     /** Required by JAXB. */
-    public Repositories() {
-        this.remotes = new LinkedList<>();
-    }
+    public Repositories() { this.remotes = new LinkedList<>(); }
 
     /** Courtesy constructor. */
     public Repositories(final Local local, final List<Remote> remotes) {

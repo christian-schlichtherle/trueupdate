@@ -13,7 +13,7 @@ import java.io.File;
  *
  * @author Christian Schlichtherle
  */
-public interface ArtifactRepository {
+public interface ArtifactResolver {
 
     /**
      * Resolves the file containing the described artifact.

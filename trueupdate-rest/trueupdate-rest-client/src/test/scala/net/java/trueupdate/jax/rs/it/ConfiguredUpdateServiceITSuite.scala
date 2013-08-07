@@ -30,7 +30,7 @@ private object ConfiguredUpdateServiceITSuite {
 
 /** @author Christian Schlichtherle */
 class ConfiguredUpdateServiceITSuite extends JerseyTest {
-  this: TestContext with ArtifactRepositoryTestContext =>
+  this: TestContext with ArtifactResolverTestContext =>
 
   @Test def testLifeCycle() {
     assertUpdateVersion()
@@ -82,7 +82,7 @@ class ConfiguredUpdateServiceITSuite extends JerseyTest {
   }
 
   private class ContextResolverForArtifactResolver
-    extends ContextResolver[ArtifactRepository] {
-    override def getContext(ignored: Class[_]) = artifactRepository
+    extends ContextResolver[ArtifactResolver] {
+    override def getContext(ignored: Class[_]) = artifactResolver
   }
 }

@@ -7,7 +7,7 @@ package net.java.trueupdate.maven;
 import static net.java.trueupdate.maven.ArtifactConverters.*;
 
 import net.java.trueupdate.artifact.ArtifactDescriptor;
-import net.java.trueupdate.repository.spec.ArtifactRepository;
+import net.java.trueupdate.repository.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.maven.model.Repositories;
@@ -32,12 +32,12 @@ import org.eclipse.aether.version.Version;
 
 /**
  * Resolves paths to described artifacts and their latest update by looking
- * them up in a local repository and, optionally, some remote repositories.
+ * them up in a local repository and some optional remote repositories.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public class MavenArtifactRepository implements ArtifactRepository {
+public class MavenArtifactResolver implements ArtifactResolver {
 
     final LocalRepository local;
     final List<RemoteRepository> remotes;
@@ -52,8 +52,8 @@ public class MavenArtifactRepository implements ArtifactRepository {
      * @param local the local repository for artifacts.
      * @param remotes the array of remote repositories for artifacts.
      */
-    public MavenArtifactRepository(LocalRepository local,
-                                   RemoteRepository... remotes) {
+    public MavenArtifactResolver(LocalRepository local,
+                                 RemoteRepository... remotes) {
         this(local, asList(remotes));
     }
 
@@ -64,8 +64,8 @@ public class MavenArtifactRepository implements ArtifactRepository {
      * @param local the local repository for artifacts.
      * @param remotes the list of remote repositories for artifacts.
      */
-    public MavenArtifactRepository(final LocalRepository local,
-                                   final List<RemoteRepository> remotes) {
+    public MavenArtifactResolver(final LocalRepository local,
+                                 final List<RemoteRepository> remotes) {
         this.local = Objects.requireNonNull(local);
         this.remotes = Collections.unmodifiableList(new ArrayList<>(remotes));
     }
@@ -216,17 +216,17 @@ public class MavenArtifactRepository implements ArtifactRepository {
      * at {@code ~/.m2/repository} plus Maven Central at
      * {@code http://repo1.maven.org/maven2/}.
      */
-    public static MavenArtifactRepository getDefaultInstance() {
+    public static MavenArtifactResolver getDefaultInstance() {
         return Lazy.INSTANCE;
     }
 
     private static class Lazy {
 
-        static final MavenArtifactRepository
+        static final MavenArtifactResolver
                 INSTANCE = configuredMavenArtifactResolver();
 
-        static MavenArtifactRepository configuredMavenArtifactResolver() {
-            return new MavenArtifactRepositoryAdapter().unmarshal(repositories());
+        static MavenArtifactResolver configuredMavenArtifactResolver() {
+            return new MavenArtifactResolverAdapter().unmarshal(repositories());
         }
 
         static Repositories repositories() { return repositories(source()); }
@@ -238,7 +238,7 @@ public class MavenArtifactRepository implements ArtifactRepository {
 
         static Source source() {
             return Sources.forResource("default-repositories.xml",
-                    MavenArtifactRepository.class);
+                    MavenArtifactResolver.class);
         }
     }
 }

@@ -7,9 +7,9 @@ package net.java.trueupdate.repository.spec
 import net.java.trueupdate.artifact.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
-trait ArtifactRepositoryTestContext {
+trait ArtifactResolverTestContext {
 
-  def artifactRepository: ArtifactRepository
+  def artifactResolver: ArtifactResolver
 
   final def artifactDescriptor =
     new ArtifactDescriptor.Builder()
