@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.maven;
+package net.java.trueupdate.artifact.maven;
 
 import java.io.File;
 import java.util.Locale;

@@ -6,7 +6,7 @@
  * Provides model classes for configuring a local and some optional remote
  * Maven repositories.
  *
- * @see net.java.trueupdate.maven.model.Repositories
+ * @see net.java.trueupdate.artifact.maven.model.Repositories
  * @author Christian Schlichtherle
  */
-package net.java.trueupdate.maven.model;
+package net.java.trueupdate.artifact.maven.model;

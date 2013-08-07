@@ -2,15 +2,15 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.maven;
+package net.java.trueupdate.artifact.maven;
 
-import static net.java.trueupdate.maven.ArtifactConverters.*;
+import static net.java.trueupdate.artifact.maven.ArtifactConverters.*;
 
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.core.io.Sources;
-import net.java.trueupdate.maven.model.Repositories;
+import net.java.trueupdate.artifact.maven.model.Repositories;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;

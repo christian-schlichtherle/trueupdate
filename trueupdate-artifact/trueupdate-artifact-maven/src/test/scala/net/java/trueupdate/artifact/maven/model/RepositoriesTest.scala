@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.maven.model
+package net.java.trueupdate.artifact.maven.model
 
 import net.java.trueupdate.core.TestContext
 import org.junit.runner.RunWith

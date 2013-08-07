@@ -9,4 +9,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.maven;
+package net.java.trueupdate.artifact.maven;

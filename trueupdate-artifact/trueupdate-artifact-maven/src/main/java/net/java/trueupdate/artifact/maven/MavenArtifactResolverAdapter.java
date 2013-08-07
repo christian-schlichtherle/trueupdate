@@ -2,15 +2,18 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.maven;
+package net.java.trueupdate.artifact.maven;
 
 import java.io.File;
 import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import net.java.trueupdate.artifact.maven.model.Local;
+import net.java.trueupdate.artifact.maven.model.Remote;
+import net.java.trueupdate.artifact.maven.model.Repositories;
 import net.java.trueupdate.core.util.SystemProperties;
-import net.java.trueupdate.maven.model.*;
 import org.eclipse.aether.repository.*;
 
 /**

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.maven.model;
+package net.java.trueupdate.artifact.maven.model;
 
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.Source;
