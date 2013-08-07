@@ -19,6 +19,6 @@
 
     <name>TrueUpdate Artifact</name>
     <description>
-        TODO
+        Provides a class to describe artifacts.
     </description>
 </project>

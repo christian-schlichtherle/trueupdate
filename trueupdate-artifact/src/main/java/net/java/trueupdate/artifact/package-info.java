@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * TODO
+ * Provides a class to describe artifacts.
  *
  * @author Christian Schlichtherle
  */
