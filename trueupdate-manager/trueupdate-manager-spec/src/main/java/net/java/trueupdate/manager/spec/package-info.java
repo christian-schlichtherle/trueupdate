@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a RESTful web client for updating web apps.
+ * Specifies a manager for updating web apps.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.client;
+package net.java.trueupdate.manager.spec;

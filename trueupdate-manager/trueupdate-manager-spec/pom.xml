@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Manager Specification</name>
     <description>
-        The specification of a manager for updating web apps.
+        Specifies a manager for updating web apps.
     </description>
 
     <dependencies>

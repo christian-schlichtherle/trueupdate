@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * TODO
+ * Specifies an agent for updating web apps.
  *
  * @author Christian Schlichtherle
  */
