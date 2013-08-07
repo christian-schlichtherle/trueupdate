@@ -15,7 +15,7 @@
     </parent>
 
     <artifactId>trueupdate-manager-spec</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>TrueUpdate Manager Specification</name>
     <description>
