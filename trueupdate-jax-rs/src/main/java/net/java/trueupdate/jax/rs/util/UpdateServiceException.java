@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jax.rs;
+package net.java.trueupdate.jax.rs.util;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Wraps a {@link Throwable} in order to decorate it with additional meta data
- * for producing or consuming a HTTP response.
+ * when producing or consuming a HTTP response.
  *
  * @author Christian Schlichtherle
  */

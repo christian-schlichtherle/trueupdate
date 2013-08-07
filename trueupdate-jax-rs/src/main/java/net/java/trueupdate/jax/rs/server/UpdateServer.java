@@ -13,9 +13,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.ext.*;
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.jax.rs.UpdateServiceException;
+import net.java.trueupdate.artifact.spec.*;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * The (unconfigured) client-side implementation of an update service for

@@ -15,8 +15,8 @@ import javax.ws.rs.core.MediaType;
 import static javax.ws.rs.core.MediaType.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.jax.rs.UpdateServiceException;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * RESTful web client based implementation of an update client.

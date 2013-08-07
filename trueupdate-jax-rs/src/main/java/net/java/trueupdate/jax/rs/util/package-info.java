@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides basic functionality for RESTful web services for updating web apps.
+ * The stuff that didn't fit anywhere else.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.jax.rs;
+package net.java.trueupdate.jax.rs.util;

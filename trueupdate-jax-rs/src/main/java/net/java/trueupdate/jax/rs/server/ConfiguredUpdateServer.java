@@ -14,12 +14,10 @@ import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.Sinks;
+import net.java.trueupdate.artifact.spec.*;
+import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
-import net.java.trueupdate.jax.rs.UpdateServiceException;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
 

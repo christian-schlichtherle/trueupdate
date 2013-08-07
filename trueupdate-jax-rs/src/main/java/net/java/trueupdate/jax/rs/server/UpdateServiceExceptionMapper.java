@@ -4,21 +4,16 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.jax.rs.UpdateServiceException;
-
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.*;
+import javax.ws.rs.ext.*;
 import static javax.ws.rs.core.MediaType.*;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import javax.ws.rs.Produces;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * Maps an update service exception to a HTTP response.

@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.jax.rs.UpdateServiceException;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 import java.util.concurrent.Callable;
 
