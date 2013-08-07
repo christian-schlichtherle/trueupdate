@@ -86,6 +86,11 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-agent-spec</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -98,24 +103,29 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-jax-rs</artifactId>
+                <artifactId>trueupdate-rest-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-jax-rs</artifactId>
+                <artifactId>trueupdate-rest-client</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-maven</artifactId>
+                <artifactId>trueupdate-manager-spec</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-maven</artifactId>
+                <artifactId>trueupdate-repository-maven</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-repository-maven</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -175,10 +185,11 @@
     </dependencyManagement>
 
     <modules>
-        <module>trueupdate-client</module>
+        <module>trueupdate-agent</module>
         <module>trueupdate-core</module>
-        <module>trueupdate-jax-rs</module>
-        <module>trueupdate-maven</module>
+        <module>trueupdate-rest</module>
+        <module>trueupdate-manager</module>
+        <module>trueupdate-repository</module>
         <module>trueupdate-server</module>
     </modules>
 </project>

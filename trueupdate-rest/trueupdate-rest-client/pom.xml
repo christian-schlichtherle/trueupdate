@@ -10,13 +10,13 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-rest</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-jax-rs</artifactId>
+    <artifactId>trueupdate-rest-client</artifactId>
 
-    <name>TrueUpdate JAX-RS</name>
+    <name>TrueUpdate REST Client</name>
     <description>Provides a RESTful web service for updating web apps.</description>
 
     <dependencies>

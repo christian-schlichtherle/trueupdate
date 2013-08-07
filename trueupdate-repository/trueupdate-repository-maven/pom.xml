@@ -10,15 +10,15 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-repository</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-maven</artifactId>
+    <artifactId>trueupdate-repository-maven</artifactId>
 
-    <name>TrueUpdate Maven</name>
+    <name>TrueUpdate Repository Maven</name>
     <description>
-        Provides an artifact resolver which is based on a local Maven repository.
+        An artifact repository which is based on Maven.
     </description>
 
     <dependencies>
