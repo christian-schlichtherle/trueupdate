@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.core.artifact;
 
-import net.java.trueupdate.agent.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.ArtifactDescriptor;
 
 import java.io.File;
 

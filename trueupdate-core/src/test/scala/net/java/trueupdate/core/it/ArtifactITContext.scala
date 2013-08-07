@@ -6,7 +6,7 @@ package net.java.trueupdate.core.it
 
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.artifact.{ArtifactResolver}
-import net.java.trueupdate.agent.spec.ArtifactDescriptor
+import net.java.trueupdate.artifact.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 trait ArtifactITContext extends TestContext {

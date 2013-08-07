@@ -14,7 +14,7 @@ import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import net.java.trueupdate.agent.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.ArtifactDescriptor;
 import net.java.trueupdate.core.artifact.ArtifactResolver;
 import net.java.trueupdate.core.io.Sink;
 import net.java.trueupdate.core.io.Sinks;

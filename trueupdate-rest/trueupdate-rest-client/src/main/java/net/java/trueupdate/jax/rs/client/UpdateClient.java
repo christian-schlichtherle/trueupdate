@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.jax.rs.client;
 
-import net.java.trueupdate.agent.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
 
 import java.io.IOException;

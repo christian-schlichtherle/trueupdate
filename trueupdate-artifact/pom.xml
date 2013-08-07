@@ -10,22 +10,15 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-agent</artifactId>
+        <artifactId>trueupdate</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent-spec</artifactId>
+    <artifactId>trueupdate-artifact</artifactId>
     <packaging>jar</packaging>
 
-    <name>TrueUpdate Agent Specification</name>
+    <name>TrueUpdate Artifact</name>
     <description>
-        The specification of an agent for updating web apps.
+        TODO
     </description>
-
-    <dependencies>
-        <dependency>
-            <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-artifact</artifactId>
-        </dependency>
-    </dependencies>
 </project>

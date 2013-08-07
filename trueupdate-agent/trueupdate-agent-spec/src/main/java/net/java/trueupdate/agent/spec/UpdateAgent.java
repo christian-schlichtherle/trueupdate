@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.agent.spec;
 
+import net.java.trueupdate.artifact.ArtifactDescriptor;
+
 /**
  * Communicates with the TrueUpdate Manager about updating this web app.
  * Note that all communication is asynchronous.

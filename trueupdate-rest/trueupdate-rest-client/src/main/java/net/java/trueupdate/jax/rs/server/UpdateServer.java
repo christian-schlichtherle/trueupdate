@@ -13,7 +13,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.ext.*;
-import net.java.trueupdate.agent.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.ArtifactDescriptor;
 import net.java.trueupdate.core.artifact.ArtifactResolver;
 import net.java.trueupdate.jax.rs.UpdateServiceException;
 
