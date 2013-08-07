@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.core.artifact;
 
+import net.java.trueupdate.agent.spec.ArtifactDescriptor;
+
 import java.io.File;
 
 /**

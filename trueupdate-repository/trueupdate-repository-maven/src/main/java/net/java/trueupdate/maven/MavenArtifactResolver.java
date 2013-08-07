@@ -6,7 +6,7 @@ package net.java.trueupdate.maven;
 
 import static net.java.trueupdate.maven.ArtifactConverters.*;
 
-import net.java.trueupdate.core.artifact.ArtifactDescriptor;
+import net.java.trueupdate.agent.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.artifact.ArtifactResolver;
 import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.core.io.Sources;

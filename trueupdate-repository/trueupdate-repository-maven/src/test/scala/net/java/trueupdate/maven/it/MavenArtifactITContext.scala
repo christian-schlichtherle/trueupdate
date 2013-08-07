@@ -8,7 +8,8 @@ import net.java.trueupdate.maven.MavenArtifactResolverAdapter
 import net.java.trueupdate.maven.model.Repositories
 import net.java.trueupdate.core.it.ArtifactITContext
 import net.java.trueupdate.core.io.Sources
-import net.java.trueupdate.core.artifact.{ArtifactResolver, ArtifactDescriptor}
+import net.java.trueupdate.core.artifact.{ArtifactResolver}
+import net.java.trueupdate.agent.spec.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 trait MavenArtifactITContext extends ArtifactITContext {

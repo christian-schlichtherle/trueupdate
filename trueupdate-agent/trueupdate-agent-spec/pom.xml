@@ -21,11 +21,4 @@
     <description>
         The specification of an agent for updating web apps.
     </description>
-
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-core</artifactId>
-        </dependency>
-    </dependencies>
 </project>

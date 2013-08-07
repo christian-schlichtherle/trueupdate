@@ -22,6 +22,10 @@
     </description>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-agent-spec</artifactId>
+        </dependency>
         <!--dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
