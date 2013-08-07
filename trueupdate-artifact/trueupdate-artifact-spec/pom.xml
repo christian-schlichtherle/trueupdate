@@ -10,23 +10,17 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-repository</artifactId>
+        <artifactId>trueupdate-artifact</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-repository-spec</artifactId>
+    <artifactId>trueupdate-artifact-spec</artifactId>
+    <packaging>jar</packaging>
 
-    <name>TrueUpdate Repository Specification</name>
+    <name>TrueUpdate Artifact Specification</name>
     <description>
-        TODO
+        The specification of artifacts.
     </description>
-
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

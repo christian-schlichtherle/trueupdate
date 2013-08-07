@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
         </dependency>
         <!--dependency>
             <groupId>ch.qos.logback</groupId>

@@ -15,10 +15,15 @@
     </parent>
 
     <artifactId>trueupdate-artifact</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>TrueUpdate Artifact</name>
     <description>
-        Provides a class to describe artifacts.
+        The parent POM for TrueUpdate Artifacts.
     </description>
+
+    <modules>
+        <module>trueupdate-artifact-spec</module>
+        <module>trueupdate-artifact-maven</module>
+    </modules>
 </project>

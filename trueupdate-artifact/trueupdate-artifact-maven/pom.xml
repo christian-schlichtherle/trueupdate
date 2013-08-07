@@ -10,15 +10,16 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-repository</artifactId>
+        <artifactId>trueupdate-artifact</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-repository-maven</artifactId>
+    <artifactId>trueupdate-artifact-maven</artifactId>
 
-    <name>TrueUpdate Repository Maven</name>
+    <name>TrueUpdate Artifact Maven</name>
     <description>
-        An artifact repository which is based on Maven.
+        An artifact resolver which is based on a local Maven repository and
+        some optional remote Maven repositories.
     </description>
 
     <dependencies>
@@ -33,11 +34,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-spec</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-spec</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
             <type>test-jar</type>
         </dependency>
         <!--dependency>

@@ -25,7 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-artifact</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
         </dependency>
     </dependencies>
 </project>

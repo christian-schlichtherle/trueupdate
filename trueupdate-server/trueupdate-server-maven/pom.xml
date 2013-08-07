@@ -31,16 +31,16 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-spec</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-maven</artifactId>
+            <artifactId>trueupdate-artifact-maven</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-maven</artifactId>
+            <artifactId>trueupdate-artifact-maven</artifactId>
             <type>test-jar</type>
         </dependency>
         <dependency>
