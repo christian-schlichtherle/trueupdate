@@ -3,8 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides model classes for configuring a local and some remote Maven
- * repositories.
+ * Provides model classes for configuring a local and some optional remote
+ * Maven repositories.
  *
  * @see net.java.trueupdate.maven.model.Repositories
  * @author Christian Schlichtherle
