@@ -14,15 +14,15 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-server</artifactId>
+    <artifactId>trueupdate-manager</artifactId>
     <packaging>pom</packaging>
 
-    <name>TrueUpdate Server</name>
+    <name>TrueUpdate Manager</name>
     <description>
-        The parent POM for TrueUpdate Servers.
+        The parent POM for TrueUpdate Managers.
     </description>
 
     <modules>
-        <module>trueupdate-server-maven</module>
+        <module>trueupdate-manager-spec</module>
     </modules>
 </project>

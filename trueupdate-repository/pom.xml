@@ -14,20 +14,16 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-client</artifactId>
-    <packaging>war</packaging>
+    <artifactId>trueupdate-repository</artifactId>
+    <packaging>pom</packaging>
 
-    <name>TrueUpdate Client</name>
-    <description>Provides a RESTful web client for updating web apps.</description>
+    <name>TrueUpdate Repository</name>
+    <description>
+        The parent POM for TrueUpdate Repositories.
+    </description>
 
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>trueupdate-repository-maven</module>
+        <module>trueupdate-repository-spec</module>
+    </modules>
 </project>
