@@ -11,16 +11,17 @@ import java.util.zip.ZipInputStream
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
 import javax.ws.rs.ext.ContextResolver
+import net.java.trueupdate.core.TestContext
+import net.java.trueupdate.core.io._
+import net.java.trueupdate.core.util.Loan._
+import net.java.trueupdate.core.zip.model.Diff
+import net.java.trueupdate.jax.rs.server._
+import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
+import net.java.trueupdate.repository.spec._
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
-import net.java.trueupdate.core.artifact._
-import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.it.ArtifactITContext
-import net.java.trueupdate.core.util.Loan._
-import net.java.trueupdate.core.zip.model.Diff
-import net.java.trueupdate.jax.rs.server.{UpdateServiceExceptionMapper, UpdateServer}
-import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
+import ConfiguredUpdateServiceITSuite._
 
 private object ConfiguredUpdateServiceITSuite {
 
@@ -28,8 +29,8 @@ private object ConfiguredUpdateServiceITSuite {
 }
 
 /** @author Christian Schlichtherle */
-class ConfiguredUpdateServiceITSuite
-extends JerseyTest { this: ArtifactITContext =>
+class ConfiguredUpdateServiceITSuite extends JerseyTest {
+  this: TestContext with ArtifactRepositoryTestContext =>
 
   @Test def testLifeCycle() {
     assertUpdateVersion()
@@ -81,7 +82,7 @@ extends JerseyTest { this: ArtifactITContext =>
   }
 
   private class ContextResolverForArtifactResolver
-    extends ContextResolver[ArtifactResolver] {
-    override def getContext(ignored: Class[_]) = artifactResolver
+    extends ContextResolver[ArtifactRepository] {
+    override def getContext(ignored: Class[_]) = artifactRepository
   }
 }

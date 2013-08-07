@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.artifact;
+package net.java.trueupdate.repository.spec;
 
 import net.java.trueupdate.artifact.ArtifactDescriptor;
 
@@ -13,7 +13,7 @@ import java.io.File;
  *
  * @author Christian Schlichtherle
  */
-public interface ArtifactResolver {
+public interface ArtifactRepository {
 
     /**
      * Resolves the file containing the described artifact.

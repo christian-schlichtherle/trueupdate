@@ -11,6 +11,7 @@ import net.java.trueupdate.core.io.MemoryStore
 import net.java.trueupdate.core.codec.{TestJaxbCodec, JaxbCodec}
 import org.slf4j.LoggerFactory
 import org.scalatest.matchers.ShouldMatchers._
+import TestContext._
 
 /** @author Christian Schlichtherle */
 object TestContext {
@@ -21,15 +22,13 @@ object TestContext {
 /** @author Christian Schlichtherle */
 trait TestContext {
 
-  import TestContext._
+  final lazy val logger = LoggerFactory.getLogger(getClass)
 
-  lazy val logger = LoggerFactory.getLogger(getClass)
+  final def utf8String(store: MemoryStore) = new String(store.data, utf8)
 
-  def utf8String(store: MemoryStore) = new String(store.data, utf8)
+  final def memoryStore = new MemoryStore
 
-  def memoryStore = new MemoryStore
-
-  def jaxbCodec: JaxbCodec = new TestJaxbCodec(jaxbContext)
+  final def jaxbCodec: JaxbCodec = new TestJaxbCodec(jaxbContext)
 
   lazy val jaxbContext: JAXBContext = throw new UnsupportedOperationException
 

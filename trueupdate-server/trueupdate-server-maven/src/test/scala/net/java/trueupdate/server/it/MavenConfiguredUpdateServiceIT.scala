@@ -5,9 +5,9 @@
 package net.java.trueupdate.server.it
 
 import net.java.trueupdate.jax.rs.it.ConfiguredUpdateServiceITSuite
-import net.java.trueupdate.maven.it.MavenArtifactITContext
+import net.java.trueupdate.maven.it.MavenArtifactRepositoryTestContext
 
 /** @author Christian Schlichtherle */
 class MavenConfiguredUpdateServiceIT
 extends ConfiguredUpdateServiceITSuite
-with MavenArtifactITContext
+with MavenArtifactRepositoryTestContext

@@ -8,15 +8,16 @@ import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
-import net.java.trueupdate.maven.MavenArtifactResolverAdapter
+import net.java.trueupdate.maven.MavenArtifactRepositoryAdapter
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class MavenArtifactResolverAdapterIT extends WordSpec with MavenArtifactITContext {
+class MavenArtifactRepositoryAdapterTest
+extends WordSpec with MavenArtifactRepositoryTestContext {
 
-  def adapter = new MavenArtifactResolverAdapter
+  def adapter = new MavenArtifactRepositoryAdapter
 
-  "A maven artifact resolver adapter" should {
+  "A maven artifact repository adapter" should {
     "support round-trip conversion" in {
       val original = testRepositories()
       val clone = adapter marshal (adapter unmarshal original)

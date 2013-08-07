@@ -14,21 +14,22 @@ import net.java.trueupdate.maven.model.*;
 import org.eclipse.aether.repository.*;
 
 /**
- * Adapts a maven artifact resolver to a repositories model so that JAXB can
+ * Adapts a maven artifact repository to a repositories model so that JAXB can
  * marshall / unmarshall it.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class MavenArtifactResolverAdapter
-extends XmlAdapter<Repositories, MavenArtifactResolver> {
+public final class MavenArtifactRepositoryAdapter
+extends XmlAdapter<Repositories, MavenArtifactRepository> {
 
-    @Override public @Nullable MavenArtifactResolver unmarshal(
+    @Override public @Nullable
+    MavenArtifactRepository unmarshal(
             final @CheckForNull Repositories repositories) {
         try {
             return null == repositories
                     ? null
-                    : new MavenArtifactResolver(
+                    : new MavenArtifactRepository(
                         localRepository(repositories.local),
                         remoteRepositories(repositories.remotes));
         } catch (NullPointerException ex) {
@@ -58,12 +59,12 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
     }
 
     @Override public @Nullable Repositories marshal(
-            @CheckForNull MavenArtifactResolver mavenArtifactResolver) {
-        return null == mavenArtifactResolver
+            @CheckForNull MavenArtifactRepository mavenArtifactRepository) {
+        return null == mavenArtifactRepository
                 ? null
                 : new Repositories(
-                    local(mavenArtifactResolver.local),
-                    remotes(mavenArtifactResolver.remotes));
+                    local(mavenArtifactRepository.local),
+                    remotes(mavenArtifactRepository.remotes));
     }
 
     private static Local local(LocalRepository localRepository) {
@@ -72,7 +73,8 @@ extends XmlAdapter<Repositories, MavenArtifactResolver> {
                 nonEmptyOrNull(localRepository.getContentType()));
     }
 
-    private static List<Remote> remotes(final List<RemoteRepository> remoteRepositories) {
+    private static List<Remote> remotes(
+            final List<RemoteRepository> remoteRepositories) {
         final List<Remote> remotes = new ArrayList<>(remoteRepositories.size());
         for (RemoteRepository remoteRepository : remoteRepositories)
             remotes.add(remote(remoteRepository));

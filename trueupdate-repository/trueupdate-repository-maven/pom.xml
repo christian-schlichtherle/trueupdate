@@ -31,6 +31,15 @@
             <artifactId>trueupdate-core</artifactId>
             <type>test-jar</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-repository-spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-repository-spec</artifactId>
+            <type>test-jar</type>
+        </dependency>
         <!--dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

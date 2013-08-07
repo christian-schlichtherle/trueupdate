@@ -31,11 +31,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-rest-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-rest-client</artifactId>
+            <artifactId>trueupdate-repository-spec</artifactId>
             <type>test-jar</type>
         </dependency>
         <dependency>
@@ -45,6 +41,15 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-repository-maven</artifactId>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-rest-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-rest-client</artifactId>
             <type>test-jar</type>
         </dependency>
         <!--dependency>
