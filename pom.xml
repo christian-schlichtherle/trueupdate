@@ -132,12 +132,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-rest-client</artifactId>
+                <artifactId>trueupdate-jax-rs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-rest-client</artifactId>
+                <artifactId>trueupdate-jax-rs</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -200,7 +200,7 @@
         <module>trueupdate-agent</module>
         <module>trueupdate-artifact</module>
         <module>trueupdate-core</module>
-        <module>trueupdate-rest</module>
+        <module>trueupdate-jax-rs</module>
         <module>trueupdate-manager</module>
         <module>trueupdate-server</module>
     </modules>
