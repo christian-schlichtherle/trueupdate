@@ -11,13 +11,13 @@ import java.util.zip.ZipInputStream
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
 import javax.ws.rs.ext.ContextResolver
+import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.util.Loan._
 import net.java.trueupdate.core.zip.model.Diff
 import net.java.trueupdate.jax.rs.server._
 import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
-import net.java.trueupdate.repository.spec._
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory

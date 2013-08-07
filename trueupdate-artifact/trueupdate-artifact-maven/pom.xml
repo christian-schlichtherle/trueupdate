@@ -18,8 +18,8 @@
 
     <name>TrueUpdate Artifact Maven</name>
     <description>
-        An artifact resolver which is based on a local Maven repository and
-        some optional remote Maven repositories.
+        Provides an artifact resolver which is based on a local Maven
+        repository and some optional remote Maven repositories.
     </description>
 
     <dependencies>

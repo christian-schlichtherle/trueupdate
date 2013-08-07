@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Artifact Specification</name>
     <description>
-        The specification of artifacts.
+        Specifies artifacts.
     </description>
 
     <build>

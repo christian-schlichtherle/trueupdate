@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.maven.it
 
+import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io.Sources
 import net.java.trueupdate.maven.MavenArtifactResolverAdapter
 import net.java.trueupdate.maven.model.Repositories
-import net.java.trueupdate.repository.spec._
 
 /** @author Christian Schlichtherle */
 trait MavenArtifactResolverTestContext

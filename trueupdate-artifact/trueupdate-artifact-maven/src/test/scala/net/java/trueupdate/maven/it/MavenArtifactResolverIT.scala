@@ -10,7 +10,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.WordSpec
 import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
-import net.java.trueupdate.artifact.ArtifactDescriptor
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 
 private object MavenArtifactResolverIT {
 

@@ -31,12 +31,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-spec</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-repository-spec</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>

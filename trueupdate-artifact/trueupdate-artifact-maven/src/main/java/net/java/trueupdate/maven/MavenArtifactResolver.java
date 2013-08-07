@@ -6,8 +6,8 @@ package net.java.trueupdate.maven;
 
 import static net.java.trueupdate.maven.ArtifactConverters.*;
 
-import net.java.trueupdate.artifact.ArtifactDescriptor;
-import net.java.trueupdate.repository.spec.ArtifactResolver;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.maven.model.Repositories;

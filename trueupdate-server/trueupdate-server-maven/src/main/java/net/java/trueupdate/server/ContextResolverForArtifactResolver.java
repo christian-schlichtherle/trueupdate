@@ -9,14 +9,14 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.naming.InitialContext;
 import javax.ws.rs.ext.*;
 
-import net.java.trueupdate.repository.spec.ArtifactResolver;
+import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.maven.*;
 import net.java.trueupdate.maven.model.Repositories;
 
 /**
- * A context resolver which resolves {@link net.java.trueupdate.repository.spec.ArtifactResolver}s to a singleton
+ * A context resolver which resolves {@link net.java.trueupdate.artifact.spec.ArtifactResolver}s to a singleton
  * {@link net.java.trueupdate.maven.MavenArtifactResolver}.
  */
 @ThreadSafe

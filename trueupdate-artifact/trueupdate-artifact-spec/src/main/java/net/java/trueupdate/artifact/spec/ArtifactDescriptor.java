@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.artifact;
+package net.java.trueupdate.artifact.spec;
 
 import java.io.Serializable;
 import static java.util.Objects.requireNonNull;

@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * TODO
+ * Specifies artifacts.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.repository.spec;
+package net.java.trueupdate.artifact.spec;

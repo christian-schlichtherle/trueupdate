@@ -3,7 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an artifact resolver which is based on a local Maven repository.
+ * Provides an artifact resolver which is based on a local Maven repository and
+ * some optional remote Maven repositories.
  *
  * @author Christian Schlichtherle
  */

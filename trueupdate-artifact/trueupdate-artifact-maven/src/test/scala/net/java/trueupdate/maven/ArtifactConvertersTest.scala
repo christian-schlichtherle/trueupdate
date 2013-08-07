@@ -4,14 +4,13 @@
  */
 package net.java.trueupdate.maven
 
-import net.java.trueupdate.artifact.ArtifactDescriptor
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import ArtifactDescriptor.Builder
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
-import net.java.trueupdate.artifact.ArtifactDescriptor
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
