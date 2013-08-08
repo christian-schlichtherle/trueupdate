@@ -23,6 +23,6 @@
     </description>
 
     <modules>
-        <module>trueupdate-server-maven</module>
+        <module>trueupdate-server-servlet</module>
     </modules>
 </project>

@@ -14,10 +14,10 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-server-maven</artifactId>
+    <artifactId>trueupdate-server-servlet</artifactId>
     <packaging>war</packaging>
 
-    <name>TrueUpdate Server Maven</name>
+    <name>TrueUpdate Server Servlet</name>
     <description>
         Provides a RESTful web service for diffing JARs in one or more Maven
         repositories.
