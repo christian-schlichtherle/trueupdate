@@ -4,66 +4,83 @@
  */
 package net.java.trueupdate.agent.spec;
 
+import static java.util.Objects.requireNonNull;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
 /**
- * Communicates with the TrueUpdate Manager about updating this web app.
- * Note that all communication is asynchronous.
+ * An agent for updating an application.
+ * This component sends and receives message to and from the TrueUpdate Manager.
+ * <p>
  * Implementations should be immutable and hence, thread-safe.
+ * <p>
+ * Applications have no need to implement this class and should not do so
+ * because it may be subject to future expansion.
  *
  * @author Christian Schlichtherle
  */
-public interface UpdateAgent {
-
-    /** Returns the artifact descriptor for this web app. */
-    ArtifactDescriptor artifactDescriptor();
+public abstract class UpdateAgent {
 
     /**
-     * Sends a message to the TrueUpdate Manager in order to subscribe to the
-     * list of recipients for update announcements for this web app.
+     * Sends a request to subscribe to the list of recipients for update
+     * announcements for the application.
      *
      * @param listener the call back interface for processing responses from
      *                 the TrueUpdate Manager.
-     * @throws Exception if sending the message is not possible for some reason.
+     * @throws UpdateRuntimeException if sending the request is not possible for some
+     *         reason.
      */
-    void subscribe(UpdateListener listener) throws Exception;
+    public abstract void subscribe() throws UpdateRuntimeException;
 
     /**
-     * Sends a message to the TrueUpdate Manager in order to unsubscribe from
-     * the list of recipients for update announcements for this web app.
+     * Sends a request to unsubscribe from the list of recipients for update
+     * announcements for the application.
      *
-     * @param listener the call back interface for processing responses from
-     *                 the TrueUpdate Manager.
-     * @throws Exception if sending the message is not possible for some reason.
+     * @throws UpdateRuntimeException if sending the request is not possible for some
+     *         reason.
      */
-    void unsubscribe() throws Exception;
+    public abstract void unsubscribe() throws UpdateRuntimeException;
 
-    void updateMeTo(String version) throws Exception;
+    /**
+     * Sends a request to shutdown the application, install the given version
+     * and restart it.
+     *
+     * @param version the version to install.
+     *        Specifying the current version shows no effect.
+     *        Specifying a higher version upgrades the application.
+     *        Specifying a prior version downgrades the application.
+     * @throws UpdateRuntimeException if sending the request is not possible for some
+     *         reason.
+     */
+    public abstract void install(String version) throws UpdateRuntimeException;
 
-    interface UpdateListener {
+    /** A builder for an update agent. */
+    public static abstract class Builder {
 
-        void onSubscribeError(FailureEvent failure) throws Exception;
+        private ArtifactDescriptor artifactDescriptor;
+        private UpdateListener updateListener;
 
-        void onUnsubscribeError(FailureEvent failure) throws Exception;
+        /** Returns the artifact descriptor for the application. */
+        public final ArtifactDescriptor artifactDescriptor() {
+            return artifactDescriptor;
+        }
 
-        void onUpdateAvailable(AnnouncementEvent announcement) throws Exception;
-    }
+        /** Sets the artifact descriptor for the application. */
+        public final Builder artifactDescriptor(
+                final ArtifactDescriptor artifactDescriptor) {
+            this.artifactDescriptor = requireNonNull(artifactDescriptor);
+            return this;
+        }
 
-    interface UpdateEvent {
-        /** Returns the source update agent. */
-        UpdateAgent source();
-    }
+        /** Returns the update listener. */
+        public final UpdateListener updateListener() { return updateListener; }
 
-    interface FailureEvent extends UpdateEvent {
-        /**
-         * Returns the reason for failure.
-         * This may be a stack trace from the TrueUpdate Manager.
-         */
-        String reason();
-    }
+        /** Sets the update listener. */
+        public final Builder updateListener(
+                final UpdateListener updateListener) {
+            this.updateListener = requireNonNull(updateListener);
+            return this;
+        }
 
-    interface AnnouncementEvent extends UpdateEvent {
-        /** Returns the update version. */
-        String updateVersion();
+        public abstract UpdateAgent build();
     }
 }

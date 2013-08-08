@@ -15,27 +15,16 @@
     </parent>
 
     <artifactId>trueupdate-manager-spec</artifactId>
-    <packaging>war</packaging>
 
     <name>TrueUpdate Manager Specification</name>
     <description>
-        Specifies a manager for updating web apps.
+        Specifies a manager for updating applications.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>6.0</version>
-            <scope>provided</scope>
+            <artifactId>trueupdate-message</artifactId>
         </dependency>
     </dependencies>
 </project>

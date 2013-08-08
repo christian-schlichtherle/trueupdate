@@ -14,16 +14,10 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>trueupdate-message</artifactId>
 
-    <name>TrueUpdate Manager</name>
+    <name>TrueUpdate Message</name>
     <description>
-        The parent POM for TrueUpdate Managers.
+        Defines update messages.
     </description>
-
-    <modules>
-        <module>trueupdate-manager-ejb</module>
-        <module>trueupdate-manager-spec</module>
-    </modules>
 </project>

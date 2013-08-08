@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Specifies an agent for updating an application.
+ * Defines update messages.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.agent.spec;
+package net.java.trueupdate.message;

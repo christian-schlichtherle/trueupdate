@@ -19,13 +19,23 @@
 
     <name>TrueUpdate Agent Specification</name>
     <description>
-        Specifies an agent for updating web apps.
+        Specifies an agent for updating an application.
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>net.java.trueupdate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-artifact-spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-message</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

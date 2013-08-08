@@ -4,9 +4,8 @@
  */
 package net.java.trueupdate.jax.rs.util;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
+import javax.annotation.CheckForNull;
 
 /**
  * Wraps a {@link Throwable} in order to decorate it with additional meta data
@@ -14,7 +13,6 @@ import java.io.IOException;
  *
  * @author Christian Schlichtherle
  */
-@Immutable
 public class UpdateServiceException extends IOException {
 
     private static final long serialVersionUID = 0L;

@@ -2,53 +2,40 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec;
+package net.java.trueupdate.agent.impl;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.Callable;
-import javax.annotation.Resource;
 import javax.jms.*;
-import javax.servlet.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * @author Christian Schlichtherle
  */
-public final class Main implements ServletContextListener {
+public final class Main implements Callable<Void> {
 
-    @Resource // Source: http://activemq.apache.org/tomcat.html
-    //@Resource(lookup = "jms/ConnectionFactory") // Doesn't work with GlassFish! Source: http://docs.oracle.com/javaee/6/tutorial/doc/bnceh.html#bncek
-    //@Resource(lookup = "java:comp/DefaultJMSConnectionFactory") // Source: http://docs.oracle.com/javaee/7/tutorial/doc/jms-concepts003.htm#BNCEK
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
+    private final Queue queue;
 
-    @Resource(lookup = "jms/updates")
-    private Queue updates;
-
-    @Override public void contextInitialized(final ServletContextEvent sce) {
-        wrap(new MessageConsumerTask<Void>() {
-            @Override
-            public Void use(final MessageConsumer mc, final Session s, final Connection c)
-            throws Exception {
-                c.start();
-                try {
-                    System.out.println("--- BEGIN MESSAGES ---");
-                    Message m;
-                    while (null != (m = mc.receiveNoWait())) {
-                        System.out.println("Reply To: " + m.getJMSReplyTo());
-                        if (m instanceof TextMessage)
-                            System.out.println("Body: " + ((TextMessage) m).getText());
-                        m.acknowledge();
-                    }
-                    System.out.println("---  END MESSAGES  ---");
-                } finally {
-                    //c.stop();
-                }
-                return null;
-            }
-        });
+    public static void main(String[] args) throws Exception {
+        new Main(connectionFactory(), queue()).call();
     }
 
-    @Override public void contextDestroyed(final ServletContextEvent sce) {
-        wrap(new MessageProducerTask<Void>() {
+    private static ConnectionFactory connectionFactory() throws NamingException {
+        return (ConnectionFactory) InitialContext.doLookup("java:comp/DefaultJMSConnectionFactory");
+    }
+
+    private static Queue queue() throws NamingException {
+        return (Queue) InitialContext.doLookup("java:comp/jms/trueupdate-manager");
+    }
+
+    public Main(final ConnectionFactory connectionFactory, final Queue queue) {
+        this.connectionFactory = connectionFactory;
+        this.queue = queue;
+    }
+
+    @Override public Void call() throws Exception {
+        return new MessageProducerTask<Void>() {
             @Override
             public Void use(final MessageProducer mp, final Session s, final Connection c)
             throws Exception {
@@ -56,12 +43,7 @@ public final class Main implements ServletContextListener {
                 mp.send(m);
                 return null;
             }
-        });
-    }
-
-    private static <V> V wrap(final Callable<V> task) {
-        try { return task.call(); }
-        catch (Exception ex) { throw new UndeclaredThrowableException(ex); }
+        }.call();
     }
 
     private abstract class MessageProducerTask<V> implements Callable<V> {
@@ -70,7 +52,7 @@ public final class Main implements ServletContextListener {
             return new SessionTask<V>() {
                 @Override public V use(final Session s, final Connection c)
                 throws Exception {
-                    final MessageProducer mp = s.createProducer(updates);
+                    final MessageProducer mp = s.createProducer(queue);
                     try {
                         return use(mp, s, c);
                     } finally {
@@ -90,7 +72,7 @@ public final class Main implements ServletContextListener {
             return new SessionTask<V>() {
                 @Override public V use(final Session s, final Connection c)
                 throws Exception {
-                    final MessageConsumer mc = s.createConsumer(updates);
+                    final MessageConsumer mc = s.createConsumer(queue);
                     try {
                         return use(mc, s, c);
                     } finally {
