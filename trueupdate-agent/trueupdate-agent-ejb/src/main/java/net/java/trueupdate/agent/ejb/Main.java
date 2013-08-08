@@ -6,8 +6,7 @@ package net.java.trueupdate.agent.ejb;
 
 import java.util.concurrent.Callable;
 import javax.jms.*;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.naming.*;
 
 /**
  * @author Christian Schlichtherle
@@ -110,7 +109,12 @@ public final class Main implements Callable<Void> {
         @Override public final V call() throws Exception {
             final Connection c = connectionFactory.createConnection();
             try {
-                return use(c);
+                c.start();
+                try {
+                    return use(c);
+                } finally {
+                    c.stop();
+                }
             } finally {
                 c.close();
             }
