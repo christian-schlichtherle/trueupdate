@@ -5,7 +5,7 @@
 package net.java.trueupdate.server;
 
 import java.net.URI;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import javax.naming.InitialContext;
 import javax.ws.rs.ext.*;
 import net.java.trueupdate.artifact.maven.*;
@@ -15,10 +15,10 @@ import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.SystemProperties;
 
 /**
- * A context resolver which resolves {@link net.java.trueupdate.artifact.spec.ArtifactResolver}s to a singleton
- * {@link net.java.trueupdate.artifact.maven.MavenArtifactResolver}.
+ * A context resolver which resolves {@link ArtifactResolver}s to a singleton
+ * {@link MavenArtifactResolver}.
  */
-@ThreadSafe
+@Immutable
 @Provider
 public class ContextResolverForArtifactResolver
 implements ContextResolver<ArtifactResolver> {
@@ -53,7 +53,7 @@ implements ContextResolver<ArtifactResolver> {
             return uri.isAbsolute()
                     ? Sources.forUrl(uri.toURL())
                     : Sources.forResource(removeLeadingSlashes(uri.getPath()),
-                        Thread.currentThread().getContextClassLoader());
+                                          contextClassLoader());
         }
 
         static URI configurationUri() throws Exception {
@@ -65,6 +65,10 @@ implements ContextResolver<ArtifactResolver> {
         static String removeLeadingSlashes(String string) {
             while (string.startsWith("/")) string = string.substring(1);
             return string;
+        }
+
+        static ClassLoader contextClassLoader() {
+            return Thread.currentThread().getContextClassLoader();
         }
     }
 }

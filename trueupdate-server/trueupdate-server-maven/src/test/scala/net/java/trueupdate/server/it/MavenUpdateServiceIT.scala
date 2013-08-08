@@ -4,10 +4,10 @@
  */
 package net.java.trueupdate.server.it
 
-import net.java.trueupdate.jax.rs.it.ConfiguredUpdateServiceITSuite
+import net.java.trueupdate.jax.rs.it.UpdateServiceITSuite
 import net.java.trueupdate.artifact.maven.it.MavenArtifactResolverTestContext
 
 /** @author Christian Schlichtherle */
-class MavenConfiguredUpdateServiceIT
-extends ConfiguredUpdateServiceITSuite
+class MavenUpdateServiceIT
+extends UpdateServiceITSuite
 with MavenArtifactResolverTestContext

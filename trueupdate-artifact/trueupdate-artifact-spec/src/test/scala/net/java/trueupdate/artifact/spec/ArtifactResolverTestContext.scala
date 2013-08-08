@@ -6,13 +6,6 @@ package net.java.trueupdate.artifact.spec
 
 /** @author Christian Schlichtherle */
 trait ArtifactResolverTestContext {
-
   def artifactResolver: ArtifactResolver
-
-  final def artifactDescriptor =
-    new ArtifactDescriptor.Builder()
-      .groupId("net.java.truevfs")
-      .artifactId("truevfs-kernel-spec")
-      .version("0.9")
-      .build
+  def artifactDescriptor: ArtifactDescriptor
 }

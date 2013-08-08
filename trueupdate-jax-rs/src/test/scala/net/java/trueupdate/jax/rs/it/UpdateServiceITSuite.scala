@@ -21,15 +21,15 @@ import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
-import ConfiguredUpdateServiceITSuite._
+import UpdateServiceITSuite._
 
-private object ConfiguredUpdateServiceITSuite {
+private object UpdateServiceITSuite {
 
-  val logger = LoggerFactory.getLogger(classOf[ConfiguredUpdateServiceITSuite])
+  val logger = LoggerFactory.getLogger(classOf[UpdateServiceITSuite])
 }
 
 /** @author Christian Schlichtherle */
-class ConfiguredUpdateServiceITSuite extends JerseyTest {
+class UpdateServiceITSuite extends JerseyTest {
   this: TestContext with ArtifactResolverTestContext =>
 
   @Test def testLifeCycle() {

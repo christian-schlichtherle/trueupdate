@@ -14,15 +14,21 @@ import net.java.trueupdate.artifact.maven.model.Repositories
 trait MavenArtifactResolverTestContext
 extends TestContext with ArtifactResolverTestContext {
 
-  final override def artifactResolver: ArtifactResolver =
+  final override def artifactResolver =
     new MavenArtifactResolverAdapter() unmarshal testRepositories()
 
   final def testRepositories(): Repositories =
     jaxbCodec decode (testRepositoriesSource, classOf[Repositories])
 
   private def testRepositoriesSource =
-    Sources.forResource("test-repositories.xml",
-      classOf[MavenArtifactResolverTestContext])
+    Sources.forResource("test-repositories.xml", classOf[Repositories])
 
   final override lazy val jaxbContext = Repositories.jaxbContext
+
+  final override def artifactDescriptor =
+    new ArtifactDescriptor.Builder()
+      .groupId("net.java.truevfs")
+      .artifactId("truevfs-kernel-spec")
+      .version("0.9")
+      .build
 }

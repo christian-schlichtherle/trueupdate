@@ -4,19 +4,14 @@
  */
 package net.java.trueupdate.artifact.maven;
 
-import static net.java.trueupdate.artifact.maven.ArtifactConverters.*;
-
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.io.Sources;
-import net.java.trueupdate.artifact.maven.model.Repositories;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
+import static net.java.trueupdate.artifact.maven.ArtifactConverters.*;
+import net.java.trueupdate.artifact.spec.*;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
@@ -209,36 +204,5 @@ public class MavenArtifactResolver implements ArtifactResolver {
                 throw new UndeclaredThrowableException(exception);
             }
         };
-    }
-
-    /**
-     * Returns a Maven artifact resolver which uses the user's local repository
-     * at {@code ~/.m2/repository} plus Maven Central at
-     * {@code http://repo1.maven.org/maven2/}.
-     */
-    public static MavenArtifactResolver getDefaultInstance() {
-        return Lazy.INSTANCE;
-    }
-
-    private static class Lazy {
-
-        static final MavenArtifactResolver
-                INSTANCE = configuredMavenArtifactResolver();
-
-        static MavenArtifactResolver configuredMavenArtifactResolver() {
-            return new MavenArtifactResolverAdapter().unmarshal(repositories());
-        }
-
-        static Repositories repositories() { return repositories(source()); }
-
-        static Repositories repositories(final Source source) {
-            try { return Repositories.decodeFromXml(source); }
-            catch (Exception ex) { throw new AssertionError(ex); }
-        }
-
-        static Source source() {
-            return Sources.forResource("default-repositories.xml",
-                    MavenArtifactResolver.class);
-        }
     }
 }
