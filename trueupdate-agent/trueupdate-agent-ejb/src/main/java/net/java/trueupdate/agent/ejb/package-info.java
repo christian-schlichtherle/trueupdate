@@ -8,4 +8,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.agent.impl;
+package net.java.trueupdate.agent.ejb;

@@ -14,20 +14,20 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class DefaultUpdateMessage
-extends UpdateMessage implements Serializable {
+public final class DefaultUpdateMessage<B extends Serializable>
+extends UpdateMessage<B> implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
-    private final Type type;
-    private final String text;
+    private final Type<B> type;
+    private final B body;
 
-    public DefaultUpdateMessage(final Type type, final String text) {
+    public DefaultUpdateMessage(final Type<B> type, final B body) {
         this.type = requireNonNull(type);
-        this.text = requireNonNull(text);
+        this.body = requireNonNull(body);
     }
 
-    @Override public final Type type() { return type; }
+    @Override public final Type<B> type() { return type; }
 
-    @Override public final String text() { return text; }
+    @Override public final B body() { return body; }
 }

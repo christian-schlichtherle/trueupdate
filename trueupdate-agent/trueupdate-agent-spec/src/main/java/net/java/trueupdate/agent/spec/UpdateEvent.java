@@ -11,10 +11,10 @@ import net.java.trueupdate.message.UpdateMessage;
  *
  * @author Christian Schlichtherle
  */
-public interface UpdateEvent {
+public interface UpdateEvent<B> {
 
     /** Returns the update message. */
-    UpdateMessage message();
+    UpdateMessage<B> message();
 
     /** Returns the associated update agent. */
     UpdateAgent agent();

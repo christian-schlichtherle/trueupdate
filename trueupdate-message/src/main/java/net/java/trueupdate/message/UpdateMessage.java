@@ -9,33 +9,42 @@ import java.io.Serializable;
 /**
  * A basic update message.
  *
+ * @param <T> The type of the message body.
  * @author Christian Schlichtherle
  */
-public abstract class UpdateMessage {
+public abstract class UpdateMessage<B> {
 
-    public static UpdateMessage success(Type type) {
-        return new DefaultUpdateMessage(type, "SUCCESS");
+    public static <B extends Serializable> UpdateMessage<B>
+    success(Type<B> type, B body) {
+        return new DefaultUpdateMessage<>(type, body);
     }
 
-    public static UpdateMessage failure(Type type, Throwable ex) {
-        return new DefaultUpdateMessage(type, ex.getMessage());
+    public static UpdateMessage<String>
+    failure(Type<String> type, Exception body) {
+        return new DefaultUpdateMessage<>(type, body.toString());
     }
 
     /** Returns the message type. */
-    public abstract Type type();
+    public abstract Type<B> type();
 
-    /** Returns the message text. */
-    public abstract String text();
+    /** Returns the message body. */
+    public abstract B body();
 
     @Override public String toString() {
-        return String.format("%s: %s", type(), text());
+        return String.format("%s: %s", type(), body());
     }
 
     /** The message type. */
-    public enum Type implements Serializable {
-        SUBSCRIBE_REQUEST, SUBSCRIBE_SUCCESS, SUBSCRIBE_FAILURE,
-        UNSUBSCRIBE_REQUEST, UNSUBSCRIBE_SUCCESS, UNSUBSCRIBE_FAILURE,
+    public interface Type<B> extends Serializable { }
+
+    /** Void message types. */
+    public enum VoidType implements Type<Void> {
+        SUBSCRIBE_SUCCESS, UNSUBSCRIBE_SUCCESS, INSTALL_SUCCESS,
+    }
+
+    /** String message types. */
+    public enum StringType implements Type<String> {
+        SUBSCRIBE_FAILURE, UNSUBSCRIBE_FAILURE, INSTALL_FAILURE,
         UPDATE_AVAILABLE,
-        INSTALL_REQUEST, INSTALL_SUCCESS, INSTALL_FAILURE,
     }
 }

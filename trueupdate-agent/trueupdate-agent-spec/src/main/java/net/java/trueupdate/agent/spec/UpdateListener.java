@@ -16,16 +16,16 @@ import net.java.trueupdate.message.UpdateMessage;
 public abstract class UpdateListener {
 
     /** Processes the {@link UpdateMessageType#SUBSCRIBE_SUCCESS} message. */
-    public void onSubscribeSuccess(UpdateEvent event) { }
+    public void onSubscribeSuccess(UpdateEvent<Void> event) { }
 
     /** Processes the {@link UpdateMessageType#SUBSCRIBE_FAILURE} message. */
-    public void onSubscribeFailure(UpdateEvent event) { }
+    public void onSubscribeFailure(UpdateEvent<String> event) { }
 
     /** Processes the {@link UpdateMessageType#UNSUBSCRIBE_SUCCESS} message. */
-    public void onUnsubscribeSuccess(UpdateEvent event) { }
+    public void onUnsubscribeSuccess(UpdateEvent<Void> event) { }
 
     /** Processes the {@link UpdateMessageType#UNSUBSCRIBE_FAILURE} message. */
-    public void onUnsubscribeFailure(UpdateEvent event) { }
+    public void onUnsubscribeFailure(UpdateEvent<String> event) { }
 
     /**
      * Processes the {@link UpdateMessageType#UPDATE_AVAILABLE} message.
@@ -34,17 +34,17 @@ public abstract class UpdateListener {
      * to install the available version.
      *
      * @param event the update event.
-     *              The {@linkplain UpdateMessage#text() text} of the
+     *              The {@linkplain UpdateMessage#body() body} of the
      *              {@linkplain UpdateEvent#message() message} is the available
      *              version.
      */
-    public void onUpdateAvailable(UpdateEvent event) {
-        event.agent().install(event.message().text());
+    public void onUpdateAvailable(UpdateEvent<String> event) {
+        event.agent().install(event.message().body());
     }
 
     /** Processes the {@link UpdateMessageType#INSTALL_SUCCESS} message. */
-    public void onInstallSuccess(UpdateEvent event) { }
+    public void onInstallSuccess(UpdateEvent<Void> event) { }
 
     /** Processes the {@link UpdateMessageType#INSTALL_FAILURE} message. */
-    public void onInstallFailure(UpdateEvent event) { }
+    public void onInstallFailure(UpdateEvent<String> event) { }
 }
