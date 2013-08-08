@@ -24,11 +24,4 @@ extends TestContext with ArtifactResolverTestContext {
     Sources.forResource("test-repositories.xml", classOf[Repositories])
 
   final override lazy val jaxbContext = Repositories.jaxbContext
-
-  final override def artifactDescriptor =
-    new ArtifactDescriptor.Builder()
-      .groupId("net.java.truevfs")
-      .artifactId("truevfs-kernel-spec")
-      .version("0.9")
-      .build
 }

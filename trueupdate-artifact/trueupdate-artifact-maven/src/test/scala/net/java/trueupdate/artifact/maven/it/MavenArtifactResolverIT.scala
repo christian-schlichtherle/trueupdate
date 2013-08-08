@@ -9,8 +9,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.WordSpec
-import org.eclipse.aether.repository.{RemoteRepository, LocalRepository}
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor
+import MavenArtifactResolverIT._
 
 private object MavenArtifactResolverIT {
 
@@ -31,10 +31,8 @@ private object MavenArtifactResolverIT {
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class MavenArtifactResolverIT extends WordSpec
-with MavenArtifactResolverTestContext {
-
-  import MavenArtifactResolverIT._
+class MavenArtifactResolverIT
+extends WordSpec with MavenArtifactResolverTestContext {
 
   def resolvedPath(descriptor: ArtifactDescriptor) =
     new File(baseDir, relativePath(descriptor))
@@ -42,14 +40,13 @@ with MavenArtifactResolverTestContext {
   def baseDir = new File(testRepositories().local.basedir).getAbsoluteFile
 
   "A maven artifact resolver" should {
-    val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
-
-    "resolve the readable artifact file" in {
+    "resolve a readable artifact file" in {
+      val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
       artifactFile should equal (resolvedPath(artifactDescriptor))
       artifactFile canRead () should be (true)
     }
 
-    "resolve the update descriptor and path to a readable file" in {
+    "resolve an update descriptor and a readable artifact file" in {
       val updateDescriptor = artifactResolver resolveUpdateDescriptor artifactDescriptor
       updateDescriptor.groupId should equal (artifactDescriptor.groupId)
       updateDescriptor.artifactId should equal (artifactDescriptor.artifactId)
@@ -58,6 +55,7 @@ with MavenArtifactResolverTestContext {
       updateDescriptor.classifier should equal (artifactDescriptor.classifier)
       updateDescriptor.extension should equal (artifactDescriptor.extension)
       val updateFile = artifactResolver resolveArtifactFile updateDescriptor
+      updateFile should equal (resolvedPath(updateDescriptor))
       updateFile canRead () should be (true)
     }
   }
