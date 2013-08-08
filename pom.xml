@@ -127,11 +127,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-spec</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-jax-rs</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -141,6 +136,11 @@
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-spec</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>asm</groupId>
