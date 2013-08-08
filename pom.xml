@@ -76,6 +76,7 @@
 
         <!-- For dependency management. -->
         <aether.version>0.9.0.M2</aether.version>
+        <javaee.version>6.0</javaee.version>
         <jersey.version>1.17.1</jersey.version>
         <maven.version>3.1.0</maven.version>
         <slf4j.version>1.7.5</slf4j.version>
@@ -169,9 +170,28 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${javaee.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-endorsed-api</artifactId>
+                <version>${javaee.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-web-api</artifactId>
+                <version>${javaee.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>jsr311-api</artifactId>
                 <version>1.1.1</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -200,6 +220,21 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ejb-plugin</artifactId>
+                    <version>2.3</version>
+                    <configuration>
+                        <ejbVersion>3.1</ejbVersion>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <modules>
         <module>trueupdate-agent</module>

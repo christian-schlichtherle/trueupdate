@@ -14,28 +14,19 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent-spec</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>trueupdate-agent-ejb</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate Agent Specification</name>
-    <description>
-        Specifies an agent for updating an application.
-    </description>
+    <name>TrueUpdate Agent EJB</name>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-spec</artifactId>
+            <artifactId>trueupdate-agent-spec</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-message</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>javax.jms-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
         </dependency>
     </dependencies>
 </project>
