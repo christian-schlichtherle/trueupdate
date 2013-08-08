@@ -5,6 +5,7 @@
 package net.java.trueupdate.message;
 
 import java.io.Serializable;
+import javax.annotation.Nullable;
 
 /**
  * A basic update message.
@@ -27,8 +28,12 @@ public abstract class UpdateMessage<B> {
     /** Returns the message type. */
     public abstract Type<B> type();
 
-    /** Returns the message body. */
-    public abstract B body();
+    /**
+     * Returns the message body.
+     * The returned reference is {@code null} if and only if the message body
+     * type is {@link Void}.
+     */
+    public abstract @Nullable B body();
 
     @Override public String toString() {
         return String.format("%s: %s", type(), body());
