@@ -9,6 +9,7 @@ import net.java.trueupdate.message.UpdateMessage;
 /**
  * An update event.
  *
+ * @param <T> The type of the message body.
  * @author Christian Schlichtherle
  */
 public interface UpdateEvent<B> {
