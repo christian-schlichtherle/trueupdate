@@ -47,7 +47,7 @@ public final class Main implements Callable<Void> {
 
     private abstract class MessageProducerTask<V> implements Callable<V> {
 
-        @Override public V call() throws Exception {
+        @Override public final V call() throws Exception {
             return new SessionTask<V>() {
                 @Override public V use(final Session s, final Connection c)
                 throws Exception {
@@ -67,7 +67,7 @@ public final class Main implements Callable<Void> {
 
     private abstract class MessageConsumerTask<V> implements Callable<V> {
 
-        @Override public V call() throws Exception {
+        @Override public final V call() throws Exception {
             return new SessionTask<V>() {
                 @Override public V use(final Session s, final Connection c)
                 throws Exception {
