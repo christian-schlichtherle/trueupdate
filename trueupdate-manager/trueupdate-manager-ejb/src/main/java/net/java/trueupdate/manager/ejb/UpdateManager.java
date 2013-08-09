@@ -19,10 +19,10 @@ import javax.jms.*;
     @ActivationConfigProperty(propertyName = "destinationType",
                               propertyValue = "javax.jms.Queue"),
 })
-public class UpdateMessageBean implements MessageListener {
+public class UpdateManager implements MessageListener {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateMessageBean.class.getName());
+            logger = Logger.getLogger(UpdateManager.class.getName());
 
     @Override public void onMessage(final Message m) {
         try {
