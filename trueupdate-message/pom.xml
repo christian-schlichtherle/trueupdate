@@ -20,4 +20,11 @@
     <description>
         Defines update messages.
     </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
+        </dependency>
+    </dependencies>
 </project>
