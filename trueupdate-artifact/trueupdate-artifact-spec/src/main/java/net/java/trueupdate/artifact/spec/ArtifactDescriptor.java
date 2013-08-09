@@ -45,10 +45,12 @@ public final class ArtifactDescriptor implements Serializable {
      */
     public String groupId() { return groupId; }
 
-    /** Returns a new artifact descriptor with the given group id. */
+    /** Returns an artifact descriptor with the given group id. */
     public ArtifactDescriptor groupId(String groupId) {
-        return new ArtifactDescriptor(groupId, artifactId, version, classifier,
-                extension);
+        return this.groupId.equals(groupId)
+                ? this
+                : new ArtifactDescriptor(groupId, artifactId, version,
+                    classifier, extension);
     }
 
     /**
@@ -57,10 +59,12 @@ public final class ArtifactDescriptor implements Serializable {
      */
     public String artifactId() { return artifactId; }
 
-    /** Returns a new artifact descriptor with the given artifact id. */
+    /** Returns an artifact descriptor with the given artifact id. */
     public ArtifactDescriptor artifactId(String artifactId) {
-        return new ArtifactDescriptor(groupId, artifactId, version, classifier,
-                extension);
+        return this.artifactId.equals(artifactId)
+                ? this
+                : new ArtifactDescriptor(groupId, artifactId, version,
+                    classifier, extension);
     }
 
     /**
@@ -69,10 +73,12 @@ public final class ArtifactDescriptor implements Serializable {
      */
     public String version() { return version; }
 
-    /** Returns a new artifact descriptor with the given version. */
+    /** Returns an artifact descriptor with the given version. */
     public ArtifactDescriptor version(String version) {
-        return new ArtifactDescriptor(groupId, artifactId, version, classifier,
-                extension);
+        return this.version.equals(version)
+                ? this
+                : new ArtifactDescriptor(groupId, artifactId, version,
+                    classifier, extension);
     }
 
     /**
@@ -81,10 +87,12 @@ public final class ArtifactDescriptor implements Serializable {
      */
     public String classifier() { return classifier; }
 
-    /** Returns a new artifact descriptor with the given classifier. */
+    /** Returns an artifact descriptor with the given classifier. */
     public ArtifactDescriptor classifier(String classifier) {
-        return new ArtifactDescriptor(groupId, artifactId, version, classifier,
-                extension);
+        return this.classifier.equals(classifier)
+                ? this
+                : new ArtifactDescriptor(groupId, artifactId, version,
+                    classifier, extension);
     }
 
     /**
@@ -95,10 +103,12 @@ public final class ArtifactDescriptor implements Serializable {
      */
     public String extension() { return extension; }
 
-    /** Returns a new artifact descriptor with the given extension. */
+    /** Returns an artifact descriptor with the given extension. */
     public ArtifactDescriptor extension(String extension) {
-        return new ArtifactDescriptor(groupId, artifactId, version, classifier,
-                extension);
+        return this.extension.equals(extension)
+                ? this
+                : new ArtifactDescriptor(groupId, artifactId, version,
+                    classifier, extension);
     }
 
     /**
