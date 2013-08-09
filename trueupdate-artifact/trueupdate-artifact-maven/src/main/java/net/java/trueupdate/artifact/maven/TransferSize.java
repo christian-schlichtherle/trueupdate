@@ -8,7 +8,8 @@ import java.util.Locale;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Represents a human readable string for the number of bytes transferred.
+ * A value object which represents a human readable string for the number of
+ * bytes transferred.
  *
  * @author Christian Schlichtherle
  */
