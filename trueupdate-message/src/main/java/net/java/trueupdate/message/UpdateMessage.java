@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
 /**
- * A value object which gets exchanged between update agents and update
+ * A Value Object which gets exchanged between update agents and update
  * managers in order to establish a protocol for the automated installation of
  * application updates.
  *
