@@ -205,4 +205,19 @@ public class MavenArtifactResolver implements ArtifactResolver {
             }
         };
     }
+
+    @Override public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof MavenArtifactResolver)) return false;
+        final MavenArtifactResolver that = (MavenArtifactResolver) obj;
+        return  this.local.equals(that.local) &&
+                this.remotes.equals(that.remotes);
+    }
+
+    @Override public int hashCode() {
+        int hash = 17;
+        hash = 31 * hash + local.hashCode();
+        hash = 31 * hash + remotes.hashCode();
+        return hash;
+    }
 }

@@ -19,8 +19,8 @@ extends WordSpec with MavenArtifactResolverTestContext {
 
   "A maven artifact repository adapter" should {
     "support round-trip conversion" in {
-      val original = testRepositories()
-      val clone = adapter marshal (adapter unmarshal original)
+      val original = artifactResolver
+      val clone = adapter unmarshal (adapter marshal original)
       clone should equal (original)
       clone should not be theSameInstanceAs (original)
     }
