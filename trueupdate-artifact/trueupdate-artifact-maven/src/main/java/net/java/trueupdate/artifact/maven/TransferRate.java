@@ -16,6 +16,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 class TransferRate extends TransferSize {
 
+    private static final long serialVersionUID = 0L;
+
     /**
      * Constructs a transfer rate.
      *

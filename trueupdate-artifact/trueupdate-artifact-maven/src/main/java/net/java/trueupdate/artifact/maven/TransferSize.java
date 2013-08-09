@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.artifact.maven;
 
+import java.io.Serializable;
 import java.util.Locale;
 import javax.annotation.concurrent.Immutable;
 
@@ -14,7 +15,9 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-class TransferSize {
+class TransferSize implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private final double amount;
     private final TransferUnit unit;
