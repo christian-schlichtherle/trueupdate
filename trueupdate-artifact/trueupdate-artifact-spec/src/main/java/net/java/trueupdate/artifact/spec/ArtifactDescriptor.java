@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * An immutable description of an artifact by its Maven coordinates.
+ * An immutable description of an artifact by Maven coordinates.
  *
  * @see    <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven - POM Reference - Maven Coordinates</a>
  * @author Christian Schlichtherle
