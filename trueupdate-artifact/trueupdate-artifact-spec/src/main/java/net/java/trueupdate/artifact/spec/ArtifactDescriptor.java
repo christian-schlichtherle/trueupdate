@@ -186,7 +186,8 @@ public final class ArtifactDescriptor implements Serializable {
         }
 
         public ArtifactDescriptor build() {
-            return new ArtifactDescriptor(groupId, artifactId, version, classifier, extension);
+            return new ArtifactDescriptor(groupId, artifactId, version,
+                    classifier, extension);
         }
     } // Builder
 }
