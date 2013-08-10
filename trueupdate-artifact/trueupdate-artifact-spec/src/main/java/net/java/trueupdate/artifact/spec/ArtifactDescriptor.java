@@ -21,17 +21,12 @@ public final class ArtifactDescriptor implements Serializable {
 
     private final String groupId, artifactId, version, classifier, extension;
 
-    ArtifactDescriptor(
-            final String groupId,
-            final String artifactId,
-            final String version,
-            final String classifier,
-            final String extension) {
-        this.groupId = requireNonEmpty(groupId);
-        this.artifactId = requireNonEmpty(artifactId);
-        this.version = requireNonEmpty(version);
-        this.classifier = requireNonNull(classifier);
-        this.extension = requireNonEmpty(extension);
+    ArtifactDescriptor(final Builder b) {
+        this.groupId = requireNonEmpty(b.groupId);
+        this.artifactId = requireNonEmpty(b.artifactId);
+        this.version = requireNonEmpty(b.version);
+        this.classifier = requireNonNull(b.classifier);
+        this.extension = requireNonEmpty(b.extension);
     }
 
     static String requireNonEmpty(final String string) {
@@ -49,8 +44,13 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor groupId(String groupId) {
         return this.groupId.equals(groupId)
                 ? this
-                : new ArtifactDescriptor(groupId, artifactId, version,
-                    classifier, extension);
+                : new Builder()
+                    .groupId(groupId)
+                    .artifactId(artifactId)
+                    .version(version)
+                    .classifier(classifier)
+                    .extension(extension)
+                    .build();
     }
 
     /**
@@ -63,8 +63,13 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor artifactId(String artifactId) {
         return this.artifactId.equals(artifactId)
                 ? this
-                : new ArtifactDescriptor(groupId, artifactId, version,
-                    classifier, extension);
+                : new Builder()
+                    .groupId(groupId)
+                    .artifactId(artifactId)
+                    .version(version)
+                    .classifier(classifier)
+                    .extension(extension)
+                    .build();
     }
 
     /**
@@ -77,8 +82,13 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor version(String version) {
         return this.version.equals(version)
                 ? this
-                : new ArtifactDescriptor(groupId, artifactId, version,
-                    classifier, extension);
+                : new Builder()
+                    .groupId(groupId)
+                    .artifactId(artifactId)
+                    .version(version)
+                    .classifier(classifier)
+                    .extension(extension)
+                    .build();
     }
 
     /**
@@ -91,8 +101,13 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor classifier(String classifier) {
         return this.classifier.equals(classifier)
                 ? this
-                : new ArtifactDescriptor(groupId, artifactId, version,
-                    classifier, extension);
+                : new Builder()
+                    .groupId(groupId)
+                    .artifactId(artifactId)
+                    .version(version)
+                    .classifier(classifier)
+                    .extension(extension)
+                    .build();
     }
 
     /**
@@ -107,8 +122,13 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor extension(String extension) {
         return this.extension.equals(extension)
                 ? this
-                : new ArtifactDescriptor(groupId, artifactId, version,
-                    classifier, extension);
+                : new Builder()
+                    .groupId(groupId)
+                    .artifactId(artifactId)
+                    .version(version)
+                    .classifier(classifier)
+                    .extension(extension)
+                    .build();
     }
 
     /**
@@ -155,10 +175,10 @@ public final class ArtifactDescriptor implements Serializable {
      * and the default value for the property {@code extension} is
      * {@code "jar"}.
      */
+    @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
-        private String groupId, artifactId, version, classifier = "",
-                extension = "jar";
+        String groupId, artifactId, version, classifier = "", extension = "jar";
 
         public Builder groupId(final String groupId) {
             this.groupId = requireNonEmpty(groupId);
@@ -186,8 +206,7 @@ public final class ArtifactDescriptor implements Serializable {
         }
 
         public ArtifactDescriptor build() {
-            return new ArtifactDescriptor(groupId, artifactId, version,
-                    classifier, extension);
+            return new ArtifactDescriptor(this);
         }
     } // Builder
 }
