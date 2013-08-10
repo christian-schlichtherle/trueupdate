@@ -5,7 +5,7 @@
 package net.java.trueupdate.core.zip.patch;
 
 import net.java.trueupdate.core.util.MessageDigests;
-import net.java.trueupdate.core.zip.EntrySource;
+import net.java.trueupdate.core.zip.util.EntrySource;
 import net.java.trueupdate.core.zip.model.Diff;
 import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
 import net.java.trueupdate.core.io.Copy;

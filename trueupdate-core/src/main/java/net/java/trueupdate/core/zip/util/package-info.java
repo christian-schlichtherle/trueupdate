@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides common functionality to compare two ZIP files entry by entry.
+ * The stuff that didn't fit anywhere else.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.core.zip;
+package net.java.trueupdate.core.zip.util;

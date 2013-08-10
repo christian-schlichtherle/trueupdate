@@ -4,27 +4,36 @@
  */
 package net.java.trueupdate.core.zip.model;
 
-import net.java.trueupdate.core.codec.JaxbCodec;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.Source;
-
+import java.io.Serializable;
+import java.security.MessageDigest;
 import java.util.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import net.java.trueupdate.core.codec.JaxbCodec;
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.util.HashMaps;
+import net.java.trueupdate.core.util.MessageDigests;
 
 /**
- * Models an optional unchanged, changed, added and removed map of entry names
+ * A Value Object which represents the meta data in a ZIP patch file.
+ * It encapsulates maps of unchanged, changed, added and removed entry names
  * and message digests in canonical string notation, attributed with the
  * message digest algorithm name and byte length.
- * This model class represents the meta data in a ZIP patch file.
- * Mind you that this class is mutable and may have null fields.
  *
  * @author Christian Schlichtherle
  */
-@XmlRootElement
-public final class Diff {
+@Immutable
+@XmlRootElement(name =  "diff")
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class Diff implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     /**
      * The name of the entry which contains the marshalled diff model in a
@@ -34,59 +43,105 @@ public final class Diff {
     public static final String ENTRY_NAME = "META-INF/diff.xml";
 
     @XmlAttribute(required = true)
-    public String algorithm;
+    public final String algorithm;
 
     @XmlAttribute
-    public Integer numBytes;
+    public final @Nullable Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public Map<String, EntryNameAndDigest> unchanged;
+    public final Map<String, EntryNameAndDigest> unchanged;
 
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
-    public Map<String, EntryNameAndTwoDigests> changed;
+    public final Map<String, EntryNameAndTwoDigests> changed;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public Map<String, EntryNameAndDigest> added, removed;
+    public final Map<String, EntryNameAndDigest> added, removed;
+
+    /** Required for JAXB. */
+    private Diff() {
+        algorithm = "";
+        numBytes = null;
+        unchanged = added = removed = Collections.emptyMap();
+        changed = Collections.emptyMap();
+    }
+
+    Diff(final Builder b) {
+        this.algorithm = b.algorithm();
+        this.numBytes = b.numBytes();
+        this.unchanged = b.unchanged();
+        this.changed = b.changed();
+        this.added = b.added();
+        this.removed = b.removed();
+    }
+
+    static Map<String, EntryNameAndDigest> unchangedMap(
+            final Collection<EntryNameAndDigest> entries) {
+        final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
+                HashMaps.initialCapacity(entries.size()));
+        for (EntryNameAndDigest entryNameAndDigest : entries)
+            map.put(entryNameAndDigest.name, entryNameAndDigest);
+        return Collections.unmodifiableMap(map);
+    }
+
+    static Map<String, EntryNameAndTwoDigests> changedMap(
+            final Collection<EntryNameAndTwoDigests> entries) {
+        final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
+                HashMaps.initialCapacity(entries.size()));
+        for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
+            map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
+        return Collections.unmodifiableMap(map);
+    }
 
     @Deprecated
     public EntryNameAndDigest unchanged(String name) {
-        return null == unchanged ? null : unchanged.get(name);
+        return unchanged.get(name);
     }
 
     public EntryNameAndTwoDigests changed(String name) {
-        return null == changed ? null : changed.get(name);
+        return changed.get(name);
     }
 
     public EntryNameAndDigest added(String name) {
-        return null == added ? null : added.get(name);
+        return added.get(name);
     }
 
     @Deprecated
     public EntryNameAndDigest removed(String name) {
-        return null == removed ? null : removed.get(name);
+        return removed.get(name);
     }
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Diff)) return false;
         final Diff that = (Diff) obj;
-        return  Objects.equals(this.algorithm, that.algorithm) &&
+        return  this.algorithm.equals(that.algorithm) &&
                 Objects.equals(this.numBytes, that.numBytes) &&
-                Objects.equals(this.unchanged, that.unchanged) &&
-                Objects.equals(this.changed, that.changed) &&
-                Objects.equals(this.added, that.added) &&
-                Objects.equals(this.removed, that.removed);
+                this.unchanged.equals(that.unchanged) &&
+                this.changed.equals(that.changed) &&
+                this.added.equals(that.added) &&
+                this.removed.equals(that.removed);
     }
 
     @Override public int hashCode() {
         int hash = 17;
         hash = 31 * hash + Objects.hashCode(algorithm);
         hash = 31 * hash + Objects.hashCode(numBytes);
-        hash = 31 * hash + Objects.hashCode(unchanged);
-        hash = 31 * hash + Objects.hashCode(changed);
-        hash = 31 * hash + Objects.hashCode(added);
-        hash = 31 * hash + Objects.hashCode(removed);
+        hash = 31 * hash + unchanged.hashCode();
+        hash = 31 * hash + changed.hashCode();
+        hash = 31 * hash + added.hashCode();
+        hash = 31 * hash + removed.hashCode();
         return hash;
+    }
+
+    /**
+     * Encodes this diff model to XML.
+     *
+     * @param sink the sink for writing the XML.
+     * @throws Exception at the discretion of the JAXB codec, e.g. if the
+     *         sink isn't writable.
+     */
+    public void encodeToXml(Sink sink) throws Exception {
+        new JaxbCodec(jaxbContext()).encode(sink, this);
     }
 
     /**
@@ -101,17 +156,6 @@ public final class Diff {
         return new JaxbCodec(jaxbContext()).decode(source, Diff.class);
     }
 
-    /**
-     * Encodes this diff model to XML.
-     *
-     * @param sink the sink for writing the XML.
-     * @throws Exception at the discretion of the JAXB codec, e.g. if the
-     *         sink isn't writable.
-     */
-    public void encodeToXml(Sink sink) throws Exception {
-        new JaxbCodec(jaxbContext()).encode(sink, this);
-    }
-
     /** Returns a JAXB context which binds only this class. */
     public static JAXBContext jaxbContext() { return Lazy.JAXB_CONTEXT; }
 
@@ -123,5 +167,74 @@ public final class Diff {
             try { JAXB_CONTEXT = JAXBContext.newInstance(Diff.class); }
             catch (JAXBException ex) { throw new AssertionError(ex); }
         }
+    }
+
+    /** A builder for a diff model. */
+    @SuppressWarnings("PackageVisibleField")
+    public static final class Builder {
+
+        private MessageDigest digest;
+        private Collection<EntryNameAndDigest>
+                unchanged = emptyList(),
+                added = emptyList(),
+                removed = emptyList();
+        private Collection<EntryNameAndTwoDigests>
+                changed = emptyList();
+
+        public Builder digest(final MessageDigest digest) {
+            this.digest = requireNonNull(digest);
+            return this;
+        }
+
+        String algorithm() { return digest.getAlgorithm(); }
+
+        Integer numBytes() {
+            try {
+                final MessageDigest
+                        clone = MessageDigests.newDigest(digest.getAlgorithm());
+                if (clone.getDigestLength() == digest.getDigestLength())
+                    return null;
+            } catch (IllegalArgumentException fallThrough) {
+            }
+            return digest.getDigestLength();
+        }
+
+        Map<String, EntryNameAndDigest> unchanged() {
+            return unchangedMap(unchanged);
+        }
+
+        Map<String, EntryNameAndTwoDigests> changed() {
+            return changedMap(changed);
+        }
+
+        Map<String, EntryNameAndDigest> added() {
+            return unchangedMap(added);
+        }
+
+        Map<String, EntryNameAndDigest> removed() {
+            return unchangedMap(removed);
+        }
+
+        public Builder unchanged(final Collection<EntryNameAndDigest> unchanged) {
+            this.unchanged = requireNonNull(unchanged);
+            return this;
+        }
+
+        public Builder changed(final Collection<EntryNameAndTwoDigests> changed) {
+            this.changed = requireNonNull(changed);
+            return this;
+        }
+
+        public Builder added(final Collection<EntryNameAndDigest> added) {
+            this.added = requireNonNull(added);
+            return this;
+        }
+
+        public Builder removed(final Collection<EntryNameAndDigest> removed) {
+            this.removed = requireNonNull(removed);
+            return this;
+        }
+
+        public Diff build() { return new Diff(this); }
     }
 }

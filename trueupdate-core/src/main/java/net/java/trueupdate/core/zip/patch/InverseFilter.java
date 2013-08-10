@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import net.java.trueupdate.core.zip.EntrySource;
+import net.java.trueupdate.core.zip.util.EntrySource;
 
 /**
  * Inverts another filter.

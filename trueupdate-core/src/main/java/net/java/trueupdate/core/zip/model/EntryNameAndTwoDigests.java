@@ -4,35 +4,40 @@
  */
 package net.java.trueupdate.core.zip.model;
 
-import java.util.Objects;
+import java.io.Serializable;
+import static java.util.Objects.requireNonNull;
+import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Models a ZIP entry name and two message digests in canonical string notation.
- * Mind you that this class is mutable and may have null fields.
+ * A Value Object which represents a ZIP entry name and two message digests in
+ * canonical string notation.
  *
  * @author Christian Schlichtherle
  */
-public final class EntryNameAndTwoDigests {
+@Immutable
+public final class EntryNameAndTwoDigests implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     @XmlAttribute(required = true)
-    public String name, first, second;
+    public final String name, first, second;
 
-    /** Required by JAXB. */
-    public EntryNameAndTwoDigests() { }
+    /** Required for JAXB. */
+    private EntryNameAndTwoDigests() { name = first = second = ""; }
 
     /**
-     * Courtesy constructor.
+     * Default constructor.
      * The first and second digest should not be equal.
      */
     public EntryNameAndTwoDigests(
             final String name,
             final String first,
             final String second) {
-        this.name = name;
-        assert !Objects.equals(first, second);
-        this.first = first;
-        this.second = second;
+        this.name = requireNonNull(name);
+        this.first = requireNonNull(first);
+        this.second = requireNonNull(second);
+        assert !first.equals(second);
     }
 
     /** Returns the entry name with the first digest. */
@@ -50,16 +55,16 @@ public final class EntryNameAndTwoDigests {
         if (this == obj) return true;
         if (!(obj instanceof EntryNameAndTwoDigests)) return false;
         final EntryNameAndTwoDigests that = (EntryNameAndTwoDigests) obj;
-        return  Objects.equals(this.name, that.name) &&
-                Objects.equals(this.first, that.first) &&
-                Objects.equals(this.second, that.second);
+        return  this.name.equals(that.name) &&
+                this.first.equals(that.first) &&
+                this.second.equals(that.second);
     }
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + Objects.hashCode(name);
-        hash = 31 * hash + Objects.hashCode(first);
-        hash = 31 * hash + Objects.hashCode(second);
+        hash = 31 * hash + name.hashCode();
+        hash = 31 * hash + first.hashCode();
+        hash = 31 * hash + second.hashCode();
         return hash;
     }
 }

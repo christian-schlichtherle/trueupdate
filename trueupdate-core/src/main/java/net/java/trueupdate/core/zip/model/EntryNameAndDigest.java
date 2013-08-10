@@ -4,41 +4,45 @@
  */
 package net.java.trueupdate.core.zip.model;
 
-import java.util.Objects;
+import java.io.Serializable;
+import static java.util.Objects.requireNonNull;
+import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Models a ZIP entry name and message digest in canonical string notation.
- * Mind you that this class is mutable and may have null fields.
+ * A Value Object which represents a ZIP entry name and message digest in
+ * canonical string notation.
  *
  * @author Christian Schlichtherle
  */
-public final class EntryNameAndDigest {
+@Immutable
+public final class EntryNameAndDigest implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     @XmlAttribute(required = true)
-    public String name, digest;
+    public final String name, digest;
 
-    /** Required by JAXB. */
-    public EntryNameAndDigest() { }
+    /** Required for JAXB. */
+    private EntryNameAndDigest() { name = digest = ""; }
 
-    /** Courtesy constructor. */
     public EntryNameAndDigest(final String name, final String digest) {
-        this.name = name;
-        this.digest = digest;
+        this.name = requireNonNull(name);
+        this.digest = requireNonNull(digest);
     }
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof EntryNameAndDigest)) return false;
         final EntryNameAndDigest that = (EntryNameAndDigest) obj;
-        return  Objects.equals(this.name, that.name) &&
-                Objects.equals(this.digest, that.digest);
+        return  this.name.equals(that.name) &&
+                this.digest.equals(that.digest);
     }
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + Objects.hashCode(name);
-        hash = 31 * hash + Objects.hashCode(digest);
+        hash = 31 * hash + name.hashCode();
+        hash = 31 * hash + digest.hashCode();
         return hash;
     }
 }

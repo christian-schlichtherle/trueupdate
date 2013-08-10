@@ -4,22 +4,22 @@
  */
 package net.java.trueupdate.core.zip.diff;
 
-import net.java.trueupdate.core.util.MessageDigests;
-import net.java.trueupdate.core.zip.EntrySource;
-import net.java.trueupdate.core.io.Copy;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.zip.model.Diff;
-import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
-import net.java.trueupdate.core.zip.model.EntryNameAndTwoDigests;
-
 import java.io.*;
 import java.security.MessageDigest;
 import java.util.*;
 import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 import javax.annotation.*;
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
+import net.java.trueupdate.core.io.Copy;
+import net.java.trueupdate.core.io.Sink;
+import net.java.trueupdate.core.io.Source;
+import net.java.trueupdate.core.util.MessageDigests;
+import net.java.trueupdate.core.zip.util.EntrySource;
+import net.java.trueupdate.core.zip.model.Diff;
+import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
+import net.java.trueupdate.core.zip.model.EntryNameAndTwoDigests;
 
 /**
  * Compares two ZIP files entry by entry.
@@ -111,43 +111,19 @@ public abstract class ZipDiff {
 
     /** Computes a diff model from the two ZIP files. */
     public Diff computeDiff() throws IOException {
-        final Computer computer = new Computer();
-        new Engine().accept(computer);
-
-        {
-            final Diff diff = new Diff();
-            diff.algorithm = algorithm();
-            diff.numBytes = numBytes();
-            diff.removed = nonEmptyOrNull(computer.removed);
-            diff.added = nonEmptyOrNull(computer.added);
-            diff.unchanged = nonEmptyOrNull(computer.unchanged);
-            diff.changed = nonEmptyOrNull(computer.changed);
-            return diff;
-        }
+        return new Assembler().walkAndReturn(new Assembly()).buildDiff();
     }
 
-    private String algorithm() { return messageDigest().getAlgorithm(); }
+    @Immutable
+    private final class Assembler {
 
-    private Integer numBytes() {
-        final MessageDigest digest = messageDigest();
-        try {
-            final MessageDigest
-                    clone = MessageDigests.newDigest(digest.getAlgorithm());
-            if (clone.getDigestLength() == digest.getDigestLength())
-                return null;
-        } catch (IllegalArgumentException fallThrough) {
-        }
-        return digest.getDigestLength();
-    }
-
-    private static @Nullable <X> SortedMap<String, X>
-    nonEmptyOrNull(SortedMap<String, X> map) {
-        return map.isEmpty() ? null : map;
-    }
-
-    private class Engine {
-
-        <X extends Exception> void accept(final Visitor<X> visitor) throws X {
+        /**
+         * Walks the given visitor through the two ZIP files and returns it.
+         * If and only if the visitor throws an I/O exception, the assembler
+         * stops the visit and passes it on to the caller.
+         */
+        <V extends Visitor> V walkAndReturn(final V visitor)
+        throws IOException {
             for (final Enumeration<? extends ZipEntry>
                          entries = firstZipFile().entries();
                  entries.hasMoreElements(); ) {
@@ -173,18 +149,46 @@ public abstract class ZipDiff {
                     visitor.visitEntryInSecondFile(
                             new EntrySource(secondEntry, secondZipFile()));
             }
+
+            return visitor;
         }
-    } // Engine
+    } // Assembler
 
-    private class Computer implements Visitor<IOException> {
+    private class Assembly implements Visitor {
 
-        final SortedMap<String, EntryNameAndDigest>
-                removed = new TreeMap<>(),
-                added = new TreeMap<>(),
-                unchanged = new TreeMap<>();
-
-        final SortedMap<String, EntryNameAndTwoDigests>
+        private final Map<String, EntryNameAndTwoDigests>
                 changed = new TreeMap<>();
+
+        private final Map<String, EntryNameAndDigest>
+                unchanged = new TreeMap<>(),
+                added = new TreeMap<>(),
+                removed = new TreeMap<>();
+
+        Diff buildDiff() {
+            return new Diff.Builder()
+                    .digest(messageDigest())
+                    .unchanged(unchanged.values())
+                    .changed(changed.values())
+                    .added(added.values())
+                    .removed(removed.values())
+                    .build();
+        }
+
+        @Override
+        public void visitEntriesInBothFiles(EntrySource firstEntrySource,
+                                            EntrySource secondEntrySource)
+        throws IOException {
+            final String firstName = firstEntrySource.name();
+            assert firstName.equals(secondEntrySource.name());
+            final String firstDigest = digestToHexString(firstEntrySource);
+            final String secondDigest = digestToHexString(secondEntrySource);
+            if (firstDigest.equals(secondDigest))
+                unchanged.put(firstName, new EntryNameAndDigest(
+                        firstName, firstDigest));
+            else
+                changed.put(firstName, new EntryNameAndTwoDigests(
+                        firstName, firstDigest, secondDigest));
+        }
 
         @Override
         public void visitEntryInFirstFile(EntrySource entrySource)
@@ -202,25 +206,48 @@ public abstract class ZipDiff {
                     digestToHexString(entrySource)));
         }
 
-        @Override
-        public void visitEntriesInBothFiles(EntrySource firstEntrySource,
-                                            EntrySource secondEntrySource)
-        throws IOException {
-            final String firstName = firstEntrySource.name();
-            assert firstName.equals(secondEntrySource.name());
-            final String firstDigest = digestToHexString(firstEntrySource);
-            final String secondDigest = digestToHexString(secondEntrySource);
-            if (firstDigest.equals(secondDigest))
-                unchanged.put(firstName, new EntryNameAndDigest(firstName, firstDigest));
-            else
-                changed.put(firstName,
-                        new EntryNameAndTwoDigests(firstName, firstDigest, secondDigest));
-        }
-
         String digestToHexString(Source source) throws IOException {
             return MessageDigests.digestToHexString(messageDigest(), source);
         }
-    } // Computer
+    } // Assembly
+
+    /**
+     * A visitor of two ZIP files.
+     * Note that the order of the calls to the visitor methods is undefined,
+     * so you should not depend on the behavior of the current implementation
+     * in order to ensure compatibility with future versions.
+     */
+    private interface Visitor {
+
+        /**
+         * Visits a ZIP entry which is present in the first ZIP file,
+         * but not in the second ZIP file.
+         *
+         * @param entrySource1 the ZIP entry in the first ZIP file.
+         */
+        void visitEntryInFirstFile(EntrySource entrySource1)
+        throws IOException;
+
+        /**
+         * Visits a ZIP entry which is present in the second ZIP file,
+         * but not in the first ZIP file.
+         *
+         * @param entrySource2 the ZIP entry in the second ZIP file.
+         */
+        void visitEntryInSecondFile(EntrySource entrySource2)
+        throws IOException;
+
+        /**
+         * Visits a pair of ZIP entries with equal names in the first and
+         * second ZIP file.
+         *
+         * @param firstEntrySource the ZIP entry in the first ZIP file.
+         * @param secondEntrySource the ZIP entry in the second ZIP file.
+         */
+        void visitEntriesInBothFiles(EntrySource firstEntrySource,
+                                     EntrySource secondEntrySource)
+        throws IOException;
+    } // Visitor
 
     /**
      * A builder for a ZIP diff.
