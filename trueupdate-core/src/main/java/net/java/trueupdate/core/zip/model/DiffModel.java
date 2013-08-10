@@ -20,9 +20,9 @@ import net.java.trueupdate.core.util.*;
 
 /**
  * A Value Object which represents the meta data in a ZIP patch file.
- * It encapsulates collections of changed, unchanged, added and removed entry
- * names and message digests in canonical string notation, attributed with the
- * message digest algorithm name and byte length.
+ * It encapsulates unmodifiable collections of changed, unchanged, added and
+ * removed entry names and message digests in canonical string notation,
+ * attributed with the message digest algorithm name and byte length.
  *
  * @author Christian Schlichtherle
  */
