@@ -9,7 +9,7 @@ package net.java.trueupdate.message;
  *
  * @author Christian Schlichtherle
  */
-public interface UpdateListener {
+public interface UpdateMessageListener {
 
     /** Processes the given update message. */
     void onUpdateMessage(UpdateMessage message);
