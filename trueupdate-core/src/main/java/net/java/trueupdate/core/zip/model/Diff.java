@@ -7,7 +7,7 @@ package net.java.trueupdate.core.zip.model;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.*;
-import static java.util.Collections.emptyList;
+import static java.util.Collections.*;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.*;
+import static net.java.trueupdate.core.util.HashMaps.initialCapacity;
+
 import net.java.trueupdate.core.util.HashMaps;
 import net.java.trueupdate.core.util.MessageDigests;
 
@@ -43,26 +45,26 @@ public final class Diff implements Serializable {
     public static final String ENTRY_NAME = "META-INF/diff.xml";
 
     @XmlAttribute(required = true)
-    public final String algorithm;
+    private final String algorithm;
 
     @XmlAttribute
-    public final @Nullable Integer numBytes;
+    private final @Nullable Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public final Map<String, EntryNameAndDigest> unchanged;
+    private final Map<String, EntryNameAndDigest> unchanged;
 
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
-    public final Map<String, EntryNameAndTwoDigests> changed;
+    private final Map<String, EntryNameAndTwoDigests> changed;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    public final Map<String, EntryNameAndDigest> added, removed;
+    private final Map<String, EntryNameAndDigest> added, removed;
 
     /** Required for JAXB. */
     private Diff() {
         algorithm = "";
         numBytes = null;
-        unchanged = added = removed = Collections.emptyMap();
-        changed = Collections.emptyMap();
+        unchanged = added = removed = emptyMap();
+        changed = emptyMap();
     }
 
     Diff(final Builder b) {
@@ -77,23 +79,45 @@ public final class Diff implements Serializable {
     static Map<String, EntryNameAndDigest> unchangedMap(
             final Collection<EntryNameAndDigest> entries) {
         final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
-                HashMaps.initialCapacity(entries.size()));
+                initialCapacity(entries));
         for (EntryNameAndDigest entryNameAndDigest : entries)
             map.put(entryNameAndDigest.name, entryNameAndDigest);
-        return Collections.unmodifiableMap(map);
+        return unmodifiableMap(map);
     }
 
     static Map<String, EntryNameAndTwoDigests> changedMap(
             final Collection<EntryNameAndTwoDigests> entries) {
         final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
-                HashMaps.initialCapacity(entries.size()));
+                initialCapacity(entries));
         for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
             map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
-        return Collections.unmodifiableMap(map);
+        return unmodifiableMap(map);
     }
 
-    @Deprecated
-    public EntryNameAndDigest unchanged(String name) {
+    private static int initialCapacity(Collection<?> c) {
+        return HashMaps.initialCapacity(c.size());
+    }
+
+    public String algorithm() { return algorithm; }
+    public @Nullable Integer numBytes() { return numBytes; }
+
+    public Collection<EntryNameAndDigest> unchanged() {
+        return unchanged.values();
+    }
+
+    public Collection<EntryNameAndTwoDigests> changed() {
+        return changed.values();
+    }
+
+    public Collection<EntryNameAndDigest> added() {
+        return added.values();
+    }
+
+    public Collection<EntryNameAndDigest> removed() {
+        return removed.values();
+    }
+
+    @Deprecated public EntryNameAndDigest unchanged(String name) {
         return unchanged.get(name);
     }
 
@@ -105,8 +129,7 @@ public final class Diff implements Serializable {
         return added.get(name);
     }
 
-    @Deprecated
-    public EntryNameAndDigest removed(String name) {
+    @Deprecated public EntryNameAndDigest removed(String name) {
         return removed.get(name);
     }
 
@@ -114,8 +137,8 @@ public final class Diff implements Serializable {
         if (this == obj) return true;
         if (!(obj instanceof Diff)) return false;
         final Diff that = (Diff) obj;
-        return  this.algorithm.equals(that.algorithm) &&
-                Objects.equals(this.numBytes, that.numBytes) &&
+        return  this.algorithm().equals(that.algorithm()) &&
+                Objects.equals(this.numBytes(), that.numBytes()) &&
                 this.unchanged.equals(that.unchanged) &&
                 this.changed.equals(that.changed) &&
                 this.added.equals(that.added) &&
@@ -124,8 +147,8 @@ public final class Diff implements Serializable {
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + Objects.hashCode(algorithm);
-        hash = 31 * hash + Objects.hashCode(numBytes);
+        hash = 31 * hash + Objects.hashCode(algorithm());
+        hash = 31 * hash + Objects.hashCode(numBytes());
         hash = 31 * hash + unchanged.hashCode();
         hash = 31 * hash + changed.hashCode();
         hash = 31 * hash + added.hashCode();

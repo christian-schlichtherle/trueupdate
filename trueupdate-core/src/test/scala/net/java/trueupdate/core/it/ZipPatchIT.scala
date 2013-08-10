@@ -41,7 +41,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
               }
               loan(new JarFile(firstZipTemp)) to { firstZipFile =>
                 loan(secondZipFile()) to { secondZipFile =>
-                  val ref = SortedSet.empty[String] ++
+                  val ref = List.empty[String] ++
                     secondZipFile.entries.asScala.map(_.getName)
                   val diff = new ZipDiff.Builder()
                     .firstZipFile(firstZipFile)
@@ -50,7 +50,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                     .computeDiff ()
                   diff.added.isEmpty should be (true)
                   diff.removed.isEmpty should be (true)
-                  diff.unchanged.keySet.asScala should equal (ref)
+                  diff.unchanged.asScala map (_.name) should equal (ref)
                   diff.changed.isEmpty should be (true)
                 }
               }

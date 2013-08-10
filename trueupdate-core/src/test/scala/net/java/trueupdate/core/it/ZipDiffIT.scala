@@ -21,13 +21,13 @@ class ZipDiffIT extends WordSpec with ZipITContext {
         val diff = withZipDiff(_ computeDiff ())
         import collection.JavaConverters._
         import diff._
-        removed.values.asScala map (_.name) should
+        removed.asScala map (_.name) should
           equal (List("entryOnlyInFile1"))
-        added.values.asScala map (_.name) should
+        added.asScala map (_.name) should
           equal (List("entryOnlyInFile2"))
-        unchanged.values.asScala map (_.name) should
+        unchanged.asScala map (_.name) should
           equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntryTime", "equalEntry"))
-        changed.values.asScala map (_.name) should
+        changed.asScala map (_.name) should
           equal (List("differentEntrySize"))
       }
     }

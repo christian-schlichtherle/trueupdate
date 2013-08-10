@@ -14,6 +14,8 @@ import net.java.trueupdate.core.io.Sink;
 import java.io.*;
 import java.security.*;
 import static java.util.Objects.requireNonNull;
+
+import java.util.Collection;
 import java.util.Map;
 import java.util.zip.*;
 import javax.annotation.*;
@@ -109,10 +111,9 @@ public abstract class ZipPatch {
 
             final <T> PatchSet apply(
                     final Transformation<T> transformation,
-                    final @CheckForNull Map<String, T> selection)
+                    final @CheckForNull Collection<T> selection)
             throws IOException {
-                if (null == selection) return this;
-                for (final T item : selection.values()) {
+                for (final T item : selection) {
                     final EntryNameAndDigest
                             entryNameAndDigest = transformation.apply(item);
                     final String name = entryNameAndDigest.name;
@@ -157,17 +158,17 @@ public abstract class ZipPatch {
         // Order is important here!
         new InputZipFilePatchSet().apply(
                 new IdentityTransformation(),
-                diff().unchanged);
+                diff().unchanged());
         new ZipPatchFilePatchSet().apply(
                 new EntryNameWithTwoDigestsTransformation(),
-                diff().changed);
+                diff().changed());
         new ZipPatchFilePatchSet().apply(
                 new IdentityTransformation(),
-                diff().added);
+                diff().added());
     }
 
     private MessageDigest messageDigest() throws IOException {
-        return MessageDigests.newDigest(diff().algorithm);
+        return MessageDigests.newDigest(diff().algorithm());
     }
 
     private Diff diff() throws IOException {
