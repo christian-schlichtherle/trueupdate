@@ -48,10 +48,10 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                     .secondZipFile(secondZipFile)
                     .build
                     .computeDiffModel ()
-                  diff.added.isEmpty should be (true)
-                  diff.removed.isEmpty should be (true)
-                  diff.unchanged.asScala map (_.name) should equal (ref)
-                  diff.changed.isEmpty should be (true)
+                  diff.addedEntries.isEmpty should be (true)
+                  diff.removedEntries.isEmpty should be (true)
+                  diff.unchangedEntries.asScala map (_.name) should equal (ref)
+                  diff.changedEntries.isEmpty should be (true)
                 }
               }
             } finally {

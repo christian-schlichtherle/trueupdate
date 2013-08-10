@@ -21,8 +21,8 @@ import net.java.trueupdate.core.util.*;
 
 /**
  * A Value Object which represents the meta data in a ZIP patch file.
- * It encapsulates maps of unchanged, changed, added and removed entry names
- * and message digests in canonical string notation, attributed with the
+ * It encapsulates collections of changed, unchanged, added and removed entry
+ * names and message digests in canonical string notation, attributed with the
  * message digest algorithm name and byte length.
  *
  * @author Christian Schlichtherle
@@ -47,34 +47,31 @@ public final class DiffModel implements Serializable {
     @XmlAttribute
     private final @CheckForNull Integer numBytes;
 
-    @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    private final Map<String, EntryNameAndDigest> unchanged;
-
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
     private final Map<String, EntryNameAndTwoDigests> changed;
 
     @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    private final Map<String, EntryNameAndDigest> added, removed;
+    private final Map<String, EntryNameAndDigest> unchanged, added, removed;
 
     /** Required for JAXB. */
     private DiffModel() {
         algorithm = "";
         numBytes = null;
-        unchanged = added = removed = emptyMap();
         changed = emptyMap();
+        unchanged = added = removed = emptyMap();
     }
 
     DiffModel(final Builder b) {
-        this.algorithm = b.digestAlgorithmName();
-        this.numBytes = b.digestLengthBytes();
-        this.unchanged = b.unchanged();
+        this.algorithm = b.messageDigestAlgorithmName();
+        this.numBytes = b.messageDigestLengthBytes();
         this.changed = b.changed();
+        this.unchanged = b.unchanged();
         this.added = b.added();
         this.removed = b.removed();
     }
 
     /** Returns the message digest algorithm name. */
-    public String digestAlgorithmName() { return algorithm; }
+    public String messageDigestAlgorithmName() { return algorithm; }
 
     /**
      * Returns the message digest byte length.
@@ -82,26 +79,13 @@ public final class DiffModel implements Serializable {
      * digest used to build this diff model is the default value for the
      * algorithm.
      */
-    public @Nullable Integer digestByteLength() { return numBytes; }
-
-    /**
-     * Returns a collection of the entry name and message digest for the
-     * <i>unchanged</i> entries.
-     */
-    public Collection<EntryNameAndDigest> unchanged() {
-        return unchanged.values();
-    }
-
-    /** Looks up the given entry name in the <i>unchanged</i> entries. */
-    @Deprecated public EntryNameAndDigest unchanged(String name) {
-        return unchanged.get(name);
-    }
+    public @Nullable Integer messageDigestByteLength() { return numBytes; }
 
     /**
      * Returns a collection of the entry name and two message digests for the
      * <i>changed</i> entries.
      */
-    public Collection<EntryNameAndTwoDigests> changed() {
+    public Collection<EntryNameAndTwoDigests> changedEntries() {
         return changed.values();
     }
 
@@ -112,9 +96,22 @@ public final class DiffModel implements Serializable {
 
     /**
      * Returns a collection of the entry name and message digest for the
+     * <i>unchanged</i> entries.
+     */
+    public Collection<EntryNameAndDigest> unchangedEntries() {
+        return unchanged.values();
+    }
+
+    /** Looks up the given entry name in the <i>unchanged</i> entries. */
+    @Deprecated public EntryNameAndDigest unchanged(String name) {
+        return unchanged.get(name);
+    }
+
+    /**
+     * Returns a collection of the entry name and message digest for the
      * <i>added</i> entries.
      */
-    public Collection<EntryNameAndDigest> added() {
+    public Collection<EntryNameAndDigest> addedEntries() {
         return added.values();
     }
 
@@ -127,7 +124,7 @@ public final class DiffModel implements Serializable {
      * Returns a collection of the entry name and message digest for the
      * <i>removed</i> entries.
      */
-    public Collection<EntryNameAndDigest> removed() {
+    public Collection<EntryNameAndDigest> removedEntries() {
         return removed.values();
     }
 
@@ -142,8 +139,8 @@ public final class DiffModel implements Serializable {
         final DiffModel that = (DiffModel) obj;
         return  this.algorithm.equals(that.algorithm) &&
                 Objects.equals(this.numBytes, that.numBytes) &&
-                this.unchanged.equals(that.unchanged) &&
                 this.changed.equals(that.changed) &&
+                this.unchanged.equals(that.unchanged) &&
                 this.added.equals(that.added) &&
                 this.removed.equals(that.removed);
     }
@@ -152,8 +149,8 @@ public final class DiffModel implements Serializable {
         int hash = 17;
         hash = 31 * hash + algorithm.hashCode();
         hash = 31 * hash + Objects.hashCode(numBytes);
-        hash = 31 * hash + unchanged.hashCode();
         hash = 31 * hash + changed.hashCode();
+        hash = 31 * hash + unchanged.hashCode();
         hash = 31 * hash + added.hashCode();
         hash = 31 * hash + removed.hashCode();
         return hash;
@@ -203,33 +200,34 @@ public final class DiffModel implements Serializable {
      */
     public static final class Builder {
 
-        private MessageDigest digest;
+        private MessageDigest messageDigest;
+        private Collection<EntryNameAndTwoDigests> changed = emptyList();
         private Collection<EntryNameAndDigest>
                 unchanged = emptyList(),
                 added = emptyList(),
                 removed = emptyList();
-        private Collection<EntryNameAndTwoDigests>
-                changed = emptyList();
 
-        String digestAlgorithmName() { return digest.getAlgorithm(); }
+        String messageDigestAlgorithmName() {
+            return messageDigest.getAlgorithm();
+        }
 
-        @Nullable Integer digestLengthBytes() {
+        @Nullable Integer messageDigestLengthBytes() {
             try {
                 final MessageDigest
-                        clone = MessageDigests.newDigest(digest.getAlgorithm());
-                if (clone.getDigestLength() == digest.getDigestLength())
+                        clone = MessageDigests.newDigest(messageDigest.getAlgorithm());
+                if (clone.getDigestLength() == messageDigest.getDigestLength())
                     return null;
             } catch (IllegalArgumentException fallThrough) {
             }
-            return digest.getDigestLength();
-        }
-
-        Map<String, EntryNameAndDigest> unchanged() {
-            return unchangedMap(unchanged);
+            return messageDigest.getDigestLength();
         }
 
         Map<String, EntryNameAndTwoDigests> changed() {
             return changedMap(changed);
+        }
+
+        Map<String, EntryNameAndDigest> unchanged() {
+            return unchangedMap(unchanged);
         }
 
         Map<String, EntryNameAndDigest> added() {
@@ -238,15 +236,6 @@ public final class DiffModel implements Serializable {
 
         Map<String, EntryNameAndDigest> removed() {
             return unchangedMap(removed);
-        }
-
-        static Map<String, EntryNameAndDigest> unchangedMap(
-                final Collection<EntryNameAndDigest> entries) {
-            final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
-                    initialCapacity(entries));
-            for (EntryNameAndDigest entryNameAndDigest : entries)
-                map.put(entryNameAndDigest.name, entryNameAndDigest);
-            return unmodifiableMap(map);
         }
 
         static Map<String, EntryNameAndTwoDigests> changedMap(
@@ -258,31 +247,44 @@ public final class DiffModel implements Serializable {
             return unmodifiableMap(map);
         }
 
+        static Map<String, EntryNameAndDigest> unchangedMap(
+                final Collection<EntryNameAndDigest> entries) {
+            final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
+                    initialCapacity(entries));
+            for (EntryNameAndDigest entryNameAndDigest : entries)
+                map.put(entryNameAndDigest.name, entryNameAndDigest);
+            return unmodifiableMap(map);
+        }
+
         private static int initialCapacity(Collection<?> c) {
             return HashMaps.initialCapacity(c.size());
         }
 
-        public Builder digest(final MessageDigest digest) {
-            this.digest = requireNonNull(digest);
+        public Builder messageDigest(final MessageDigest digest) {
+            this.messageDigest = requireNonNull(digest);
             return this;
         }
 
-        public Builder unchanged(final Collection<EntryNameAndDigest> unchanged) {
-            this.unchanged = requireNonNull(unchanged);
-            return this;
-        }
-
-        public Builder changed(final Collection<EntryNameAndTwoDigests> changed) {
+        public Builder changedEntries(
+                final Collection<EntryNameAndTwoDigests> changed) {
             this.changed = requireNonNull(changed);
             return this;
         }
 
-        public Builder added(final Collection<EntryNameAndDigest> added) {
+        public Builder unchangedEntries(
+                final Collection<EntryNameAndDigest> unchanged) {
+            this.unchanged = requireNonNull(unchanged);
+            return this;
+        }
+
+        public Builder addedEntries(
+                final Collection<EntryNameAndDigest> added) {
             this.added = requireNonNull(added);
             return this;
         }
 
-        public Builder removed(final Collection<EntryNameAndDigest> removed) {
+        public Builder removedEntries(
+                final Collection<EntryNameAndDigest> removed) {
             this.removed = requireNonNull(removed);
             return this;
         }

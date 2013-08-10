@@ -106,9 +106,9 @@ public abstract class ZipPatch {
 
             final <T> PatchSet apply(
                     final Transformation<T> transformation,
-                    final @CheckForNull Collection<T> selection)
+                    final Collection<T> collection)
             throws IOException {
-                for (final T item : selection) {
+                for (final T item : collection) {
                     final EntryNameAndDigest
                             entryNameAndDigest = transformation.apply(item);
                     final String name = entryNameAndDigest.name;
@@ -153,36 +153,42 @@ public abstract class ZipPatch {
         // Order is important here!
         new InputZipFilePatchSet().apply(
                 new IdentityTransformation(),
-                diff().unchanged());
+                diffModel().unchangedEntries());
         new ZipPatchFilePatchSet().apply(
                 new EntryNameWithTwoDigestsTransformation(),
-                diff().changed());
+                diffModel().changedEntries());
         new ZipPatchFilePatchSet().apply(
                 new IdentityTransformation(),
-                diff().added());
+                diffModel().addedEntries());
     }
 
     private MessageDigest messageDigest() throws IOException {
-        return MessageDigests.newDigest(diff().digestAlgorithmName());
+        return MessageDigests.newDigest(diffModel().messageDigestAlgorithmName());
     }
 
-    private DiffModel diff() throws IOException {
+    private DiffModel diffModel() throws IOException {
         final DiffModel model = this.model;
-        return null != model ? model : (this.model = loadDiff());
+        return null != model ? model : (this.model = loadDiffModel());
     }
 
-    private DiffModel loadDiff() throws IOException {
-        final ZipEntry entry = zipPatchFile().getEntry(DiffModel.ENTRY_NAME);
-        if (null == entry)
-            throw new InvalidZipPatchFileException(zipPatchFile().getName(),
-                    new MissingZipEntryException(DiffModel.ENTRY_NAME));
+    private DiffModel loadDiffModel() throws IOException {
         try {
-            return DiffModel.decodeFromXml(new EntrySource(entry, zipPatchFile()));
+            return DiffModel.decodeFromXml(
+                    new EntrySource(diffModelEntry(), zipPatchFile()));
         } catch (IOException | RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new InvalidZipPatchFileException(zipPatchFile().getName(), ex);
         }
+    }
+
+    private ZipEntry diffModelEntry() throws IOException {
+        final String name = DiffModel.ENTRY_NAME;
+        final ZipEntry entry = zipPatchFile().getEntry(name);
+        if (null == entry)
+            throw new InvalidZipPatchFileException(zipPatchFile().getName(),
+                    new MissingZipEntryException(name));
+        return entry;
     }
 
     /** A builder for a ZIP patch. */

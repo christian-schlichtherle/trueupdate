@@ -87,25 +87,25 @@ public abstract class ZipDiff {
                 this.model = model;
             }
 
-            ZipPatchFileStreamer streamAddedOrChanged() throws IOException {
+            ZipPatchFileStreamer streamChangedOrAdded() throws IOException {
                 for (final Enumeration<? extends ZipEntry>
                              entries = secondZipFile().entries();
                      entries.hasMoreElements(); ) {
                     final ZipEntry entry = entries.nextElement();
                     final String name = entry.getName();
-                    if (addedOrChanged(name))
+                    if (changedOrAdded(name))
                         Copy.copy(new EntrySource(entry, secondZipFile()),
-                                new EntrySink(name));
+                                  new EntrySink(name));
                 }
                 return this;
             }
 
-            boolean addedOrChanged(String name) {
-                return null != model.added(name) || null != model.changed(name);
+            boolean changedOrAdded(String name) {
+                return null != model.changed(name) || null != model.added(name);
             }
         } // ZipPatchFileStreamer
 
-        new ZipPatchFileStreamer(model).streamAddedOrChanged();
+        new ZipPatchFileStreamer(model).streamChangedOrAdded();
     }
 
     /** Computes a diff model from the two ZIP files. */
@@ -165,11 +165,11 @@ public abstract class ZipDiff {
 
         DiffModel buildDiffModel() {
             return new DiffModel.Builder()
-                    .digest(messageDigest())
-                    .unchanged(unchanged.values())
-                    .changed(changed.values())
-                    .added(added.values())
-                    .removed(removed.values())
+                    .messageDigest(messageDigest())
+                    .changedEntries(changed.values())
+                    .unchangedEntries(unchanged.values())
+                    .addedEntries(added.values())
+                    .removedEntries(removed.values())
                     .build();
         }
 
