@@ -9,7 +9,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.naming.InitialContext;
 import javax.ws.rs.ext.*;
 import net.java.trueupdate.artifact.maven.*;
-import net.java.trueupdate.artifact.maven.model.Repositories;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.SystemProperties;
@@ -41,11 +40,7 @@ implements ContextResolver<ArtifactResolver> {
 
         static MavenArtifactResolver configuredMavenArtifactResolver()
         throws Exception {
-            return new MavenArtifactResolverAdapter().unmarshal(repositories());
-        }
-
-        static Repositories repositories() throws Exception {
-            return Repositories.decodeFromXml(source());
+            return MavenArtifactResolver.decodeFromXml(source());
         }
 
         static Source source() throws Exception {

@@ -45,6 +45,6 @@
         </description>
         <env-entry-name>maven-repositories/configuration-uri</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>net/java/trueupdate/artifact/maven/model/main-repositories.xml</env-entry-value>
+        <env-entry-value>net/java/trueupdate/artifact/maven/main-repositories.xml</env-entry-value>
     </env-entry>
 </web-app>

@@ -8,10 +8,15 @@ import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import static java.util.Arrays.asList;
-import javax.annotation.CheckForNull;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.*;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.*;
 import static net.java.trueupdate.artifact.maven.ArtifactConverters.*;
 import net.java.trueupdate.artifact.spec.*;
+import net.java.trueupdate.core.codec.JaxbCodec;
+import net.java.trueupdate.core.io.Source;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
@@ -32,20 +37,32 @@ import org.eclipse.aether.version.Version;
  * @author Christian Schlichtherle
  */
 @Immutable
+@XmlRootElement(name = "repositories")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class MavenArtifactResolver implements ArtifactResolver {
 
-    final LocalRepository local;
-    final List<RemoteRepository> remotes;
+    @XmlJavaTypeAdapter(LocalRepositoryAdapter.class)
+    private final LocalRepository local;
 
-    private volatile ServiceLocator serviceLocator;
-    private volatile RepositorySystemSession repositorySystemSession;
+    @XmlElement(name = "remote")
+    @XmlJavaTypeAdapter(RemoteRepositoryAdapter.class)
+    private final List<RemoteRepository> remotes;
+
+    private transient volatile ServiceLocator serviceLocator;
+    private transient volatile RepositorySystemSession repositorySystemSession;
+
+    /** Required for JAXB. */
+    private MavenArtifactResolver() {
+        local = null;
+        remotes = null;
+    }
 
     /**
      * Constructs a Maven artifact resolver which uses the given local and
      * remote repositories.
      *
-     * @param local the local repository for artifacts.
-     * @param remotes the array of remote repositories for artifacts.
+     * @param local the local repository.
+     * @param remotes the array of remote repositories.
      */
     public MavenArtifactResolver(LocalRepository local,
                                  RemoteRepository... remotes) {
@@ -56,14 +73,20 @@ public class MavenArtifactResolver implements ArtifactResolver {
      * Constructs a Maven artifact resolver which uses the given local and
      * remote repositories.
      *
-     * @param local the local repository for artifacts.
-     * @param remotes the list of remote repositories for artifacts.
+     * @param local the local repository.
+     * @param remotes the list of remote repositories.
      */
     public MavenArtifactResolver(final LocalRepository local,
                                  final List<RemoteRepository> remotes) {
         this.local = Objects.requireNonNull(local);
         this.remotes = Collections.unmodifiableList(new ArrayList<>(remotes));
     }
+
+    /** Returns the local repository. */
+    public LocalRepository local() { return local; }
+
+    /** Returns the unmodifiable list of remote repositories. */
+    public List<RemoteRepository> remotes() { return remotes; }
 
     @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws RepositoryException {
@@ -219,5 +242,35 @@ public class MavenArtifactResolver implements ArtifactResolver {
         hash = 31 * hash + local.hashCode();
         hash = 31 * hash + remotes.hashCode();
         return hash;
+    }
+
+    /**
+     * Decodes a maven artifact resolver from XML.
+     *
+     * @param source the source for reading the XML.
+     * @return the decoded repositories.
+     * @throws Exception at the discretion of the JAXB codec, e.g. if the
+     *         source isn't readable.
+     */
+    public static MavenArtifactResolver decodeFromXml(Source source)
+    throws Exception {
+        return new JaxbCodec(jaxbContext())
+                .decode(source, MavenArtifactResolver.class);
+    }
+
+    /** Returns a JAXB context which binds only this class. */
+    public static JAXBContext jaxbContext() { return Lazy.JAXB_CONTEXT; }
+
+    private static class Lazy {
+
+        static final JAXBContext JAXB_CONTEXT;
+
+        static {
+            try {
+                JAXB_CONTEXT = JAXBContext.newInstance(MavenArtifactResolver.class);
+            } catch (JAXBException ex) {
+                throw new AssertionError(ex);
+            }
+        }
     }
 }
