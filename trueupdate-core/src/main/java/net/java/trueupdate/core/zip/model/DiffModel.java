@@ -9,8 +9,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import static java.util.Collections.*;
 import static java.util.Objects.requireNonNull;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
@@ -243,7 +242,7 @@ public final class DiffModel implements Serializable {
             final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
                     initialCapacity(entries));
             for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
-                map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
+                map.put(entryNameAndTwoDigests.name(), entryNameAndTwoDigests);
             return unmodifiableMap(map);
         }
 
@@ -252,7 +251,7 @@ public final class DiffModel implements Serializable {
             final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
                     initialCapacity(entries));
             for (EntryNameAndDigest entryNameAndDigest : entries)
-                map.put(entryNameAndDigest.name, entryNameAndDigest);
+                map.put(entryNameAndDigest.name(), entryNameAndDigest);
             return unmodifiableMap(map);
         }
 

@@ -72,23 +72,23 @@ public abstract class ZipPatch {
 
         class EntrySink implements Sink {
 
-            final EntryNameAndDigest entryDigest;
+            final EntryNameAndDigest entryNameAndDigest;
 
-            EntrySink(final EntryNameAndDigest entryDigest) {
-                this.entryDigest = entryDigest;
+            EntrySink(final EntryNameAndDigest entryNameAndDigest) {
+                this.entryNameAndDigest = entryNameAndDigest;
             }
 
             @Override public OutputStream output() throws IOException {
-                out.putNextEntry(newZipEntry(entryDigest.name));
+                out.putNextEntry(newZipEntry(entryNameAndDigest.name()));
                 return new DigestOutputStream(out, messageDigest()) {
 
                     { digest.reset(); }
 
                     @Override public void close() throws IOException {
                         ((ZipOutputStream) out).closeEntry();
-                        if (!digestToHexString().equals(entryDigest.digest))
+                        if (!digestToHexString().equals(entryNameAndDigest.digest()))
                             throw new WrongMessageDigestException(
-                                    entryDigest.name);
+                                    entryNameAndDigest.name());
                     }
 
                     String digestToHexString() {
@@ -111,7 +111,7 @@ public abstract class ZipPatch {
                 for (final T item : collection) {
                     final EntryNameAndDigest
                             entryNameAndDigest = transformation.apply(item);
-                    final String name = entryNameAndDigest.name;
+                    final String name = entryNameAndDigest.name();
                     final ZipEntry entry = source().getEntry(name);
                     if (null == entry)
                         throw ioException(new MissingZipEntryException(name));
