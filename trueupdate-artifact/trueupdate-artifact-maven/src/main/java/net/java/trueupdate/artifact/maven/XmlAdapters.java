@@ -53,9 +53,7 @@ extends XmlAdapter<Remote, RemoteRepository> {
 
     @Override public RemoteRepository unmarshal(Remote r) {
         return new RemoteRepository
-                .Builder(resolve(r.id),
-                resolve(r.type),
-                resolve(r.url))
+                .Builder(resolve(r.id), resolve(r.type), resolve(r.url))
                 .build();
     }
 
