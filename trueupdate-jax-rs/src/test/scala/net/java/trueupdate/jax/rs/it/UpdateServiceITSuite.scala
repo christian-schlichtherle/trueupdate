@@ -15,7 +15,7 @@ import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.util.Loan._
-import net.java.trueupdate.core.zip.model.Diff
+import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.jax.rs.server._
 import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
 import org.junit.Test
@@ -55,7 +55,7 @@ class UpdateServiceITSuite extends JerseyTest {
     val source = updateClient.patch(artifactDescriptor, updateVersion)
     loan(new ZipInputStream(source input ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
-      entry.getName should be (Diff.ENTRY_NAME)
+      entry.getName should be (DiffModel.ENTRY_NAME)
       val source = new Source {
         def input() = new FilterInputStream(zipIn) {
           override def close() { zipIn closeEntry () }

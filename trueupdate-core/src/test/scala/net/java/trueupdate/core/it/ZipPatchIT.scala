@@ -47,7 +47,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                     .firstZipFile(firstZipFile)
                     .secondZipFile(secondZipFile)
                     .build
-                    .computeDiff ()
+                    .computeDiffModel ()
                   diff.added.isEmpty should be (true)
                   diff.removed.isEmpty should be (true)
                   diff.unchanged.asScala map (_.name) should equal (ref)

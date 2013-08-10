@@ -13,7 +13,7 @@ import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.util.MessageDigests
-import net.java.trueupdate.core.zip.model.Diff
+import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.patch.ZipPatch
 
@@ -55,5 +55,5 @@ trait ZipITContext extends TestContext {
 
   def digest = MessageDigests.sha1
 
-  override lazy val jaxbContext = Diff.jaxbContext
+  override lazy val jaxbContext = DiffModel.jaxbContext
 }

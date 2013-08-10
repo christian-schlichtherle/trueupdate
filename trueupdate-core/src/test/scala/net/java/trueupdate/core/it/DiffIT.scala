@@ -7,7 +7,7 @@ package net.java.trueupdate.core.it
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import net.java.trueupdate.core.zip.model.Diff
+import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.util.MessageDigests.sha1
 
 /** @author Christian Schlichtherle */
@@ -17,13 +17,13 @@ class DiffIT extends WordSpec with ZipITContext {
   "A diff model" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        assertRoundTripXmlSerializable(new Diff.Builder().digest(sha1).build)
+        assertRoundTripXmlSerializable(new DiffModel.Builder().digest(sha1).build)
       }
     }
 
     "computed from a ZIP diff" should {
       "be round-trip XML-serializable" in {
-        assertRoundTripXmlSerializable(withZipDiff(_ computeDiff ()))
+        assertRoundTripXmlSerializable(withZipDiff(_ computeDiffModel ()))
       }
     }
   }

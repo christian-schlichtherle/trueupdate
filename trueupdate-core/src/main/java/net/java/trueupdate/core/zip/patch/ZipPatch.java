@@ -24,7 +24,7 @@ import net.java.trueupdate.core.zip.util.EntrySource;
 @NotThreadSafe
 public abstract class ZipPatch {
 
-    private Diff diff;
+    private DiffModel model;
 
     /** Returns the ZIP patch file. */
     abstract @WillNotClose ZipFile zipPatchFile();
@@ -163,21 +163,21 @@ public abstract class ZipPatch {
     }
 
     private MessageDigest messageDigest() throws IOException {
-        return MessageDigests.newDigest(diff().algorithm());
+        return MessageDigests.newDigest(diff().digestAlgorithmName());
     }
 
-    private Diff diff() throws IOException {
-        final Diff diff = this.diff;
-        return null != diff ? diff : (this.diff = loadDiff());
+    private DiffModel diff() throws IOException {
+        final DiffModel model = this.model;
+        return null != model ? model : (this.model = loadDiff());
     }
 
-    private Diff loadDiff() throws IOException {
-        final ZipEntry entry = zipPatchFile().getEntry(Diff.ENTRY_NAME);
+    private DiffModel loadDiff() throws IOException {
+        final ZipEntry entry = zipPatchFile().getEntry(DiffModel.ENTRY_NAME);
         if (null == entry)
             throw new InvalidZipPatchFileException(zipPatchFile().getName(),
-                    new MissingZipEntryException(Diff.ENTRY_NAME));
+                    new MissingZipEntryException(DiffModel.ENTRY_NAME));
         try {
-            return Diff.decodeFromXml(new EntrySource(entry, zipPatchFile()));
+            return DiffModel.decodeFromXml(new EntrySource(entry, zipPatchFile()));
         } catch (IOException | RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -185,10 +185,7 @@ public abstract class ZipPatch {
         }
     }
 
-    /**
-     * A builder for a ZIP patch.
-     * The default JAXB context binds only the {@link Diff} class.
-     */
+    /** A builder for a ZIP patch. */
     public static final class Builder {
 
         private ZipFile zipPatchFile, inputZipFile;

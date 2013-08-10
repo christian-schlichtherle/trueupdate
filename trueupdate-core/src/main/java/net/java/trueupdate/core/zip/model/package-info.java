@@ -5,7 +5,8 @@
 /**
  * Provides model classes for use within ZIP patch files.
  *
- * @see net.java.trueupdate.core.zip.model.Diff
+ * @see net.java.trueupdate.core.zip.model.DiffModel
  * @author Christian Schlichtherle
  */
+@javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
 package net.java.trueupdate.core.zip.model;

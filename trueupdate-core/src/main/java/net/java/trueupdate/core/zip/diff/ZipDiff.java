@@ -16,8 +16,8 @@ import net.java.trueupdate.core.io.Copy;
 import net.java.trueupdate.core.io.Sink;
 import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.core.util.MessageDigests;
+import net.java.trueupdate.core.zip.model.DiffModel;
 import net.java.trueupdate.core.zip.util.EntrySource;
-import net.java.trueupdate.core.zip.model.Diff;
 import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
 import net.java.trueupdate.core.zip.model.EntryNameAndTwoDigests;
 
@@ -44,14 +44,14 @@ public abstract class ZipDiff {
      * @param zipPatchFile the sink for writing the ZIP patch file.
      */
     public void writeZipPatchFileTo(final Sink zipPatchFile) throws IOException {
-        final Diff diff = computeDiff();
+        final DiffModel model = computeDiffModel();
         try (ZipOutputStream out = new ZipOutputStream(zipPatchFile.output())) {
-            streamZipPatchFileTo(diff, out);
+            streamZipPatchFileTo(model, out);
         }
     }
 
     private void streamZipPatchFileTo(
-            final Diff diff,
+            final DiffModel model,
             final @WillNotClose ZipOutputStream out)
     throws IOException {
         out.setLevel(Deflater.BEST_COMPRESSION);
@@ -74,17 +74,17 @@ public abstract class ZipDiff {
 
         class ZipPatchFileStreamer {
 
-            final Diff diff;
+            final DiffModel model;
 
-            ZipPatchFileStreamer(final Diff diff) throws IOException {
+            ZipPatchFileStreamer(final DiffModel model) throws IOException {
                 try {
-                    diff.encodeToXml(new EntrySink(Diff.ENTRY_NAME));
+                    model.encodeToXml(new EntrySink(DiffModel.ENTRY_NAME));
                 } catch (IOException | RuntimeException ex) {
                     throw ex;
                 } catch (Exception ex) {
                     throw new IOException(ex);
                 }
-                this.diff = diff;
+                this.model = model;
             }
 
             ZipPatchFileStreamer streamAddedOrChanged() throws IOException {
@@ -101,17 +101,16 @@ public abstract class ZipDiff {
             }
 
             boolean addedOrChanged(String name) {
-                return null != diff.added(name) ||
-                        null != diff.changed(name);
+                return null != model.added(name) || null != model.changed(name);
             }
         } // ZipPatchFileStreamer
 
-        new ZipPatchFileStreamer(diff).streamAddedOrChanged();
+        new ZipPatchFileStreamer(model).streamAddedOrChanged();
     }
 
     /** Computes a diff model from the two ZIP files. */
-    public Diff computeDiff() throws IOException {
-        return new Assembler().walkAndReturn(new Assembly()).buildDiff();
+    public DiffModel computeDiffModel() throws IOException {
+        return new Assembler().walkAndReturn(new Assembly()).buildDiffModel();
     }
 
     @Immutable
@@ -164,8 +163,8 @@ public abstract class ZipDiff {
                 added = new TreeMap<>(),
                 removed = new TreeMap<>();
 
-        Diff buildDiff() {
-            return new Diff.Builder()
+        DiffModel buildDiffModel() {
+            return new DiffModel.Builder()
                     .digest(messageDigest())
                     .unchanged(unchanged.values())
                     .changed(changed.values())
@@ -251,8 +250,7 @@ public abstract class ZipDiff {
 
     /**
      * A builder for a ZIP diff.
-     * The default message digest is SHA-1 and the default JAXB context binds
-     * only the {@link Diff} class.
+     * The default message digest is SHA-1.
      */
     public static final class Builder {
 

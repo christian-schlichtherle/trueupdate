@@ -5,7 +5,6 @@
 package net.java.trueupdate.core.zip.model;
 
 import java.util.*;
-import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -20,7 +19,7 @@ final class EntryNameAndDigestMapAdapter
         if (null == holder) return null;
         final Collection<EntryNameAndDigest> entries = holder.entries;
         assert null != entries;
-        return Diff.unchangedMap(entries);
+        return DiffModel.unchangedMap(entries);
     }
 
     @Override public EntryNameAndDigestCollectionHolder marshal(
@@ -35,7 +34,7 @@ final class EntryNameAndDigestMapAdapter
 
 final class EntryNameAndDigestCollectionHolder {
     @XmlElement(name = "entry")
-    public @CheckForNull Collection<EntryNameAndDigest> entries;
+    public Collection<EntryNameAndDigest> entries;
 }
 
 @Immutable
@@ -48,7 +47,7 @@ final class EntryNameAndTwoDigestsMapAdapter
         if (null == holder) return null;
         final Collection<EntryNameAndTwoDigests> entries = holder.entries;
         assert null != entries;
-        return Diff.changedMap(entries);
+        return DiffModel.changedMap(entries);
     }
 
     @Override public EntryNameAndTwoDigestsCollectionHolder marshal(
@@ -63,5 +62,5 @@ final class EntryNameAndTwoDigestsMapAdapter
 
 final class EntryNameAndTwoDigestsCollectionHolder {
     @XmlElement(name = "entry")
-    public @CheckForNull Collection<EntryNameAndTwoDigests> entries;
+    public Collection<EntryNameAndTwoDigests> entries;
 }
