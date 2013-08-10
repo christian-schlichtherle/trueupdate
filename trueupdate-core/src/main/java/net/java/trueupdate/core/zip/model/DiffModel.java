@@ -73,28 +73,6 @@ public final class DiffModel implements Serializable {
         this.removed = b.removed();
     }
 
-    static Map<String, EntryNameAndDigest> unchangedMap(
-            final Collection<EntryNameAndDigest> entries) {
-        final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
-                initialCapacity(entries));
-        for (EntryNameAndDigest entryNameAndDigest : entries)
-            map.put(entryNameAndDigest.name, entryNameAndDigest);
-        return unmodifiableMap(map);
-    }
-
-    static Map<String, EntryNameAndTwoDigests> changedMap(
-            final Collection<EntryNameAndTwoDigests> entries) {
-        final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
-                initialCapacity(entries));
-        for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
-            map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
-        return unmodifiableMap(map);
-    }
-
-    private static int initialCapacity(Collection<?> c) {
-        return HashMaps.initialCapacity(c.size());
-    }
-
     /** Returns the message digest algorithm name. */
     public String digestAlgorithmName() { return algorithm; }
 
@@ -217,8 +195,12 @@ public final class DiffModel implements Serializable {
         }
     }
 
-    /** A builder for a diff model. */
-    @SuppressWarnings("PackageVisibleField")
+    /**
+     * A builder for a diff model.
+     * The default value for the collection of <i>unchanged</i>, <i>changed</i>,
+     * <i>added</i> and <i>removed</i> entry names and message digests is an
+     * empty collection.
+     */
     public static final class Builder {
 
         private MessageDigest digest;
@@ -228,11 +210,6 @@ public final class DiffModel implements Serializable {
                 removed = emptyList();
         private Collection<EntryNameAndTwoDigests>
                 changed = emptyList();
-
-        public Builder digest(final MessageDigest digest) {
-            this.digest = requireNonNull(digest);
-            return this;
-        }
 
         String digestAlgorithmName() { return digest.getAlgorithm(); }
 
@@ -261,6 +238,33 @@ public final class DiffModel implements Serializable {
 
         Map<String, EntryNameAndDigest> removed() {
             return unchangedMap(removed);
+        }
+
+        static Map<String, EntryNameAndDigest> unchangedMap(
+                final Collection<EntryNameAndDigest> entries) {
+            final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
+                    initialCapacity(entries));
+            for (EntryNameAndDigest entryNameAndDigest : entries)
+                map.put(entryNameAndDigest.name, entryNameAndDigest);
+            return unmodifiableMap(map);
+        }
+
+        static Map<String, EntryNameAndTwoDigests> changedMap(
+                final Collection<EntryNameAndTwoDigests> entries) {
+            final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
+                    initialCapacity(entries));
+            for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
+                map.put(entryNameAndTwoDigests.name, entryNameAndTwoDigests);
+            return unmodifiableMap(map);
+        }
+
+        private static int initialCapacity(Collection<?> c) {
+            return HashMaps.initialCapacity(c.size());
+        }
+
+        public Builder digest(final MessageDigest digest) {
+            this.digest = requireNonNull(digest);
+            return this;
         }
 
         public Builder unchanged(final Collection<EntryNameAndDigest> unchanged) {

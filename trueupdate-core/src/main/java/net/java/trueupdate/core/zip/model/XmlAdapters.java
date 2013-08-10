@@ -8,6 +8,7 @@ import java.util.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import static net.java.trueupdate.core.zip.model.DiffModel.Builder.*;
 
 @Immutable
 final class EntryNameAndDigestMapAdapter
@@ -15,11 +16,8 @@ final class EntryNameAndDigestMapAdapter
         Map<String, EntryNameAndDigest>> {
 
     @Override public Map<String, EntryNameAndDigest> unmarshal(
-            final EntryNameAndDigestCollectionHolder holder) {
-        if (null == holder) return null;
-        final Collection<EntryNameAndDigest> entries = holder.entries;
-        assert null != entries;
-        return DiffModel.unchangedMap(entries);
+            EntryNameAndDigestCollectionHolder holder) {
+        return null == holder ? null : unchangedMap(holder.entries);
     }
 
     @Override public EntryNameAndDigestCollectionHolder marshal(
@@ -43,11 +41,8 @@ final class EntryNameAndTwoDigestsMapAdapter
         Map<String, EntryNameAndTwoDigests>> {
 
     @Override public Map<String, EntryNameAndTwoDigests> unmarshal(
-            final EntryNameAndTwoDigestsCollectionHolder holder) {
-        if (null == holder) return null;
-        final Collection<EntryNameAndTwoDigests> entries = holder.entries;
-        assert null != entries;
-        return DiffModel.changedMap(entries);
+            EntryNameAndTwoDigestsCollectionHolder holder) {
+        return null == holder ? null : changedMap(holder.entries);
     }
 
     @Override public EntryNameAndTwoDigestsCollectionHolder marshal(
