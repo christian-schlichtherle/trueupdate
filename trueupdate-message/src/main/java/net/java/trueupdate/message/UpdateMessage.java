@@ -171,6 +171,7 @@ public final class UpdateMessage implements Serializable {
         if (!(obj instanceof UpdateMessage)) return false;
         final UpdateMessage that = (UpdateMessage) obj;
         return  this.type().equals(that.type()) &&
+                this.status().equals(that.status()) &&
                 this.artifactDescriptor().equals(that.artifactDescriptor()) &&
                 this.updateVersion().equals(that.updateVersion()) &&
                 this.oldLocation().equals(that.oldLocation()) &&
@@ -181,6 +182,7 @@ public final class UpdateMessage implements Serializable {
     @Override public int hashCode() {
         int hash = 17;
         hash = 31 * hash + type().hashCode();
+        hash = 31 * hash + status().hashCode();
         hash = 31 * hash + artifactDescriptor().hashCode();
         hash = 31 * hash + updateVersion().hashCode();
         hash = 31 * hash + oldLocation().hashCode();
@@ -192,6 +194,7 @@ public final class UpdateMessage implements Serializable {
     @Override public String toString() {
         StringBuilder sb = new StringBuilder(128);
         sb      .append("Type: ").append(type()).append('\n')
+                .append("Status: ").append(status()).append('\n')
                 .append("Artifact Descriptor: ").append(artifactDescriptor()).append('\n');
         if (!updateVersion().isEmpty())
             sb.append("Update Version: ").append(updateVersion()).append('\n');
