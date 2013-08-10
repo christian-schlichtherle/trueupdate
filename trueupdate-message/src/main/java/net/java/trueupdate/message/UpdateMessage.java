@@ -30,19 +30,13 @@ public final class UpdateMessage implements Serializable {
     private final String status, updateVersion;
     private final URI oldLocation, newLocation;
 
-    UpdateMessage(
-            final Type type,
-            final String status,
-            final ArtifactDescriptor artifactDescriptor,
-            final String updateVersion,
-            final URI oldLocation,
-            final URI newLocation) {
-        this.type = requireNonNull(type);
-        this.status = requireNonNull(status);
-        this.artifactDescriptor = requireNonNull(artifactDescriptor);
-        this.updateVersion = requireNonNull(updateVersion);
-        this.oldLocation = requireNonNull(oldLocation);
-        this.newLocation = requireNonNull(newLocation);
+    UpdateMessage(final Builder b) {
+        this.type = requireNonNull(b.type);
+        this.status = requireNonNull(b.status);
+        this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
+        this.updateVersion = requireNonNull(b.updateVersion);
+        this.oldLocation = requireNonNull(b.oldLocation);
+        this.newLocation = requireNonNull(b.newLocation);
     }
 
     /** Returns the update message type. */
@@ -52,8 +46,14 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage type(Type type) {
         return this.type.equals(type)
                 ? this
-                : new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
+                : new Builder()
+                    .type(type)
+                    .status(status)
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /** Returns the update message status. */
@@ -63,8 +63,14 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage status(final String status) {
         return this.status.equals(status)
                 ? this
-                : new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
+                : new Builder()
+                    .type(type)
+                    .status(status)
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /** Returns the artifact descriptor. */
@@ -76,8 +82,14 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
         return this.artifactDescriptor.equals(artifactDescriptor)
                 ? this
-                : new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
+                : new Builder()
+                    .type(type)
+                    .status(status)
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /** Returns the update version. */
@@ -87,8 +99,14 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage updateVersion(String updateVersion) {
         return this.updateVersion.equals(updateVersion)
                 ? this
-                : new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
+                : new Builder()
+                    .type(type)
+                    .status(status)
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /** Returns the old application location. */
@@ -98,8 +116,14 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage oldLocation(URI oldLocation) {
         return this.oldLocation.equals(oldLocation)
                 ? this
-                : new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
+                : new Builder()
+                    .type(type)
+                    .status(status)
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /**
@@ -113,8 +137,14 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage newLocation(URI newLocation) {
         return this.newLocation.equals(newLocation)
                 ? this
-                : new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
+                : new Builder()
+                    .type(type)
+                    .status(status)
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /**
@@ -270,15 +300,21 @@ public final class UpdateMessage implements Serializable {
      * {@code updateVersion} is an empty string and the default value for the
      * properties {@code oldLocation} and {@code newLocation} is an empty URI.
      */
+    @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
-        private Type type;
-        private ArtifactDescriptor artifactDescriptor;
-        private String status = "", updateVersion = "";
-        private URI oldLocation = EMPTY, newLocation = EMPTY;
+        Type type;
+        ArtifactDescriptor artifactDescriptor;
+        String status = "", updateVersion = "";
+        URI oldLocation = EMPTY, newLocation = EMPTY;
 
         public Builder type(final Type type) {
             this.type = requireNonNull(type);
+            return this;
+        }
+
+        public Builder status(final String status) {
+            this.status = requireNonNull(status);
             return this;
         }
 
@@ -303,9 +339,6 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
-        public UpdateMessage build() {
-            return new UpdateMessage(type, status, artifactDescriptor,
-                    updateVersion, oldLocation, newLocation);
-        }
+        public UpdateMessage build() { return new UpdateMessage(this); }
     } // Builder
 }
