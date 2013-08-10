@@ -4,22 +4,17 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import net.java.trueupdate.core.util.MessageDigests;
-import net.java.trueupdate.core.zip.util.EntrySource;
-import net.java.trueupdate.core.zip.model.Diff;
-import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
-import net.java.trueupdate.core.io.Copy;
-import net.java.trueupdate.core.io.Sink;
-
 import java.io.*;
 import java.security.*;
-import static java.util.Objects.requireNonNull;
-
 import java.util.Collection;
-import java.util.Map;
+import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.util.MessageDigests;
+import net.java.trueupdate.core.zip.model.*;
+import net.java.trueupdate.core.zip.util.EntrySource;
 
 /**
  * Applies a ZIP patch file to an input ZIP file and writes an output ZIP file.

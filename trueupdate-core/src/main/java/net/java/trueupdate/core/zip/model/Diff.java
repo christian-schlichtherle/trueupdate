@@ -9,7 +9,6 @@ import java.security.MessageDigest;
 import java.util.*;
 import static java.util.Collections.*;
 import static java.util.Objects.requireNonNull;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
@@ -17,10 +16,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.*;
-import static net.java.trueupdate.core.util.HashMaps.initialCapacity;
-
-import net.java.trueupdate.core.util.HashMaps;
-import net.java.trueupdate.core.util.MessageDigests;
+import net.java.trueupdate.core.util.*;
 
 /**
  * A Value Object which represents the meta data in a ZIP patch file.
