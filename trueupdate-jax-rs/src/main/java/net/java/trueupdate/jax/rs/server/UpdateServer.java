@@ -84,8 +84,7 @@ public final class UpdateServer {
             final @QueryParam("extension") @DefaultValue("jar") String extension)
     throws UpdateServiceException {
         return UpdateServers.wrap(new Callable<ConfiguredUpdateServer>() {
-            @Override
-            public ConfiguredUpdateServer call() throws Exception {
+            @Override public ConfiguredUpdateServer call() {
                 return new ConfiguredUpdateServer(resolver,
                         new ArtifactDescriptor.Builder()
                                 .groupId(groupId)
