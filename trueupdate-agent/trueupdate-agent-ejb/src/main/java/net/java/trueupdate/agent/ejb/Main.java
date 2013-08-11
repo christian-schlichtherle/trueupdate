@@ -21,11 +21,11 @@ public final class Main implements Callable<Void> {
     }
 
     private static ConnectionFactory connectionFactory() throws NamingException {
-        return (ConnectionFactory) InitialContext.doLookup("java:comp/DefaultJMSConnectionFactory");
+        return InitialContext.doLookup("java:comp/DefaultJMSConnectionFactory");
     }
 
     private static Queue queue() throws NamingException {
-        return (Queue) InitialContext.doLookup("java:comp/jms/trueupdate-manager");
+        return InitialContext.doLookup("java:comp/jms/trueupdate/manager");
     }
 
     public Main(final ConnectionFactory connectionFactory, final Queue queue) {
@@ -53,7 +53,7 @@ public final class Main implements Callable<Void> {
                 throws Exception {
                     final MessageProducer mp = s.createProducer(queue);
                     try {
-                        return use(mp, s, c);
+                        return MessageProducerTask.this.use(mp, s, c);
                     } finally {
                         mp.close();
                     }
@@ -73,7 +73,7 @@ public final class Main implements Callable<Void> {
                 throws Exception {
                     final MessageConsumer mc = s.createConsumer(queue);
                     try {
-                        return use(mc, s, c);
+                        return MessageConsumerTask.this.use(mc, s, c);
                     } finally {
                         mc.close();
                     }
@@ -93,7 +93,7 @@ public final class Main implements Callable<Void> {
                     final Session s = c
                             .createSession(false, Session.CLIENT_ACKNOWLEDGE);
                     try {
-                        return use(s, c);
+                        return SessionTask.this.use(s, c);
                     } finally {
                         s.close();
                     }
