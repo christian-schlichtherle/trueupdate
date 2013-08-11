@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
+  -->
 <actions>
-        <action>
-            <actionName>CUSTOM-javadoc:aggregate</actionName>
-            <displayName>javadoc:aggregate</displayName>
-            <goals>
-                <goal>javadoc:aggregate</goal>
-            </goals>
-        </action>
-    </actions>
+    <action>
+        <actionName>CUSTOM-javadoc:aggregate</actionName>
+        <displayName>javadoc:aggregate</displayName>
+        <goals>
+            <goal>javadoc:aggregate</goal>
+        </goals>
+    </action>
+</actions>

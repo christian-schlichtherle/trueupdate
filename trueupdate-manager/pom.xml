@@ -23,8 +23,8 @@
     </description>
 
     <modules>
+        <module>trueupdate-manager-ear</module>
         <module>trueupdate-manager-ejb</module>
         <module>trueupdate-manager-spec</module>
-        <module>trueupdate-manager-war</module>
     </modules>
 </project>

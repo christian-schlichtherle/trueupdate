@@ -66,17 +66,24 @@
     </distributionManagement>
 
     <properties>
-        <netbeans.hint.jdkPlatform>JDK_1.7</netbeans.hint.jdkPlatform>
+        <javase.version>7</javase.version>
+        <javaee.version>6</javaee.version>
+
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+
+        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
+        <netbeans.hint.jdkPlatform>JDK_1.${javase.version}</netbeans.hint.jdkPlatform>
+        <netbeans.hint.j2eeVersion>1.${javaee.version}</netbeans.hint.j2eeVersion>
+        <!--netbeans.hint.j2eeVersion>1.6-web</netbeans.hint.j2eeVersion-->
 
         <!-- Set defaults of maven-compiler-plugin for NetBeans. -->
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.${javase.version}</maven.compiler.source>
+        <maven.compiler.target>1.${javase.version}</maven.compiler.target>
 
         <!-- For dependency management. -->
         <aether.version>0.9.0.M2</aether.version>
-        <javaee.version>6.0</javaee.version>
         <jersey.version>1.17.1</jersey.version>
         <maven.version>3.1.0</maven.version>
         <slf4j.version>1.7.5</slf4j.version>
@@ -142,6 +149,7 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-ejb</artifactId>
                 <version>${project.version}</version>
+                <type>ejb</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -177,19 +185,19 @@
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
-                <version>${javaee.version}</version>
+                <version>${javaee.version}.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-endorsed-api</artifactId>
-                <version>${javaee.version}</version>
+                <version>${javaee.version}.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-web-api</artifactId>
-                <version>${javaee.version}</version>
+                <version>${javaee.version}.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -231,6 +239,15 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ear-plugin</artifactId>
+                    <version>2.8</version>
+                    <configuration>
+                        <version>${javaee.version}</version>
+                        <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ejb-plugin</artifactId>
                     <version>2.3</version>
                     <configuration>
@@ -240,6 +257,48 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>use-endorsed-dir</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <compilerArguments>
+                                <endorseddirs>${endorsed.dir}</endorseddirs>
+                            </compilerArguments>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${endorsed.dir}</outputDirectory>
+                                    <silent>true</silent>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>javax</groupId>
+                                            <artifactId>javaee-endorsed-api</artifactId>
+                                            <version>${javaee.version}</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <modules>
         <module>trueupdate-agent</module>

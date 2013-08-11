@@ -14,19 +14,17 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-war</artifactId>
-    <packaging>war</packaging>
+    <artifactId>trueupdate-manager-ear</artifactId>
+    <packaging>ear</packaging>
 
-    <name>TrueUpdate Manager WAR</name>
-
-    <properties>
-        <failOnMissingWebXml>false</failOnMissingWebXml>
-    </properties>
+    <name>TrueUpdate Manager EAR</name>
+    <description>TODO</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-manager-ejb</artifactId>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
