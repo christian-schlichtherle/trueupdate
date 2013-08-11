@@ -10,16 +10,10 @@ import java.util.*;
 import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
-import net.java.trueupdate.core.io.Copy;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.util.MessageDigests;
-import net.java.trueupdate.core.zip.model.DiffModel;
-import net.java.trueupdate.core.zip.util.EntrySource;
-import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
-import net.java.trueupdate.core.zip.model.EntryNameAndTwoDigests;
+import javax.annotation.concurrent.*;
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.util.*;
+import net.java.trueupdate.core.zip.model.*;
 
 /**
  * Compares two ZIP files entry by entry.

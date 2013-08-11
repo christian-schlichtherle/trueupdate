@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.core.it
 
-import net.java.trueupdate.core.util.{Loan, MessageDigests}
 import Loan._
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File

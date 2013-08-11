@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import net.java.trueupdate.core.zip.util.EntrySource;
+import net.java.trueupdate.core.util.EntrySource;
 
 /**
  * A filter for {@linkplain EntrySource entry sources}.

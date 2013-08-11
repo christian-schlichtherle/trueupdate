@@ -3,7 +3,7 @@
  * Copyright (C) 2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.util
+package net.java.trueupdate.core.it
 
 import javax.annotation.concurrent._
 

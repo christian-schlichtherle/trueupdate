@@ -7,8 +7,8 @@ package net.java.trueupdate.core.it
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.util.MessageDigests.sha1
+import net.java.trueupdate.core.zip.model.DiffModel
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])

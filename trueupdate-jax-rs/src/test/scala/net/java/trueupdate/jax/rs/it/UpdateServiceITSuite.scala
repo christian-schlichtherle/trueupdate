@@ -14,19 +14,13 @@ import javax.ws.rs.ext.ContextResolver
 import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.util.Loan._
+import net.java.trueupdate.core.it.Loan._
 import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.jax.rs.server._
 import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import org.slf4j.LoggerFactory
-import UpdateServiceITSuite._
-
-private object UpdateServiceITSuite {
-
-  val logger = LoggerFactory.getLogger(classOf[UpdateServiceITSuite])
-}
 
 /** @author Christian Schlichtherle */
 class UpdateServiceITSuite extends JerseyTest {

@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.core.it
 
-import net.java.trueupdate.core.util.Loan
 import Loan._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -16,7 +15,6 @@ import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
 import scala.collection.SortedSet
 import net.java.trueupdate.core.io.FileStore
-import net.java.trueupdate.core.util.Loan
 import net.java.trueupdate.core.zip.diff.ZipDiff
 
 /**
