@@ -6,7 +6,6 @@ package net.java.trueupdate.manager.ejb;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import net.java.trueupdate.manager.spec.UpdateException;
@@ -18,7 +17,6 @@ import net.java.trueupdate.message.UpdateMessage;
  */
 @Stateless
 @Remote
-@EJB(name = "java:global/net.java.trueupdate/trueupdate-manager-ejb/UpdateManagerBean", beanInterface = UpdateManager.class)
 public class UpdateManagerBean implements UpdateManager {
 
     private static Logger
