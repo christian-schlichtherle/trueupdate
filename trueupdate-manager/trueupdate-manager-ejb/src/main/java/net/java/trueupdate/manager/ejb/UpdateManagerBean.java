@@ -25,10 +25,11 @@ import net.java.trueupdate.message.UpdateMessageListener;
             @ActivationConfigProperty(propertyName = "destinationType",
                                       propertyValue = "javax.jms.Queue"),
         })
-public class UpdateManager implements MessageListener, UpdateMessageListener {
+public class UpdateManagerBean
+implements MessageListener, UpdateMessageListener {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateManager.class.getName());
+            logger = Logger.getLogger(UpdateManagerBean.class.getName());
 
     @Override public void onMessage(final Message message) {
         final UpdateMessage updateMessage = updateMessage(message);
