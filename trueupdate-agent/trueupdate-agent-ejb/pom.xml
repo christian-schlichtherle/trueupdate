@@ -18,6 +18,9 @@
     <packaging>ejb</packaging>
 
     <name>TrueUpdate Agent EJB</name>
+    <description>
+        TODO
+    </description>
 
     <dependencies>
         <dependency>

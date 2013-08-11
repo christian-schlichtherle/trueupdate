@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.agent.spec;
 
+import net.java.trueupdate.manager.spec.UpdateRuntimeException;
+
 /**
  * An update agent cooperates with an update manager to automatically install
  * updates to an application.
