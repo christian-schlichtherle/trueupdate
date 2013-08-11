@@ -190,11 +190,16 @@ public abstract class ZipPatch {
         return entry;
     }
 
+    /** Returns a new builder for a ZIP patch. */
+    public static Builder builder() { return new Builder(); }
+
     /** A builder for a ZIP patch. */
     public static final class Builder {
 
         private ZipFile zipPatchFile, inputZipFile;
         private boolean outputJarFile;
+
+        Builder() { }
 
         public Builder zipPatchFile(final ZipFile zipPatchFile) {
             this.zipPatchFile = requireNonNull(zipPatchFile);

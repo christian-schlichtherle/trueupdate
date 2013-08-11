@@ -107,6 +107,9 @@ public abstract class ZipDiff {
         return new Assembler().walkAndReturn(new Assembly()).buildDiffModel();
     }
 
+    /** Returns a new builder for a ZIP diff. */
+    public static Builder builder() { return new Builder(); }
+
     @Immutable
     private final class Assembler {
 
@@ -158,7 +161,7 @@ public abstract class ZipDiff {
                 removed = new TreeMap<>();
 
         DiffModel buildDiffModel() {
-            return new DiffModel.Builder()
+            return DiffModel.builder()
                     .messageDigest(messageDigest())
                     .changedEntries(changed.values())
                     .unchangedEntries(unchanged.values())
@@ -250,6 +253,8 @@ public abstract class ZipDiff {
 
         private ZipFile firstZipFile, secondZipFile;
         private MessageDigest messageDigest;
+
+        Builder() { }
 
         public Builder firstZipFile(final ZipFile firstZipFile) {
             this.firstZipFile = requireNonNull(firstZipFile);

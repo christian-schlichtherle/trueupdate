@@ -191,6 +191,9 @@ public final class DiffModel implements Serializable {
         }
     }
 
+    /** Returns a new builder for a diff model. */
+    public static Builder builder() { return new Builder(); }
+
     /**
      * A builder for a diff model.
      * The default value for the collection of <i>unchanged</i>, <i>changed</i>,
@@ -205,6 +208,8 @@ public final class DiffModel implements Serializable {
                 unchanged = emptyList(),
                 added = emptyList(),
                 removed = emptyList();
+
+        Builder() { }
 
         String messageDigestAlgorithmName() {
             return messageDigest.getAlgorithm();

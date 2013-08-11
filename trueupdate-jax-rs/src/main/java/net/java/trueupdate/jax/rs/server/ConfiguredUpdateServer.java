@@ -17,9 +17,8 @@ import javax.xml.namespace.QName;
 import net.java.trueupdate.artifact.spec.*;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
-import net.java.trueupdate.jax.rs.util.UpdateServiceException;
-
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * The configured client-side implementation of an update service for artifacts.
@@ -114,7 +113,7 @@ public final class ConfiguredUpdateServer {
             void write(final Sink output) throws IOException {
                 try (ZipFile firstZipFile = new ZipFile(firstFile);
                      ZipFile secondZipFile = new ZipFile(secondFile)) {
-                    new ZipDiff.Builder()
+                    ZipDiff.builder()
                             .firstZipFile(firstZipFile)
                             .secondZipFile(secondZipFile)
                             .build()

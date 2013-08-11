@@ -297,6 +297,9 @@ public final class UpdateMessage implements Serializable {
         public Type failureResponse() { return this; }
     } // Type
 
+    /** Returns a new builder for an update message. */
+    public static Builder builder() { return new Builder(); }
+
     /**
      * A builder for an update message.
      * The default value for the properties {@code status} and
@@ -310,6 +313,8 @@ public final class UpdateMessage implements Serializable {
         ArtifactDescriptor artifactDescriptor;
         String status = "", updateVersion = "";
         URI oldLocation = EMPTY, newLocation = EMPTY;
+
+        Builder() { }
 
         public Builder type(final Type type) {
             this.type = requireNonNull(type);

@@ -169,6 +169,9 @@ public final class ArtifactDescriptor implements Serializable {
         return sb.toString();
     }
 
+    /** Returns a new builder for an artifact descriptor. */
+    public static Builder builder() { return new Builder(); }
+
     /**
      * A builder for an artifact descriptor.
      * The default value for the property {@code classifier} is an empty string
@@ -179,6 +182,8 @@ public final class ArtifactDescriptor implements Serializable {
     public static final class Builder {
 
         String groupId, artifactId, version, classifier = "", extension = "jar";
+
+        Builder() { }
 
         public Builder groupId(final String groupId) {
             this.groupId = requireNonEmpty(groupId);

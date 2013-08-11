@@ -86,7 +86,7 @@ public final class UpdateServer {
         return UpdateServers.wrap(new Callable<ConfiguredUpdateServer>() {
             @Override public ConfiguredUpdateServer call() {
                 return new ConfiguredUpdateServer(resolver,
-                        new ArtifactDescriptor.Builder()
+                        ArtifactDescriptor.builder()
                                 .groupId(groupId)
                                 .artifactId(artifactId)
                                 .version(version)

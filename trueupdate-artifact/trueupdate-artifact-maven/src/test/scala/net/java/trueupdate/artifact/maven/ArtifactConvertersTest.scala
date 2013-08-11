@@ -5,7 +5,6 @@
 package net.java.trueupdate.artifact.maven
 
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor
-import ArtifactDescriptor.Builder
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
@@ -22,7 +21,7 @@ class ArtifactConvertersTest extends WordSpec {
       ("groupId", "artifactId", "version", "classifier", "extension")
     )
     forAll(table) { (groupId, artifactId, version, classifier, extension) =>
-      val descriptor = new Builder()
+      val descriptor = ArtifactDescriptor.builder
         .groupId(groupId)
         .artifactId(artifactId)
         .version(version)

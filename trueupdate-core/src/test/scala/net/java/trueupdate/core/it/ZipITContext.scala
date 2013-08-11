@@ -23,7 +23,7 @@ trait ZipITContext extends TestContext {
 
   def withZipDiff[A](fun: ZipDiff => A) =
     withZipFiles { (firstZipFile, secondZipFile) =>
-      fun(new ZipDiff.Builder()
+      fun(ZipDiff.builder
         .firstZipFile(firstZipFile)
         .secondZipFile(secondZipFile)
         .messageDigest(digest)
@@ -32,7 +32,7 @@ trait ZipITContext extends TestContext {
 
   def withZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) =
     loan(firstZipFile()) to { inputZipFile =>
-      fun(new ZipPatch.Builder()
+      fun(ZipPatch.builder
         .zipPatchFile(zipPatchFile)
         .inputZipFile(inputZipFile)
         .outputJarFile(true)
