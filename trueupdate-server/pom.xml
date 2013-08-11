@@ -23,6 +23,6 @@
     </description>
 
     <modules>
-        <module>trueupdate-server-servlet</module>
+        <module>trueupdate-server-war</module>
     </modules>
 </project>
