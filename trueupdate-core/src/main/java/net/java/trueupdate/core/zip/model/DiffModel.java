@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.*;
 import static java.util.Collections.*;
-import static java.util.Objects.requireNonNull;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
@@ -234,44 +233,48 @@ public final class DiffModel implements Serializable {
      * <i>added</i> and <i>removed</i> entry names and message digests is an
      * empty collection.
      */
-    @SuppressWarnings("PackageVisibleField")
+    @SuppressWarnings({
+        "PackageVisibleField",
+        "AssignmentToCollectionOrArrayFieldFromParameter"
+    })
     public static final class Builder {
 
-        MessageDigest messageDigest;
-        Collection<EntryNameAndTwoDigests> changed = emptyList();
-        Collection<EntryNameAndDigest>
+        @Nullable MessageDigest messageDigest;
+        @Nullable Collection<EntryNameAndTwoDigests> changed = emptyList();
+        @Nullable Collection<EntryNameAndDigest>
                 unchanged = emptyList(),
                 added = emptyList(),
                 removed = emptyList();
 
         Builder() { }
 
-        public Builder messageDigest(final MessageDigest digest) {
-            this.messageDigest = requireNonNull(digest);
+        public Builder messageDigest(
+                final @Nullable MessageDigest messageDigest) {
+            this.messageDigest = messageDigest;
             return this;
         }
 
         public Builder changedEntries(
-                final Collection<EntryNameAndTwoDigests> changed) {
-            this.changed = requireNonNull(changed);
+                final @Nullable Collection<EntryNameAndTwoDigests> changed) {
+            this.changed = changed;
             return this;
         }
 
         public Builder unchangedEntries(
-                final Collection<EntryNameAndDigest> unchanged) {
-            this.unchanged = requireNonNull(unchanged);
+                final @Nullable Collection<EntryNameAndDigest> unchanged) {
+            this.unchanged = unchanged;
             return this;
         }
 
         public Builder addedEntries(
-                final Collection<EntryNameAndDigest> added) {
-            this.added = requireNonNull(added);
+                final @Nullable Collection<EntryNameAndDigest> added) {
+            this.added = added;
             return this;
         }
 
         public Builder removedEntries(
-                final Collection<EntryNameAndDigest> removed) {
-            this.removed = requireNonNull(removed);
+                final @Nullable Collection<EntryNameAndDigest> removed) {
+            this.removed = removed;
             return this;
         }
 

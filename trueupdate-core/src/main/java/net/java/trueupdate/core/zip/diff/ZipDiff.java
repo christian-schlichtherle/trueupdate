@@ -251,29 +251,35 @@ public abstract class ZipDiff {
      */
     public static final class Builder {
 
-        private ZipFile firstZipFile, secondZipFile;
-        private MessageDigest messageDigest;
+        private @Nullable ZipFile firstZipFile, secondZipFile;
+        private @Nullable MessageDigest messageDigest;
 
         Builder() { }
 
-        public Builder firstZipFile(final ZipFile firstZipFile) {
-            this.firstZipFile = requireNonNull(firstZipFile);
+        public Builder firstZipFile(final @Nullable ZipFile firstZipFile) {
+            this.firstZipFile = firstZipFile;
             return this;
         }
 
-        public Builder secondZipFile(final ZipFile secondZipFile) {
-            this.secondZipFile = requireNonNull(secondZipFile);
+        public Builder secondZipFile(final @Nullable ZipFile secondZipFile) {
+            this.secondZipFile = secondZipFile;
             return this;
         }
 
-        public Builder messageDigest(final MessageDigest messageDigest) {
-            this.messageDigest = requireNonNull(messageDigest);
+        public Builder messageDigest(
+                final @Nullable MessageDigest messageDigest) {
+            this.messageDigest = messageDigest;
             return this;
         }
 
         public ZipDiff build() {
             return create(firstZipFile, secondZipFile,
-                    null != messageDigest ? messageDigest : MessageDigests.sha1());
+                    nonNullOrSha1(messageDigest));
+        }
+
+        private static MessageDigest nonNullOrSha1(
+                final @CheckForNull MessageDigest messageDigest) {
+            return null != messageDigest ? messageDigest : MessageDigests.sha1();
         }
 
         private static ZipDiff create(

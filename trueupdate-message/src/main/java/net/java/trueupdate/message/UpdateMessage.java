@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import static java.util.Objects.requireNonNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
@@ -24,7 +25,7 @@ public final class UpdateMessage implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
-    static final URI EMPTY = URI.create("");
+    private static final URI EMPTY = URI.create("");
 
     private final long timestamp;
     private final URI from, to;
@@ -34,17 +35,23 @@ public final class UpdateMessage implements Serializable {
     private final URI oldLocation, newLocation;
 
     UpdateMessage(final Builder b) {
-        this.timestamp = null != b.timestamp
-                ? b.timestamp
-                : System.currentTimeMillis();
+        this.timestamp = nonNullOrNow(b.timestamp);
         this.from = requireNonNull(b.from);
         this.to = requireNonNull(b.to);
         this.type = requireNonNull(b.type);
-        this.status = requireNonNull(b.status);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
-        this.updateVersion = requireNonNull(b.updateVersion);
-        this.oldLocation = requireNonNull(b.oldLocation);
-        this.newLocation = requireNonNull(b.newLocation);
+        this.status = nonNullOr(b.status, "");
+        this.updateVersion = nonNullOr(b.updateVersion, "");
+        this.oldLocation = nonNullOr(b.oldLocation, EMPTY);
+        this.newLocation = nonNullOr(b.newLocation, EMPTY);
+    }
+
+    private static long nonNullOrNow(Long timestamp) {
+        return null != timestamp ? timestamp : System.currentTimeMillis();
+    }
+
+    private static <T> T nonNullOr(T value, T eagerDefault) {
+        return null != value ? value : eagerDefault;
     }
 
     /** Returns a new builder with all properties set from this instance. */
@@ -61,7 +68,15 @@ public final class UpdateMessage implements Serializable {
                 .newLocation(newLocation());
     }
 
-    /** Returns a new builder for an update message. */
+    /**
+     * Returns a new builder for an update message.
+     * The default value for the property {@code timestamp} is the creation
+     * time of the update message in milliseconds since the epoch.
+     * The default value for the properties {@code status} and
+     * {@code updateVersion} is an empty string.
+     * The default value for the properties {@code oldLocation} and
+     * {@code newLocation} is an empty URI.
+     */
     public static Builder create() { return new Builder(); }
 
     /** Returns the update message timestamp. */
@@ -174,8 +189,8 @@ public final class UpdateMessage implements Serializable {
                 .type(type().successResponse())
                 .from(to())
                 .to(from())
-                .status("")
-                .timestamp(System.currentTimeMillis())
+                .status(null)
+                .timestamp(null)
                 .build();
     }
 
@@ -195,7 +210,7 @@ public final class UpdateMessage implements Serializable {
                 .from(to())
                 .to(from())
                 .status(ex.toString())
-                .timestamp(System.currentTimeMillis())
+                .timestamp(null)
                 .build();
     }
 
@@ -426,70 +441,62 @@ public final class UpdateMessage implements Serializable {
         throws UpdateMessageException;
     } // Type
 
-    /**
-     * A builder for an update message.
-     * The default value for the timestamp is the time the {@link #build()}
-     * method gets called in milliseconds since the epoch.
-     * The default value for the properties {@code status} and
-     * {@code updateVersion} is an empty string.
-     * The default value for the properties {@code oldLocation} and
-     * {@code newLocation} is an empty URI.
-     */
+    /** A builder for an update message. */
     @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
-        Long timestamp;
-        URI from, to;
-        Type type;
-        ArtifactDescriptor artifactDescriptor;
-        String status = "", updateVersion = "";
-        URI oldLocation = EMPTY, newLocation = EMPTY;
+        @Nullable Long timestamp;
+        @Nullable URI from, to;
+        @Nullable Type type;
+        @Nullable ArtifactDescriptor artifactDescriptor;
+        @Nullable String status, updateVersion;
+        @Nullable URI oldLocation, newLocation;
 
         Builder() { }
 
-        public Builder timestamp(long timestamp) {
+        public Builder timestamp(final @Nullable Long timestamp) {
             this.timestamp = timestamp;
             return this;
         }
 
-        public Builder from(URI from) {
-            this.from = requireNonNull(from);
+        public Builder from(final @Nullable URI from) {
+            this.from = from;
             return this;
         }
 
-        public Builder to(URI to) {
-            this.to = requireNonNull(to);
+        public Builder to(final @Nullable URI to) {
+            this.to = to;
             return this;
         }
 
-        public Builder type(final Type type) {
-            this.type = requireNonNull(type);
+        public Builder type(final @Nullable Type type) {
+            this.type = type;
             return this;
         }
 
-        public Builder status(final String status) {
-            this.status = requireNonNull(status);
+        public Builder status(final @Nullable String status) {
+            this.status = status;
             return this;
         }
 
         public Builder artifactDescriptor(
-                final ArtifactDescriptor artifactDescriptor) {
-            this.artifactDescriptor = requireNonNull(artifactDescriptor);
+                final @Nullable ArtifactDescriptor artifactDescriptor) {
+            this.artifactDescriptor = artifactDescriptor;
             return this;
         }
 
-        public Builder updateVersion(final String updateVersion) {
-            this.updateVersion = requireNonNull(updateVersion);
+        public Builder updateVersion(final @Nullable String updateVersion) {
+            this.updateVersion = updateVersion;
             return this;
         }
 
-        public Builder oldLocation(final URI oldLocation) {
-            this.oldLocation = requireNonNull(oldLocation);
+        public Builder oldLocation(final @Nullable URI oldLocation) {
+            this.oldLocation = oldLocation;
             return this;
         }
 
-        public Builder newLocation(final URI newLocation) {
-            this.newLocation = requireNonNull(newLocation);
+        public Builder newLocation(final @Nullable URI newLocation) {
+            this.newLocation = newLocation;
             return this;
         }
 

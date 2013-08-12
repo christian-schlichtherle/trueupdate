@@ -196,18 +196,18 @@ public abstract class ZipPatch {
     /** A builder for a ZIP patch. */
     public static final class Builder {
 
-        private ZipFile zipPatchFile, inputZipFile;
+        private @Nullable ZipFile zipPatchFile, inputZipFile;
         private boolean outputJarFile;
 
         Builder() { }
 
-        public Builder zipPatchFile(final ZipFile zipPatchFile) {
-            this.zipPatchFile = requireNonNull(zipPatchFile);
+        public Builder zipPatchFile(final @Nullable ZipFile zipPatchFile) {
+            this.zipPatchFile = zipPatchFile;
             return this;
         }
 
-        public Builder inputZipFile(final ZipFile inputZipFile) {
-            this.inputZipFile = requireNonNull(inputZipFile);
+        public Builder inputZipFile(final @Nullable ZipFile inputZipFile) {
+            this.inputZipFile = inputZipFile;
             return this;
         }
 

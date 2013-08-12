@@ -5,7 +5,7 @@
 package net.java.trueupdate.artifact.spec;
 
 import java.io.Serializable;
-import static java.util.Objects.requireNonNull;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -25,8 +25,12 @@ public final class ArtifactDescriptor implements Serializable {
         this.groupId = requireNonEmpty(b.groupId);
         this.artifactId = requireNonEmpty(b.artifactId);
         this.version = requireNonEmpty(b.version);
-        this.classifier = requireNonNull(b.classifier);
-        this.extension = requireNonEmpty(b.extension);
+        this.classifier = nonNullOr(b.classifier, "");
+        this.extension = nonNullOr(b.extension, "jar");
+    }
+
+    private static String nonNullOr(@CheckForNull String string, String def) {
+        return null != string ? string : def;
     }
 
     /** Returns a new builder with all properties set from this instance. */
@@ -39,7 +43,12 @@ public final class ArtifactDescriptor implements Serializable {
                 .extension(extension());
     }
 
-    /** Returns a new builder for an artifact descriptor. */
+    /**
+     * Returns a new builder for an artifact descriptor.
+     * The default value for the property {@code classifier} is an empty string
+     * and the default value for the property {@code extension} is
+     * {@code "jar"}.
+     */
     public static Builder create() { return new Builder(); }
 
     static String requireNonEmpty(final String string) {
@@ -152,41 +161,36 @@ public final class ArtifactDescriptor implements Serializable {
         return sb.toString();
     }
 
-    /**
-     * A builder for an artifact descriptor.
-     * The default value for the property {@code classifier} is an empty string
-     * and the default value for the property {@code extension} is
-     * {@code "jar"}.
-     */
+    /** A builder for an artifact descriptor. */
     @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
-        String groupId, artifactId, version, classifier = "", extension = "jar";
+        @Nullable String groupId, artifactId, version, classifier, extension;
 
         Builder() { }
 
-        public Builder groupId(final String groupId) {
-            this.groupId = requireNonEmpty(groupId);
+        public Builder groupId(final @Nullable String groupId) {
+            this.groupId = groupId;
             return this;
         }
 
-        public Builder artifactId(final String artifactId) {
-            this.artifactId = requireNonEmpty(artifactId);
+        public Builder artifactId(final @Nullable String artifactId) {
+            this.artifactId = artifactId;
             return this;
         }
 
-        public Builder version(final String version) {
-            this.version = requireNonEmpty(version);
+        public Builder version(final @Nullable String version) {
+            this.version = version;
             return this;
         }
 
-        public Builder classifier(final String classifier) {
-            this.classifier = requireNonNull(classifier);
+        public Builder classifier(final @Nullable String classifier) {
+            this.classifier = classifier;
             return this;
         }
 
-        public Builder extension(final String extension) {
-            this.extension = requireNonEmpty(extension);
+        public Builder extension(final @Nullable String extension) {
+            this.extension = extension;
             return this;
         }
 
