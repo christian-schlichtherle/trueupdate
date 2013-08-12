@@ -44,7 +44,7 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor groupId(String groupId) {
         return this.groupId.equals(groupId)
                 ? this
-                : new Builder()
+                : builder()
                     .groupId(groupId)
                     .artifactId(artifactId)
                     .version(version)
@@ -63,7 +63,7 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor artifactId(String artifactId) {
         return this.artifactId.equals(artifactId)
                 ? this
-                : new Builder()
+                : builder()
                     .groupId(groupId)
                     .artifactId(artifactId)
                     .version(version)
@@ -82,7 +82,7 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor version(String version) {
         return this.version.equals(version)
                 ? this
-                : new Builder()
+                : builder()
                     .groupId(groupId)
                     .artifactId(artifactId)
                     .version(version)
@@ -101,7 +101,7 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor classifier(String classifier) {
         return this.classifier.equals(classifier)
                 ? this
-                : new Builder()
+                : builder()
                     .groupId(groupId)
                     .artifactId(artifactId)
                     .version(version)
@@ -122,7 +122,7 @@ public final class ArtifactDescriptor implements Serializable {
     public ArtifactDescriptor extension(String extension) {
         return this.extension.equals(extension)
                 ? this
-                : new Builder()
+                : builder()
                     .groupId(groupId)
                     .artifactId(artifactId)
                     .version(version)
