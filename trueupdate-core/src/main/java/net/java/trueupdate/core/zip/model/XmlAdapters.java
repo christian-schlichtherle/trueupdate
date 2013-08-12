@@ -8,7 +8,7 @@ import java.util.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import static net.java.trueupdate.core.zip.model.DiffModel.Builder.*;
+import static net.java.trueupdate.core.zip.model.DiffModel.*;
 
 @Immutable
 final class EntryNameAndDigestMapAdapter

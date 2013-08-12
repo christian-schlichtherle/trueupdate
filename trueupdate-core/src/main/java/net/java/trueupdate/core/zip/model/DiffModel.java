@@ -61,12 +61,45 @@ public final class DiffModel implements Serializable {
     }
 
     DiffModel(final Builder b) {
-        this.algorithm = b.messageDigestAlgorithmName();
-        this.numBytes = b.messageDigestLengthBytes();
-        this.changed = b.changed();
-        this.unchanged = b.unchanged();
-        this.added = b.added();
-        this.removed = b.removed();
+        this.algorithm = b.messageDigest.getAlgorithm();
+        this.numBytes = lengthBytes(b.messageDigest);
+        this.changed = changedMap(b.changed);
+        this.unchanged = unchangedMap(b.unchanged);
+        this.added = unchangedMap(b.added);
+        this.removed = unchangedMap(b.removed);
+    }
+
+    private static @Nullable Integer lengthBytes(final MessageDigest digest) {
+        try {
+            final MessageDigest
+                    clone = MessageDigests.newDigest(digest.getAlgorithm());
+            if (clone.getDigestLength() == digest.getDigestLength())
+                return null;
+        } catch (IllegalArgumentException fallThrough) {
+        }
+        return digest.getDigestLength();
+    }
+
+    static Map<String, EntryNameAndTwoDigests> changedMap(
+            final Collection<EntryNameAndTwoDigests> entries) {
+        final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
+                initialCapacity(entries));
+        for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
+            map.put(entryNameAndTwoDigests.name(), entryNameAndTwoDigests);
+        return unmodifiableMap(map);
+    }
+
+    static Map<String, EntryNameAndDigest> unchangedMap(
+            final Collection<EntryNameAndDigest> entries) {
+        final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
+                initialCapacity(entries));
+        for (EntryNameAndDigest entryNameAndDigest : entries)
+            map.put(entryNameAndDigest.name(), entryNameAndDigest);
+        return unmodifiableMap(map);
+    }
+
+    private static int initialCapacity(Collection<?> c) {
+        return HashMaps.initialCapacity(c.size());
     }
 
     /** Returns the message digest algorithm name. */
@@ -132,7 +165,8 @@ public final class DiffModel implements Serializable {
         return removed.get(name);
     }
 
-    @Override public boolean equals(final Object obj) {
+    @Override@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof DiffModel)) return false;
         final DiffModel that = (DiffModel) obj;
@@ -200,69 +234,17 @@ public final class DiffModel implements Serializable {
      * <i>added</i> and <i>removed</i> entry names and message digests is an
      * empty collection.
      */
+    @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
-        private MessageDigest messageDigest;
-        private Collection<EntryNameAndTwoDigests> changed = emptyList();
-        private Collection<EntryNameAndDigest>
+        MessageDigest messageDigest;
+        Collection<EntryNameAndTwoDigests> changed = emptyList();
+        Collection<EntryNameAndDigest>
                 unchanged = emptyList(),
                 added = emptyList(),
                 removed = emptyList();
 
         Builder() { }
-
-        String messageDigestAlgorithmName() {
-            return messageDigest.getAlgorithm();
-        }
-
-        @Nullable Integer messageDigestLengthBytes() {
-            try {
-                final MessageDigest
-                        clone = MessageDigests.newDigest(messageDigest.getAlgorithm());
-                if (clone.getDigestLength() == messageDigest.getDigestLength())
-                    return null;
-            } catch (IllegalArgumentException fallThrough) {
-            }
-            return messageDigest.getDigestLength();
-        }
-
-        Map<String, EntryNameAndTwoDigests> changed() {
-            return changedMap(changed);
-        }
-
-        Map<String, EntryNameAndDigest> unchanged() {
-            return unchangedMap(unchanged);
-        }
-
-        Map<String, EntryNameAndDigest> added() {
-            return unchangedMap(added);
-        }
-
-        Map<String, EntryNameAndDigest> removed() {
-            return unchangedMap(removed);
-        }
-
-        static Map<String, EntryNameAndTwoDigests> changedMap(
-                final Collection<EntryNameAndTwoDigests> entries) {
-            final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
-                    initialCapacity(entries));
-            for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
-                map.put(entryNameAndTwoDigests.name(), entryNameAndTwoDigests);
-            return unmodifiableMap(map);
-        }
-
-        static Map<String, EntryNameAndDigest> unchangedMap(
-                final Collection<EntryNameAndDigest> entries) {
-            final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
-                    initialCapacity(entries));
-            for (EntryNameAndDigest entryNameAndDigest : entries)
-                map.put(entryNameAndDigest.name(), entryNameAndDigest);
-            return unmodifiableMap(map);
-        }
-
-        private static int initialCapacity(Collection<?> c) {
-            return HashMaps.initialCapacity(c.size());
-        }
 
         public Builder messageDigest(final MessageDigest digest) {
             this.messageDigest = requireNonNull(digest);
