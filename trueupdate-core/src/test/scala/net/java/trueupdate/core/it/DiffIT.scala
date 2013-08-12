@@ -17,7 +17,7 @@ class DiffIT extends WordSpec with ZipITContext {
   "A diff model" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        assertRoundTripXmlSerializable(DiffModel.builder.messageDigest(sha1).build)
+        assertRoundTripXmlSerializable(DiffModel.create.messageDigest(sha1).build)
       }
     }
 

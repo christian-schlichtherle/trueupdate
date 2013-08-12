@@ -31,6 +31,9 @@ public abstract class ZipPatch {
     /** Returns the input ZIP file. */
     abstract @WillNotClose ZipFile inputZipFile();
 
+    /** Returns a new builder for a ZIP patch. */
+    public static Builder create() { return new Builder(); }
+
     /**
      * Applies the configured ZIP patch file.
      *
@@ -189,9 +192,6 @@ public abstract class ZipPatch {
                     new MissingZipEntryException(name));
         return entry;
     }
-
-    /** Returns a new builder for a ZIP patch. */
-    public static Builder builder() { return new Builder(); }
 
     /** A builder for a ZIP patch. */
     public static final class Builder {

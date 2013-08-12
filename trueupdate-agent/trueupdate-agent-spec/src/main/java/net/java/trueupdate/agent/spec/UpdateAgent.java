@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.agent.spec;
 
-import net.java.trueupdate.manager.spec.UpdateRuntimeException;
+import net.java.trueupdate.message.UpdateMessageException;
 
 /**
  * An update agent cooperates with an update manager to automatically install
@@ -17,7 +17,6 @@ import net.java.trueupdate.manager.spec.UpdateRuntimeException;
  * Applications have no need to implement this class and should not do so
  * because it may be subject to future expansion.
  *
- * @see net.java.trueupdate.message.UpdateMessage
  * @author Christian Schlichtherle
  */
 public interface UpdateAgent {
@@ -26,10 +25,10 @@ public interface UpdateAgent {
      * Sends a request to subscribe to the list of recipients for update
      * announcements for the application.
      *
-     * @throws UpdateRuntimeException if sending the request is not possible
-     *         for some reason.
+     * @throws UpdateMessageException if sending the request is not possible for some
+     *         reason.
      */
-    void subscribe() throws UpdateRuntimeException;
+    void subscribe() throws UpdateMessageException;
 
     /**
      * Sends a request to shutdown the application, install the given version
@@ -39,17 +38,17 @@ public interface UpdateAgent {
      *        Specifying the current version shows no effect.
      *        Specifying a higher version upgrades the application.
      *        Specifying a prior version downgrades the application.
-     * @throws UpdateRuntimeException if sending the request is not possible
-     *         for some reason.
+     * @throws UpdateMessageException if sending the request is not possible for some
+     *         reason.
      */
-    void install(String version) throws UpdateRuntimeException;
+    void install(String version) throws UpdateMessageException;
 
     /**
      * Sends a request to unsubscribe from the list of recipients for update
      * announcements for the application.
      *
-     * @throws UpdateRuntimeException if sending the request is not possible
-     *         for some reason.
+     * @throws UpdateMessageException if sending the request is not possible for some
+     *         reason.
      */
-    void unsubscribe() throws UpdateRuntimeException;
+    void unsubscribe() throws UpdateMessageException;
 }

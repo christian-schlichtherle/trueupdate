@@ -2,30 +2,17 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message;
+package net.java.trueupdate.agent.spec;
+
+import net.java.trueupdate.message.UpdateMessage;
+import net.java.trueupdate.message.UpdateMessageException;
 
 /**
- * Processes update messages.
+ * Processes update messages from an update manager.
  *
  * @author Christian Schlichtherle
  */
-public abstract class UpdateMessageListener {
-
-    /**
-     * Processes the given update message by dispatching the call to the
-     * corresponding {@code visit<Type>(UpdateMessage)} method, where
-     * {@code <Type>} is the {@link UpdateMessage.Type} obtained from calling
-     * the {@link UpdateMessage#type()} method.
-     *
-     * @param message the update message to process.
-     */
-    public void onUpdateMessage(UpdateMessage message)
-    throws UpdateMessageException {
-        message.type().dispatch(message, this);
-    }
-
-    protected void onSubscriptionRequest(UpdateMessage message)
-    throws UpdateMessageException { }
+public abstract class UpdateManagerListener {
 
     protected void onSubscriptionSuccessResponse(UpdateMessage message)
     throws UpdateMessageException { }
@@ -36,16 +23,10 @@ public abstract class UpdateMessageListener {
     protected void onUpdateAnnouncement(UpdateMessage message)
     throws UpdateMessageException { }
 
-    protected void onInstallationRequest(UpdateMessage message)
-    throws UpdateMessageException { }
-
     protected void onInstallationSuccessResponse(UpdateMessage message)
     throws UpdateMessageException { }
 
     protected void onInstallationFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onUnsubscriptionRequest(UpdateMessage message)
     throws UpdateMessageException { }
 
     protected void onUnsubscriptionSuccessResponse(UpdateMessage message)

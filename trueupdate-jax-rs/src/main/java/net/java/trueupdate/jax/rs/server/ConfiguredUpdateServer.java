@@ -113,7 +113,7 @@ public final class ConfiguredUpdateServer {
             void write(final Sink output) throws IOException {
                 try (ZipFile firstZipFile = new ZipFile(firstFile);
                      ZipFile secondZipFile = new ZipFile(secondFile)) {
-                    ZipDiff.builder()
+                    ZipDiff.create()
                             .firstZipFile(firstZipFile)
                             .secondZipFile(secondZipFile)
                             .build()

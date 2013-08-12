@@ -69,6 +69,9 @@ public final class DiffModel implements Serializable {
         this.removed = unchangedMap(b.removed);
     }
 
+    /** Returns a new builder for a diff model. */
+    public static Builder create() { return new Builder(); }
+
     private static @Nullable Integer lengthBytes(final MessageDigest digest) {
         try {
             final MessageDigest
@@ -224,9 +227,6 @@ public final class DiffModel implements Serializable {
             catch (JAXBException ex) { throw new AssertionError(ex); }
         }
     }
-
-    /** Returns a new builder for a diff model. */
-    public static Builder builder() { return new Builder(); }
 
     /**
      * A builder for a diff model.

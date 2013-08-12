@@ -47,6 +47,23 @@ public final class UpdateMessage implements Serializable {
         this.newLocation = requireNonNull(b.newLocation);
     }
 
+    /** Returns a new builder with all properties set from this instance. */
+    public Builder update() {
+        return create()
+                .timestamp(timestamp())
+                .from(from())
+                .to(to())
+                .type(type())
+                .artifactDescriptor(artifactDescriptor())
+                .status(status())
+                .updateVersion(updateVersion())
+                .oldLocation(oldLocation())
+                .newLocation(newLocation());
+    }
+
+    /** Returns a new builder for an update message. */
+    public static Builder create() { return new Builder(); }
+
     /** Returns the update message timestamp. */
     public long timestamp() { return timestamp; }
 
@@ -54,17 +71,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage timestamp(long timestamp) {
         return this.timestamp == timestamp
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().timestamp(timestamp).build();
     }
 
     /** Returns the update message sender. */
@@ -74,17 +81,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage from(URI from) {
         return this.from.equals(from)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().from(from).build();
     }
 
     /** Returns the update message recipient. */
@@ -94,17 +91,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage to(URI to) {
         return this.to.equals(to)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().to(to).build();
     }
 
     /** Returns the update message type. */
@@ -114,17 +101,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage type(Type type) {
         return this.type.equals(type)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().type(type).build();
     }
 
     /** Returns the artifact descriptor. */
@@ -136,17 +113,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
         return this.artifactDescriptor.equals(artifactDescriptor)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().artifactDescriptor(artifactDescriptor).build();
     }
 
     /** Returns the update message status. */
@@ -156,17 +123,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage status(final String status) {
         return this.status.equals(status)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().status(status).build();
     }
 
     /** Returns the update version. */
@@ -176,17 +133,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage updateVersion(String updateVersion) {
         return this.updateVersion.equals(updateVersion)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().updateVersion(updateVersion).build();
     }
 
     /** Returns the old application location. */
@@ -196,17 +143,7 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage oldLocation(URI oldLocation) {
         return this.oldLocation.equals(oldLocation)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().oldLocation(oldLocation).build();
     }
 
     /**
@@ -220,32 +157,46 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage newLocation(URI newLocation) {
         return this.newLocation.equals(newLocation)
                 ? this
-                : builder()
-                    .timestamp(timestamp)
-                    .from(from)
-                    .to(to)
-                    .type(type)
-                    .artifactDescriptor(artifactDescriptor)
-                    .status(status)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
+                : update().newLocation(newLocation).build();
     }
 
     /**
-     * Returns a success response for this update message with an empty status.
+     * Returns a success response for this update message with an empty status,
+     * swapped from/to URIs and an updated time stamp.
+     * First, checks if the type of this update message is a {@code *_REQUEST}.
+     * If no, then an {@link UnsupportedOperationException} gets thrown.
+     * If yes, then a new update message of the corresponding type
+     * {@code *_SUCCESS_RESPONSE} gets returned with an empty status and an
+     * updated time stamp.
      */
     public UpdateMessage successResponse() {
-        return type(type().successResponse()).status("");
+        return update()
+                .type(type().successResponse())
+                .from(to())
+                .to(from())
+                .status("")
+                .timestamp(System.currentTimeMillis())
+                .build();
     }
 
     /**
      * Returns a failure response for this update message with the string
-     * representation of the given exception as the status.
+     * representation of the given exception as the status, swapped from/to
+     * URIs and an updated time stamp.
+     * First, checks if the type of this update message is a {@code *_REQUEST}.
+     * If no, then an {@link UnsupportedOperationException} gets thrown.
+     * If yes, then a new update message of the corresponding type
+     * {@code *_FAILURE_RESPONSE} gets returned with the string representation
+     * of the given exception as the status and an updated time stamp.
      */
     public UpdateMessage failureResponse(Exception ex) {
-        return type(type().failureResponse()).status(ex.toString());
+        return update()
+                .type(type().failureResponse())
+                .from(to())
+                .to(from())
+                .status(ex.toString())
+                .timestamp(System.currentTimeMillis())
+                .build();
     }
 
     /**
@@ -348,36 +299,32 @@ public final class UpdateMessage implements Serializable {
                 return SUBSCRIPTION_FAILURE_RESPONSE;
             }
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onSubscriptionRequest(message);
             }
         },
 
         SUBSCRIPTION_SUCCESS_RESPONSE {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onSubscriptionSuccessResponse(message);
             }
         },
 
         SUBSCRIPTION_FAILURE_RESPONSE {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onSubscriptionFailureResponse(message);
             }
         },
 
         UPDATE_ANNOUNCEMENT {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onUpdateAnnouncement(message);
             }
         },
@@ -392,27 +339,24 @@ public final class UpdateMessage implements Serializable {
                 return INSTALLATION_FAILURE_RESPONSE;
             }
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onInstallationRequest(message);
             }
         },
 
         INSTALLATION_SUCCESS_RESPONSE {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onInstallationSuccessResponse(message);
             }
         },
 
         INSTALLATION_FAILURE_RESPONSE {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onInstallationFailureResponse(message);
             }
         },
@@ -427,27 +371,24 @@ public final class UpdateMessage implements Serializable {
                 return UNSUBSCRIPTION_FAILURE_RESPONSE;
             }
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onUnsubscriptionRequest(message);
             }
         },
 
         UNSUBSCRIPTION_SUCCESS_RESPONSE {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onUnsubscriptionSuccessResponse(message);
             }
         },
 
         UNSUBSCRIPTION_FAILURE_RESPONSE {
 
-            @Override void process(UpdateMessage message,
-                                   UpdateListener listener)
-            throws UpdateException {
+            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            throws UpdateMessageException {
                 listener.onUnsubscriptionFailureResponse(message);
             }
         };
@@ -455,23 +396,24 @@ public final class UpdateMessage implements Serializable {
         /**
          * Returns the corresponding {@code *_SUCCESS_RESPONSE} if and only if
          * this is a {@code *_REQUEST} type.
-         * Otherwise returns {@code this}.
+         * Otherwise throws an {@link UnsupportedOperationException}.
          */
-        public Type successResponse() { return this; }
+        public Type successResponse() {
+            throw new UnsupportedOperationException();
+        }
 
         /**
          * Returns the corresponding {@code *_FAILURE_RESPONSE} if and only if
          * this is a {@code *_REQUEST} type.
-         * Otherwise returns {@code this}.
+         * Otherwise throws an {@link UnsupportedOperationException}.
          */
-        public Type failureResponse() { return this; }
+        public Type failureResponse() {
+            throw new UnsupportedOperationException();
+        }
 
-        abstract void process(UpdateMessage message, UpdateListener listener)
-        throws UpdateException;
+        abstract void dispatch(UpdateMessage message, UpdateMessageListener listener)
+        throws UpdateMessageException;
     } // Type
-
-    /** Returns a new builder for an update message. */
-    public static Builder builder() { return new Builder(); }
 
     /**
      * A builder for an update message.

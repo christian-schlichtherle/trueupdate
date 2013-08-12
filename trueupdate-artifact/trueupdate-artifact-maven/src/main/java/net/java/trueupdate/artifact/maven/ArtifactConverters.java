@@ -53,7 +53,7 @@ final class ArtifactConverters {
      * @return the artifact descriptor.
      */
     static ArtifactDescriptor descriptor(Artifact artifact) {
-        return ArtifactDescriptor.builder()
+        return ArtifactDescriptor.create()
                 .groupId(artifact.getGroupId())
                 .artifactId(artifact.getArtifactId())
                 .version(artifact.getVersion())
