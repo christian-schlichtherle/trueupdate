@@ -21,7 +21,7 @@ public abstract class UpdateMessageListener {
      */
     public void onUpdateMessage(UpdateMessage message)
     throws UpdateMessageException {
-        message.type().dispatch(message, this);
+        message.type().dispatchMessageTo(message, this);
     }
 
     protected void onSubscriptionRequest(UpdateMessage message)

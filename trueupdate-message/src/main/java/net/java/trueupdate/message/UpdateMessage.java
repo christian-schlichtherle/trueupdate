@@ -299,7 +299,8 @@ public final class UpdateMessage implements Serializable {
                 return SUBSCRIPTION_FAILURE_RESPONSE;
             }
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onSubscriptionRequest(message);
             }
@@ -307,7 +308,8 @@ public final class UpdateMessage implements Serializable {
 
         SUBSCRIPTION_SUCCESS_RESPONSE {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onSubscriptionSuccessResponse(message);
             }
@@ -315,7 +317,8 @@ public final class UpdateMessage implements Serializable {
 
         SUBSCRIPTION_FAILURE_RESPONSE {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onSubscriptionFailureResponse(message);
             }
@@ -323,7 +326,8 @@ public final class UpdateMessage implements Serializable {
 
         UPDATE_ANNOUNCEMENT {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onUpdateAnnouncement(message);
             }
@@ -339,7 +343,8 @@ public final class UpdateMessage implements Serializable {
                 return INSTALLATION_FAILURE_RESPONSE;
             }
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onInstallationRequest(message);
             }
@@ -347,7 +352,8 @@ public final class UpdateMessage implements Serializable {
 
         INSTALLATION_SUCCESS_RESPONSE {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onInstallationSuccessResponse(message);
             }
@@ -355,7 +361,8 @@ public final class UpdateMessage implements Serializable {
 
         INSTALLATION_FAILURE_RESPONSE {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onInstallationFailureResponse(message);
             }
@@ -371,7 +378,8 @@ public final class UpdateMessage implements Serializable {
                 return UNSUBSCRIPTION_FAILURE_RESPONSE;
             }
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onUnsubscriptionRequest(message);
             }
@@ -379,7 +387,8 @@ public final class UpdateMessage implements Serializable {
 
         UNSUBSCRIPTION_SUCCESS_RESPONSE {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onUnsubscriptionSuccessResponse(message);
             }
@@ -387,7 +396,8 @@ public final class UpdateMessage implements Serializable {
 
         UNSUBSCRIPTION_FAILURE_RESPONSE {
 
-            @Override void dispatch(UpdateMessage message, UpdateMessageListener listener)
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
             throws UpdateMessageException {
                 listener.onUnsubscriptionFailureResponse(message);
             }
@@ -411,7 +421,8 @@ public final class UpdateMessage implements Serializable {
             throw new UnsupportedOperationException();
         }
 
-        abstract void dispatch(UpdateMessage message, UpdateMessageListener listener)
+        abstract void dispatchMessageTo(UpdateMessage message,
+                                        UpdateMessageListener listener)
         throws UpdateMessageException;
     } // Type
 
