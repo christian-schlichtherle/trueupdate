@@ -12,5 +12,5 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 public interface UpdateAgentFactory {
 
     UpdateAgent newUpdateAgent(ArtifactDescriptor artifactDescriptor,
-                               UpdateManagerListener visitor);
+                               UpdateManagerListener listener);
 }
