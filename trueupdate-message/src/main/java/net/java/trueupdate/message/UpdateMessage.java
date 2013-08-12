@@ -6,6 +6,7 @@ package net.java.trueupdate.message;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Date;
 import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
@@ -25,18 +26,85 @@ public final class UpdateMessage implements Serializable {
 
     static final URI EMPTY = URI.create("");
 
+    private final long timestamp;
+    private final URI from, to;
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
     private final String status, updateVersion;
     private final URI oldLocation, newLocation;
 
     UpdateMessage(final Builder b) {
+        this.timestamp = null != b.timestamp
+                ? b.timestamp
+                : System.currentTimeMillis();
+        this.from = requireNonNull(b.from);
+        this.to = requireNonNull(b.to);
         this.type = requireNonNull(b.type);
         this.status = requireNonNull(b.status);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.updateVersion = requireNonNull(b.updateVersion);
         this.oldLocation = requireNonNull(b.oldLocation);
         this.newLocation = requireNonNull(b.newLocation);
+    }
+
+    /** Returns the update message timestamp. */
+    public long timestamp() { return timestamp; }
+
+    /** Returns an update message with the given update message timestamp. */
+    public UpdateMessage timestamp(long timestamp) {
+        return this.timestamp == timestamp
+                ? this
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
+                    .type(type)
+                    .artifactDescriptor(artifactDescriptor)
+                    .status(status)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
+    }
+
+    /** Returns the update message sender. */
+    public URI from() { return from; }
+
+    /** Returns an update message with the given update message sender. */
+    public UpdateMessage from(URI from) {
+        return this.from.equals(from)
+                ? this
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
+                    .type(type)
+                    .artifactDescriptor(artifactDescriptor)
+                    .status(status)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
+    }
+
+    /** Returns the update message recipient. */
+    public URI to() { return to; }
+
+    /** Returns an update message with the given update message recipient. */
+    public UpdateMessage to(URI to) {
+        return this.to.equals(to)
+                ? this
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
+                    .type(type)
+                    .artifactDescriptor(artifactDescriptor)
+                    .status(status)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
     }
 
     /** Returns the update message type. */
@@ -46,27 +114,13 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage type(Type type) {
         return this.type.equals(type)
                 ? this
-                : new Builder()
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
                     .type(type)
-                    .status(status)
                     .artifactDescriptor(artifactDescriptor)
-                    .updateVersion(updateVersion)
-                    .oldLocation(oldLocation)
-                    .newLocation(newLocation)
-                    .build();
-    }
-
-    /** Returns the update message status. */
-    public String status() { return status; }
-
-    /** Returns an update message with the given update message status. */
-    public UpdateMessage status(final String status) {
-        return this.status.equals(status)
-                ? this
-                : new Builder()
-                    .type(type)
                     .status(status)
-                    .artifactDescriptor(artifactDescriptor)
                     .updateVersion(updateVersion)
                     .oldLocation(oldLocation)
                     .newLocation(newLocation)
@@ -82,10 +136,33 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
         return this.artifactDescriptor.equals(artifactDescriptor)
                 ? this
-                : new Builder()
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
                     .type(type)
-                    .status(status)
                     .artifactDescriptor(artifactDescriptor)
+                    .status(status)
+                    .updateVersion(updateVersion)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .build();
+    }
+
+    /** Returns the update message status. */
+    public String status() { return status; }
+
+    /** Returns an update message with the given update message status. */
+    public UpdateMessage status(final String status) {
+        return this.status.equals(status)
+                ? this
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
+                    .type(type)
+                    .artifactDescriptor(artifactDescriptor)
+                    .status(status)
                     .updateVersion(updateVersion)
                     .oldLocation(oldLocation)
                     .newLocation(newLocation)
@@ -99,10 +176,13 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage updateVersion(String updateVersion) {
         return this.updateVersion.equals(updateVersion)
                 ? this
-                : new Builder()
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
                     .type(type)
-                    .status(status)
                     .artifactDescriptor(artifactDescriptor)
+                    .status(status)
                     .updateVersion(updateVersion)
                     .oldLocation(oldLocation)
                     .newLocation(newLocation)
@@ -116,10 +196,13 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage oldLocation(URI oldLocation) {
         return this.oldLocation.equals(oldLocation)
                 ? this
-                : new Builder()
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
                     .type(type)
-                    .status(status)
                     .artifactDescriptor(artifactDescriptor)
+                    .status(status)
                     .updateVersion(updateVersion)
                     .oldLocation(oldLocation)
                     .newLocation(newLocation)
@@ -137,10 +220,13 @@ public final class UpdateMessage implements Serializable {
     public UpdateMessage newLocation(URI newLocation) {
         return this.newLocation.equals(newLocation)
                 ? this
-                : new Builder()
+                : builder()
+                    .timestamp(timestamp)
+                    .from(from)
+                    .to(to)
                     .type(type)
-                    .status(status)
                     .artifactDescriptor(artifactDescriptor)
+                    .status(status)
                     .updateVersion(updateVersion)
                     .oldLocation(oldLocation)
                     .newLocation(newLocation)
@@ -170,9 +256,12 @@ public final class UpdateMessage implements Serializable {
         if (this == obj) return true;
         if (!(obj instanceof UpdateMessage)) return false;
         final UpdateMessage that = (UpdateMessage) obj;
-        return  this.type().equals(that.type()) &&
-                this.status().equals(that.status()) &&
+        return  this.timestamp() == that.timestamp() &&
+                this.from().equals(that.from()) &&
+                this.to().equals(that.to()) &&
+                this.type().equals(that.type()) &&
                 this.artifactDescriptor().equals(that.artifactDescriptor()) &&
+                this.status().equals(that.status()) &&
                 this.updateVersion().equals(that.updateVersion()) &&
                 this.oldLocation().equals(that.oldLocation()) &&
                 this.newLocation().equals(that.newLocation());
@@ -181,27 +270,37 @@ public final class UpdateMessage implements Serializable {
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
     @Override public int hashCode() {
         int hash = 17;
+        hash = 31 * hash + hashCode(timestamp);
+        hash = 31 * hash + from().hashCode();
+        hash = 31 * hash + to().hashCode();
         hash = 31 * hash + type().hashCode();
-        hash = 31 * hash + status().hashCode();
         hash = 31 * hash + artifactDescriptor().hashCode();
+        hash = 31 * hash + status().hashCode();
         hash = 31 * hash + updateVersion().hashCode();
         hash = 31 * hash + oldLocation().hashCode();
         hash = 31 * hash + newLocation().hashCode();
         return hash;
     }
 
+    private static int hashCode(long value) {
+        return (int) ((value >> 32) ^ value);
+    }
+
     /** Returns a human readable string representation of this object. */
     @Override public String toString() {
         StringBuilder sb = new StringBuilder(128);
-        sb      .append("Type: ").append(type()).append('\n')
+        sb      .append("Timestamp: ").append(new Date(timestamp())).append('\n')
+                .append("From: ").append(from()).append('\n')
+                .append("To: ").append(to()).append('\n')
+                .append("Type: ").append(type()).append('\n')
                 .append("Status: ").append(status()).append('\n')
-                .append("Artifact Descriptor: ").append(artifactDescriptor()).append('\n');
+                .append("Artifact-Descriptor: ").append(artifactDescriptor()).append('\n');
         if (!updateVersion().isEmpty())
-            sb.append("Update Version: ").append(updateVersion()).append('\n');
+            sb.append("Update-Version: ").append(updateVersion()).append('\n');
         if (!oldLocation().equals(EMPTY))
-            sb.append("Old Location: ").append(oldLocation()).append('\n');
+            sb.append("Old-Location: ").append(oldLocation()).append('\n');
         if (!newLocation().equals(EMPTY))
-            sb.append("New Location: ").append(newLocation()).append('\n');
+            sb.append("New-Location: ").append(newLocation()).append('\n');
         return sb.toString();
     }
 
@@ -248,11 +347,40 @@ public final class UpdateMessage implements Serializable {
             @Override public Type failureResponse() {
                 return SUBSCRIPTION_FAILURE_RESPONSE;
             }
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onSubscriptionRequest(message);
+            }
         },
 
-        SUBSCRIPTION_SUCCESS_RESPONSE,
-        SUBSCRIPTION_FAILURE_RESPONSE,
-        UPDATE_ANNOUNCEMENT,
+        SUBSCRIPTION_SUCCESS_RESPONSE {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onSubscriptionSuccessResponse(message);
+            }
+        },
+
+        SUBSCRIPTION_FAILURE_RESPONSE {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onSubscriptionFailureResponse(message);
+            }
+        },
+
+        UPDATE_ANNOUNCEMENT {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onUpdateAnnouncement(message);
+            }
+        },
 
         INSTALLATION_REQUEST {
 
@@ -263,10 +391,31 @@ public final class UpdateMessage implements Serializable {
             @Override public Type failureResponse() {
                 return INSTALLATION_FAILURE_RESPONSE;
             }
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onInstallationRequest(message);
+            }
         },
 
-        INSTALLATION_SUCCESS_RESPONSE,
-        INSTALLATION_FAILURE_RESPONSE,
+        INSTALLATION_SUCCESS_RESPONSE {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onInstallationSuccessResponse(message);
+            }
+        },
+
+        INSTALLATION_FAILURE_RESPONSE {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onInstallationFailureResponse(message);
+            }
+        },
 
         UNSUBSCRIPTION_REQUEST {
 
@@ -277,10 +426,31 @@ public final class UpdateMessage implements Serializable {
             @Override public Type failureResponse() {
                 return UNSUBSCRIPTION_FAILURE_RESPONSE;
             }
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onUnsubscriptionRequest(message);
+            }
         },
 
-        UNSUBSCRIPTION_SUCCESS_RESPONSE,
-        UNSUBSCRIPTION_FAILURE_RESPONSE;
+        UNSUBSCRIPTION_SUCCESS_RESPONSE {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onUnsubscriptionSuccessResponse(message);
+            }
+        },
+
+        UNSUBSCRIPTION_FAILURE_RESPONSE {
+
+            @Override void process(UpdateMessage message,
+                                   UpdateListener listener)
+            throws UpdateException {
+                listener.onUnsubscriptionFailureResponse(message);
+            }
+        };
 
         /**
          * Returns the corresponding {@code *_SUCCESS_RESPONSE} if and only if
@@ -295,6 +465,9 @@ public final class UpdateMessage implements Serializable {
          * Otherwise returns {@code this}.
          */
         public Type failureResponse() { return this; }
+
+        abstract void process(UpdateMessage message, UpdateListener listener)
+        throws UpdateException;
     } // Type
 
     /** Returns a new builder for an update message. */
@@ -302,19 +475,39 @@ public final class UpdateMessage implements Serializable {
 
     /**
      * A builder for an update message.
+     * The default value for the timestamp is the time the {@link #build()}
+     * method gets called in milliseconds since the epoch.
      * The default value for the properties {@code status} and
-     * {@code updateVersion} is an empty string and the default value for the
-     * properties {@code oldLocation} and {@code newLocation} is an empty URI.
+     * {@code updateVersion} is an empty string.
+     * The default value for the properties {@code oldLocation} and
+     * {@code newLocation} is an empty URI.
      */
     @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
+        Long timestamp;
+        URI from, to;
         Type type;
         ArtifactDescriptor artifactDescriptor;
         String status = "", updateVersion = "";
         URI oldLocation = EMPTY, newLocation = EMPTY;
 
         Builder() { }
+
+        public Builder timestamp(long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public Builder from(URI from) {
+            this.from = requireNonNull(from);
+            return this;
+        }
+
+        public Builder to(URI to) {
+            this.to = requireNonNull(to);
+            return this;
+        }
 
         public Builder type(final Type type) {
             this.type = requireNonNull(type);
