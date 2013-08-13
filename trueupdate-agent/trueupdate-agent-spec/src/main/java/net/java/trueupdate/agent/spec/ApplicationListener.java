@@ -5,7 +5,6 @@
 package net.java.trueupdate.agent.spec;
 
 import net.java.trueupdate.manager.spec.UpdateMessage;
-import net.java.trueupdate.manager.spec.UpdateMessageException;
 
 /**
  * Processes update messages from an update manager on behalf of the
@@ -16,23 +15,23 @@ import net.java.trueupdate.manager.spec.UpdateMessageException;
 public class ApplicationListener {
 
     public void onSubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     public void onSubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     public void onUpdateAnnouncement(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     public void onInstallationSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     public void onInstallationFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     public void onUnsubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     public void onUnsubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 }

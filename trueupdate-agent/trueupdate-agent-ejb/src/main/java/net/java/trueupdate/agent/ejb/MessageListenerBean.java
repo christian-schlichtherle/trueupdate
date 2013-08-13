@@ -12,6 +12,9 @@ import javax.jms.*;
 import net.java.trueupdate.manager.spec.*;
 
 /**
+ * Filters JMS messages and forwards update messages to the injected
+ * {@link UpdateMessageListener}.
+ *
  * @author Christian Schlichtherle
  */
 @MessageDriven(mappedName = "jms/trueupdate",

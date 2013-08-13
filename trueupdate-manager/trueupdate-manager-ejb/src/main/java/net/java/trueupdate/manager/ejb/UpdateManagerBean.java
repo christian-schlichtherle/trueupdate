@@ -16,7 +16,7 @@ import net.java.trueupdate.manager.spec.*;
  */
 @Singleton
 public class UpdateManagerBean
-extends UpdateMessageDispatcher implements UpdateManager {
+extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
@@ -47,19 +47,19 @@ extends UpdateMessageDispatcher implements UpdateManager {
     }
 
     @Override protected void onSubscriptionRequest(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         respondTo(message);
     }
 
     @Override protected void onInstallationRequest(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         respondTo(message);
     }
 
     @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         respondTo(message);
     }
@@ -69,27 +69,19 @@ extends UpdateMessageDispatcher implements UpdateManager {
         return message;
     }
 
-    private UpdateMessage respondTo(UpdateMessage request)
-    throws UpdateMessageException {
+    private UpdateMessage respondTo(UpdateMessage request) throws Exception {
         return send(request.successResponse());
     }
 
-    private UpdateMessage send(final UpdateMessage message)
-    throws UpdateMessageException {
+    private UpdateMessage send(final UpdateMessage message) throws Exception {
+        final Destination destination = destination(message);
+        final Session session = connection.createSession(true, 0);
         try {
-            final Destination destination = destination(message);
-            final Session session = connection.createSession(true, 0);
-            try {
-                session .createProducer(destination)
-                        .send(session.createObjectMessage(message));
-                return message;
-            } finally {
-                session.close();
-            }
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new UpdateMessageException(ex);
+            session .createProducer(destination)
+                    .send(session.createObjectMessage(message));
+            return message;
+        } finally {
+            session.close();
         }
     }
 

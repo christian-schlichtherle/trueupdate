@@ -27,8 +27,6 @@ implements UpdateMessageListener, UpdateAgent.Builder {
 
     static final String DESTINATION_NAME = "jms/trueupdate";
 
-    private static final ApplicationListener NULL = new ApplicationListener();
-
     @Resource ConnectionFactory connectionFactory;
     @Resource(lookup = DESTINATION_NAME) Destination destination;
     @CheckForNull ApplicationParameters applicationParameters;
@@ -60,49 +58,49 @@ implements UpdateMessageListener, UpdateAgent.Builder {
 
     @Override
     protected void onSubscriptionSuccessResponse(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onSubscriptionSuccessResponse(message);
     }
 
     @Override
     protected void onSubscriptionFailureResponse(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onSubscriptionFailureResponse(message);
     }
 
     @Override
     protected void onUpdateAnnouncement(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onUpdateAnnouncement(message);
     }
 
     @Override
     protected void onInstallationSuccessResponse(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onInstallationSuccessResponse(message);
     }
 
     @Override
     protected void onInstallationFailureResponse(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onInstallationFailureResponse(message);
     }
 
     @Override
     protected void onUnsubscriptionSuccessResponse(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onUnsubscriptionSuccessResponse(message);
     }
 
     @Override
     protected void onUnsubscriptionFailureResponse(final UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         listener().onUnsubscriptionFailureResponse(message);
     }

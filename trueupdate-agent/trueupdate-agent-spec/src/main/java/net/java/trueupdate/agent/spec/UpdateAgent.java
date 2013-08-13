@@ -28,7 +28,7 @@ public interface UpdateAgent {
      * @throws UpdateMessageException if sending the request is not possible
      *         for some reason.
      */
-    void subscribe() throws UpdateMessageException;
+    void subscribe() throws UpdateAgentException;
 
     /**
      * Sends a request to shutdown the application, install the given version
@@ -41,7 +41,7 @@ public interface UpdateAgent {
      * @throws UpdateMessageException if sending the request is not possible
      *         for some reason.
      */
-    void install(String version) throws UpdateMessageException;
+    void install(String version) throws UpdateAgentException;
 
     /**
      * Sends a request to unsubscribe from the list of recipients for update
@@ -50,7 +50,7 @@ public interface UpdateAgent {
      * @throws UpdateMessageException if sending the request is not possible
      *         for some reason.
      */
-    void unsubscribe() throws UpdateMessageException;
+    void unsubscribe() throws UpdateAgentException;
 
     /**
      * A builder for update agents.

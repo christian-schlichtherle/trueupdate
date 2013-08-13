@@ -22,42 +22,40 @@ public class UpdateMessageDispatcher implements UpdateMessageListener {
      * corresponding {@code visit<Type>(UpdateMessage)} method, where
      * {@code <Type>} is the {@link UpdateMessage.Type} obtained from calling
      * the {@link UpdateMessage#type()} method.
-     *
-     * @param message the update message to process.
      */
-    @Override public void onUpdateMessage(UpdateMessage message)
-    throws UpdateMessageException {
+    @Override
+    public void onUpdateMessage(UpdateMessage message) throws Exception {
         if (filter().accept(message))
             message.type().dispatchMessageTo(message, this);
     }
 
     protected void onSubscriptionRequest(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onSubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onSubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onUpdateAnnouncement(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onInstallationRequest(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onInstallationSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onInstallationFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onUnsubscriptionRequest(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 
     protected void onUnsubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    throws Exception { }
 }

@@ -21,6 +21,7 @@ public interface UpdateMessageListener {
      * Processes the given update message.
      *
      * @param message the update message to process.
+     * @throws Exception at the discretion of the implementation.
      */
-    void onUpdateMessage(UpdateMessage message) throws UpdateMessageException;
+    void onUpdateMessage(UpdateMessage message) throws Exception;
 }

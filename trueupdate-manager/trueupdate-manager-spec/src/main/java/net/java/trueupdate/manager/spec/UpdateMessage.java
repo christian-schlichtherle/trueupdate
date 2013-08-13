@@ -330,7 +330,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onSubscriptionRequest(message);
             }
         },
@@ -339,7 +339,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onSubscriptionSuccessResponse(message);
             }
         },
@@ -348,7 +348,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onSubscriptionFailureResponse(message);
             }
         },
@@ -357,7 +357,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onUpdateAnnouncement(message);
             }
         },
@@ -374,7 +374,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onInstallationRequest(message);
             }
         },
@@ -383,7 +383,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onInstallationSuccessResponse(message);
             }
         },
@@ -392,7 +392,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onInstallationFailureResponse(message);
             }
         },
@@ -409,7 +409,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onUnsubscriptionRequest(message);
             }
         },
@@ -418,7 +418,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onUnsubscriptionSuccessResponse(message);
             }
         },
@@ -427,7 +427,7 @@ public final class UpdateMessage implements Serializable {
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
-            throws UpdateMessageException {
+            throws Exception {
                 dispatcher.onUnsubscriptionFailureResponse(message);
             }
         };
@@ -452,7 +452,7 @@ public final class UpdateMessage implements Serializable {
 
         abstract void dispatchMessageTo(UpdateMessage message,
                                         UpdateMessageDispatcher dispatcher)
-        throws UpdateMessageException;
+        throws Exception;
     } // Type
 
     /** A builder for an update message. */

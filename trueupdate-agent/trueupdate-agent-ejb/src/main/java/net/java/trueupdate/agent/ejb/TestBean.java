@@ -46,8 +46,20 @@ public class TestBean extends ApplicationListener {
         });
     }
 
+    private @Nullable <V> V log(final Callable<V> task) {
+        try {
+            return task.call();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (final Exception ex) {
+            context.setRollbackOnly();
+            logger.log(Level.SEVERE, "Error while processing task.", ex);
+            return null;
+        }
+    }
+
     private UpdateAgent updateAgent() {
-        // The update agent should normally get cached, but isn't done so for
+        // The update agent should normally get cached, but isn't done here for
         // testing purposes.
         return updateAgentBuilder
                 .applicationParameters()
@@ -65,51 +77,39 @@ public class TestBean extends ApplicationListener {
                 .build();
     }
 
-    private @Nullable <V> V log(final Callable<V> task) {
-        try {
-            return task.call();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (final Exception ex) {
-            context.setRollbackOnly();
-            logger.log(Level.SEVERE, "Error while processing task.", ex);
-            return null;
-        }
-    }
-
     @Override public void onSubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
     }
 
     @Override public void onSubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
     }
 
     @Override public void onUpdateAnnouncement(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
         updateAgent().install(message.updateVersion());
     }
 
     @Override public void onInstallationSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
     }
 
     @Override public void onInstallationFailureResponse(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
     }
 
     @Override public void onUnsubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
     }
 
     @Override public void onUnsubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException {
+    throws Exception {
         log(message);
     }
 

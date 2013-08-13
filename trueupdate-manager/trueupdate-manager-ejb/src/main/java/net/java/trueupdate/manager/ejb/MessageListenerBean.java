@@ -4,14 +4,17 @@
  */
 package net.java.trueupdate.manager.ejb;
 
-import net.java.trueupdate.manager.spec.UpdateMessage;
 import java.io.Serializable;
 import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.*;
+import net.java.trueupdate.manager.spec.*;
 
 /**
+ * Filters JMS messages and forwards update messages to the injected
+ * {@link UpdateMessageListener}.
+ *
  * @author Christian Schlichtherle
  */
 @MessageDriven(mappedName = "jms/trueupdate",
@@ -27,7 +30,7 @@ public class MessageListenerBean implements MessageListener {
             logger = Logger.getLogger(MessageListenerBean.class.getName());
 
     @EJB
-    private UpdateManager updateManager;
+    private UpdateMessageListener updateMessageListener;
 
     @Resource
     private MessageDrivenContext context;
@@ -37,7 +40,7 @@ public class MessageListenerBean implements MessageListener {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateManager.onUpdateMessage((UpdateMessage) body);
+                    updateMessageListener.onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;
