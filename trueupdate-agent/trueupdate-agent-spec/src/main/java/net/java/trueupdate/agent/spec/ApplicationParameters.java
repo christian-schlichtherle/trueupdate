@@ -61,7 +61,7 @@ public final class ApplicationParameters {
             return new ApplicationDescriptor.Builder<Builder<T>>() {
                 @Override
                 public Builder<T> inject() {
-                    return updateAgentDescriptor(build());
+                    return applicationDescriptor(build());
                 }
             };
         }
@@ -72,9 +72,9 @@ public final class ApplicationParameters {
             return this;
         }
 
-        public Builder<T> updateAgentDescriptor(
-                final @Nullable ApplicationDescriptor descriptor) {
-            this.applicationDescriptor = descriptor;
+        public Builder<T> applicationDescriptor(
+                final @Nullable ApplicationDescriptor applicationDescriptor) {
+            this.applicationDescriptor = applicationDescriptor;
             return this;
         }
 
