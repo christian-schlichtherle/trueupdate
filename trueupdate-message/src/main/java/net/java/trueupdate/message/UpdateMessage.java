@@ -8,8 +8,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import static java.util.Objects.requireNonNull;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
@@ -32,8 +31,8 @@ public final class UpdateMessage implements Serializable {
     private final URI from, to;
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
-    private final String status, updateVersion;
     private final URI currentLocation, updateLocation;
+    private final String updateVersion, status;
 
     UpdateMessage(final Builder b) {
         this.timestamp = nonNullOrNow(b.timestamp);
@@ -42,8 +41,8 @@ public final class UpdateMessage implements Serializable {
         this.type = requireNonNull(b.type);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.currentLocation = nonNullOr(b.currentLocation, EMPTY);
-        this.updateVersion = nonNullOr(b.updateVersion, "");
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
+        this.updateVersion = nonNullOr(b.updateVersion, "");
         this.status = nonNullOr(b.status, "");
     }
 
@@ -64,8 +63,8 @@ public final class UpdateMessage implements Serializable {
                 .type(type())
                 .artifactDescriptor(artifactDescriptor())
                 .currentLocation(currentLocation())
-                .updateVersion(updateVersion())
                 .updateLocation(updateLocation())
+                .updateVersion(updateVersion())
                 .status(status());
     }
 
@@ -143,16 +142,6 @@ public final class UpdateMessage implements Serializable {
                 : update().currentLocation(currentLocation).build();
     }
 
-    /** Returns the update version. */
-    public String updateVersion() { return updateVersion; }
-
-    /** Returns an update message with the given update version. */
-    public UpdateMessage updateVersion(String updateVersion) {
-        return this.updateVersion.equals(updateVersion)
-                ? this
-                : update().updateVersion(updateVersion).build();
-    }
-
     /**
      * Returns the update location.
      * If this equals {@link #currentLocation()}, then the update should happen
@@ -165,6 +154,16 @@ public final class UpdateMessage implements Serializable {
         return this.updateLocation.equals(newLocation)
                 ? this
                 : update().updateLocation(newLocation).build();
+    }
+
+    /** Returns the update version. */
+    public String updateVersion() { return updateVersion; }
+
+    /** Returns an update message with the given update version. */
+    public UpdateMessage updateVersion(String updateVersion) {
+        return this.updateVersion.equals(updateVersion)
+                ? this
+                : update().updateVersion(updateVersion).build();
     }
 
     /** Returns the status text. */
@@ -230,8 +229,8 @@ public final class UpdateMessage implements Serializable {
                 this.type().equals(that.type()) &&
                 this.artifactDescriptor().equals(that.artifactDescriptor()) &&
                 this.currentLocation().equals(that.currentLocation()) &&
-                this.updateVersion().equals(that.updateVersion()) &&
                 this.updateLocation().equals(that.updateLocation()) &&
+                this.updateVersion().equals(that.updateVersion()) &&
                 this.status().equals(that.status());
     }
 
@@ -244,8 +243,8 @@ public final class UpdateMessage implements Serializable {
         hash = 31 * hash + type().hashCode();
         hash = 31 * hash + artifactDescriptor().hashCode();
         hash = 31 * hash + currentLocation().hashCode();
-        hash = 31 * hash + updateVersion().hashCode();
         hash = 31 * hash + updateLocation().hashCode();
+        hash = 31 * hash + updateVersion().hashCode();
         hash = 31 * hash + status().hashCode();
         return hash;
     }
@@ -264,10 +263,10 @@ public final class UpdateMessage implements Serializable {
                 .append("Artifact-Descriptor: ").append(artifactDescriptor()).append('\n');
         if (!currentLocation().equals(EMPTY))
             sb.append("Current-Location: ").append(currentLocation()).append('\n');
-        if (!updateVersion().isEmpty())
-            sb.append("Update-Version: ").append(updateVersion()).append('\n');
         if (!updateLocation().equals(EMPTY))
             sb.append("Update-Location: ").append(updateLocation()).append('\n');
+        if (!updateVersion().isEmpty())
+            sb.append("Update-Version: ").append(updateVersion()).append('\n');
         if (!status().isEmpty())
             sb.append("Status: ").append(status()).append('\n');
         return sb.toString();
@@ -452,8 +451,8 @@ public final class UpdateMessage implements Serializable {
         @CheckForNull URI from, to;
         @CheckForNull Type type;
         @CheckForNull ArtifactDescriptor artifactDescriptor;
-        @CheckForNull String status, updateVersion;
         @CheckForNull URI currentLocation, updateLocation;
+        @CheckForNull String updateVersion, status;
 
         Builder() { }
 
@@ -488,13 +487,13 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
-        public Builder updateVersion(final @Nullable String updateVersion) {
-            this.updateVersion = updateVersion;
+        public Builder updateLocation(final @Nullable URI updateLocation) {
+            this.updateLocation = updateLocation;
             return this;
         }
 
-        public Builder updateLocation(final @Nullable URI updateLocation) {
-            this.updateLocation = updateLocation;
+        public Builder updateVersion(final @Nullable String updateVersion) {
+            this.updateVersion = updateVersion;
             return this;
         }
 
