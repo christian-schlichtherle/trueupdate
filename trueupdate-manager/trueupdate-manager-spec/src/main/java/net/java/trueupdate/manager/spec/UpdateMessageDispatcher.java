@@ -25,8 +25,7 @@ public class UpdateMessageDispatcher implements UpdateMessageListener {
      *
      * @param message the update message to process.
      */
-    @Override
-    public void onUpdateMessage(UpdateMessage message)
+    @Override public void onUpdateMessage(UpdateMessage message)
     throws UpdateMessageException {
         if (filter().accept(message))
             message.type().dispatchMessageTo(message, this);
