@@ -163,11 +163,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-message</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>asm</groupId>
                 <artifactId>asm</artifactId>
                 <version>3.3.1</version>
@@ -316,7 +311,6 @@
         <module>trueupdate-core</module>
         <module>trueupdate-jax-rs</module>
         <module>trueupdate-manager</module>
-        <module>trueupdate-message</module>
         <module>trueupdate-server</module>
     </modules>
 </project>

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message;
+package net.java.trueupdate.manager.spec;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -212,6 +212,18 @@ public final class UpdateMessage implements Serializable {
                 .from(to())
                 .to(from())
                 .status(ex.toString())
+                .build();
+    }
+
+    /**
+     * Extracts an application descriptor from the information in this update
+     * message.
+     */
+    public ApplicationDescriptor applicationDescriptor() {
+        return ApplicationDescriptor
+                .builder()
+                .artifactDescriptor(artifactDescriptor())
+                .currentLocation(currentLocation())
                 .build();
     }
 

@@ -8,20 +8,11 @@ import java.net.URI;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import net.java.trueupdate.agent.spec.ApplicationDescriptor;
-import net.java.trueupdate.agent.spec.UpdateAgent;
+import javax.jms.*;
+import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.message.UpdateMessage;
-import static net.java.trueupdate.message.UpdateMessage.Type.INSTALLATION_REQUEST;
-import static net.java.trueupdate.message.UpdateMessage.Type.SUBSCRIPTION_REQUEST;
-import static net.java.trueupdate.message.UpdateMessage.Type.UNSUBSCRIPTION_REQUEST;
-import net.java.trueupdate.message.UpdateMessageException;
+import net.java.trueupdate.manager.spec.*;
+import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 
 /**
  * @author Christian Schlichtherle
@@ -33,12 +24,12 @@ final class BasicUpdateAgent implements UpdateAgent {
 
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
-    private final Parameters parameters;
+    private final ApplicationParameters parameters;
 
     BasicUpdateAgent(final UpdateAgentBuilderBean b) {
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.destination = requireNonNull(b.destination);
-        this.parameters = requireNonNull(b.parameters);
+        this.parameters = requireNonNull(b.applicationParameters);
     }
 
     private ApplicationDescriptor applicationDescriptor() {

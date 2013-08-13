@@ -4,12 +4,7 @@
  */
 package net.java.trueupdate.agent.spec;
 
-import java.net.URI;
-import static java.util.Objects.requireNonNull;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import net.java.trueupdate.message.UpdateMessage;
-import net.java.trueupdate.message.UpdateMessageException;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * An update agent cooperates with an update manager to automatically install
@@ -67,102 +62,10 @@ public interface UpdateAgent {
      */
     interface Builder {
 
-        Parameters.Builder<Builder> parameters();
+        ApplicationParameters.Builder<Builder> applicationParameters();
 
-        Builder parameters(Parameters parameters);
+        Builder applicationParameters(ApplicationParameters applicationParameters);
 
         UpdateAgent build();
     }
-
-    /** Update Agent Parameters. */
-    final class Parameters {
-
-        private final ApplicationDescriptor applicationDescriptor;
-        private final URI updateLocation;
-        private final UpdateListener updateListener;
-
-        Parameters(final Builder<?> b) {
-            this.applicationDescriptor = requireNonNull(b.applicationDescriptor);
-            this.updateLocation = requireNonNull(b.updateLocation);
-            this.updateListener = requireNonNull(b.updateListener);
-        }
-
-        /** Returns a new builder for update agent parameters. */
-        public static Builder<Void> builder() { return new Builder<>(); }
-
-        public ApplicationDescriptor applicationDescriptor() {
-            return applicationDescriptor;
-        }
-
-        public URI updateLocation() { return updateLocation; }
-
-        public UpdateListener updateListener() { return updateListener; }
-
-        @SuppressWarnings(value = "PackageVisibleField")
-        public static class Builder<T> {
-
-            @CheckForNull ApplicationDescriptor applicationDescriptor;
-            @CheckForNull URI updateLocation;
-            @CheckForNull UpdateListener updateListener;
-
-            protected Builder() { }
-
-            public ApplicationDescriptor.Builder<Builder<T>> applicationDescriptor() {
-                return new ApplicationDescriptor.Builder<Builder<T>>() {
-                    @Override public Builder<T> inject() {
-                        return updateAgentDescriptor(build());
-                    }
-                };
-            }
-
-            public Builder<T> updateAgentDescriptor(
-                    final @Nullable ApplicationDescriptor descriptor) {
-                this.applicationDescriptor = descriptor;
-                return this;
-            }
-
-            public Builder<T> updateLocation(
-                    final @Nullable URI updateLocation) {
-                this.updateLocation = updateLocation;
-                return this;
-            }
-
-            public Builder<T> updateListener(
-                    final @Nullable UpdateListener updateListener) {
-                this.updateListener = updateListener;
-                return this;
-            }
-
-            public Parameters build() { return new Parameters(this); }
-
-            public T inject() {
-                throw new IllegalStateException("No target for injection.");
-            }
-        } // Builder
-    } // Parameters
-
-    /** Processes update messages from an update manager. */
-    class UpdateListener {
-
-        public void onSubscriptionSuccessResponse(UpdateMessage message)
-        throws UpdateMessageException { }
-
-        public void onSubscriptionFailureResponse(UpdateMessage message)
-        throws UpdateMessageException { }
-
-        public void onUpdateAnnouncement(UpdateMessage message)
-        throws UpdateMessageException { }
-
-        public void onInstallationSuccessResponse(UpdateMessage message)
-        throws UpdateMessageException { }
-
-        public void onInstallationFailureResponse(UpdateMessage message)
-        throws UpdateMessageException { }
-
-        public void onUnsubscriptionSuccessResponse(UpdateMessage message)
-        throws UpdateMessageException { }
-
-        public void onUnsubscriptionFailureResponse(UpdateMessage message)
-        throws UpdateMessageException { }
-    } // Listener
 }

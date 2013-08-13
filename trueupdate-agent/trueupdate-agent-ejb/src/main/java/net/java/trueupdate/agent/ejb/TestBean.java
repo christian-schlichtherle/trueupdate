@@ -16,22 +16,23 @@ import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import net.java.trueupdate.agent.spec.ApplicationListener;
 import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.message.UpdateMessage;
-import net.java.trueupdate.message.UpdateMessageException;
+import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.manager.spec.UpdateMessageException;
 
 /**
  * @author Christian Schlichtherle
  */
 @Startup
 @Singleton
-public class TestBean extends UpdateAgent.UpdateListener {
+public class TestBean extends ApplicationListener {
 
     private static final Logger
             logger = Logger.getLogger(TestBean.class.getName());
 
     @EJB
-    private UpdateAgentBuilder updateAgentBuilder;
+    private UpdateAgent.Builder updateAgentBuilder;
 
     @Resource
     private SessionContext context;
@@ -56,7 +57,8 @@ public class TestBean extends UpdateAgent.UpdateListener {
 
     private UpdateAgent updateAgent() {
         return updateAgentBuilder
-                .parameters()
+                .applicationParameters()
+                    .applicationListener(this)
                     .applicationDescriptor()
                         .artifactDescriptor()
                             .groupId("net.java.truevfs")
@@ -66,7 +68,6 @@ public class TestBean extends UpdateAgent.UpdateListener {
                         .currentLocation(URI.create("here"))
                         .inject()
                     .updateLocation(URI.create("there"))
-                    .updateListener(this)
                     .inject()
                 .build();
     }
@@ -83,33 +84,39 @@ public class TestBean extends UpdateAgent.UpdateListener {
         }
     }
 
-    @Override
-    public void onSubscriptionSuccessResponse(UpdateMessage message) throws UpdateMessageException {
+    @Override public void onSubscriptionSuccessResponse(UpdateMessage message)
+    throws UpdateMessageException {
         log(message);
     }
 
-    @Override
-    public void onSubscriptionFailureResponse(UpdateMessage message) throws UpdateMessageException {
+    @Override public void onSubscriptionFailureResponse(UpdateMessage message)
+    throws UpdateMessageException {
         log(message);
     }
 
-    @Override
-    public void onInstallationSuccessResponse(UpdateMessage message) throws UpdateMessageException {
+    @Override public void onUpdateAnnouncement(UpdateMessage message)
+    throws UpdateMessageException {
+        log(message);
+        updateAgent().install(message.updateVersion());
+    }
+
+    @Override public void onInstallationSuccessResponse(UpdateMessage message)
+    throws UpdateMessageException {
         log(message);
     }
 
-    @Override
-    public void onInstallationFailureResponse(UpdateMessage message) throws UpdateMessageException {
+    @Override public void onInstallationFailureResponse(UpdateMessage message)
+    throws UpdateMessageException {
         log(message);
     }
 
-    @Override
-    public void onUnsubscriptionSuccessResponse(UpdateMessage message) throws UpdateMessageException {
+    @Override public void onUnsubscriptionSuccessResponse(UpdateMessage message)
+    throws UpdateMessageException {
         log(message);
     }
 
-    @Override
-    public void onUnsubscriptionFailureResponse(UpdateMessage message) throws UpdateMessageException {
+    @Override public void onUnsubscriptionFailureResponse(UpdateMessage message)
+    throws UpdateMessageException {
         log(message);
     }
 

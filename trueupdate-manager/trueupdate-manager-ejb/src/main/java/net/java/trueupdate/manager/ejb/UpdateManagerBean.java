@@ -4,12 +4,14 @@
  */
 package net.java.trueupdate.manager.ejb;
 
+import net.java.trueupdate.manager.spec.UpdateMessageDispatcher;
+import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.manager.spec.UpdateMessageException;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
 import javax.naming.*;
-import net.java.trueupdate.message.*;
 
 /**
  * @author Christian Schlichtherle

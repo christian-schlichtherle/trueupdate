@@ -2,18 +2,23 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message;
+package net.java.trueupdate.manager.spec;
 
 /**
- * An update message listener which dispatches the messages to its protected
- * stub methods.
+ * An update message listener which filters and dispatches the update messages
+ * to its protected stub methods.
  *
  * @author Christian Schlichtherle
  */
 public class UpdateMessageDispatcher implements UpdateMessageListener {
 
+    /** Returns the filter to use before dispatching an update message. */
+    protected UpdateMessageFilter filter() {
+        return UpdateMessageFilter.ACCEPT_ALL;
+    }
+
     /**
-     * Processes the given update message by dispatching the call to the
+     * Filters the given update message and dispatches the call to the
      * corresponding {@code visit<Type>(UpdateMessage)} method, where
      * {@code <Type>} is the {@link UpdateMessage.Type} obtained from calling
      * the {@link UpdateMessage#type()} method.
@@ -23,7 +28,8 @@ public class UpdateMessageDispatcher implements UpdateMessageListener {
     @Override
     public void onUpdateMessage(UpdateMessage message)
     throws UpdateMessageException {
-        message.type().dispatchMessageTo(message, this);
+        if (filter().accept(message))
+            message.type().dispatchMessageTo(message, this);
     }
 
     protected void onSubscriptionRequest(UpdateMessage message)

@@ -4,12 +4,12 @@
  */
 package net.java.trueupdate.manager.ejb;
 
+import net.java.trueupdate.manager.spec.UpdateMessage;
 import java.io.Serializable;
 import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.*;
-import net.java.trueupdate.message.*;
 
 /**
  * @author Christian Schlichtherle

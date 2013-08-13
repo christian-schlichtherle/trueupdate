@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.manager.ejb;
 
-import net.java.trueupdate.message.UpdateMessageListener;
+import net.java.trueupdate.manager.spec.UpdateMessageListener;
 
 /**
  * @author Christian Schlichtherle

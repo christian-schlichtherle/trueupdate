@@ -11,14 +11,14 @@ import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import net.java.trueupdate.agent.spec.ApplicationDescriptor;
+import net.java.trueupdate.agent.spec.ApplicationListener;
+import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.agent.spec.UpdateAgent;
 import net.java.trueupdate.agent.spec.UpdateAgent.Builder;
-import net.java.trueupdate.agent.spec.UpdateAgent.Parameters;
-import net.java.trueupdate.agent.spec.UpdateAgent.UpdateListener;
-import net.java.trueupdate.message.UpdateMessage;
-import net.java.trueupdate.message.UpdateMessageDispatcher;
-import net.java.trueupdate.message.UpdateMessageException;
+import net.java.trueupdate.manager.spec.ApplicationDescriptor;
+import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.manager.spec.UpdateMessageDispatcher;
+import net.java.trueupdate.manager.spec.UpdateMessageException;
 
 /**
  * @author Christian Schlichtherle
@@ -33,32 +33,25 @@ extends UpdateMessageDispatcher implements UpdateAgentBuilder {
 
     static final String DESTINATION_NAME = "jms/trueupdate";
 
-    private static final UpdateListener NULL = new UpdateListener();
+    private static final ApplicationListener NULL = new ApplicationListener();
 
     @Resource ConnectionFactory connectionFactory;
     @Resource(lookup = DESTINATION_NAME) Destination destination;
-    @CheckForNull Parameters parameters;
+    @CheckForNull ApplicationParameters applicationParameters;
 
-    @Override public Parameters.Builder<Builder> parameters() {
-        return new Parameters.Builder<Builder>() {
-            @Override public Builder inject() { return parameters(build()); }
+    @Override public ApplicationParameters.Builder<Builder> applicationParameters() {
+        return new ApplicationParameters.Builder<Builder>() {
+            @Override public Builder inject() { return applicationParameters(build()); }
         };
     }
 
-    @Override public Builder parameters(final Parameters parameters) {
+    @Override public Builder applicationParameters(
+            final ApplicationParameters parameters) {
         if (anotherApplicationDescriptor(parameters))
-            throw new IllegalArgumentException("Cannot create an update agent for another application descriptor.");
-        this.parameters = parameters;
+            throw new IllegalArgumentException(
+                    "Cannot create an update agent for another application descriptor.");
+        this.applicationParameters = parameters;
         return this;
-    }
-
-    private boolean anotherApplicationDescriptor(final Parameters parameters) {
-        final ApplicationDescriptor ad = applicationDescriptor();
-        return null != ad && !ad.equals(parameters.applicationDescriptor());
-    }
-
-    private @CheckForNull ApplicationDescriptor applicationDescriptor() {
-        return null == parameters ? null : parameters.applicationDescriptor();
     }
 
     @Override public UpdateAgent build() { return new BasicUpdateAgent(this); }
@@ -112,23 +105,26 @@ extends UpdateMessageDispatcher implements UpdateAgentBuilder {
         listener(message).onUnsubscriptionFailureResponse(message);
     }
 
-    private UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.INFO, "Received update message:\n{0}", message);
-        return message;
+    private boolean anotherApplicationDescriptor(
+            final ApplicationParameters parameters) {
+        final ApplicationDescriptor ad = applicationDescriptor();
+        return null != ad && !ad.equals(parameters.applicationDescriptor());
     }
 
-    private UpdateListener listener(UpdateMessage message) {
-        return applicationDescriptor(message).equals(applicationDescriptor())
-                    ? parameters.updateListener()
+    private @CheckForNull ApplicationDescriptor applicationDescriptor() {
+        final ApplicationParameters ap = applicationParameters;
+        return null == ap ? null : ap.applicationDescriptor();
+    }
+
+    private ApplicationListener listener(UpdateMessage message) {
+        return message.applicationDescriptor().equals(applicationDescriptor())
+                    ? applicationParameters.applicationListener()
                     : NULL;
 
     }
 
-    private ApplicationDescriptor applicationDescriptor(UpdateMessage message) {
-        return ApplicationDescriptor
-                .builder()
-                .artifactDescriptor(message.artifactDescriptor())
-                .currentLocation(message.currentLocation())
-                .build();
+    private static UpdateMessage log(final UpdateMessage message) {
+        logger.log(Level.INFO, "Received update message:\n{0}", message);
+        return message;
     }
 }

@@ -5,7 +5,7 @@
 package net.java.trueupdate.agent.ejb;
 
 import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.message.UpdateMessageListener;
+import net.java.trueupdate.manager.spec.UpdateMessageListener;
 
 /**
  * @author Christian Schlichtherle
