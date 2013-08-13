@@ -14,6 +14,7 @@ import javax.jms.Destination;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import net.java.trueupdate.agent.spec.ApplicationDescriptor;
 import net.java.trueupdate.agent.spec.UpdateAgent;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.message.UpdateMessage;
@@ -28,35 +29,48 @@ import net.java.trueupdate.message.UpdateMessageException;
 final class BasicUpdateAgent implements UpdateAgent {
 
     private static final URI
-            DESTINATION_URI = URI.create(UpdateMessageListenerBean.JNDI_NAME);
+            DESTINATION_URI = URI.create(UpdateAgentBuilderBean.DESTINATION_NAME);
 
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
     private final Parameters parameters;
 
-    BasicUpdateAgent(final UpdateMessageListenerBean b) {
+    BasicUpdateAgent(final UpdateAgentBuilderBean b) {
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.destination = requireNonNull(b.destination);
         this.parameters = requireNonNull(b.parameters);
     }
 
+    private ApplicationDescriptor applicationDescriptor() {
+        return parameters.applicationDescriptor();
+    }
+
     private ArtifactDescriptor artifactDescriptor() {
-        return parameters.applicationDescriptor().artifactDescriptor();
+        return applicationDescriptor().artifactDescriptor();
+    }
+
+    private URI currentLocation() {
+        return applicationDescriptor().currentLocation();
+    }
+
+    private URI updateLocation() {
+        return parameters.updateLocation();
     }
 
     @Override public void subscribe() throws UpdateMessageException {
-        send(SUBSCRIPTION_REQUEST);
+        send(SUBSCRIPTION_REQUEST, null);
     }
 
     @Override public void install(String version) throws UpdateMessageException {
-        send(INSTALLATION_REQUEST);
+        send(INSTALLATION_REQUEST, version);
     }
 
     @Override public void unsubscribe() throws UpdateMessageException {
-        send(UNSUBSCRIPTION_REQUEST);
+        send(UNSUBSCRIPTION_REQUEST, null);
     }
 
-    private void send(final UpdateMessage.Type type) throws UpdateMessageException {
+    private void send(final UpdateMessage.Type type, final String updateVersion)
+    throws UpdateMessageException {
         wrap(new MessageProducerTask<Void>() {
             @Override
             public Void use(MessageProducer mp, Session s, Connection c)
@@ -66,8 +80,11 @@ final class BasicUpdateAgent implements UpdateAgent {
                             .builder()
                             .from(DESTINATION_URI)
                             .to(DESTINATION_URI)
-                            .artifactDescriptor(artifactDescriptor())
                             .type(type)
+                            .artifactDescriptor(artifactDescriptor())
+                            .currentLocation(currentLocation())
+                            .updateVersion(updateVersion)
+                            .updateLocation(updateLocation())
                             .build()));
                 return null;
             }

@@ -317,36 +317,36 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onSubscriptionRequest(message);
+                dispatcher.onSubscriptionRequest(message);
             }
         },
 
         SUBSCRIPTION_SUCCESS_RESPONSE {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onSubscriptionSuccessResponse(message);
+                dispatcher.onSubscriptionSuccessResponse(message);
             }
         },
 
         SUBSCRIPTION_FAILURE_RESPONSE {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onSubscriptionFailureResponse(message);
+                dispatcher.onSubscriptionFailureResponse(message);
             }
         },
 
         UPDATE_ANNOUNCEMENT {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onUpdateAnnouncement(message);
+                dispatcher.onUpdateAnnouncement(message);
             }
         },
 
@@ -361,27 +361,27 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onInstallationRequest(message);
+                dispatcher.onInstallationRequest(message);
             }
         },
 
         INSTALLATION_SUCCESS_RESPONSE {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onInstallationSuccessResponse(message);
+                dispatcher.onInstallationSuccessResponse(message);
             }
         },
 
         INSTALLATION_FAILURE_RESPONSE {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onInstallationFailureResponse(message);
+                dispatcher.onInstallationFailureResponse(message);
             }
         },
 
@@ -396,27 +396,27 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onUnsubscriptionRequest(message);
+                dispatcher.onUnsubscriptionRequest(message);
             }
         },
 
         UNSUBSCRIPTION_SUCCESS_RESPONSE {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onUnsubscriptionSuccessResponse(message);
+                dispatcher.onUnsubscriptionSuccessResponse(message);
             }
         },
 
         UNSUBSCRIPTION_FAILURE_RESPONSE {
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
+                                             UpdateMessageDispatcher dispatcher)
             throws UpdateMessageException {
-                listener.onUnsubscriptionFailureResponse(message);
+                dispatcher.onUnsubscriptionFailureResponse(message);
             }
         };
 
@@ -439,7 +439,7 @@ public final class UpdateMessage implements Serializable {
         }
 
         abstract void dispatchMessageTo(UpdateMessage message,
-                                        UpdateMessageListener listener)
+                                        UpdateMessageDispatcher dispatcher)
         throws UpdateMessageException;
     } // Type
 

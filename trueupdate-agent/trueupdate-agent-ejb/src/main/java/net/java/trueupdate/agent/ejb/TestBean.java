@@ -31,7 +31,7 @@ public class TestBean extends UpdateAgent.UpdateListener {
             logger = Logger.getLogger(TestBean.class.getName());
 
     @EJB
-    private UpdateAgent.Builder updateAgentBuilder;
+    private UpdateAgentBuilder updateAgentBuilder;
 
     @Resource
     private SessionContext context;
@@ -74,6 +74,8 @@ public class TestBean extends UpdateAgent.UpdateListener {
     private @Nullable <V> V log(final Callable<V> task) {
         try {
             return task.call();
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (final Exception ex) {
             context.setRollbackOnly();
             logger.log(Level.SEVERE, "Could not send message.", ex);
@@ -83,31 +85,36 @@ public class TestBean extends UpdateAgent.UpdateListener {
 
     @Override
     public void onSubscriptionSuccessResponse(UpdateMessage message) throws UpdateMessageException {
-        logger.log(Level.INFO, "Subscription Success Response: {0}", message);
+        log(message);
     }
 
     @Override
     public void onSubscriptionFailureResponse(UpdateMessage message) throws UpdateMessageException {
-        logger.log(Level.INFO, "Subscription Failure Response: {0}", message);
+        log(message);
     }
 
     @Override
     public void onInstallationSuccessResponse(UpdateMessage message) throws UpdateMessageException {
-        logger.log(Level.INFO, "Installation Success Response: {0}", message);
+        log(message);
     }
 
     @Override
     public void onInstallationFailureResponse(UpdateMessage message) throws UpdateMessageException {
-        logger.log(Level.INFO, "Installation Failure Response: {0}", message);
+        log(message);
     }
 
     @Override
     public void onUnsubscriptionSuccessResponse(UpdateMessage message) throws UpdateMessageException {
-        logger.log(Level.INFO, "Unsubscription Success Response: {0}", message);
+        log(message);
     }
 
     @Override
     public void onUnsubscriptionFailureResponse(UpdateMessage message) throws UpdateMessageException {
-        logger.log(Level.INFO, "Unsubscription Failure Response: {0}", message);
+        log(message);
+    }
+
+    private UpdateMessage log(final UpdateMessage message) {
+        logger.log(Level.INFO, "Received update message:\n{0}", message);
+        return message;
     }
 }

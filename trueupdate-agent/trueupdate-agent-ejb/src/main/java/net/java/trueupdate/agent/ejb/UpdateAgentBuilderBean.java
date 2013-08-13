@@ -14,29 +14,29 @@ import javax.jms.Destination;
 import net.java.trueupdate.agent.spec.ApplicationDescriptor;
 import net.java.trueupdate.agent.spec.UpdateAgent;
 import net.java.trueupdate.agent.spec.UpdateAgent.Builder;
-import net.java.trueupdate.agent.spec.UpdateAgent.UpdateListener;
 import net.java.trueupdate.agent.spec.UpdateAgent.Parameters;
+import net.java.trueupdate.agent.spec.UpdateAgent.UpdateListener;
 import net.java.trueupdate.message.UpdateMessage;
+import net.java.trueupdate.message.UpdateMessageDispatcher;
 import net.java.trueupdate.message.UpdateMessageException;
-import net.java.trueupdate.message.UpdateMessageListener;
 
 /**
  * @author Christian Schlichtherle
  */
 @Singleton
 @SuppressWarnings("PackageVisibleField")
-public class UpdateMessageListenerBean
-extends UpdateMessageListener implements Builder {
+public class UpdateAgentBuilderBean
+extends UpdateMessageDispatcher implements UpdateAgentBuilder {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateMessageListenerBean.class.getName());
+            logger = Logger.getLogger(UpdateAgentBuilderBean.class.getName());
 
-    static final String JNDI_NAME = "jms/trueupdate";
+    static final String DESTINATION_NAME = "jms/trueupdate";
 
-    private static final UpdateListener NULL = new UpdateListener() { };
+    private static final UpdateListener NULL = new UpdateListener();
 
     @Resource ConnectionFactory connectionFactory;
-    @Resource(lookup = JNDI_NAME) Destination destination;
+    @Resource(lookup = DESTINATION_NAME) Destination destination;
     @CheckForNull Parameters parameters;
 
     @Override public Parameters.Builder<Builder> parameters() {
@@ -66,53 +66,69 @@ extends UpdateMessageListener implements Builder {
     @Override
     protected void onSubscriptionSuccessResponse(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received subscription success response:\n{0}", message.toString());
-        listener().onSubscriptionSuccessResponse(message);
+        log(message);
+        listener(message).onSubscriptionSuccessResponse(message);
     }
 
     @Override
     protected void onSubscriptionFailureResponse(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received subscription failure response:\n{0}", message.toString());
-        listener().onSubscriptionFailureResponse(message);
+        log(message);
+        listener(message).onSubscriptionFailureResponse(message);
     }
 
     @Override
     protected void onUpdateAnnouncement(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received update announcement:\n{0}", message.toString());
-        listener().onUpdateAnnouncement(message);
+        log(message);
+        listener(message).onUpdateAnnouncement(message);
     }
 
     @Override
     protected void onInstallationSuccessResponse(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received installation success response:\n{0}", message.toString());
-        listener().onInstallationSuccessResponse(message);
+        log(message);
+        listener(message).onInstallationSuccessResponse(message);
     }
 
     @Override
     protected void onInstallationFailureResponse(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received installation failure response:\n{0}", message.toString());
-        listener().onInstallationFailureResponse(message);
+        log(message);
+        listener(message).onInstallationFailureResponse(message);
     }
 
     @Override
     protected void onUnsubscriptionSuccessResponse(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received unsubscription success response:\n{0}", message.toString());
-        listener().onUnsubscriptionSuccessResponse(message);
+        log(message);
+        listener(message).onUnsubscriptionSuccessResponse(message);
     }
 
     @Override
     protected void onUnsubscriptionFailureResponse(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Received unsubscription failure response:\n{0}", message.toString());
-        listener().onUnsubscriptionFailureResponse(message);
+        log(message);
+        listener(message).onUnsubscriptionFailureResponse(message);
     }
 
-    private UpdateListener listener() {
-        return null == parameters ? NULL : parameters.updateListener();
+    private UpdateMessage log(final UpdateMessage message) {
+        logger.log(Level.INFO, "Received update message:\n{0}", message);
+        return message;
+    }
+
+    private UpdateListener listener(UpdateMessage message) {
+        return applicationDescriptor(message).equals(applicationDescriptor())
+                    ? parameters.updateListener()
+                    : NULL;
+
+    }
+
+    private ApplicationDescriptor applicationDescriptor(UpdateMessage message) {
+        return ApplicationDescriptor
+                .builder()
+                .artifactDescriptor(message.artifactDescriptor())
+                .currentLocation(message.currentLocation())
+                .build();
     }
 }

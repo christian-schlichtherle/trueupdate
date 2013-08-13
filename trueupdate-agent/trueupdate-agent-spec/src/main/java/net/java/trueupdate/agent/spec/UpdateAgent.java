@@ -142,7 +142,7 @@ public interface UpdateAgent {
     } // Parameters
 
     /** Processes update messages from an update manager. */
-    abstract class UpdateListener {
+    class UpdateListener {
 
         public void onSubscriptionSuccessResponse(UpdateMessage message)
         throws UpdateMessageException { }

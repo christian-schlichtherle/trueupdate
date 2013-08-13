@@ -6,51 +6,21 @@ package net.java.trueupdate.message;
 
 /**
  * Processes update messages.
+ * <p>
+ * Implementations should be immutable and hence, thread-safe.
+ * <p>
+ * Applications have no need to implement this class and should not do so
+ * because it may be subject to future expansion.
  *
+ * @see UpdateMessageDispatcher
  * @author Christian Schlichtherle
  */
-public abstract class UpdateMessageListener {
+public interface UpdateMessageListener {
 
     /**
-     * Processes the given update message by dispatching the call to the
-     * corresponding {@code visit<Type>(UpdateMessage)} method, where
-     * {@code <Type>} is the {@link UpdateMessage.Type} obtained from calling
-     * the {@link UpdateMessage#type()} method.
+     * Processes the given update message.
      *
      * @param message the update message to process.
      */
-    public void onUpdateMessage(UpdateMessage message)
-    throws UpdateMessageException {
-        message.type().dispatchMessageTo(message, this);
-    }
-
-    protected void onSubscriptionRequest(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onSubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onSubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onUpdateAnnouncement(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onInstallationRequest(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onInstallationSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onInstallationFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onUnsubscriptionRequest(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
-    throws UpdateMessageException { }
-
-    protected void onUnsubscriptionFailureResponse(UpdateMessage message)
-    throws UpdateMessageException { }
+    void onUpdateMessage(UpdateMessage message) throws UpdateMessageException;
 }

@@ -15,8 +15,8 @@ import net.java.trueupdate.message.*;
  * @author Christian Schlichtherle
  */
 @Singleton
-@Local(UpdateMessageListener.class)
-public class UpdateManagerBean extends UpdateMessageListener {
+public class UpdateManagerBean
+extends UpdateMessageDispatcher implements UpdateManager {
 
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
@@ -29,6 +29,8 @@ public class UpdateManagerBean extends UpdateMessageListener {
     @PostConstruct private void postConstruct() {
         try {
             connection = connectionFactory.createConnection();
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (JMSException ex) {
             logger.log(Level.SEVERE, "Error while creating connection.", ex);
         }
@@ -37,6 +39,8 @@ public class UpdateManagerBean extends UpdateMessageListener {
     @PreDestroy private void preDestroy() {
         try {
             connection.close();
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (JMSException ex) {
             logger.log(Level.SEVERE, "Error while closing connection.", ex);
         }
@@ -44,36 +48,46 @@ public class UpdateManagerBean extends UpdateMessageListener {
 
     @Override protected void onSubscriptionRequest(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Processing subscription request:\n{0}", message.toString());
+        log(message);
         respondTo(message);
     }
 
     @Override protected void onInstallationRequest(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Processing installation request:\n{0}", message.toString());
+        log(message);
         respondTo(message);
     }
 
     @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
     throws UpdateMessageException {
-        logger.log(Level.INFO, "Processing unsubscribtion request:\n{0}", message.toString());
+        log(message);
         respondTo(message);
     }
 
-    private void respondTo(UpdateMessage request) throws UpdateMessageException {
-        send(request.successResponse());
+    private UpdateMessage log(final UpdateMessage message) {
+        logger.log(Level.INFO, "Received update message:\n{0}", message);
+        return message;
     }
 
-    private void send(final UpdateMessage message) throws UpdateMessageException {
+    private UpdateMessage respondTo(UpdateMessage request)
+    throws UpdateMessageException {
+        return send(request.successResponse());
+    }
+
+    private UpdateMessage send(final UpdateMessage message)
+    throws UpdateMessageException {
         try {
             final Destination destination = destination(message);
             final Session session = connection.createSession(true, 0);
             try {
                 session .createProducer(destination)
                         .send(session.createObjectMessage(message));
+                return message;
             } finally {
                 session.close();
             }
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new UpdateMessageException(ex);
         }
