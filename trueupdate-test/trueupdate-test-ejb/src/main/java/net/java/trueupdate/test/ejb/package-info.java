@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Implements an agent for updating an application.
+ * Provides a singleton session bean for testing the TrueUpdate Agent EJB.
  *
  * @author Christian Schlichtherle
  */

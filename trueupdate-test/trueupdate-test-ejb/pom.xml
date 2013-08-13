@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Test EJB</name>
     <description>
-        TODO
+        Provides a singleton session bean for testing the TrueUpdate Agent EJB.
     </description>
 
     <dependencies>
