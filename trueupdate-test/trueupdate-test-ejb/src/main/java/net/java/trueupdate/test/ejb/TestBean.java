@@ -5,6 +5,7 @@
 package net.java.trueupdate.test.ejb;
 
 import java.net.URI;
+import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.*;
@@ -21,6 +22,9 @@ public class TestBean extends ApplicationListener {
 
     private static final Logger
             logger = Logger.getLogger(TestBean.class.getName());
+
+    private static ResourceBundle
+            bundle = ResourceBundle.getBundle(TestBean.class.getName());
 
     @EJB
     private UpdateAgent.Builder updateAgentBuilder;
@@ -66,16 +70,22 @@ public class TestBean extends ApplicationListener {
                     .applicationListener(this)
                     .applicationDescriptor()
                         .artifactDescriptor()
-                            .groupId("net.java.truevfs")
-                            .artifactId("truevfs-kernel-spec")
-                            .version("0.9")
+                            .groupId(lookupString("groupId"))
+                            .artifactId(lookupString("artifactId"))
+                            .version(lookupString("version"))
+                            .classifier(lookupString("classifier"))
+                            .extension(lookupString("extension"))
                             .inject()
-                        .currentLocation(URI.create("here"))
+                        .currentLocation(lookupUri("currentLocation"))
                         .inject()
-                    .updateLocation(URI.create("there"))
+                    .updateLocation(lookupUri("updateLocation"))
                     .inject()
                 .build();
     }
+
+    private URI lookupUri(String key) { return URI.create(lookupString(key)); }
+
+    private String lookupString(String key) { return bundle.getString(key); }
 
     @Override public void onSubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
