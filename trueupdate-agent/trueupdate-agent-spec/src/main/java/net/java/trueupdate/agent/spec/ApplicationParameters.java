@@ -23,7 +23,8 @@ public final class ApplicationParameters {
     ApplicationParameters(final Builder<?> b) {
         this.applicationListener = requireNonNull(b.applicationListener);
         this.applicationDescriptor = requireNonNull(b.applicationDescriptor);
-        this.updateLocation = nonNullOr(b.updateLocation, applicationDescriptor.currentLocation());
+        this.updateLocation = nonNullOr(b.updateLocation,
+                applicationDescriptor.currentLocation());
     }
 
     private static <T> T nonNullOr(T value, T eagerDefault) {
