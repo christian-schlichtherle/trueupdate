@@ -23,6 +23,8 @@ import net.java.trueupdate.manager.spec.*;
                                       propertyValue = "jms/trueupdate"),
             @ActivationConfigProperty(propertyName = "destinationType",
                                       propertyValue = "javax.jms.Topic"),
+            @ActivationConfigProperty(propertyName = "messageSelector",
+                                      propertyValue = "request = false"),
         })
 public class MessageListenerBean implements MessageListener {
 

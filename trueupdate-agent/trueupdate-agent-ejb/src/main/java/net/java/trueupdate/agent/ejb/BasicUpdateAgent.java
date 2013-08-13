@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.agent.ejb;
 
-import net.java.trueupdate.agent.spec.UpdateAgentException;
 import java.net.URI;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
@@ -65,8 +64,7 @@ final class BasicUpdateAgent implements UpdateAgent {
             @Override
             public Void use(MessageProducer mp, Session s, Connection c)
             throws Exception {
-                mp.send(s.createObjectMessage(
-                        UpdateMessage
+                final UpdateMessage um = UpdateMessage
                             .builder()
                             .from(DESTINATION_URI)
                             .to(DESTINATION_URI)
@@ -75,7 +73,10 @@ final class BasicUpdateAgent implements UpdateAgent {
                             .currentLocation(currentLocation())
                             .updateVersion(updateVersion)
                             .updateLocation(updateLocation())
-                            .build()));
+                            .build();
+                final Message m = s.createObjectMessage(um);
+                m.setBooleanProperty("request", true);
+                mp.send(m);
                 return null;
             }
         });

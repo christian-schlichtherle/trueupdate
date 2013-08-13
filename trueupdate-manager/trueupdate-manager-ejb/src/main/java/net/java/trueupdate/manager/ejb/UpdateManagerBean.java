@@ -48,38 +48,41 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     @Override protected void onSubscriptionRequest(final UpdateMessage message)
     throws Exception {
-        log(message);
-        respondTo(message);
+        logResponse(respondTo(logRequest(message)));
     }
 
     @Override protected void onInstallationRequest(final UpdateMessage message)
     throws Exception {
-        log(message);
-        respondTo(message);
+        logResponse(respondTo(logRequest(message)));
     }
 
     @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
     throws Exception {
-        log(message);
-        respondTo(message);
+        logResponse(respondTo(logRequest(message)));
     }
 
-    private UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.FINE, "Received update message:\n{0}", message);
-        return message;
+    private UpdateMessage logRequest(final UpdateMessage request) {
+        logger.log(Level.FINE, "Received update message:\n{0}", request);
+        return request;
+    }
+
+    private UpdateMessage logResponse(final UpdateMessage response) {
+        logger.log(Level.FINER, "Sent update message:\n{0}", response);
+        return response;
     }
 
     private UpdateMessage respondTo(UpdateMessage request) throws Exception {
         return send(request.successResponse());
     }
 
-    private UpdateMessage send(final UpdateMessage message) throws Exception {
-        final Destination destination = destination(message);
+    private UpdateMessage send(final UpdateMessage response) throws Exception {
+        final Destination destination = destination(response);
         final Session session = connection.createSession(true, 0);
         try {
-            session .createProducer(destination)
-                    .send(session.createObjectMessage(message));
-            return message;
+            final Message message = session.createObjectMessage(response);
+            message.setBooleanProperty("request", false);
+            session.createProducer(destination).send(message);
+            return response;
         } finally {
             session.close();
         }
