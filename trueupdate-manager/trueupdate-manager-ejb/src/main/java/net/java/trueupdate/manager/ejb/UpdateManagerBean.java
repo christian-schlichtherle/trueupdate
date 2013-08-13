@@ -4,23 +4,18 @@
  */
 package net.java.trueupdate.manager.ejb;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
-import javax.ejb.Singleton;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
+import java.util.logging.*;
+import javax.annotation.*;
+import javax.ejb.*;
+import javax.jms.*;
+import javax.naming.*;
 import net.java.trueupdate.message.*;
 
 /**
  * @author Christian Schlichtherle
  */
 @Singleton
+@Local(UpdateMessageListener.class)
 public class UpdateManagerBean extends UpdateMessageListener {
 
     private static final Logger
@@ -31,8 +26,7 @@ public class UpdateManagerBean extends UpdateMessageListener {
 
     private Connection connection;
 
-    @PostConstruct
-    private void postConstruct() {
+    @PostConstruct private void postConstruct() {
         try {
             connection = connectionFactory.createConnection();
         } catch (JMSException ex) {
@@ -40,8 +34,7 @@ public class UpdateManagerBean extends UpdateMessageListener {
         }
     }
 
-    @PreDestroy
-    private void preDestroy() {
+    @PreDestroy private void preDestroy() {
         try {
             connection.close();
         } catch (JMSException ex) {
@@ -49,19 +42,22 @@ public class UpdateManagerBean extends UpdateMessageListener {
         }
     }
 
-    @Override protected void onSubscriptionRequest(UpdateMessage message)
+    @Override protected void onSubscriptionRequest(final UpdateMessage message)
     throws UpdateMessageException {
         logger.log(Level.INFO, "Processing subscription request:\n{0}", message.toString());
+        respondTo(message);
     }
 
-    @Override protected void onInstallationRequest(UpdateMessage message)
+    @Override protected void onInstallationRequest(final UpdateMessage message)
     throws UpdateMessageException {
         logger.log(Level.INFO, "Processing installation request:\n{0}", message.toString());
+        respondTo(message);
     }
 
-    @Override protected void onUnsubscriptionRequest(UpdateMessage message)
+    @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
     throws UpdateMessageException {
         logger.log(Level.INFO, "Processing unsubscribtion request:\n{0}", message.toString());
+        respondTo(message);
     }
 
     private void respondTo(UpdateMessage request) throws UpdateMessageException {
@@ -70,9 +66,11 @@ public class UpdateManagerBean extends UpdateMessageListener {
 
     private void send(final UpdateMessage message) throws UpdateMessageException {
         try {
+            final Destination destination = destination(message);
             final Session session = connection.createSession(true, 0);
             try {
-                session.createProducer(destination(message));
+                session .createProducer(destination)
+                        .send(session.createObjectMessage(message));
             } finally {
                 session.close();
             }
@@ -81,7 +79,8 @@ public class UpdateManagerBean extends UpdateMessageListener {
         }
     }
 
-    private static Destination destination(UpdateMessage message) {
-        throw new UnsupportedOperationException();
+    private Destination destination(UpdateMessage message)
+    throws NamingException {
+        return InitialContext.doLookup(message.to().toString());
     }
 }

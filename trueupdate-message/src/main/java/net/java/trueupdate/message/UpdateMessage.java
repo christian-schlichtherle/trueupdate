@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import static java.util.Objects.requireNonNull;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
@@ -32,7 +33,7 @@ public final class UpdateMessage implements Serializable {
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
     private final String status, updateVersion;
-    private final URI oldLocation, newLocation;
+    private final URI currentLocation, updateLocation;
 
     UpdateMessage(final Builder b) {
         this.timestamp = nonNullOrNow(b.timestamp);
@@ -40,10 +41,10 @@ public final class UpdateMessage implements Serializable {
         this.to = requireNonNull(b.to);
         this.type = requireNonNull(b.type);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
-        this.status = nonNullOr(b.status, "");
+        this.currentLocation = nonNullOr(b.currentLocation, EMPTY);
         this.updateVersion = nonNullOr(b.updateVersion, "");
-        this.oldLocation = nonNullOr(b.oldLocation, EMPTY);
-        this.newLocation = nonNullOr(b.newLocation, EMPTY);
+        this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
+        this.status = nonNullOr(b.status, "");
     }
 
     private static long nonNullOrNow(Long timestamp) {
@@ -56,16 +57,16 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns a new builder with all properties set from this instance. */
     public Builder update() {
-        return create()
+        return builder()
                 .timestamp(timestamp())
                 .from(from())
                 .to(to())
                 .type(type())
                 .artifactDescriptor(artifactDescriptor())
-                .status(status())
+                .currentLocation(currentLocation())
                 .updateVersion(updateVersion())
-                .oldLocation(oldLocation())
-                .newLocation(newLocation());
+                .updateLocation(updateLocation())
+                .status(status());
     }
 
     /**
@@ -74,10 +75,11 @@ public final class UpdateMessage implements Serializable {
      * time of the update message in milliseconds since the epoch.
      * The default value for the properties {@code status} and
      * {@code updateVersion} is an empty string.
-     * The default value for the properties {@code oldLocation} and
-     * {@code newLocation} is an empty URI.
+     * The default value for the property {@code location} is an empty URI.
+     * The default value for the property {@code updateLocation} is the
+     * effective value of the property {@code location}.
      */
-    public static Builder create() { return new Builder(); }
+    public static Builder builder() { return new Builder(); }
 
     /** Returns the update message timestamp. */
     public long timestamp() { return timestamp; }
@@ -131,14 +133,14 @@ public final class UpdateMessage implements Serializable {
                 : update().artifactDescriptor(artifactDescriptor).build();
     }
 
-    /** Returns the update message status. */
-    public String status() { return status; }
+    /** Returns the current location. */
+    public URI currentLocation() { return currentLocation; }
 
-    /** Returns an update message with the given update message status. */
-    public UpdateMessage status(final String status) {
-        return this.status.equals(status)
+    /** Returns an update message with the given current location. */
+    public UpdateMessage currentLocation(URI currentLocation) {
+        return this.currentLocation.equals(currentLocation)
                 ? this
-                : update().status(status).build();
+                : update().currentLocation(currentLocation).build();
     }
 
     /** Returns the update version. */
@@ -151,28 +153,28 @@ public final class UpdateMessage implements Serializable {
                 : update().updateVersion(updateVersion).build();
     }
 
-    /** Returns the old application location. */
-    public URI oldLocation() { return oldLocation; }
-
-    /** Returns an update message with the given old application location. */
-    public UpdateMessage oldLocation(URI oldLocation) {
-        return this.oldLocation.equals(oldLocation)
-                ? this
-                : update().oldLocation(oldLocation).build();
-    }
-
     /**
-     * Returns the new application location.
-     * If this equals {@link #oldLocation()}, then the update should happen
+     * Returns the update location.
+     * If this equals {@link #currentLocation()}, then the update should happen
      * in-place.
      */
-    public URI newLocation() { return newLocation; }
+    public URI updateLocation() { return updateLocation; }
 
-    /** Returns an update message with the given new application location. */
-    public UpdateMessage newLocation(URI newLocation) {
-        return this.newLocation.equals(newLocation)
+    /** Returns an update message with the given update location. */
+    public UpdateMessage updateLocation(URI newLocation) {
+        return this.updateLocation.equals(newLocation)
                 ? this
-                : update().newLocation(newLocation).build();
+                : update().updateLocation(newLocation).build();
+    }
+
+    /** Returns the status text. */
+    public String status() { return status; }
+
+    /** Returns an update message with the given status text. */
+    public UpdateMessage status(final String status) {
+        return this.status.equals(status)
+                ? this
+                : update().status(status).build();
     }
 
     /**
@@ -186,11 +188,11 @@ public final class UpdateMessage implements Serializable {
      */
     public UpdateMessage successResponse() {
         return update()
+                .timestamp(null)
                 .type(type().successResponse())
                 .from(to())
                 .to(from())
                 .status(null)
-                .timestamp(null)
                 .build();
     }
 
@@ -206,11 +208,11 @@ public final class UpdateMessage implements Serializable {
      */
     public UpdateMessage failureResponse(Exception ex) {
         return update()
+                .timestamp(null)
                 .type(type().failureResponse())
                 .from(to())
                 .to(from())
                 .status(ex.toString())
-                .timestamp(null)
                 .build();
     }
 
@@ -227,10 +229,10 @@ public final class UpdateMessage implements Serializable {
                 this.to().equals(that.to()) &&
                 this.type().equals(that.type()) &&
                 this.artifactDescriptor().equals(that.artifactDescriptor()) &&
-                this.status().equals(that.status()) &&
+                this.currentLocation().equals(that.currentLocation()) &&
                 this.updateVersion().equals(that.updateVersion()) &&
-                this.oldLocation().equals(that.oldLocation()) &&
-                this.newLocation().equals(that.newLocation());
+                this.updateLocation().equals(that.updateLocation()) &&
+                this.status().equals(that.status());
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
@@ -241,10 +243,10 @@ public final class UpdateMessage implements Serializable {
         hash = 31 * hash + to().hashCode();
         hash = 31 * hash + type().hashCode();
         hash = 31 * hash + artifactDescriptor().hashCode();
-        hash = 31 * hash + status().hashCode();
+        hash = 31 * hash + currentLocation().hashCode();
         hash = 31 * hash + updateVersion().hashCode();
-        hash = 31 * hash + oldLocation().hashCode();
-        hash = 31 * hash + newLocation().hashCode();
+        hash = 31 * hash + updateLocation().hashCode();
+        hash = 31 * hash + status().hashCode();
         return hash;
     }
 
@@ -259,14 +261,15 @@ public final class UpdateMessage implements Serializable {
                 .append("From: ").append(from()).append('\n')
                 .append("To: ").append(to()).append('\n')
                 .append("Type: ").append(type()).append('\n')
-                .append("Status: ").append(status()).append('\n')
                 .append("Artifact-Descriptor: ").append(artifactDescriptor()).append('\n');
+        if (!currentLocation().equals(EMPTY))
+            sb.append("Current-Location: ").append(currentLocation()).append('\n');
         if (!updateVersion().isEmpty())
             sb.append("Update-Version: ").append(updateVersion()).append('\n');
-        if (!oldLocation().equals(EMPTY))
-            sb.append("Old-Location: ").append(oldLocation()).append('\n');
-        if (!newLocation().equals(EMPTY))
-            sb.append("New-Location: ").append(newLocation()).append('\n');
+        if (!updateLocation().equals(EMPTY))
+            sb.append("Update-Location: ").append(updateLocation()).append('\n');
+        if (!status().isEmpty())
+            sb.append("Status: ").append(status()).append('\n');
         return sb.toString();
     }
 
@@ -445,12 +448,12 @@ public final class UpdateMessage implements Serializable {
     @SuppressWarnings("PackageVisibleField")
     public static final class Builder {
 
-        @Nullable Long timestamp;
-        @Nullable URI from, to;
-        @Nullable Type type;
-        @Nullable ArtifactDescriptor artifactDescriptor;
-        @Nullable String status, updateVersion;
-        @Nullable URI oldLocation, newLocation;
+        @CheckForNull Long timestamp;
+        @CheckForNull URI from, to;
+        @CheckForNull Type type;
+        @CheckForNull ArtifactDescriptor artifactDescriptor;
+        @CheckForNull String status, updateVersion;
+        @CheckForNull URI currentLocation, updateLocation;
 
         Builder() { }
 
@@ -474,14 +477,14 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
-        public Builder status(final @Nullable String status) {
-            this.status = status;
-            return this;
-        }
-
         public Builder artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
+            return this;
+        }
+
+        public Builder currentLocation(final @Nullable URI currentLocation) {
+            this.currentLocation = currentLocation;
             return this;
         }
 
@@ -490,13 +493,13 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
-        public Builder oldLocation(final @Nullable URI oldLocation) {
-            this.oldLocation = oldLocation;
+        public Builder updateLocation(final @Nullable URI updateLocation) {
+            this.updateLocation = updateLocation;
             return this;
         }
 
-        public Builder newLocation(final @Nullable URI newLocation) {
-            this.newLocation = newLocation;
+        public Builder status(final @Nullable String status) {
+            this.status = status;
             return this;
         }
 

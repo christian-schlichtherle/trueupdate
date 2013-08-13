@@ -21,7 +21,7 @@ public final class ArtifactDescriptor implements Serializable {
 
     private final String groupId, artifactId, version, classifier, extension;
 
-    ArtifactDescriptor(final Builder b) {
+    ArtifactDescriptor(final Builder<?> b) {
         this.groupId = requireNonEmpty(b.groupId);
         this.artifactId = requireNonEmpty(b.artifactId);
         this.version = requireNonEmpty(b.version);
@@ -34,8 +34,8 @@ public final class ArtifactDescriptor implements Serializable {
     }
 
     /** Returns a new builder with all properties set from this instance. */
-    public Builder update() {
-        return create()
+    public Builder<Void> update() {
+        return builder()
                 .groupId(groupId())
                 .artifactId(artifactId())
                 .version(version())
@@ -49,7 +49,7 @@ public final class ArtifactDescriptor implements Serializable {
      * and the default value for the property {@code extension} is
      * {@code "jar"}.
      */
-    public static Builder create() { return new Builder(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     static String requireNonEmpty(final String string) {
         if (string.isEmpty()) throw new IllegalArgumentException();
@@ -163,39 +163,43 @@ public final class ArtifactDescriptor implements Serializable {
 
     /** A builder for an artifact descriptor. */
     @SuppressWarnings("PackageVisibleField")
-    public static final class Builder {
+    public static class Builder<T> {
 
-        @Nullable String groupId, artifactId, version, classifier, extension;
+        @CheckForNull String groupId, artifactId, version, classifier, extension;
 
-        Builder() { }
+        protected Builder() { }
 
-        public Builder groupId(final @Nullable String groupId) {
+        public Builder<T> groupId(final @Nullable String groupId) {
             this.groupId = groupId;
             return this;
         }
 
-        public Builder artifactId(final @Nullable String artifactId) {
+        public Builder<T> artifactId(final @Nullable String artifactId) {
             this.artifactId = artifactId;
             return this;
         }
 
-        public Builder version(final @Nullable String version) {
+        public Builder<T> version(final @Nullable String version) {
             this.version = version;
             return this;
         }
 
-        public Builder classifier(final @Nullable String classifier) {
+        public Builder<T> classifier(final @Nullable String classifier) {
             this.classifier = classifier;
             return this;
         }
 
-        public Builder extension(final @Nullable String extension) {
+        public Builder<T> extension(final @Nullable String extension) {
             this.extension = extension;
             return this;
         }
 
         public ArtifactDescriptor build() {
             return new ArtifactDescriptor(this);
+        }
+
+        public T inject() {
+            throw new IllegalStateException("No target for injection.");
         }
     } // Builder
 }

@@ -31,7 +31,7 @@ public class MessageListenerBean implements MessageListener {
             logger = Logger.getLogger(MessageListenerBean.class.getName());
 
     @EJB
-    private UpdateAgentBean updateAgent;
+    private UpdateMessageListener updateMessageListener;
 
     @Resource
     private MessageDrivenContext context;
@@ -41,7 +41,7 @@ public class MessageListenerBean implements MessageListener {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateAgent.onUpdateMessage((UpdateMessage) body);
+                    updateMessageListener.onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;

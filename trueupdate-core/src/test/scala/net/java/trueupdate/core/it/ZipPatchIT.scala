@@ -41,7 +41,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                 loan(secondZipFile()) to { secondZipFile =>
                   val ref = List.empty[String] ++
                     secondZipFile.entries.asScala.map(_.getName)
-                  val diff = ZipDiff.create
+                  val diff = ZipDiff.builder
                     .firstZipFile(firstZipFile)
                     .secondZipFile(secondZipFile)
                     .build

@@ -32,7 +32,7 @@ public abstract class ZipPatch {
     abstract @WillNotClose ZipFile inputZipFile();
 
     /** Returns a new builder for a ZIP patch. */
-    public static Builder create() { return new Builder(); }
+    public static Builder builder() { return new Builder(); }
 
     /**
      * Applies the configured ZIP patch file.
@@ -196,7 +196,7 @@ public abstract class ZipPatch {
     /** A builder for a ZIP patch. */
     public static final class Builder {
 
-        private @Nullable ZipFile zipPatchFile, inputZipFile;
+        private @CheckForNull ZipFile zipPatchFile, inputZipFile;
         private boolean outputJarFile;
 
         Builder() { }

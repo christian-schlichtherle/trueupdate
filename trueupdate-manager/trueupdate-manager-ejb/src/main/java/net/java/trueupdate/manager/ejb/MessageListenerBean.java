@@ -5,13 +5,9 @@
 package net.java.trueupdate.manager.ejb;
 
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.annotation.Resource;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+import javax.ejb.*;
 import javax.jms.*;
 import net.java.trueupdate.message.*;
 
@@ -31,7 +27,7 @@ public class MessageListenerBean implements MessageListener {
             logger = Logger.getLogger(MessageListenerBean.class.getName());
 
     @EJB
-    private UpdateManagerBean updateManager;
+    private UpdateMessageListener updateMessageListener;
 
     @Resource
     private MessageDrivenContext context;
@@ -41,7 +37,7 @@ public class MessageListenerBean implements MessageListener {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateManager.onUpdateMessage((UpdateMessage) body);
+                    updateMessageListener.onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;

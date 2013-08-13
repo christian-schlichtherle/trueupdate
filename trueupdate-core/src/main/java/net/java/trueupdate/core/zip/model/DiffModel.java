@@ -69,7 +69,7 @@ public final class DiffModel implements Serializable {
     }
 
     /** Returns a new builder for a diff model. */
-    public static Builder create() { return new Builder(); }
+    public static Builder builder() { return new Builder(); }
 
     private static @Nullable Integer lengthBytes(final MessageDigest digest) {
         try {
@@ -239,9 +239,9 @@ public final class DiffModel implements Serializable {
     })
     public static final class Builder {
 
-        @Nullable MessageDigest messageDigest;
-        @Nullable Collection<EntryNameAndTwoDigests> changed = emptyList();
-        @Nullable Collection<EntryNameAndDigest>
+        @CheckForNull MessageDigest messageDigest;
+        @CheckForNull Collection<EntryNameAndTwoDigests> changed = emptyList();
+        @CheckForNull Collection<EntryNameAndDigest>
                 unchanged = emptyList(),
                 added = emptyList(),
                 removed = emptyList();

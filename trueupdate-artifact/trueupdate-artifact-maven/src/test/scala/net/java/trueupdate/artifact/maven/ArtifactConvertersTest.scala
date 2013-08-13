@@ -21,7 +21,7 @@ class ArtifactConvertersTest extends WordSpec {
       ("groupId", "artifactId", "version", "classifier", "extension")
     )
     forAll(table) { (groupId, artifactId, version, classifier, extension) =>
-      val descriptor = ArtifactDescriptor.create
+      val descriptor = ArtifactDescriptor.builder
         .groupId(groupId)
         .artifactId(artifactId)
         .version(version)

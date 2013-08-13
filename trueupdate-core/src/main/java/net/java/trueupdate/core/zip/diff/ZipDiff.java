@@ -33,7 +33,7 @@ public abstract class ZipDiff {
     abstract MessageDigest messageDigest();
 
     /** Returns a new builder for a ZIP diff. */
-    public static Builder create() { return new Builder(); }
+    public static Builder builder() { return new Builder(); }
 
     /**
      * Writes a ZIP patch file to the given sink.
@@ -161,7 +161,7 @@ public abstract class ZipDiff {
                 removed = new TreeMap<>();
 
         DiffModel buildDiffModel() {
-            return DiffModel.create()
+            return DiffModel.builder()
                     .messageDigest(messageDigest())
                     .changedEntries(changed.values())
                     .unchangedEntries(unchanged.values())
@@ -251,8 +251,8 @@ public abstract class ZipDiff {
      */
     public static final class Builder {
 
-        private @Nullable ZipFile firstZipFile, secondZipFile;
-        private @Nullable MessageDigest messageDigest;
+        private @CheckForNull ZipFile firstZipFile, secondZipFile;
+        private @CheckForNull MessageDigest messageDigest;
 
         Builder() { }
 
