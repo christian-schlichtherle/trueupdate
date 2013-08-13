@@ -5,6 +5,7 @@
 package net.java.trueupdate.test.ejb;
 
 import java.net.URI;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.logging.*;
@@ -85,7 +86,10 @@ public class TestBean extends ApplicationListener {
 
     private URI lookupUri(String key) { return URI.create(lookupString(key)); }
 
-    private String lookupString(String key) { return bundle.getString(key); }
+    private @Nullable String lookupString(String key) {
+        try { return bundle.getString(key); }
+        catch (MissingResourceException ex) { return null; }
+    }
 
     @Override public void onSubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
