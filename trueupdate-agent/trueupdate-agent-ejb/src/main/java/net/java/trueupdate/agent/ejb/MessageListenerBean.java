@@ -4,16 +4,12 @@
  */
 package net.java.trueupdate.agent.ejb;
 
-import net.java.trueupdate.manager.spec.UpdateMessage;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.annotation.Resource;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+import javax.ejb.*;
 import javax.jms.*;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * @author Christian Schlichtherle
@@ -31,7 +27,7 @@ public class MessageListenerBean implements MessageListener {
             logger = Logger.getLogger(MessageListenerBean.class.getName());
 
     @EJB
-    private UpdateAgentBuilder updateAgentBuilder;
+    private UpdateMessageListener updateMessageListener;
 
     @Resource
     private MessageDrivenContext context;
@@ -41,7 +37,7 @@ public class MessageListenerBean implements MessageListener {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateAgentBuilder.onUpdateMessage((UpdateMessage) body);
+                    updateMessageListener.onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;

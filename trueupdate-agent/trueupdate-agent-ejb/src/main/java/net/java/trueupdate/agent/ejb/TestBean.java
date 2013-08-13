@@ -6,20 +6,11 @@ package net.java.trueupdate.agent.ejb;
 
 import java.net.URI;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import net.java.trueupdate.agent.spec.ApplicationListener;
-import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.manager.spec.UpdateMessage;
-import net.java.trueupdate.manager.spec.UpdateMessageException;
+import java.util.logging.*;
+import javax.annotation.*;
+import javax.ejb.*;
+import net.java.trueupdate.agent.spec.*;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * @author Christian Schlichtherle
@@ -37,7 +28,7 @@ public class TestBean extends ApplicationListener {
     @Resource
     private SessionContext context;
 
-    @PostConstruct public void subscribe() {
+    @PostConstruct private void subscribe() {
         log(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 updateAgent().subscribe();
@@ -46,7 +37,7 @@ public class TestBean extends ApplicationListener {
         });
     }
 
-    @PreDestroy public void unsubscribe() {
+    @PreDestroy private void unsubscribe() {
         log(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 updateAgent().unsubscribe();
@@ -56,6 +47,8 @@ public class TestBean extends ApplicationListener {
     }
 
     private UpdateAgent updateAgent() {
+        // The update agent should normally get cached, but isn't done so for
+        // testing purposes.
         return updateAgentBuilder
                 .applicationParameters()
                     .applicationListener(this)
@@ -79,7 +72,7 @@ public class TestBean extends ApplicationListener {
             throw ex;
         } catch (final Exception ex) {
             context.setRollbackOnly();
-            logger.log(Level.SEVERE, "Could not send message.", ex);
+            logger.log(Level.SEVERE, "Error while processing task.", ex);
             return null;
         }
     }

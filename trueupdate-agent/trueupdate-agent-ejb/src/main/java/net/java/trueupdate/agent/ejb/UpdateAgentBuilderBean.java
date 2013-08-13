@@ -4,29 +4,23 @@
  */
 package net.java.trueupdate.agent.ejb;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Resource;
-import javax.ejb.Singleton;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import net.java.trueupdate.agent.spec.ApplicationListener;
-import net.java.trueupdate.agent.spec.ApplicationParameters;
-import net.java.trueupdate.agent.spec.UpdateAgent;
+import java.util.logging.*;
+import javax.annotation.*;
+import javax.ejb.*;
+import javax.jms.*;
+import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.agent.spec.UpdateAgent.Builder;
-import net.java.trueupdate.manager.spec.ApplicationDescriptor;
-import net.java.trueupdate.manager.spec.UpdateMessage;
-import net.java.trueupdate.manager.spec.UpdateMessageDispatcher;
-import net.java.trueupdate.manager.spec.UpdateMessageException;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * @author Christian Schlichtherle
  */
 @Singleton
 @SuppressWarnings("PackageVisibleField")
+@Local({ UpdateMessageListener.class, UpdateAgent.Builder.class })
 public class UpdateAgentBuilderBean
-extends UpdateMessageDispatcher implements UpdateAgentBuilder {
+extends UpdateMessageDispatcher
+implements UpdateMessageListener, UpdateAgent.Builder {
 
     private static final Logger
             logger = Logger.getLogger(UpdateAgentBuilderBean.class.getName());
