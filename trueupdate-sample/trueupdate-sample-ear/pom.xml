@@ -10,22 +10,28 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-manager</artifactId>
+        <artifactId>trueupdate-sample</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-ejb</artifactId>
-    <packaging>ejb</packaging>
+    <artifactId>trueupdate-sample-ear</artifactId>
+    <packaging>ear</packaging>
 
-    <name>TrueUpdate Manager EJB</name>
+    <name>TrueUpdate Sample EAR</name>
     <description>
-        Provides an update manager EJB for updating enterprise applications.
+        TODO
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-spec</artifactId>
+            <artifactId>trueupdate-agent-ejb</artifactId>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-sample-ejb</artifactId>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

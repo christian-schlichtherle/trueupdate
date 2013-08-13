@@ -105,24 +105,24 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-spec</artifactId>
+                <artifactId>trueupdate-artifact-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-spec</artifactId>
+                <artifactId>trueupdate-artifact-maven</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-spec</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-spec</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -174,8 +174,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-test-ejb</artifactId>
+                <artifactId>trueupdate-sample-ejb</artifactId>
                 <type>ejb</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-server-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -327,7 +332,7 @@
         <module>trueupdate-core</module>
         <module>trueupdate-jax-rs</module>
         <module>trueupdate-manager</module>
+        <module>trueupdate-sample</module>
         <module>trueupdate-server</module>
-        <module>trueupdate-test</module>
     </modules>
 </project>

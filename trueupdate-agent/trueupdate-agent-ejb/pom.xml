@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Agent EJB</name>
     <description>
-        TODO
+        Provides an update agent EJB for updating an enterprise application.
     </description>
 
     <dependencies>

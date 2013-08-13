@@ -18,7 +18,9 @@
     <packaging>ear</packaging>
 
     <name>TrueUpdate Manager EAR</name>
-    <description>TODO</description>
+    <description>
+        TODO
+    </description>
 
     <dependencies>
         <dependency>

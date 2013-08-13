@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Manager</name>
     <description>
-        The parent POM for TrueUpdate Managers.
+        The parent POM for TrueUpdate Manager modules.
     </description>
 
     <modules>

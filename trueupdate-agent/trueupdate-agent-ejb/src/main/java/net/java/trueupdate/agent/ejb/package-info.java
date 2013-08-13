@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Implements an agent for updating an application.
+ * Provides an update agent EJB for updating an enterprise application.
  *
  * @author Christian Schlichtherle
  */

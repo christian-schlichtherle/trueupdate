@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Agent</name>
     <description>
-        The parent POM for TrueUpdate Agents.
+        The parent POM for TrueUpdate Agent modules.
     </description>
 
     <modules>

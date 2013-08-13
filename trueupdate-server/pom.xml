@@ -19,10 +19,11 @@
 
     <name>TrueUpdate Server</name>
     <description>
-        The parent POM for TrueUpdate Servers.
+        The parent POM for TrueUpdate Server modules.
     </description>
 
     <modules>
+        <module>trueupdate-server-maven</module>
         <module>trueupdate-server-war</module>
     </modules>
 </project>

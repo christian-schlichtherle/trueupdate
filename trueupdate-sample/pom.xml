@@ -10,26 +10,20 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-manager</artifactId>
+        <artifactId>trueupdate</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-ejb</artifactId>
-    <packaging>ejb</packaging>
+    <artifactId>trueupdate-sample</artifactId>
+    <packaging>pom</packaging>
 
-    <name>TrueUpdate Manager EJB</name>
+    <name>TrueUpdate Sample</name>
     <description>
-        Provides an update manager EJB for updating enterprise applications.
+        The parent POM for TrueUpdate Sample modules.
     </description>
 
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>trueupdate-sample-ear</module>
+        <module>trueupdate-sample-ejb</module>
+    </modules>
 </project>

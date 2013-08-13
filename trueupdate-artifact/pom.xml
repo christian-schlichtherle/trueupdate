@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Artifact</name>
     <description>
-        The parent POM for TrueUpdate Artifacts.
+        The parent POM for TrueUpdate Artifact modules.
     </description>
 
     <modules>

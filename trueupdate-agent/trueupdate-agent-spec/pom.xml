@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Agent Specification</name>
     <description>
-        Specifies an agent for updating an application.
+        Specifies an update agent for updating an application.
     </description>
 
     <dependencies>
