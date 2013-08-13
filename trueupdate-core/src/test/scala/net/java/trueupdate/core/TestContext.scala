@@ -8,7 +8,7 @@ import java.nio.charset.Charset
 import java.lang.String
 import javax.xml.bind.JAXBContext
 import net.java.trueupdate.core.io.MemoryStore
-import net.java.trueupdate.core.codec.{TestJaxbCodec, JaxbCodec}
+import net.java.trueupdate.core.codec._
 import org.slf4j.LoggerFactory
 import org.scalatest.matchers.ShouldMatchers._
 import TestContext._

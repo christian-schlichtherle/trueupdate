@@ -3,7 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a RESTful web service for updating web apps.
+ * Provides a RESTful web service for diffing JARs in one or more Maven
+ * repositories.
  *
  * @author Christian Schlichtherle
  */

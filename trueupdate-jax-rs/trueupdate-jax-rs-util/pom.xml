@@ -10,21 +10,14 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-jax-rs</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-jax-rs</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>trueupdate-jax-rs-util</artifactId>
 
-    <name>TrueUpdate JAX-RS</name>
+    <name>TrueUpdate JAX-RS Utilities</name>
     <description>
-        The parent POM for TrueUpdate JAX-RS.
+        The stuff that didn't fit anywhere else.
     </description>
-
-    <modules>
-        <module>trueupdate-jax-rs-client</module>
-        <module>trueupdate-jax-rs-server</module>
-        <module>trueupdate-jax-rs-util</module>
-    </modules>
 </project>
