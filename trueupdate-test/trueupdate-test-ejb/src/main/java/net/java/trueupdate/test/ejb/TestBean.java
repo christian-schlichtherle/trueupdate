@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.ejb;
+package net.java.trueupdate.test.ejb;
 
 import java.net.URI;
 import java.util.concurrent.Callable;
@@ -89,8 +89,7 @@ public class TestBean extends ApplicationListener {
 
     @Override public void onUpdateAnnouncement(UpdateMessage message)
     throws Exception {
-        log(message);
-        updateAgent().install(message.updateVersion());
+        updateAgent().install(log(message).updateVersion());
     }
 
     @Override public void onInstallationSuccessResponse(UpdateMessage message)

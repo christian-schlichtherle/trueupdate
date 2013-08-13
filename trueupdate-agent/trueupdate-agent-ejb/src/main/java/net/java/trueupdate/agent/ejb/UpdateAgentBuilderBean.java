@@ -27,9 +27,14 @@ implements UpdateMessageListener, UpdateAgent.Builder {
 
     static final String DESTINATION_NAME = "jms/trueupdate";
 
-    @Resource ConnectionFactory connectionFactory;
-    @Resource(lookup = DESTINATION_NAME) Destination destination;
-    @CheckForNull ApplicationParameters applicationParameters;
+    @Resource
+    ConnectionFactory connectionFactory;
+
+    @Resource(lookup = DESTINATION_NAME)
+    Destination destination;
+
+    @CheckForNull
+    ApplicationParameters applicationParameters;
 
     private final UpdateMessageFilter filter = new UpdateMessageFilter() {
         @Override public boolean accept(UpdateMessage message) {
@@ -46,63 +51,56 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     }
 
     @Override public Builder applicationParameters(
-            final ApplicationParameters parameters) {
-        if (anotherApplicationDescriptor(parameters))
+            final ApplicationParameters applicationParameters) {
+        if (anotherApplicationDescriptor(applicationParameters))
             throw new IllegalArgumentException(
                     "Cannot create an update agent for another application descriptor.");
-        this.applicationParameters = parameters;
+        this.applicationParameters = applicationParameters;
         return this;
     }
 
     @Override public UpdateAgent build() { return new BasicUpdateAgent(this); }
 
     @Override
-    protected void onSubscriptionSuccessResponse(final UpdateMessage message)
+    protected void onSubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onSubscriptionSuccessResponse(message);
+        applicationListener().onSubscriptionSuccessResponse(log(message));
     }
 
     @Override
-    protected void onSubscriptionFailureResponse(final UpdateMessage message)
+    protected void onSubscriptionFailureResponse(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onSubscriptionFailureResponse(message);
+        applicationListener().onSubscriptionFailureResponse(log(message));
     }
 
     @Override
-    protected void onUpdateAnnouncement(final UpdateMessage message)
+    protected void onUpdateAnnouncement(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onUpdateAnnouncement(message);
+        applicationListener().onUpdateAnnouncement(log(message));
     }
 
     @Override
-    protected void onInstallationSuccessResponse(final UpdateMessage message)
+    protected void onInstallationSuccessResponse(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onInstallationSuccessResponse(message);
+        applicationListener().onInstallationSuccessResponse(log(message));
     }
 
     @Override
-    protected void onInstallationFailureResponse(final UpdateMessage message)
+    protected void onInstallationFailureResponse(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onInstallationFailureResponse(message);
+        applicationListener().onInstallationFailureResponse(log(message));
     }
 
     @Override
-    protected void onUnsubscriptionSuccessResponse(final UpdateMessage message)
+    protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onUnsubscriptionSuccessResponse(message);
+        applicationListener().onUnsubscriptionSuccessResponse(log(message));
     }
 
     @Override
-    protected void onUnsubscriptionFailureResponse(final UpdateMessage message)
+    protected void onUnsubscriptionFailureResponse(UpdateMessage message)
     throws Exception {
-        log(message);
-        listener().onUnsubscriptionFailureResponse(message);
+        applicationListener().onUnsubscriptionFailureResponse(log(message));
     }
 
     private boolean anotherApplicationDescriptor(
@@ -111,9 +109,10 @@ implements UpdateMessageListener, UpdateAgent.Builder {
         return null != ad && !ad.equals(parameters.applicationDescriptor());
     }
 
-    private ApplicationListener listener() {
-        assert null != applicationParameters : "Error in update message filter.";
-        return applicationParameters.applicationListener();
+    private ApplicationListener applicationListener() {
+        final ApplicationParameters ap = applicationParameters;
+        assert null != ap : "The filter should not have accepted this update message.";
+        return ap.applicationListener();
     }
 
     private @CheckForNull ApplicationDescriptor applicationDescriptor() {

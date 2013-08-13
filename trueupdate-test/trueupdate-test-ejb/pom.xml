@@ -10,20 +10,26 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-test</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>trueupdate-test-ejb</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate Agent</name>
+    <name>TrueUpdate Test EJB</name>
     <description>
-        The parent POM for TrueUpdate Agents.
+        TODO
     </description>
 
-    <modules>
-        <module>trueupdate-agent-ejb</module>
-        <module>trueupdate-agent-spec</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-agent-spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>
