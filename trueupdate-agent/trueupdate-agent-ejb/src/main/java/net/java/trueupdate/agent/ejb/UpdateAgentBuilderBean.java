@@ -33,6 +33,14 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     @Resource(lookup = DESTINATION_NAME) Destination destination;
     @CheckForNull ApplicationParameters applicationParameters;
 
+    private final UpdateMessageFilter filter = new UpdateMessageFilter() {
+        @Override public boolean accept(UpdateMessage message) {
+            return message.applicationDescriptor().equals(applicationDescriptor());
+        }
+    };
+
+    @Override protected UpdateMessageFilter filter() { return filter; }
+
     @Override public ApplicationParameters.Builder<Builder> applicationParameters() {
         return new ApplicationParameters.Builder<Builder>() {
             @Override public Builder inject() { return applicationParameters(build()); }
@@ -54,49 +62,49 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     protected void onSubscriptionSuccessResponse(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onSubscriptionSuccessResponse(message);
+        listener().onSubscriptionSuccessResponse(message);
     }
 
     @Override
     protected void onSubscriptionFailureResponse(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onSubscriptionFailureResponse(message);
+        listener().onSubscriptionFailureResponse(message);
     }
 
     @Override
     protected void onUpdateAnnouncement(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onUpdateAnnouncement(message);
+        listener().onUpdateAnnouncement(message);
     }
 
     @Override
     protected void onInstallationSuccessResponse(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onInstallationSuccessResponse(message);
+        listener().onInstallationSuccessResponse(message);
     }
 
     @Override
     protected void onInstallationFailureResponse(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onInstallationFailureResponse(message);
+        listener().onInstallationFailureResponse(message);
     }
 
     @Override
     protected void onUnsubscriptionSuccessResponse(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onUnsubscriptionSuccessResponse(message);
+        listener().onUnsubscriptionSuccessResponse(message);
     }
 
     @Override
     protected void onUnsubscriptionFailureResponse(final UpdateMessage message)
     throws UpdateMessageException {
         log(message);
-        listener(message).onUnsubscriptionFailureResponse(message);
+        listener().onUnsubscriptionFailureResponse(message);
     }
 
     private boolean anotherApplicationDescriptor(
@@ -105,20 +113,18 @@ implements UpdateMessageListener, UpdateAgent.Builder {
         return null != ad && !ad.equals(parameters.applicationDescriptor());
     }
 
+    private ApplicationListener listener() {
+        assert null != applicationParameters : "Error in update message filter.";
+        return applicationParameters.applicationListener();
+    }
+
     private @CheckForNull ApplicationDescriptor applicationDescriptor() {
         final ApplicationParameters ap = applicationParameters;
         return null == ap ? null : ap.applicationDescriptor();
     }
 
-    private ApplicationListener listener(UpdateMessage message) {
-        return message.applicationDescriptor().equals(applicationDescriptor())
-                    ? applicationParameters.applicationListener()
-                    : NULL;
-
-    }
-
     private static UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.INFO, "Received update message:\n{0}", message);
+        logger.log(Level.FINE, "Received update message:\n{0}", message);
         return message;
     }
 }
