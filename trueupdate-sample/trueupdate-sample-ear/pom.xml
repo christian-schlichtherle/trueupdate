@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Sample EAR</name>
     <description>
-        TODO
+        Bundles the components of the TrueUpdate Sample application.
     </description>
 
     <dependencies>

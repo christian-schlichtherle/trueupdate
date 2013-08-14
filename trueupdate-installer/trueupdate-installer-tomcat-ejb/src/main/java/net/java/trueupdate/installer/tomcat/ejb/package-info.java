@@ -9,4 +9,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.manager.tomcat;
+package net.java.trueupdate.installer.tomcat.ejb;

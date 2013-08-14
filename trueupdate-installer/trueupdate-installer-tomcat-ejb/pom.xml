@@ -14,10 +14,10 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-installer-tomcat</artifactId>
+    <artifactId>trueupdate-installer-tomcat-ejb</artifactId>
     <packaging>ejb</packaging>
 
-    <name>TrueUpdate Installer Tomcat</name>
+    <name>TrueUpdate Installer Tomcat EJB</name>
     <description>
         Provides an update installer for applications running in the Tomcat
         Servlet container.

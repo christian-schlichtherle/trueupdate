@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Manager EAR</name>
     <description>
-        TODO
+        Bundles the components of the TrueUpdate Manager application.
     </description>
 
     <dependencies>
@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-installer-tomcat</artifactId>
+            <artifactId>trueupdate-installer-tomcat-ejb</artifactId>
             <type>ejb</type>
         </dependency>
         <dependency>

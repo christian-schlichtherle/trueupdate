@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Server WAR</name>
     <description>
-        TODO
+        Bundles the components of the TrueUpdate Server application.
     </description>
 
     <properties>
