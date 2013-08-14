@@ -318,7 +318,29 @@ public final class UpdateMessage implements Serializable {
      * Note that messages may get lost or duplicated and no timeout is defined.
      */
     public enum Type {
+
+        SUBSCRIPTION_NOTICE {
+
+            @Override public boolean manager() { return true; }
+
+            @Override public Type successResponse() {
+                return SUBSCRIPTION_SUCCESS_RESPONSE;
+            }
+
+            @Override public Type failureResponse() {
+                return SUBSCRIPTION_FAILURE_RESPONSE;
+            }
+
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageDispatcher dispatcher)
+            throws Exception {
+                dispatcher.onSubscriptionNotice(message);
+            }
+        },
+
         SUBSCRIPTION_REQUEST {
+
+            @Override public boolean manager() { return true; }
 
             @Override public Type successResponse() {
                 return SUBSCRIPTION_SUCCESS_RESPONSE;
@@ -337,6 +359,8 @@ public final class UpdateMessage implements Serializable {
 
         SUBSCRIPTION_SUCCESS_RESPONSE {
 
+            @Override public boolean manager() { return false; }
+
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
             throws Exception {
@@ -345,6 +369,8 @@ public final class UpdateMessage implements Serializable {
         },
 
         SUBSCRIPTION_FAILURE_RESPONSE {
+
+            @Override public boolean manager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
@@ -355,6 +381,8 @@ public final class UpdateMessage implements Serializable {
 
         UPDATE_ANNOUNCEMENT {
 
+            @Override public boolean manager() { return false; }
+
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
             throws Exception {
@@ -363,6 +391,8 @@ public final class UpdateMessage implements Serializable {
         },
 
         INSTALLATION_REQUEST {
+
+            @Override public boolean manager() { return true; }
 
             @Override public Type successResponse() {
                 return INSTALLATION_SUCCESS_RESPONSE;
@@ -381,6 +411,8 @@ public final class UpdateMessage implements Serializable {
 
         INSTALLATION_SUCCESS_RESPONSE {
 
+            @Override public boolean manager() { return false; }
+
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
             throws Exception {
@@ -390,6 +422,8 @@ public final class UpdateMessage implements Serializable {
 
         INSTALLATION_FAILURE_RESPONSE {
 
+            @Override public boolean manager() { return false; }
+
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
             throws Exception {
@@ -397,7 +431,28 @@ public final class UpdateMessage implements Serializable {
             }
         },
 
+        UNSUBSCRIPTION_NOTICE {
+
+            @Override public boolean manager() { return true; }
+
+            @Override public Type successResponse() {
+                return UNSUBSCRIPTION_SUCCESS_RESPONSE;
+            }
+
+            @Override public Type failureResponse() {
+                return UNSUBSCRIPTION_FAILURE_RESPONSE;
+            }
+
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageDispatcher dispatcher)
+            throws Exception {
+                dispatcher.onUnsubscriptionNotice(message);
+            }
+        },
+
         UNSUBSCRIPTION_REQUEST {
+
+            @Override public boolean manager() { return true; }
 
             @Override public Type successResponse() {
                 return UNSUBSCRIPTION_SUCCESS_RESPONSE;
@@ -416,6 +471,8 @@ public final class UpdateMessage implements Serializable {
 
         UNSUBSCRIPTION_SUCCESS_RESPONSE {
 
+            @Override public boolean manager() { return false; }
+
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
             throws Exception {
@@ -425,12 +482,20 @@ public final class UpdateMessage implements Serializable {
 
         UNSUBSCRIPTION_FAILURE_RESPONSE {
 
+            @Override public boolean manager() { return false; }
+
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageDispatcher dispatcher)
             throws Exception {
                 dispatcher.onUnsubscriptionFailureResponse(message);
             }
         };
+
+        /**
+         * Returns {@code true} if and only if messages of this type should be
+         * processed by an update manager.
+         */
+        public abstract boolean manager();
 
         /**
          * Returns the corresponding {@code *_SUCCESS_RESPONSE} if and only if

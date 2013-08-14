@@ -29,6 +29,9 @@ public class UpdateMessageDispatcher implements UpdateMessageListener {
             message.type().dispatchMessageTo(message, this);
     }
 
+    protected void onSubscriptionNotice(UpdateMessage message)
+    throws Exception { }
+
     protected void onSubscriptionRequest(UpdateMessage message)
     throws Exception { }
 
@@ -48,6 +51,9 @@ public class UpdateMessageDispatcher implements UpdateMessageListener {
     throws Exception { }
 
     protected void onInstallationFailureResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onUnsubscriptionNotice(UpdateMessage message)
     throws Exception { }
 
     protected void onUnsubscriptionRequest(UpdateMessage message)

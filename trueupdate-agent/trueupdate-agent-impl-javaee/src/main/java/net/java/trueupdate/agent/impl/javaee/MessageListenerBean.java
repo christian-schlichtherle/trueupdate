@@ -20,7 +20,7 @@ import net.java.trueupdate.manager.spec.*;
 @MessageDriven(mappedName = MessageListenerBean.LOOKUP_NAME,
         activationConfig = {
             @ActivationConfigProperty(propertyName = "messageSelector",
-                                      propertyValue = "request = false"),
+                                      propertyValue = "manager = false"),
             @ActivationConfigProperty(propertyName = "destinationType",
                                       propertyValue = "javax.jms.Topic"),
             @ActivationConfigProperty(propertyName = "destinationLookup",

@@ -55,10 +55,11 @@ final class BasicUpdateAgent implements UpdateAgent {
     }
 
     @Override public void unsubscribe() throws UpdateAgentException {
-        send(UNSUBSCRIPTION_REQUEST, null);
+        send(UNSUBSCRIPTION_NOTICE, null);
     }
 
-    private void send(final UpdateMessage.Type type, final String updateVersion)
+    private void send(final UpdateMessage.Type type,
+                      final @Nullable String updateVersion)
     throws UpdateAgentException {
         wrap(new MessageProducerTask<Void>() {
             @Override
@@ -71,11 +72,11 @@ final class BasicUpdateAgent implements UpdateAgent {
                             .type(type)
                             .artifactDescriptor(artifactDescriptor())
                             .currentLocation(currentLocation())
-                            .updateVersion(updateVersion)
                             .updateLocation(updateLocation())
+                            .updateVersion(updateVersion)
                             .build();
                 final Message m = s.createObjectMessage(um);
-                m.setBooleanProperty("request", true);
+                m.setBooleanProperty("manager", type.manager());
                 mp.send(m);
                 return null;
             }

@@ -11,6 +11,7 @@ import javax.ejb.*;
 import javax.jms.*;
 import javax.naming.*;
 import net.java.trueupdate.manager.spec.*;
+import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 
 /**
  * @author Christian Schlichtherle
@@ -45,17 +46,28 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     @PreDestroy private void preDestroy() {
         try {
+            persistSubscriptions();
             connection.close();
         } catch (RuntimeException ex) {
             throw ex;
-        } catch (JMSException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error while closing connection.", ex);
         }
     }
 
+    private void persistSubscriptions() throws Exception {
+        for (UpdateMessage um : subscriptions.values())
+            send(um.type(SUBSCRIPTION_NOTICE));
+    }
+
+    @Override protected void onSubscriptionNotice(UpdateMessage message)
+    throws Exception {
+        logResponse(subscribe(logRequest(message)));
+    }
+
     @Override protected void onSubscriptionRequest(UpdateMessage message)
     throws Exception {
-        logResponse(respondWith(subscribe(logRequest(message))));
+        logResponse(send(subscribe(logRequest(message))));
     }
 
     private UpdateMessage subscribe(final UpdateMessage message) {
@@ -65,7 +77,7 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     @Override protected void onInstallationRequest(UpdateMessage message)
     throws Exception {
-        logResponse(respondWith(install(logRequest(message))));
+        logResponse(send(install(logRequest(message))));
     }
 
     private UpdateMessage install(UpdateMessage message) {
@@ -79,9 +91,14 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
         }
     }
 
+    @Override protected void onUnsubscriptionNotice(UpdateMessage message)
+    throws Exception {
+        logResponse(unsubscribe(logRequest(message)));
+    }
+
     @Override protected void onUnsubscriptionRequest(UpdateMessage message)
     throws Exception {
-        logResponse(respondWith(unsubscribe(logRequest(message))));
+        logResponse(send(unsubscribe(logRequest(message))));
     }
 
     private UpdateMessage unsubscribe(final UpdateMessage message) {
@@ -90,31 +107,30 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
     }
 
     private UpdateMessage logRequest(final UpdateMessage request) {
-        logger.log(Level.FINE, "Received update message:\n{0}", request);
+        logger.log(Level.INFO, "Update message request:\n{0}", request);
         return request;
     }
 
     private UpdateMessage logResponse(final UpdateMessage response) {
-        logger.log(Level.FINER, "Sent update message:\n{0}", response);
+        logger.log(Level.FINER, "Update message response:\n{0}", response);
         return response;
     }
 
-    private UpdateMessage respondWith(final UpdateMessage response)
+    private UpdateMessage send(final UpdateMessage um)
     throws Exception {
-        final Destination destination = destination(response);
-        final Session session = connection.createSession(true, 0);
+        final Destination d = to(um);
+        final Session s = connection.createSession(true, 0);
         try {
-            final Message message = session.createObjectMessage(response);
-            message.setBooleanProperty("request", false);
-            session.createProducer(destination).send(message);
-            return response;
+            final Message m = s.createObjectMessage(um);
+            m.setBooleanProperty("manager", um.type().manager());
+            s.createProducer(d).send(m);
+            return um;
         } finally {
-            session.close();
+            s.close();
         }
     }
 
-    private Destination destination(UpdateMessage message)
-    throws NamingException {
+    private Destination to(UpdateMessage message) throws NamingException {
         return InitialContext.doLookup(message.to().toString());
     }
 }
