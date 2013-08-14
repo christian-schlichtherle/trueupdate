@@ -23,6 +23,6 @@
     </description>
 
     <modules>
-        <module>trueupdate-installer-tomcat-ejb</module>
+        <module>trueupdate-installer-openejb</module>
     </modules>
 </project>

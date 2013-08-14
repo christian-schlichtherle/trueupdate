@@ -141,7 +141,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-installer-tomcat-ejb</artifactId>
+                <artifactId>trueupdate-installer-openejb</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
