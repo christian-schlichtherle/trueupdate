@@ -29,9 +29,5 @@
             <artifactId>trueupdate-manager-impl-openejb</artifactId>
             <type>ejb</type>
         </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-        </dependency>
     </dependencies>
 </project>
