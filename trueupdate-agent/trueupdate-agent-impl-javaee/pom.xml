@@ -10,22 +10,26 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-agent</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>trueupdate-agent-impl-javaee</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate Manager</name>
+    <name>TrueUpdate Agent Implementation Java EE</name>
     <description>
-        The parent POM for TrueUpdate Manager modules.
+        Provides an update agent for updating a Java EE application.
     </description>
 
-    <modules>
-        <module>trueupdate-manager-appl-openejb</module>
-        <module>trueupdate-manager-impl-javaee</module>
-        <module>trueupdate-manager-impl-openejb</module>
-        <module>trueupdate-manager-spec</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-agent-spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

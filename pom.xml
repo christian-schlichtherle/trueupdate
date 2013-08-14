@@ -94,7 +94,7 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-ejb</artifactId>
+                <artifactId>trueupdate-agent-impl-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
@@ -105,12 +105,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-impl-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-impl-maven</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -138,12 +138,6 @@
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-installer-openejb</artifactId>
-                <type>ejb</type>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -169,7 +163,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-ejb</artifactId>
+                <artifactId>trueupdate-manager-impl-javaee</artifactId>
+                <type>ejb</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-impl-openejb</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
@@ -180,18 +180,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-tomcat</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-sample-ejb</artifactId>
+                <artifactId>trueupdate-sample-impl-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-server-maven</artifactId>
+                <artifactId>trueupdate-server-impl-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -342,7 +337,6 @@
         <module>trueupdate-agent</module>
         <module>trueupdate-artifact</module>
         <module>trueupdate-core</module>
-        <module>trueupdate-installer</module>
         <module>trueupdate-jax-rs</module>
         <module>trueupdate-manager</module>
         <module>trueupdate-sample</module>
