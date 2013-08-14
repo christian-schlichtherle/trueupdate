@@ -10,26 +10,23 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-manager</artifactId>
+        <artifactId>trueupdate-installer</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-ejb</artifactId>
+    <artifactId>trueupdate-installer-tomcat</artifactId>
     <packaging>ejb</packaging>
 
-    <name>TrueUpdate Manager EJB</name>
+    <name>TrueUpdate Installer Tomcat</name>
     <description>
-        Provides an update manager EJB for updating enterprise applications.
+        Provides an update installer for applications running in the Tomcat
+        Servlet container.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-manager-spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs-client</artifactId>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

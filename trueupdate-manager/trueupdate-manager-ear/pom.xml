@@ -29,6 +29,11 @@
             <type>ejb</type>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-installer-tomcat</artifactId>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
         </dependency>

@@ -33,7 +33,7 @@
             E.g. "package/repositories.xml".
 
             In either case, if the string contains references of the form
-            {@code ${key}}, then they get replaced by the value of the system
+            {@code ${key}}, then they get replaced with the value of the system
             property with the specified key.
             E.g. "file://${user.home}/.repositories.xml".
 

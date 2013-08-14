@@ -53,8 +53,6 @@ public interface UpdateAgent {
     /**
      * A builder for update agents.
      * <p>
-     * Implementations should be immutable and hence, thread-safe.
-     * <p>
      * Applications have no need to implement this class and should not do so
      * because it may be subject to future expansion.
      */

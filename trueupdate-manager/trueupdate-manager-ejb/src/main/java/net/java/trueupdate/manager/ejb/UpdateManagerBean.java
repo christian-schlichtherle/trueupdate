@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.ejb;
 
+import java.util.*;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
@@ -26,6 +27,12 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     private Connection connection;
 
+    @EJB
+    private UpdateInstaller installer;
+
+    private final Map<ApplicationDescriptor, UpdateMessage>
+            subscriptions = new HashMap<>();
+
     @PostConstruct private void postConstruct() {
         try {
             connection = connectionFactory.createConnection();
@@ -46,19 +53,40 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
         }
     }
 
-    @Override protected void onSubscriptionRequest(final UpdateMessage message)
+    @Override protected void onSubscriptionRequest(UpdateMessage message)
     throws Exception {
-        logResponse(respondTo(logRequest(message)));
+        logResponse(respondWith(subscribe(logRequest(message))));
     }
 
-    @Override protected void onInstallationRequest(final UpdateMessage message)
-    throws Exception {
-        logResponse(respondTo(logRequest(message)));
+    private UpdateMessage subscribe(final UpdateMessage message) {
+        subscriptions.put(message.applicationDescriptor(), message);
+        return message.successResponse();
     }
 
-    @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
+    @Override protected void onInstallationRequest(UpdateMessage message)
     throws Exception {
-        logResponse(respondTo(logRequest(message)));
+        logResponse(respondWith(install(logRequest(message))));
+    }
+
+    private UpdateMessage install(UpdateMessage message) {
+        try {
+            installer.install(message);
+            return message.successResponse();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            return message.failureResponse(ex);
+        }
+    }
+
+    @Override protected void onUnsubscriptionRequest(UpdateMessage message)
+    throws Exception {
+        logResponse(respondWith(unsubscribe(logRequest(message))));
+    }
+
+    private UpdateMessage unsubscribe(final UpdateMessage message) {
+        subscriptions.remove(message.applicationDescriptor());
+        return message.successResponse();
     }
 
     private UpdateMessage logRequest(final UpdateMessage request) {
@@ -71,11 +99,8 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
         return response;
     }
 
-    private UpdateMessage respondTo(UpdateMessage request) throws Exception {
-        return send(request.successResponse());
-    }
-
-    private UpdateMessage send(final UpdateMessage response) throws Exception {
+    private UpdateMessage respondWith(final UpdateMessage response)
+    throws Exception {
         final Destination destination = destination(response);
         final Session session = connection.createSession(true, 0);
         try {

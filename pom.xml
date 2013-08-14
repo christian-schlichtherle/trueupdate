@@ -141,6 +141,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-installer-tomcat</artifactId>
+                <type>ejb</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-jax-rs-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -170,6 +176,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-spec</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-tomcat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -267,6 +278,7 @@
                         <applicationName>${project.artifactId}</applicationName>
                         <description>${project.description}</description>
                         <displayName>${project.name}</displayName>
+                        <filtering>true</filtering>
                         <version>${javaee.version}</version>
                         <defaultLibBundleDir>lib</defaultLibBundleDir>
                     </configuration>
@@ -330,6 +342,7 @@
         <module>trueupdate-agent</module>
         <module>trueupdate-artifact</module>
         <module>trueupdate-core</module>
+        <module>trueupdate-installer</module>
         <module>trueupdate-jax-rs</module>
         <module>trueupdate-manager</module>
         <module>trueupdate-sample</module>

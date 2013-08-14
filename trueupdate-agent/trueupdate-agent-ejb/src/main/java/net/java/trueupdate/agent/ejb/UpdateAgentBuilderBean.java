@@ -25,12 +25,10 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     private static final Logger
             logger = Logger.getLogger(UpdateAgentBuilderBean.class.getName());
 
-    static final String DESTINATION_NAME = "jms/trueupdate";
-
     @Resource
     ConnectionFactory connectionFactory;
 
-    @Resource(lookup = DESTINATION_NAME)
+    @Resource(lookup = MessageListenerBean.LOOKUP_NAME)
     Destination destination;
 
     @CheckForNull

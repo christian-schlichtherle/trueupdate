@@ -20,7 +20,7 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 final class BasicUpdateAgent implements UpdateAgent {
 
     private static final URI
-            DESTINATION_URI = URI.create(UpdateAgentBuilderBean.DESTINATION_NAME);
+            DESTINATION_URI = URI.create(MessageListenerBean.LOOKUP_NAME);
 
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
@@ -84,13 +84,9 @@ final class BasicUpdateAgent implements UpdateAgent {
 
     private @Nullable <V> V wrap(final Callable<V> task)
     throws UpdateAgentException {
-        try {
-            return task.call();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new UpdateAgentException(ex);
-        }
+        try { return task.call(); }
+        catch (RuntimeException ex) { throw ex; }
+        catch (Exception ex) { throw new UpdateAgentException(ex); }
     }
 
     private abstract class MessageProducerTask<V> implements Callable<V> {
