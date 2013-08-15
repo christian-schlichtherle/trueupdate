@@ -4,8 +4,7 @@
  */
 package net.java.trueupdate.manager.impl.javaee;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.*;
