@@ -7,6 +7,7 @@ package net.java.trueupdate.agent.spec;
 import java.net.URI;
 import static java.util.Objects.requireNonNull;
 import javax.annotation.*;
+import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.spec.ApplicationDescriptor;
 
 /**
@@ -14,6 +15,7 @@ import net.java.trueupdate.manager.spec.ApplicationDescriptor;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 public final class ApplicationParameters {
 
     private final ApplicationListener applicationListener;
@@ -92,5 +94,4 @@ public final class ApplicationParameters {
             throw new IllegalStateException("No target for injection.");
         }
     } // Builder
-
-} // Parameters
+}

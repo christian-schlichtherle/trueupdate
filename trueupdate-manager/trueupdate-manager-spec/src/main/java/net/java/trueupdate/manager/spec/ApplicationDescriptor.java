@@ -8,6 +8,7 @@ import java.net.URI;
 import static java.util.Objects.requireNonNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
 /**
@@ -15,6 +16,7 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 public final class ApplicationDescriptor {
 
     private final ArtifactDescriptor artifactDescriptor;
