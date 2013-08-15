@@ -6,14 +6,14 @@ package net.java.trueupdate.jax.rs.server;
 
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
-import javax.ws.rs.ext.*;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.Produces;
+import javax.ws.rs.ext.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import net.java.trueupdate.jax.rs.util.UpdateServiceException;
+import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 
 /**
  * Maps an update service exception to a HTTP response.
@@ -23,8 +23,8 @@ import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 @Provider
 @Produces({ APPLICATION_JSON, APPLICATION_XML, TEXT_XML, TEXT_PLAIN })
 @Immutable
-public final class UpdateServiceExceptionMapper
-implements ExceptionMapper<UpdateServiceException> {
+public final class ArtifactUpdateServiceExceptionMapper
+implements ExceptionMapper<ArtifactUpdateServiceException> {
 
     private static final String MESSAGE = "message";
 
@@ -32,11 +32,13 @@ implements ExceptionMapper<UpdateServiceException> {
 
     private final HttpHeaders headers;
 
-    public UpdateServiceExceptionMapper(final @Context HttpHeaders headers) {
+    public ArtifactUpdateServiceExceptionMapper(
+            final @Context HttpHeaders headers) {
         this.headers = Objects.requireNonNull(headers);
     }
 
-    @Override public Response toResponse(final UpdateServiceException ex) {
+    @Override
+    public Response toResponse(final ArtifactUpdateServiceException ex) {
         final String msg = ex.getMessage();
         final MediaType mt = headers.getMediaType();
         final ResponseBuilder rb = Response.status(ex.getStatus());

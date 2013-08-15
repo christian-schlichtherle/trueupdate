@@ -20,7 +20,7 @@ public class ApplicationListener {
     public void onSubscriptionFailureResponse(UpdateMessage message)
     throws Exception { }
 
-    public void onUpdateAnnouncement(UpdateMessage message)
+    public void onUpdateNotice(UpdateMessage message)
     throws Exception { }
 
     public void onInstallationSuccessResponse(UpdateMessage message)

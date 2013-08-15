@@ -72,9 +72,9 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     }
 
     @Override
-    protected void onUpdateAnnouncement(UpdateMessage message)
+    protected void onUpdateNotice(UpdateMessage message)
     throws Exception {
-        applicationListener().onUpdateAnnouncement(log(message));
+        applicationListener().onUpdateNotice(log(message));
     }
 
     @Override
@@ -119,7 +119,7 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     }
 
     private static UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.FINE, "Received update message:\n{0}", message);
+        logger.log(Level.FINE, "Update message:\n{0}", message);
         return message;
     }
 }

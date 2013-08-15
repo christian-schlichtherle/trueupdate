@@ -16,28 +16,36 @@ import static javax.ws.rs.core.MediaType.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
-import net.java.trueupdate.jax.rs.util.UpdateServiceException;
+
+import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 
 /**
- * RESTful web client based implementation of an update client.
+ * The client-side implementation of a RESTful service for artifact updates.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ConfiguredUpdateClient implements UpdateClient {
+public final class ArtifactUpdateClient {
 
     private final URI baseUri;
     private final Client client;
 
-    public ConfiguredUpdateClient(URI baseUri) { this(baseUri, null); }
+    public ArtifactUpdateClient(URI baseUri) { this(baseUri, null); }
 
-    public ConfiguredUpdateClient(final URI baseUri,
-                                  final @CheckForNull Client client) {
+    public ArtifactUpdateClient(final URI baseUri,
+                                final @CheckForNull Client client) {
         this.baseUri = Objects.requireNonNull(baseUri);
         this.client = null != client ? client : Client.create();
     }
 
-    @Override
+    /**
+     * Returns the update version for the described artifact.
+     *
+     * @param descriptor the artifact descriptor.
+     * @return the update version for the described artifact.
+     * @throws IOException on any I/O error, e.g. if the web service is not
+     *         available.
+     */
     public String version(ArtifactDescriptor descriptor) throws IOException {
         return version(descriptor, null);
     }
@@ -45,18 +53,28 @@ public final class ConfiguredUpdateClient implements UpdateClient {
     public String version(ArtifactDescriptor descriptor,
                           @CheckForNull MediaType mediaType)
     throws IOException {
-        return get(path("update/version")
+        return get(path("artifact/version")
                 .queryParams(queryParameters(descriptor))
                 .accept(null != mediaType ? mediaType : TEXT_PLAIN_TYPE)
         ).getEntity(String.class);
     }
 
-    @Override public Source patch(
-            final ArtifactDescriptor descriptor,
-            final String updateVersion) {
+    /**
+     * Returns a source for reading the ZIP patch file for the described
+     * artifact and its update version.
+     * The web service is contacted whenever {@link Source#input()} is called,
+     * so that any I/O exception may only be thrown from there.
+     *
+     * @param descriptor the artifact descriptor.
+     * @param updateVersion the update version.
+     * @return A source for reading the ZIP patch file for the described
+     *         artifact and its update version.
+     */
+    public Source diff(final ArtifactDescriptor descriptor,
+                       final String updateVersion) {
         return new Source() {
             @Override public InputStream input() throws IOException {
-                return get(path("update/patch")
+                return get(path("artifact/diff")
                         .queryParams(queryParameters(descriptor))
                         .queryParam("update-version", updateVersion)
                         .accept(APPLICATION_OCTET_STREAM_TYPE)
@@ -78,7 +96,7 @@ public final class ConfiguredUpdateClient implements UpdateClient {
     throws IOException {
         final Status status = response.getClientResponseStatus();
         if (status != Status.OK)
-            throw new UpdateServiceException(status.getStatusCode(),
+            throw new ArtifactUpdateServiceException(status.getStatusCode(),
                     new UniformInterfaceException(response));
         return response;
     }

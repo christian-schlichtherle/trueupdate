@@ -18,12 +18,8 @@
 
     <name>TrueUpdate JAX-RS Client</name>
     <description>
-        Provides a RESTful web client for updating web apps.
+        Provides a RESTful web service client for artifact updates.
     </description>
-
-    <properties>
-        <org-netbeans-modules-maven-jaxws.rest_2e_config_2e_type>ide</org-netbeans-modules-maven-jaxws.rest_2e_config_2e_type>
-    </properties>
 
     <dependencies>
         <dependency>

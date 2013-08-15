@@ -4,12 +4,15 @@
  */
 package net.java.trueupdate.manager.impl.javaee;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
 import javax.naming.*;
+import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 
@@ -23,6 +26,9 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
 
+    @Resource(name = "serverBaseUri")
+    private String serverBaseString;
+
     @Resource
     private ConnectionFactory connectionFactory;
 
@@ -33,6 +39,10 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     private final Map<ApplicationDescriptor, UpdateMessage>
             subscriptions = new HashMap<>();
+
+    private URI serverBaseUri() throws URISyntaxException {
+        return new URI(SystemProperties.resolve(serverBaseString));
+    }
 
     @PostConstruct private void postConstruct() {
         try {
@@ -62,22 +72,27 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     @Override protected void onSubscriptionNotice(UpdateMessage message)
     throws Exception {
-        logResponse(subscribe(logRequest(message)));
+        logOutput(subscribe(logInput(message)));
     }
 
     @Override protected void onSubscriptionRequest(UpdateMessage message)
     throws Exception {
-        logResponse(send(subscribe(logRequest(message))));
+        logOutput(send(subscribe(logInput(message))));
     }
 
     private UpdateMessage subscribe(final UpdateMessage message) {
         subscriptions.put(message.applicationDescriptor(), message);
+        try {
+            logger.info(serverBaseUri().toString());
+        } catch (Exception ex) {
+            Logger.getLogger(UpdateManagerBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return message.successResponse();
     }
 
     @Override protected void onInstallationRequest(UpdateMessage message)
     throws Exception {
-        logResponse(send(install(logRequest(message))));
+        logOutput(send(install(logInput(message))));
     }
 
     private UpdateMessage install(UpdateMessage message) {
@@ -93,12 +108,12 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     @Override protected void onUnsubscriptionNotice(UpdateMessage message)
     throws Exception {
-        logResponse(unsubscribe(logRequest(message)));
+        logOutput(unsubscribe(logInput(message)));
     }
 
     @Override protected void onUnsubscriptionRequest(UpdateMessage message)
     throws Exception {
-        logResponse(send(unsubscribe(logRequest(message))));
+        logOutput(send(unsubscribe(logInput(message))));
     }
 
     private UpdateMessage unsubscribe(final UpdateMessage message) {
@@ -106,31 +121,30 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
         return message.successResponse();
     }
 
-    private UpdateMessage logRequest(final UpdateMessage request) {
-        logger.log(Level.INFO, "Update message request:\n{0}", request);
-        return request;
+    private UpdateMessage logInput(final UpdateMessage message) {
+        logger.log(Level.FINE, "Input update message:\n{0}", message);
+        return message;
     }
 
-    private UpdateMessage logResponse(final UpdateMessage response) {
-        logger.log(Level.FINER, "Update message response:\n{0}", response);
-        return response;
+    private UpdateMessage logOutput(final UpdateMessage message) {
+        logger.log(Level.FINER, "Output update message:\n{0}", message);
+        return message;
     }
 
-    private UpdateMessage send(final UpdateMessage um)
-    throws Exception {
-        final Destination d = to(um);
+    private UpdateMessage send(final UpdateMessage message) throws Exception {
+        final Destination d = toDestination(message);
         final Session s = connection.createSession(true, 0);
         try {
-            final Message m = s.createObjectMessage(um);
-            m.setBooleanProperty("manager", um.type().manager());
+            final Message m = s.createObjectMessage(message);
+            m.setBooleanProperty("manager", message.type().forManager());
             s.createProducer(d).send(m);
-            return um;
+            return message;
         } finally {
             s.close();
         }
     }
 
-    private Destination to(UpdateMessage message) throws NamingException {
+    private Destination toDestination(UpdateMessage message) throws NamingException {
         return InitialContext.doLookup(message.to().toString());
     }
 }

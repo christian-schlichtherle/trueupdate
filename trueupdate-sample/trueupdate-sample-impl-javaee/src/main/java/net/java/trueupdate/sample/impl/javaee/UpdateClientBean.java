@@ -101,7 +101,7 @@ public class UpdateClientBean extends ApplicationListener {
         log(message);
     }
 
-    @Override public void onUpdateAnnouncement(UpdateMessage message)
+    @Override public void onUpdateNotice(UpdateMessage message)
     throws Exception {
         updateAgent().install(log(message).updateVersion());
     }
@@ -127,7 +127,7 @@ public class UpdateClientBean extends ApplicationListener {
     }
 
     private UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.INFO, "Received update message:\n{0}", message);
+        logger.log(Level.INFO, "Update message:\n{0}", message);
         return message;
     }
 }

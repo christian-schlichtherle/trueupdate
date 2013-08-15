@@ -41,7 +41,7 @@ public class UpdateMessageDispatcher implements UpdateMessageListener {
     protected void onSubscriptionFailureResponse(UpdateMessage message)
     throws Exception { }
 
-    protected void onUpdateAnnouncement(UpdateMessage message)
+    protected void onUpdateNotice(UpdateMessage message)
     throws Exception { }
 
     protected void onInstallationRequest(UpdateMessage message)

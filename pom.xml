@@ -206,7 +206,13 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey.jersey-test-framework</groupId>
-                <artifactId>jersey-test-framework-http</artifactId>
+                <artifactId>jersey-test-framework-core</artifactId>
+                <version>${jersey.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey.jersey-test-framework</groupId>
+                <artifactId>jersey-test-framework-embedded-glassfish</artifactId>
                 <version>${jersey.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -242,7 +248,7 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
-                <version>3.0.10</version>
+                <version>3.0.14</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.aether</groupId>
@@ -321,7 +327,7 @@
                                         <artifactItem>
                                             <groupId>javax</groupId>
                                             <artifactId>javaee-endorsed-api</artifactId>
-                                            <version>${javaee.version}</version>
+                                            <version>${javaee.version}.0</version>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>

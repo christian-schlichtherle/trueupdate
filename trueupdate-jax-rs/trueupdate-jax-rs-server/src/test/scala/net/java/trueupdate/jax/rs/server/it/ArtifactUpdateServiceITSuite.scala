@@ -2,36 +2,32 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jax.rs.it
+package net.java.trueupdate.jax.rs.server.it
 
-import com.sun.jersey.api.core._
 import com.sun.jersey.test.framework._
 import java.io.FilterInputStream
 import java.util.zip.ZipInputStream
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
-import javax.ws.rs.ext.ContextResolver
-import net.java.trueupdate.artifact.spec._
-import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.it.Loan._
 import net.java.trueupdate.core.zip.model.DiffModel
-import net.java.trueupdate.jax.rs.server._
-import net.java.trueupdate.jax.rs.client.ConfiguredUpdateClient
+import net.java.trueupdate.jax.rs.client.ArtifactUpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
-import org.slf4j.LoggerFactory
+import net.java.trueupdate.core.TestContext
+import net.java.trueupdate.artifact.spec.ArtifactResolverTestContext
 
 /** @author Christian Schlichtherle */
-class UpdateServiceITSuite extends JerseyTest {
-  this: TestContext with ArtifactResolverTestContext =>
+class ArtifactUpdateServiceITSuite extends JerseyTest {
+  context: TestContext with ArtifactResolverTestContext =>
 
   @Test def testLifeCycle() {
-    assertUpdateVersion()
-    assertUpdatePatch()
+    assertVersion()
+    assertDiff()
   }
 
-  private def assertUpdateVersion() {
+  private def assertVersion() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
     logger info ("Resolved update for artifact {} to version {}.",
       artifactDescriptor, updateVersion)
@@ -42,11 +38,11 @@ class UpdateServiceITSuite extends JerseyTest {
   }
 
   private def updateVersionAs(mediaType: MediaType) =
-    updateClient.version(artifactDescriptor, mediaType)
+    artifactUpdateClient.version(artifactDescriptor, mediaType)
 
-  private def assertUpdatePatch() {
+  private def assertDiff() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
-    val source = updateClient.patch(artifactDescriptor, updateVersion)
+    val source = artifactUpdateClient.diff(artifactDescriptor, updateVersion)
     loan(new ZipInputStream(source input ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
       entry.getName should be (DiffModel.ENTRY_NAME)
@@ -61,22 +57,6 @@ class UpdateServiceITSuite extends JerseyTest {
     }
   }
 
-  private def updateClient =
-    new ConfiguredUpdateClient(getBaseURI, client)
-
-  override protected def configure =
-    new LowLevelAppDescriptor.Builder(resourceConfig).contextPath("").build
-
-  private def resourceConfig = {
-    val rc = new DefaultResourceConfig
-    rc.getClasses.add(classOf[UpdateServer])
-    rc.getClasses.add(classOf[UpdateServiceExceptionMapper])
-    rc.getSingletons.add(new ContextResolverForArtifactResolver)
-    rc
-  }
-
-  private class ContextResolverForArtifactResolver
-    extends ContextResolver[ArtifactResolver] {
-    override def getContext(ignored: Class[_]) = artifactResolver
-  }
+  private def artifactUpdateClient =
+    new ArtifactUpdateClient(resource.getURI, client)
 }

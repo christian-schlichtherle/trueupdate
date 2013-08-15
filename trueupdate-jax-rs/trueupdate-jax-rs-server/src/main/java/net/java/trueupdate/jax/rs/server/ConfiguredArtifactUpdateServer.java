@@ -17,16 +17,17 @@ import javax.xml.namespace.QName;
 import net.java.trueupdate.artifact.spec.*;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
-import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
-import net.java.trueupdate.jax.rs.util.UpdateServiceException;
+import static net.java.trueupdate.jax.rs.server.ArtifactUpdateServers.wrap;
+import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 
 /**
- * The configured client-side implementation of an update service for artifacts.
+ * The configured server-side implementation of a RESTful service for
+ * artifact updates.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ConfiguredUpdateServer {
+public final class ConfiguredArtifactUpdateServer {
 
     private static final QName VERSION_NAME = new QName("version");
 
@@ -40,7 +41,7 @@ public final class ConfiguredUpdateServer {
      * @param currentDescriptor the artifact descriptor for the client's
      *                          current version.
      */
-    public ConfiguredUpdateServer(
+    public ConfiguredArtifactUpdateServer(
             final ArtifactResolver resolver,
             final ArtifactDescriptor currentDescriptor) {
         this.resolver = requireNonNull(resolver);
@@ -50,7 +51,7 @@ public final class ConfiguredUpdateServer {
     @GET
     @Path("version")
     @Produces(TEXT_PLAIN)
-    public String versionAsText() throws UpdateServiceException {
+    public String versionAsText() throws ArtifactUpdateServiceException {
         return wrap(new Callable<String>() {
             @Override public String call() throws Exception {
                 return resolveUpdateDescriptor().version();
@@ -61,14 +62,14 @@ public final class ConfiguredUpdateServer {
     @GET
     @Path("version")
     @Produces(APPLICATION_JSON)
-    public String versionAsJson() throws UpdateServiceException {
+    public String versionAsJson() throws ArtifactUpdateServiceException {
         return '"' + versionAsText() + '"';
     }
 
     @GET
     @Path("version")
     @Produces({ APPLICATION_XML, TEXT_XML })
-    public JAXBElement<String> versionAsXml() throws UpdateServiceException {
+    public JAXBElement<String> versionAsXml() throws ArtifactUpdateServiceException {
         return new JAXBElement<>(VERSION_NAME, String.class, versionAsText());
     }
 
@@ -77,11 +78,11 @@ public final class ConfiguredUpdateServer {
     }
 
     @GET
-    @Path("patch")
+    @Path("diff")
     @Produces(APPLICATION_OCTET_STREAM)
-    public StreamingOutput patch(
+    public StreamingOutput diff(
             final @QueryParam("update-version") String updateVersion)
-    throws UpdateServiceException {
+    throws ArtifactUpdateServiceException {
         return wrap(new Callable<StreamingOutput>() {
             @Override public StreamingOutput call() throws Exception {
                 return streamingOutputWithZipPatchFile(

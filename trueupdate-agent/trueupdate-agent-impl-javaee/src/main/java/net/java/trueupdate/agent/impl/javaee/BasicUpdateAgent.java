@@ -76,7 +76,7 @@ final class BasicUpdateAgent implements UpdateAgent {
                             .updateVersion(updateVersion)
                             .build();
                 final Message m = s.createObjectMessage(um);
-                m.setBooleanProperty("manager", type.manager());
+                m.setBooleanProperty("manager", type.forManager());
                 mp.send(m);
                 return null;
             }

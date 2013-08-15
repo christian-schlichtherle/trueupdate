@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a RESTful web service for updating web apps.
+ * Provides a RESTful web service implementation for artifact updates.
  *
  * @author Christian Schlichtherle
  */

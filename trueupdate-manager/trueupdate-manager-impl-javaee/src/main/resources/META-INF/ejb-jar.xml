@@ -10,4 +10,22 @@
     <module-name>${project.artifactId}</module-name>
     <description>${project.description}</description>
     <display-name>${project.name}</display-name>
+    <enterprise-beans>
+        <session>
+            <ejb-name>UpdateManagerBean</ejb-name>
+            <env-entry>
+                <description>
+                    The base URI of the TrueUpdate Server application, ending
+                    with a slash forward character.
+
+                    If the string contains references of the form
+                    \${key}, then they get replaced with the value of
+                    the system property with the specified key.
+                    E.g. "http://localhost/\${user.name}/trueupdate-server/".
+                </description>
+                <env-entry-name>serverBaseUri</env-entry-name>
+                <env-entry-value>http://localhost:8080/trueupdate-server/</env-entry-value>
+            </env-entry>
+        </session>
+    </enterprise-beans>
 </ejb-jar>

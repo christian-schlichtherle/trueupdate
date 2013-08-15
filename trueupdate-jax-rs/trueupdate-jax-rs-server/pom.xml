@@ -18,12 +18,8 @@
 
     <name>TrueUpdate JAX-RS Server</name>
     <description>
-        Provides a RESTful web service for updating web apps.
+        Provides a RESTful web service implementation for artifact updates.
     </description>
-
-    <properties>
-        <org-netbeans-modules-maven-jaxws.rest_2e_config_2e_type>ide</org-netbeans-modules-maven-jaxws.rest_2e_config_2e_type>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -57,12 +53,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.jersey-test-framework</groupId>
-            <artifactId>jersey-test-framework-http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <optional>true</optional>
+            <artifactId>jersey-test-framework-core</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>

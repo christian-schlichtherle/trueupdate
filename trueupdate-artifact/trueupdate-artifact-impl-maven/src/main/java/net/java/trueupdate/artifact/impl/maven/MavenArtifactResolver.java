@@ -23,6 +23,7 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
 import org.eclipse.aether.connector.wagon.*;
 import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.internal.impl.Slf4jLoggerFactory;
 import org.eclipse.aether.repository.*;
 import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
@@ -39,7 +40,7 @@ import org.eclipse.aether.version.Version;
 @Immutable
 @XmlRootElement(name = "repositories")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MavenArtifactResolver implements ArtifactResolver {
+public final class MavenArtifactResolver implements ArtifactResolver {
 
     @XmlJavaTypeAdapter(LocalRepositoryAdapter.class)
     private final LocalRepository local;
@@ -86,6 +87,7 @@ public class MavenArtifactResolver implements ArtifactResolver {
     public LocalRepository local() { return local; }
 
     /** Returns the unmodifiable list of remote repositories. */
+    @SuppressWarnings("ReturnOfCollectionOrArrayField")
     public List<RemoteRepository> remotes() { return remotes; }
 
     @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
@@ -206,7 +208,7 @@ public class MavenArtifactResolver implements ArtifactResolver {
         return null != sl ? sl : (this.serviceLocator = newServiceLocator());
     }
 
-    private ServiceLocator newServiceLocator() {
+    private static ServiceLocator newServiceLocator() {
         final DefaultServiceLocator sl = MavenRepositorySystemUtils
                 .newServiceLocator()
                 .addService(RepositoryConnectorFactory.class,
@@ -215,10 +217,12 @@ public class MavenArtifactResolver implements ArtifactResolver {
                         WagonRepositoryConnectorFactory.class)
                 .setServices(WagonProvider.class, new AhcWagonProvider());
         sl.setErrorHandler(errorHandler());
+        if (Slf4jLoggerFactory.isSlf4jAvailable())
+            sl.setService(LoggerFactory.class, FixedSlf4jLoggerFactory.class);
         return sl;
     }
 
-    private DefaultServiceLocator.ErrorHandler errorHandler() {
+    private static DefaultServiceLocator.ErrorHandler errorHandler() {
         return new DefaultServiceLocator.ErrorHandler() {
             @Override public void serviceCreationFailed(
                     Class<?> type,
@@ -233,14 +237,14 @@ public class MavenArtifactResolver implements ArtifactResolver {
         if (this == obj) return true;
         if (!(obj instanceof MavenArtifactResolver)) return false;
         final MavenArtifactResolver that = (MavenArtifactResolver) obj;
-        return  this.local.equals(that.local) &&
-                this.remotes.equals(that.remotes);
+        return  this.local().equals(that.local()) &&
+                this.remotes().equals(that.remotes());
     }
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + local.hashCode();
-        hash = 31 * hash + remotes.hashCode();
+        hash = 31 * hash + local().hashCode();
+        hash = 31 * hash + remotes().hashCode();
         return hash;
     }
 

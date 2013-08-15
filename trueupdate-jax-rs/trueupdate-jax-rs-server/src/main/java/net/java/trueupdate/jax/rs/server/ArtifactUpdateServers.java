@@ -4,32 +4,32 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.jax.rs.util.UpdateServiceException;
+import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 
 import java.util.concurrent.Callable;
 
 /**
  * Utility functions for update servers.
  *
- * @see UpdateServer
- * @see ConfiguredUpdateServer
+ * @see BasicArtifactUpdateServer
+ * @see ConfiguredArtifactUpdateServer
  * @author Christian Schlichtherle
  */
-final class UpdateServers {
+final class ArtifactUpdateServers {
 
     private static final int BAD_REQUEST = 400, NOT_FOUND = 404;
 
-    private UpdateServers() { }
+    private ArtifactUpdateServers() { }
 
-    static <V> V wrap(final Callable<V> task) throws UpdateServiceException {
+    static <V> V wrap(final Callable<V> task) throws ArtifactUpdateServiceException {
         try {
             return task.call();
-        } catch (UpdateServiceException ex) {
+        } catch (ArtifactUpdateServiceException ex) {
             throw ex;
         } catch (RuntimeException ex) {
-            throw new UpdateServiceException(BAD_REQUEST, ex);
+            throw new ArtifactUpdateServiceException(BAD_REQUEST, ex);
         } catch (Exception ex) {
-            throw new UpdateServiceException(NOT_FOUND, ex);
+            throw new ArtifactUpdateServiceException(NOT_FOUND, ex);
         }
     }
 }
