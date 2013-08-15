@@ -23,7 +23,6 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
 import org.eclipse.aether.connector.wagon.*;
 import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.internal.impl.Slf4jLoggerFactory;
 import org.eclipse.aether.repository.*;
 import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
@@ -217,8 +216,8 @@ public final class MavenArtifactResolver implements ArtifactResolver {
                         WagonRepositoryConnectorFactory.class)
                 .setServices(WagonProvider.class, new AhcWagonProvider());
         sl.setErrorHandler(errorHandler());
-        if (Slf4jLoggerFactory.isSlf4jAvailable())
-            sl.setService(LoggerFactory.class, FixedSlf4jLoggerFactory.class);
+        if (LegacySlf4jLoggerFactory.AVAILABLE)
+            sl.setService(LoggerFactory.class, LegacySlf4jLoggerFactory.class);
         return sl;
     }
 
