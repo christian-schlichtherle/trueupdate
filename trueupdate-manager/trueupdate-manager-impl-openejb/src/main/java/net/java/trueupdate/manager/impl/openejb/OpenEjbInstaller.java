@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.impl.openejb;
 
+import java.util.logging.*;
 import javax.ejb.Stateless;
 import net.java.trueupdate.manager.spec.*;
 
@@ -15,7 +16,10 @@ import net.java.trueupdate.manager.spec.*;
 @Stateless
 public class OpenEjbInstaller implements UpdateInstaller {
 
+    private static final Logger
+            logger = Logger.getLogger(OpenEjbInstaller.class.getName());
+
     @Override public void install(UpdateMessage message) throws Exception {
-        throw new Exception("TODO");
+        logger.log(Level.INFO, "TODO: Implement the update installation.");
     }
 }
