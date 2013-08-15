@@ -6,10 +6,10 @@ package net.java.trueupdate.core
 
 import java.nio.charset.Charset
 import java.lang.String
+import java.util.logging._
 import javax.xml.bind.JAXBContext
 import net.java.trueupdate.core.io.MemoryStore
 import net.java.trueupdate.core.codec._
-import org.slf4j.LoggerFactory
 import org.scalatest.matchers.ShouldMatchers._
 import TestContext._
 
@@ -22,7 +22,7 @@ object TestContext {
 /** @author Christian Schlichtherle */
 trait TestContext {
 
-  final lazy val logger = LoggerFactory.getLogger(getClass)
+  final lazy val logger = Logger.getLogger(getClass.getName)
 
   final def utf8String(store: MemoryStore) = new String(store.data, utf8)
 
@@ -35,7 +35,7 @@ trait TestContext {
   final def assertRoundTripXmlSerializable(original: AnyRef) {
     val store = memoryStore
     jaxbCodec encode (store, original)
-    logger debug ("\n{}", utf8String(store))
+    logger log (Level.FINE, "\n{0}", utf8String(store))
     val clone: AnyRef = jaxbCodec decode (store, original.getClass)
     clone should equal (original)
     clone should not be theSameInstanceAs (original)

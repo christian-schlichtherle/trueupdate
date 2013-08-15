@@ -17,6 +17,7 @@ import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.artifact.spec.ArtifactResolverTestContext
+import java.util.logging.Level
 
 /** @author Christian Schlichtherle */
 class ArtifactUpdateServiceITSuite extends JerseyTest {
@@ -29,8 +30,8 @@ class ArtifactUpdateServiceITSuite extends JerseyTest {
 
   private def assertVersion() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
-    logger info ("Resolved update for artifact {} to version {}.",
-      artifactDescriptor, updateVersion)
+    logger log (Level.FINE, "Resolved update for artifact {0} to version {1}.",
+      Array(artifactDescriptor, updateVersion))
     updateVersionAs(APPLICATION_JSON_TYPE) should
       be ('"' + updateVersion + '"')
     updateVersionAs(APPLICATION_XML_TYPE) should
@@ -53,7 +54,7 @@ class ArtifactUpdateServiceITSuite extends JerseyTest {
       }
       val store = memoryStore
       Copy copy (source, store)
-      logger debug ("\n{}", utf8String(store))
+      logger log (Level.FINE, "\n{0}", utf8String(store))
     }
   }
 
