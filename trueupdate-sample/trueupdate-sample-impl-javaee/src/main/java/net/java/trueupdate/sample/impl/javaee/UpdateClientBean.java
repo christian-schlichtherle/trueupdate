@@ -58,7 +58,7 @@ public class UpdateClientBean extends ApplicationListener {
             throw ex;
         } catch (final Exception ex) {
             context.setRollbackOnly();
-            logger.log(Level.SEVERE, "Error while processing task.", ex);
+            logger.log(Level.WARNING, "Error while processing task.", ex);
             return null;
         }
     }
@@ -127,7 +127,7 @@ public class UpdateClientBean extends ApplicationListener {
     }
 
     private UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.INFO, "Update message:\n{0}", message);
+        logger.log(Level.FINE, "Received update message:\n{0}", message);
         return message;
     }
 }
