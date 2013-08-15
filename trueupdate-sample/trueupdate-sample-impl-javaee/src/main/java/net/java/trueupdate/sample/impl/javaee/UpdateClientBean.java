@@ -64,8 +64,10 @@ public class UpdateClientBean extends ApplicationListener {
     }
 
     private UpdateAgent updateAgent() {
-        // The update agent should normally get cached, but isn't done here for
-        // testing purposes.
+        // The update agent may get cached, but isn't done here for testing
+        // purposes and because this method is very infrequently called:
+        // Only once at startup, once at shutdown and once for every
+        // installation request in response to an update notice.
         return updateAgentBuilder
                 .applicationParameters()
                     .applicationListener(this)
