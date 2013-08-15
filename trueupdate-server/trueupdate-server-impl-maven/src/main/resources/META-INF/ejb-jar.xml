@@ -12,7 +12,7 @@
     <display-name>${project.name}</display-name>
     <enterprise-beans>
         <session>
-            <ejb-name>ArtifactUpdateServerBean</ejb-name>
+            <ejb-name>MavenArtifactResolverProviderBean</ejb-name>
             <env-entry>
                 <description>
                     The URI of the XML to configure the mandatory local Maven
@@ -34,7 +34,7 @@
                     of the system property with the specified key.
                     E.g. "file://\${user.home}/.repositories.xml".
 
-                    The default value specifies a resource on the class path
+                    The default value refers to a resource on the class path
                     which contains the XML to configure the local repository
                     path "${user.home}/.m2/repository" - thus referencing the
                     home directory of the user which runs the web app server -
@@ -43,7 +43,6 @@
                 </description>
                 <env-entry-name>configurationUri</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>net/java/trueupdate/artifact/impl/maven/main-repositories.xml</env-entry-value>
             </env-entry>
         </session>
     </enterprise-beans>

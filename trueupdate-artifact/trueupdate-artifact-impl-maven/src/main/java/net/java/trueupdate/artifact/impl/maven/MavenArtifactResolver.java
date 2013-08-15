@@ -6,6 +6,7 @@ package net.java.trueupdate.artifact.impl.maven;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
 import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.*;
@@ -245,6 +246,11 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         hash = 31 * hash + local().hashCode();
         hash = 31 * hash + remotes().hashCode();
         return hash;
+    }
+
+    /** Returns the URL of the {@code "main-repositories.xml"} resource. */
+    public static URL mainRepositoriesResource() {
+        return MavenArtifactResolver.class.getResource("main-repositories.xml");
     }
 
     /**
