@@ -13,7 +13,7 @@ import net.java.trueupdate.artifact.impl.maven.MavenArtifactResolver
 trait MavenArtifactResolverTestContext
 extends TestContext with ArtifactResolverTestContext {
 
-  final override def artifactResolver =
+  override def artifactResolver =
     MavenArtifactResolver decodeFromXml testRepositories
 
   private def testRepositories =
