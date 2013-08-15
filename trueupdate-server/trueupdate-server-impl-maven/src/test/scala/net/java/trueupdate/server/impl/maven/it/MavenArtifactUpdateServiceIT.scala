@@ -11,7 +11,7 @@ import net.java.trueupdate.server.impl.maven._
 import javax.ws.rs.core.Application
 
 /** @author Christian Schlichtherle */
-class MavenArtifactUpdateServiceIT
+final class MavenArtifactUpdateServiceIT
 extends ArtifactUpdateServiceITSuite
 with MavenArtifactResolverTestContext {
 
