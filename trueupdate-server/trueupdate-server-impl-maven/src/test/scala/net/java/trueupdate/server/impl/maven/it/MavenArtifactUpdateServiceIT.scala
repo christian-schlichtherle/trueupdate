@@ -7,9 +7,8 @@ package net.java.trueupdate.server.impl.maven.it
 import net.java.trueupdate.artifact.impl.maven.it.MavenArtifactResolverTestContext
 import net.java.trueupdate.jax.rs.server.it.ArtifactUpdateServiceITSuite
 import com.sun.jersey.test.framework.WebAppDescriptor
-import com.sun.jersey.api.core.DefaultResourceConfig
-import net.java.trueupdate.jax.rs.server.{BasicArtifactUpdateServer, ArtifactUpdateServiceExceptionMapper}
-import javax.ws.rs.Path
+import net.java.trueupdate.server.impl.maven._
+import javax.ws.rs.core.Application
 
 /** @author Christian Schlichtherle */
 class MavenArtifactUpdateServiceIT
@@ -20,7 +19,12 @@ with MavenArtifactResolverTestContext {
 
   override protected def configure =
     new WebAppDescriptor
-      .Builder("net.java.trueupdate.jax.rs.server;net.java.trueupdate.server.impl.maven")
+      .Builder(packagesOf(new ArtifactUpdateServerApplication): _*)
       .contextPath("test")
       .build
+
+  private def packagesOf(app: Application) = {
+    import collection.JavaConverters._
+    (app.getClasses.asScala map (_.getPackage.getName)).toArray
+  }
 }
