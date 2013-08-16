@@ -17,25 +17,25 @@ import net.java.trueupdate.manager.spec.*;
  *
  * @author Christian Schlichtherle
  */
-@MessageDriven(mappedName = MessageListenerBean.LOOKUP_NAME,
+@MessageDriven(mappedName = MessageListenerBean.DESTINATION_LOOKUP,
         activationConfig = {
             @ActivationConfigProperty(propertyName = "messageSelector",
                                       propertyValue = "manager = true"),
             @ActivationConfigProperty(propertyName = "destinationType",
                                       propertyValue = "javax.jms.Topic"),
-            @ActivationConfigProperty(propertyName = "destinationLookup",
-                                      propertyValue = MessageListenerBean.LOOKUP_NAME),
             @ActivationConfigProperty(propertyName = "subscriptionDurability",
                                       propertyValue = "Durable"),
             @ActivationConfigProperty(propertyName = "subscriptionName",
-                                      propertyValue = "trueupdate-manager"),
+                                      propertyValue = "TrueUpdate Manager"),
+            @ActivationConfigProperty(propertyName = "clientId",
+                                      propertyValue = "nevermind"),
         })
 public class MessageListenerBean implements MessageListener {
 
     private static final Logger
             logger = Logger.getLogger(MessageListenerBean.class.getName());
 
-    static final String LOOKUP_NAME = "jms/trueupdate";
+    static final String DESTINATION_LOOKUP = "TrueUpdate";
 
     @EJB
     private UpdateMessageListener updateMessageListener;

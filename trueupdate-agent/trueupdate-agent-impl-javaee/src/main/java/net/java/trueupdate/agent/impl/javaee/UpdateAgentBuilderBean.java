@@ -28,7 +28,7 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     @Resource
     ConnectionFactory connectionFactory;
 
-    @Resource(lookup = MessageListenerBean.LOOKUP_NAME)
+    @Resource(lookup = MessageListenerBean.DESTINATION_LOOKUP)
     Destination destination;
 
     @CheckForNull

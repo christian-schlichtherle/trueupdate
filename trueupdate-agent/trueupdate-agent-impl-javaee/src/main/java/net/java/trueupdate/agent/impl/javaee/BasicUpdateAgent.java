@@ -9,18 +9,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
 import javax.jms.*;
+import static net.java.trueupdate.agent.impl.javaee.MessageListenerBean.DESTINATION_URI;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
-
 /**
  * @author Christian Schlichtherle
  */
 final class BasicUpdateAgent implements UpdateAgent {
-
-    private static final URI
-            DESTINATION_URI = URI.create(MessageListenerBean.LOOKUP_NAME);
 
     private final ConnectionFactory connectionFactory;
     private final Destination destination;

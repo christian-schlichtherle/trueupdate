@@ -21,7 +21,7 @@
     <description>
         Bundles the components for deploying the TrueUpdate Manager application
         to an OpenEJB container.
-   </description>
+    </description>
 
     <dependencies>
         <dependency>
