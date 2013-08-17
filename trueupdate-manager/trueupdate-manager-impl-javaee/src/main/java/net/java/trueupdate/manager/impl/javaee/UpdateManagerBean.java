@@ -123,7 +123,7 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
     }
 
     private UpdateMessage logInput(final UpdateMessage message) {
-        logger.log(Level.INFO, "Input update message:\n{0}", message);
+        logger.log(Level.FINE, "Input update message:\n{0}", message);
         return message;
     }
 
