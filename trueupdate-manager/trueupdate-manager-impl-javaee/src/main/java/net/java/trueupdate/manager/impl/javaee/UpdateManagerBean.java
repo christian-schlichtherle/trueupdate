@@ -10,7 +10,6 @@ import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
-import javax.naming.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
@@ -35,6 +34,9 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
 
     @EJB
     private UpdateInstaller installer;
+
+    @Resource(name = "TrueUpdate")
+    Topic destination;
 
     private final Map<ApplicationDescriptor, UpdateMessage>
             subscriptions = new HashMap<>();
@@ -121,7 +123,7 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
     }
 
     private UpdateMessage logInput(final UpdateMessage message) {
-        logger.log(Level.FINE, "Input update message:\n{0}", message);
+        logger.log(Level.INFO, "Input update message:\n{0}", message);
         return message;
     }
 
@@ -131,19 +133,14 @@ extends UpdateMessageDispatcher implements UpdateMessageListener {
     }
 
     private UpdateMessage send(final UpdateMessage message) throws Exception {
-        final Destination d = toDestination(message);
         final Session s = connection.createSession(true, 0);
         try {
             final Message m = s.createObjectMessage(message);
             m.setBooleanProperty("manager", message.type().forManager());
-            s.createProducer(d).send(m);
+            s.createProducer(destination).send(m);
             return message;
         } finally {
             s.close();
         }
-    }
-
-    private Destination toDestination(UpdateMessage message) throws NamingException {
-        return InitialContext.doLookup(message.to().toString());
     }
 }

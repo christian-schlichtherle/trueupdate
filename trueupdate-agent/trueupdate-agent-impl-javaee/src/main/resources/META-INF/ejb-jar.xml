@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
+  -->
 <ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
-         version = "3.1"
          xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+         version = "3.1">
     <module-name>${project.artifactId}</module-name>
     <description>${project.description}</description>
     <display-name>${project.name}</display-name>
+    <enterprise-beans>
+        <session>
+            <ejb-name>UpdateAgentBuilderBean</ejb-name>
+            <resource-env-ref>
+                <resource-env-ref-name>TrueUpdate</resource-env-ref-name>
+                <resource-env-ref-type>javax.jms.Topic</resource-env-ref-type>
+            </resource-env-ref>
+        </session>
+        <message-driven>
+            <ejb-name>UpdateAgentListenerBean</ejb-name>
+            <resource-env-ref>
+                <resource-env-ref-name>TrueUpdate</resource-env-ref-name>
+                <resource-env-ref-type>javax.jms.Topic</resource-env-ref-type>
+            </resource-env-ref>
+        </message-driven>
+    </enterprise-beans>
 </ejb-jar>

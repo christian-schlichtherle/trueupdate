@@ -5,7 +5,6 @@
 package net.java.trueupdate.agent.impl.javaee;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
@@ -18,21 +17,19 @@ import net.java.trueupdate.manager.spec.*;
  *
  * @author Christian Schlichtherle
  */
-@MessageDriven(mappedName = MessageListenerBean.DESTINATION_LOOKUP,
+@MessageDriven(
         activationConfig = {
             @ActivationConfigProperty(propertyName = "messageSelector",
                                       propertyValue = "manager = false"),
+            @ActivationConfigProperty(propertyName = "destination",
+                                      propertyValue = "TrueUpdate"),
             @ActivationConfigProperty(propertyName = "destinationType",
                                       propertyValue = "javax.jms.Topic"),
         })
-public class MessageListenerBean implements MessageListener {
+public class UpdateAgentListenerBean implements MessageListener {
 
     private static final Logger
-            logger = Logger.getLogger(MessageListenerBean.class.getName());
-
-    static final String DESTINATION_LOOKUP = "TrueUpdate";
-
-    static final URI DESTINATION_URI = URI.create(DESTINATION_LOOKUP);
+            logger = Logger.getLogger(UpdateAgentListenerBean.class.getName());
 
     @EJB
     private UpdateMessageListener updateMessageListener;

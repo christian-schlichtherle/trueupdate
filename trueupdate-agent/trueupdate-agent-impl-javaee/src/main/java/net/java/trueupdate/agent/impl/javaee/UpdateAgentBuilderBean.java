@@ -28,8 +28,8 @@ implements UpdateMessageListener, UpdateAgent.Builder {
     @Resource
     ConnectionFactory connectionFactory;
 
-    @Resource(lookup = MessageListenerBean.DESTINATION_LOOKUP)
-    Destination destination;
+    @Resource(name = "TrueUpdate")
+    Topic destination;
 
     @CheckForNull
     ApplicationParameters applicationParameters;
