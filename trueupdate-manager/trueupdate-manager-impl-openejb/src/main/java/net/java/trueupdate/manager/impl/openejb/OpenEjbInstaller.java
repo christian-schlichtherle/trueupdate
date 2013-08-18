@@ -20,6 +20,7 @@ public class OpenEjbInstaller implements UpdateInstaller {
             logger = Logger.getLogger(OpenEjbInstaller.class.getName());
 
     @Override public void install(UpdateMessage message) throws Exception {
-        logger.log(Level.INFO, "TODO: Implement the update installation.");
+        logger.log(Level.INFO, "TODO: Implement the installation of:\n{0}",
+                message);
     }
 }
