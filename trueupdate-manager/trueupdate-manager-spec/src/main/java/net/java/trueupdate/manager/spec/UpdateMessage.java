@@ -553,6 +553,14 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
+        public ArtifactDescriptor.Builder<Builder> artifactDescriptor() {
+            return new ArtifactDescriptor.Builder<Builder>() {
+                @Override public Builder inject() {
+                    return artifactDescriptor(build());
+                }
+            };
+        }
+
         public Builder artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
