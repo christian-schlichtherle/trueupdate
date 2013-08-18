@@ -23,7 +23,7 @@
                     the system property with the specified key.
                     E.g. "http://localhost/\${user.name}/trueupdate-server/".
                 </description>
-                <env-entry-name>serverBaseUri</env-entry-name>
+                <env-entry-name>updateServiceBaseUri</env-entry-name>
                 <env-entry-value>http://localhost:8080/trueupdate-server/</env-entry-value>
             </env-entry>
             <env-entry>
