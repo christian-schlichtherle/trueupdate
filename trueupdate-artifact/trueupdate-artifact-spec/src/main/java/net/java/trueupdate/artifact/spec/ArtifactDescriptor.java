@@ -29,6 +29,11 @@ public final class ArtifactDescriptor implements Serializable {
         this.extension = nonNullOr(b.extension, "jar");
     }
 
+    private static String requireNonEmpty(final String string) {
+        if (string.isEmpty()) throw new IllegalArgumentException();
+        return string;
+    }
+
     private static String nonNullOr(@CheckForNull String string, String def) {
         return null != string ? string : def;
     }
@@ -50,11 +55,6 @@ public final class ArtifactDescriptor implements Serializable {
      * {@code "jar"}.
      */
     public static Builder<Void> builder() { return new Builder<>(); }
-
-    static String requireNonEmpty(final String string) {
-        if (string.isEmpty()) throw new IllegalArgumentException();
-        return string;
-    }
 
     /**
      * Returns the group id, e.g. {@code net.java.trueupdate}.
