@@ -5,17 +5,13 @@
 package net.java.trueupdate.server.impl.maven;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import javax.annotation.Resource;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Singleton;
+import javax.ejb.*;
 import javax.inject.Provider;
 import net.java.trueupdate.artifact.impl.maven.MavenArtifactResolver;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.io.Sources;
+import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.SystemProperties;
 
 /**
@@ -27,6 +23,10 @@ import net.java.trueupdate.core.util.SystemProperties;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class MavenArtifactResolverProviderBean
 implements Provider<ArtifactResolver> {
+
+    @Resource(name = "configurationUri")
+    private String configurationString =
+            MavenArtifactResolver.mainRepositoriesResource().toString();
 
     @Override public ArtifactResolver get() {
         final ArtifactResolver ar = artifactResolver;
@@ -54,10 +54,6 @@ implements Provider<ArtifactResolver> {
     private URI configurationUri() throws URISyntaxException {
         return new URI(SystemProperties.resolve(configurationString));
     }
-
-    @Resource(name = "configurationUri")
-    private String configurationString =
-            MavenArtifactResolver.mainRepositoriesResource().toString();
 
     private static String removeLeadingSlashes(String string) {
         while (string.startsWith("/")) string = string.substring(1);
