@@ -29,13 +29,29 @@ public final class ArtifactUpdateClient {
     private final URI baseUri;
     private final Client client;
 
-    public ArtifactUpdateClient(URI baseUri) { this(baseUri, null); }
+    /**
+     * Constructs an artifact update client.
+     *
+     * @param baseUri the base URI of the web service.
+     */
+    public ArtifactUpdateClient(URI baseUri) {
+        this(baseUri, null);
+    }
 
+    /**
+     * Constructs an artifact update client.
+     *
+     * @param baseUri the base URI of the web service.
+     * @param client the nullable client.
+     */
     public ArtifactUpdateClient(final URI baseUri,
                                 final @CheckForNull Client client) {
         this.baseUri = Objects.requireNonNull(baseUri);
         this.client = null != client ? client : Client.create();
     }
+
+    /** Returns the base URI of the web service. */
+    public URI baseUri() { return baseUri; }
 
     /**
      * Returns the update version for the described artifact.
@@ -85,7 +101,7 @@ public final class ArtifactUpdateClient {
 
     private WebResource path(String path) { return resource().path(path); }
 
-    private WebResource resource() { return client.resource(baseUri); }
+    private WebResource resource() { return client.resource(baseUri()); }
 
     private static ClientResponse get(WebResource.Builder builder)
     throws ArtifactUpdateServiceException {
