@@ -4,9 +4,9 @@
   - All rights reserved. Use is subject to license terms.
   -->
 <ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
-         version = "3.1"
          xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+         version = "3.1">
     <module-name>${project.artifactId}</module-name>
     <description>${project.description}</description>
     <display-name>${project.name}</display-name>
@@ -43,6 +43,7 @@
                 </description>
                 <env-entry-name>configurationUri</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>net/java/trueupdate/artifact/impl/maven/main-repositories.xml</env-entry-value>
             </env-entry>
         </session>
     </enterprise-beans>
