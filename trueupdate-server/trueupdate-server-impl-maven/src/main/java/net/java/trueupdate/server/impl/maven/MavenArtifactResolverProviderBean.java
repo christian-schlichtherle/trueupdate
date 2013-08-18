@@ -24,6 +24,7 @@ import net.java.trueupdate.core.util.SystemProperties;
 public class MavenArtifactResolverProviderBean
 implements Provider<ArtifactResolver> {
 
+    // See https://java.net/jira/browse/GLASSFISH-20766 .
     @Resource(name = "configurationUri")
     private String configurationString =
             MavenArtifactResolver.mainRepositoriesResource().toString();
