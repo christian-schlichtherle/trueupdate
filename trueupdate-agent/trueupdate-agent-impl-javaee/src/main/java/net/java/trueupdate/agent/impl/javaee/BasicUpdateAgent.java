@@ -83,7 +83,7 @@ final class BasicUpdateAgent implements UpdateAgent {
         });
     }
 
-    private @Nullable <V> V wrap(final Callable<V> task)
+    private static @Nullable <V> V wrap(final Callable<V> task)
     throws UpdateAgentException {
         try { return task.call(); }
         catch (RuntimeException ex) { throw ex; }
