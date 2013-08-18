@@ -31,6 +31,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-server-impl-maven</artifactId>
+            <type>ejb</type>
         </dependency>
         <!--dependency>
             <groupId>ch.qos.logback</groupId>

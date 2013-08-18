@@ -193,6 +193,7 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-server-impl-maven</artifactId>
                 <version>${project.version}</version>
+                <type>ejb</type>
             </dependency>
             <dependency>
                 <groupId>asm</groupId>
