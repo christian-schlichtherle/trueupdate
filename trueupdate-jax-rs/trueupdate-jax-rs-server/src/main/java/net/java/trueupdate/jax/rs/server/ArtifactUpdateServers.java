@@ -4,9 +4,8 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
-
 import java.util.concurrent.Callable;
+import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 
 /**
  * Utility functions for update servers.
@@ -21,7 +20,8 @@ final class ArtifactUpdateServers {
 
     private ArtifactUpdateServers() { }
 
-    static <V> V wrap(final Callable<V> task) throws ArtifactUpdateServiceException {
+    static <V> V wrap(final Callable<V> task)
+    throws ArtifactUpdateServiceException {
         try {
             return task.call();
         } catch (ArtifactUpdateServiceException ex) {
