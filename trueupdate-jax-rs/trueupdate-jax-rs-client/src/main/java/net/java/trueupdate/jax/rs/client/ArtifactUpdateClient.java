@@ -16,7 +16,6 @@ import static javax.ws.rs.core.MediaType.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
-
 import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 
 /**
@@ -43,16 +42,17 @@ public final class ArtifactUpdateClient {
      *
      * @param descriptor the artifact descriptor.
      * @return the update version for the described artifact.
-     * @throws IOException on any I/O error, e.g. if the web service is not
-     *         available.
+     * @throws ArtifactUpdateServiceException on any I/O error, e.g. if the web
+     *         service is not available.
      */
-    public String version(ArtifactDescriptor descriptor) throws IOException {
+    public String version(ArtifactDescriptor descriptor)
+    throws ArtifactUpdateServiceException {
         return version(descriptor, null);
     }
 
     public String version(ArtifactDescriptor descriptor,
                           @CheckForNull MediaType mediaType)
-    throws IOException {
+    throws ArtifactUpdateServiceException {
         return get(path("artifact/version")
                 .queryParams(queryParameters(descriptor))
                 .accept(null != mediaType ? mediaType : TEXT_PLAIN_TYPE)
@@ -88,12 +88,12 @@ public final class ArtifactUpdateClient {
     private WebResource resource() { return client.resource(baseUri); }
 
     private static ClientResponse get(WebResource.Builder builder)
-    throws IOException {
+    throws ArtifactUpdateServiceException {
         return checked(builder.get(ClientResponse.class));
     }
 
     private static ClientResponse checked(final ClientResponse response)
-    throws IOException {
+    throws ArtifactUpdateServiceException {
         final Status status = response.getClientResponseStatus();
         if (status != Status.OK)
             throw new ArtifactUpdateServiceException(status.getStatusCode(),
