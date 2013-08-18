@@ -61,8 +61,7 @@ public final class ApplicationParameters {
 
         public ApplicationDescriptor.Builder<Builder<T>> applicationDescriptor() {
             return new ApplicationDescriptor.Builder<Builder<T>>() {
-                @Override
-                public Builder<T> inject() {
+                @Override public Builder<T> inject() {
                     return applicationDescriptor(build());
                 }
             };
