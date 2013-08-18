@@ -26,6 +26,13 @@
                 <env-entry-name>serverBaseUri</env-entry-name>
                 <env-entry-value>http://localhost:8080/trueupdate-server/</env-entry-value>
             </env-entry>
+            <env-entry>
+                <description>
+                    The interval for checking for artifact updates in minutes.
+                </description>
+                <env-entry-name>checkUpdatesIntervalMinutes</env-entry-name>
+                <env-entry-value>360</env-entry-value>
+            </env-entry>
             <resource-env-ref>
                 <resource-env-ref-name>TrueUpdate</resource-env-ref-name>
                 <resource-env-ref-type>javax.jms.Topic</resource-env-ref-type>
