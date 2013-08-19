@@ -58,17 +58,16 @@ public final class UpdateClient {
      *
      * @param descriptor the artifact descriptor.
      * @return the update version for the described artifact.
-     * @throws net.java.trueupdate.jax.rs.util.UpdateServiceException on any I/O error, e.g. if the web
-     *         service is not available.
+     * @throws IOException on any I/O error, e.g. if the web service is not
+     *         available.
      */
-    public String version(ArtifactDescriptor descriptor)
-    throws UpdateServiceException {
+    public String version(ArtifactDescriptor descriptor) throws IOException {
         return version(descriptor, null);
     }
 
     public String version(ArtifactDescriptor descriptor,
                           @CheckForNull MediaType mediaType)
-    throws UpdateServiceException {
+    throws IOException {
         return get(path("artifact/version")
                 .queryParams(queryParameters(descriptor))
                 .accept(null != mediaType ? mediaType : TEXT_PLAIN_TYPE)
