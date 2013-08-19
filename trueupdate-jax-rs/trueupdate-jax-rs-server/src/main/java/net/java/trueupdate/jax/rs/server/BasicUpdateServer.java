@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;
 import net.java.trueupdate.artifact.spec.*;
-import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * The (un-configured) server-side implementation of a RESTful service for
@@ -17,24 +17,24 @@ import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class BasicArtifactUpdateServer {
+public abstract class BasicUpdateServer {
 
     /** Returns the artifact resolver. */
     protected abstract ArtifactResolver artifactResolver();
 
     /** Returns a parameterized artifact update server. */
     @Path("artifact")
-    public ConfiguredArtifactUpdateServer configure(
+    public ConfiguredUpdateServer configure(
             final @QueryParam("groupId") String groupId,
             final @QueryParam("artifactId") String artifactId,
             final @QueryParam("version") String version,
             final @QueryParam("classifier") @DefaultValue("") String classifier,
             final @QueryParam("extension") @DefaultValue("jar") String extension)
-    throws ArtifactUpdateServiceException {
-        return ArtifactUpdateServers.wrap(new Callable<ConfiguredArtifactUpdateServer>() {
+    throws UpdateServiceException {
+        return UpdateServers.wrap(new Callable<ConfiguredUpdateServer>() {
             @Override
-            public ConfiguredArtifactUpdateServer call() {
-                return new ConfiguredArtifactUpdateServer(artifactResolver(),
+            public ConfiguredUpdateServer call() {
+                return new ConfiguredUpdateServer(artifactResolver(),
                         ArtifactDescriptor.builder()
                                 .groupId(groupId)
                                 .artifactId(artifactId)

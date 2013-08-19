@@ -8,7 +8,7 @@ import javax.ejb.*;
 import javax.inject.Provider;
 import javax.ws.rs.Path;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.jax.rs.server.BasicArtifactUpdateServer;
+import net.java.trueupdate.jax.rs.server.BasicUpdateServer;
 
 /**
  * A an artifact update server which uses a maven artifact resolver.
@@ -17,7 +17,7 @@ import net.java.trueupdate.jax.rs.server.BasicArtifactUpdateServer;
  */
 @Stateless
 @Path("/")
-public class ArtifactUpdateServerBean extends BasicArtifactUpdateServer {
+public class MavenizedUpdateServerBean extends BasicUpdateServer {
 
     @EJB
     private Provider<ArtifactResolver> artifactResolverProvider;

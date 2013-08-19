@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * Maps an update service exception to a HTTP response.
@@ -23,8 +23,8 @@ import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
 @Provider
 @Produces({ APPLICATION_JSON, APPLICATION_XML, TEXT_XML, TEXT_PLAIN })
 @Immutable
-public final class ArtifactUpdateServiceExceptionMapper
-implements ExceptionMapper<ArtifactUpdateServiceException> {
+public final class UpdateServiceExceptionMapper
+implements ExceptionMapper<UpdateServiceException> {
 
     private static final String MESSAGE = "message";
 
@@ -32,13 +32,13 @@ implements ExceptionMapper<ArtifactUpdateServiceException> {
 
     private final HttpHeaders headers;
 
-    public ArtifactUpdateServiceExceptionMapper(
+    public UpdateServiceExceptionMapper(
             final @Context HttpHeaders headers) {
         this.headers = Objects.requireNonNull(headers);
     }
 
     @Override
-    public Response toResponse(final ArtifactUpdateServiceException ex) {
+    public Response toResponse(final UpdateServiceException ex) {
         final String msg = ex.getMessage();
         final MediaType mt = headers.getMediaType();
         final ResponseBuilder rb = Response.status(ex.getStatus());

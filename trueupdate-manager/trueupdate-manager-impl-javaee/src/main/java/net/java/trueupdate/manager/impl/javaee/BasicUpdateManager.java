@@ -7,8 +7,8 @@ package net.java.trueupdate.manager.impl.javaee;
 import java.util.*;
 import java.util.logging.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.jax.rs.client.ArtifactUpdateClient;
-import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
+import net.java.trueupdate.jax.rs.client.UpdateClient;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage.Type;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
@@ -28,7 +28,7 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
             subscriptions = new HashMap<>();
 
     /** Returns the artifact update client. */
-    protected abstract ArtifactUpdateClient updateClient();
+    protected abstract UpdateClient updateClient();
 
     /** Returns the update installer. */
     protected abstract UpdateInstaller updateInstaller();
@@ -44,7 +44,7 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     protected void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
-        final ArtifactUpdateClient updateClient = updateClient();
+        final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from: {0}",
                 updateClient.baseUri());
         final Map<ArtifactDescriptor, String> versions = new HashMap<>();
@@ -59,7 +59,7 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
                 if (!version.equals(artifactDescriptor.version()))
                     logOutput(send(updateNotice(subscription, version)));
             }
-        } catch (ArtifactUpdateServiceException ex) {
+        } catch (UpdateServiceException ex) {
             logger.log(Level.WARNING,
                     "Failed to resolve artifact update version:", ex);
         }

@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType._
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.it.Loan._
 import net.java.trueupdate.core.zip.model.DiffModel
-import net.java.trueupdate.jax.rs.client.ArtifactUpdateClient
+import net.java.trueupdate.jax.rs.client.UpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.core.TestContext
@@ -20,7 +20,7 @@ import net.java.trueupdate.artifact.spec.ArtifactResolverTestContext
 import java.util.logging.Level
 
 /** @author Christian Schlichtherle */
-class ArtifactUpdateServiceITSuite extends JerseyTest {
+class UpdateServiceITSuite extends JerseyTest {
   context: TestContext with ArtifactResolverTestContext =>
 
   @Test def testLifeCycle() {
@@ -59,5 +59,5 @@ class ArtifactUpdateServiceITSuite extends JerseyTest {
   }
 
   private def artifactUpdateClient =
-    new ArtifactUpdateClient(resource.getURI, client)
+    new UpdateClient(resource.getURI, client)
 }

@@ -13,7 +13,7 @@ import javax.annotation.CheckForNull;
  *
  * @author Christian Schlichtherle
  */
-public class ArtifactUpdateServiceException extends IOException {
+public class UpdateServiceException extends IOException {
 
     private static final long serialVersionUID = 0L;
 
@@ -27,7 +27,7 @@ public class ArtifactUpdateServiceException extends IOException {
      * @param cause the causing exception.
      * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html</a>
      */
-    public ArtifactUpdateServiceException(
+    public UpdateServiceException(
             final int status,
             final @CheckForNull Throwable cause) {
         super(null == cause ? null : cause.toString(), cause);

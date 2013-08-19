@@ -16,7 +16,7 @@ import static javax.ws.rs.core.MediaType.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
-import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
+import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
  * The client-side implementation of a RESTful service for artifact updates.
@@ -24,7 +24,7 @@ import net.java.trueupdate.jax.rs.util.ArtifactUpdateServiceException;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ArtifactUpdateClient {
+public final class UpdateClient {
 
     private final URI baseUri;
     private final Client client;
@@ -34,7 +34,7 @@ public final class ArtifactUpdateClient {
      *
      * @param baseUri the base URI of the web service.
      */
-    public ArtifactUpdateClient(URI baseUri) {
+    public UpdateClient(URI baseUri) {
         this(baseUri, null);
     }
 
@@ -44,8 +44,8 @@ public final class ArtifactUpdateClient {
      * @param baseUri the base URI of the web service.
      * @param client the nullable client.
      */
-    public ArtifactUpdateClient(final URI baseUri,
-                                final @CheckForNull Client client) {
+    public UpdateClient(final URI baseUri,
+                        final @CheckForNull Client client) {
         this.baseUri = Objects.requireNonNull(baseUri);
         this.client = null != client ? client : Client.create();
     }
@@ -58,17 +58,17 @@ public final class ArtifactUpdateClient {
      *
      * @param descriptor the artifact descriptor.
      * @return the update version for the described artifact.
-     * @throws ArtifactUpdateServiceException on any I/O error, e.g. if the web
+     * @throws net.java.trueupdate.jax.rs.util.UpdateServiceException on any I/O error, e.g. if the web
      *         service is not available.
      */
     public String version(ArtifactDescriptor descriptor)
-    throws ArtifactUpdateServiceException {
+    throws UpdateServiceException {
         return version(descriptor, null);
     }
 
     public String version(ArtifactDescriptor descriptor,
                           @CheckForNull MediaType mediaType)
-    throws ArtifactUpdateServiceException {
+    throws UpdateServiceException {
         return get(path("artifact/version")
                 .queryParams(queryParameters(descriptor))
                 .accept(null != mediaType ? mediaType : TEXT_PLAIN_TYPE)
@@ -104,15 +104,15 @@ public final class ArtifactUpdateClient {
     private WebResource resource() { return client.resource(baseUri()); }
 
     private static ClientResponse get(WebResource.Builder builder)
-    throws ArtifactUpdateServiceException {
+    throws UpdateServiceException {
         return checked(builder.get(ClientResponse.class));
     }
 
     private static ClientResponse checked(final ClientResponse response)
-    throws ArtifactUpdateServiceException {
+    throws UpdateServiceException {
         final Status status = response.getClientResponseStatus();
         if (status != Status.OK)
-            throw new ArtifactUpdateServiceException(status.getStatusCode(),
+            throw new UpdateServiceException(status.getStatusCode(),
                     new UniformInterfaceException(response));
         return response;
     }

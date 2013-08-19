@@ -12,7 +12,7 @@ import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
 import net.java.trueupdate.core.util.SystemProperties;
-import net.java.trueupdate.jax.rs.client.ArtifactUpdateClient;
+import net.java.trueupdate.jax.rs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 
 /**
@@ -46,8 +46,8 @@ public class UpdateManagerBean extends BasicUpdateManager {
     @Resource
     private TimerService timerService;
 
-    @Override protected ArtifactUpdateClient updateClient() {
-        return new ArtifactUpdateClient(updateServiceBaseUri());
+    @Override protected UpdateClient updateClient() {
+        return new UpdateClient(updateServiceBaseUri());
     }
 
     private URI updateServiceBaseUri() {

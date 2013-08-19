@@ -5,21 +5,21 @@
 package net.java.trueupdate.server.impl.maven.it
 
 import net.java.trueupdate.artifact.impl.maven.it.MavenArtifactResolverTestContext
-import net.java.trueupdate.jax.rs.server.it.ArtifactUpdateServiceITSuite
+import net.java.trueupdate.jax.rs.server.it.UpdateServiceITSuite
 import com.sun.jersey.test.framework.WebAppDescriptor
 import net.java.trueupdate.server.impl.maven._
 import javax.ws.rs.core.Application
 
 /** @author Christian Schlichtherle */
-final class MavenArtifactUpdateServiceIT
-extends ArtifactUpdateServiceITSuite
+final class MavenizedUpdateServiceIT
+extends UpdateServiceITSuite
 with MavenArtifactResolverTestContext {
 
   override def artifactResolver = throw new UnsupportedOperationException
 
   override protected def configure =
     new WebAppDescriptor
-      .Builder(packagesOf(new ArtifactUpdateServerApplication): _*)
+      .Builder(packagesOf(new MavenizedUpdateServerApplication): _*)
       .contextPath("test")
       .build
 
