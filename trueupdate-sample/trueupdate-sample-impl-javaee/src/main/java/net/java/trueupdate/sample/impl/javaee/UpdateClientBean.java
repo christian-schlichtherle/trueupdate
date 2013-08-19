@@ -63,33 +63,24 @@ public class UpdateClientBean extends ApplicationListener {
         }
     }
 
-    private UpdateAgent updateAgent;
-
     private UpdateAgent updateAgent() {
-        // Needs caching because when running @PreDestroy, the update agent
-        // builder bean may have already been shut down and this may result in
-        // an IllegalStateException.
-        // Using the @DependsOn annotation would create tight coupling, so I
-        // don't use it.
-        final UpdateAgent ua = this.updateAgent;
-        return null != ua
-                ? ua
-                : (this.updateAgent = updateAgentBuilder
-                    .applicationParameters()
-                        .applicationListener(this)
-                        .applicationDescriptor()
-                            .artifactDescriptor()
-                                .groupId(lookupString("groupId"))
-                                .artifactId(lookupString("artifactId"))
-                                .version(lookupString("version"))
-                                .classifier(lookupString("classifier"))
-                                .extension(lookupString("extension"))
-                                .inject()
-                            .currentLocation(lookupUri("currentLocation"))
+        // The result may get cached, too.
+        return updateAgentBuilder
+                .applicationParameters()
+                    .applicationListener(this)
+                    .applicationDescriptor()
+                        .artifactDescriptor()
+                            .groupId(lookupString("groupId"))
+                            .artifactId(lookupString("artifactId"))
+                            .version(lookupString("version"))
+                            .classifier(lookupString("classifier"))
+                            .extension(lookupString("extension"))
                             .inject()
-                        .updateLocation(lookupUri("updateLocation"))
+                        .currentLocation(lookupUri("currentLocation"))
                         .inject()
-                    .build());
+                    .updateLocation(lookupUri("updateLocation"))
+                    .inject()
+                .build();
     }
 
     private URI lookupUri(String key) { return URI.create(lookupString(key)); }
