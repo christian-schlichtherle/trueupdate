@@ -66,9 +66,9 @@ public class UpdateClientBean extends ApplicationListener {
     private UpdateAgent updateAgent;
 
     private UpdateAgent updateAgent() {
-        // Needs caching because when running @PreDestroy, the update builder
-        // bean may have already been shut down and this may result in an
-        // IllegalStateException.
+        // Needs caching because when running @PreDestroy, the update agent
+        // builder bean may have already been shut down and this may result in
+        // an IllegalStateException.
         // Using the @DependsOn annotation would create tight coupling, so I
         // don't use it.
         final UpdateAgent ua = this.updateAgent;
