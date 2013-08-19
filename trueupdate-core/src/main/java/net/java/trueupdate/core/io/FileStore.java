@@ -5,8 +5,6 @@
  */
 package net.java.trueupdate.core.io;
 
-import net.java.trueupdate.core.io.Store;
-
 import java.io.*;
 import static java.util.Objects.requireNonNull;
 
