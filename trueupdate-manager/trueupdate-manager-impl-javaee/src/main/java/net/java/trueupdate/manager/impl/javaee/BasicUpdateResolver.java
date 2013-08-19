@@ -16,8 +16,7 @@ import net.java.trueupdate.manager.spec.*;
 
 
 /**
- * A patch manager resolves artifact update files and keeps track of their
- * usage.
+ * Resolves ZIP patch files for artifact updates and manages their life cycle.
  * This class has no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
