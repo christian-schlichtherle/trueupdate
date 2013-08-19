@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.impl.javaee;
+package net.java.trueupdate.manager.impl.core;
 
 import java.io.IOException;
 import java.util.*;
@@ -15,11 +15,10 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
 
 /**
  * A basic update manager.
- * This class has no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
  */
-abstract class BasicUpdateManager extends UpdateMessageDispatcher {
+public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     private static final Logger
             logger = Logger.getLogger(BasicUpdateManager.class.getName());
@@ -33,7 +32,7 @@ abstract class BasicUpdateManager extends UpdateMessageDispatcher {
         }
     };
 
-    /** Returns the artifact update client. */
+    /** Returns the update client. */
     protected abstract UpdateClient updateClient();
 
     /** Returns the update installer. */

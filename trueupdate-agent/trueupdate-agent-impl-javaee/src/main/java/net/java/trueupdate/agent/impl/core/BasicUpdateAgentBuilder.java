@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.impl.javaee;
+package net.java.trueupdate.agent.impl.core;
 
 import java.util.logging.*;
 import javax.annotation.CheckForNull;
@@ -12,19 +12,18 @@ import net.java.trueupdate.manager.spec.*;
 
 /**
  * A basic update agent builder.
- * This class has no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PackageVisibleField")
-abstract class BasicUpdateAgentBuilder
+public abstract class BasicUpdateAgentBuilder
 extends UpdateMessageDispatcher implements UpdateAgent.Builder {
 
     private static final Logger
             logger = Logger.getLogger(BasicUpdateAgentBuilder.class.getName());
 
     @CheckForNull
-    ApplicationParameters applicationParameters;
+    protected ApplicationParameters applicationParameters;
 
     private final UpdateMessageFilter filter = new UpdateMessageFilter() {
         @Override public boolean accept(UpdateMessage message) {

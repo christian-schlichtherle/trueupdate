@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.manager.impl.javaee;
 
-import net.java.trueupdate.manager.spec.UpdateInstaller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.*;
 import java.util.concurrent.Callable;
@@ -14,6 +13,7 @@ import javax.ejb.*;
 import javax.jms.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
+import net.java.trueupdate.manager.impl.core.BasicUpdateManager;
 import net.java.trueupdate.manager.spec.*;
 
 /**

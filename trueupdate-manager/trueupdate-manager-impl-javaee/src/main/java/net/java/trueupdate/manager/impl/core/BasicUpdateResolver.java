@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.impl.javaee;
+package net.java.trueupdate.manager.impl.core;
 
 import java.io.*;
 import java.util.*;
@@ -13,11 +13,8 @@ import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 
-
-
 /**
  * Resolves ZIP patch files for artifact updates and manages their life cycle.
- * This class has no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
  */

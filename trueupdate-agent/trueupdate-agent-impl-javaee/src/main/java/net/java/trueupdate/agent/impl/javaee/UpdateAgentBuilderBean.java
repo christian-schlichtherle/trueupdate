@@ -7,6 +7,7 @@ package net.java.trueupdate.agent.impl.javaee;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
+import net.java.trueupdate.agent.impl.core.BasicUpdateAgentBuilder;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
 
@@ -26,5 +27,7 @@ public class UpdateAgentBuilderBean extends BasicUpdateAgentBuilder {
     @Resource(name = "TrueUpdate")
     Topic destination;
 
-    @Override public UpdateAgent build() { return new ConfiguredUpdateAgent(this); }
+    @Override public UpdateAgent build() {
+        return new ConfiguredUpdateAgent(applicationParameters, this);
+    }
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.impl.javaee;
+package net.java.trueupdate.agent.impl.core;
 
 import java.net.URI;
 import javax.annotation.Nullable;
@@ -13,11 +13,10 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 
 /**
  * A basic update agent.
- * This class has no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
  */
-abstract class BasicUpdateAgent implements UpdateAgent {
+public abstract class BasicUpdateAgent implements UpdateAgent {
 
     private static final URI
             AGENT_URI = URI.create("agent"),
@@ -53,8 +52,8 @@ abstract class BasicUpdateAgent implements UpdateAgent {
         send(UNSUBSCRIPTION_NOTICE, null);
     }
 
-    protected UpdateMessage send(final UpdateMessage.Type type,
-                                 final @Nullable String updateVersion)
+    private UpdateMessage send(final UpdateMessage.Type type,
+                               final @Nullable String updateVersion)
     throws UpdateAgentException {
         final UpdateMessage message = UpdateMessage
                     .builder()

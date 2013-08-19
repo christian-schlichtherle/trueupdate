@@ -7,6 +7,7 @@ package net.java.trueupdate.agent.impl.javaee;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
 import javax.jms.*;
+import net.java.trueupdate.agent.impl.core.BasicUpdateAgent;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
 
@@ -21,8 +22,9 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
 
-    ConfiguredUpdateAgent(final UpdateAgentBuilderBean b) {
-        this.applicationParameters = requireNonNull(b.applicationParameters);
+    ConfiguredUpdateAgent(final ApplicationParameters applicationParameters,
+                          final UpdateAgentBuilderBean b) {
+        this.applicationParameters = requireNonNull(applicationParameters);
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.destination = requireNonNull(b.destination);
     }
