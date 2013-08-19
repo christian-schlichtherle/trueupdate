@@ -21,6 +21,7 @@ import net.java.trueupdate.manager.spec.*;
  * @author Christian Schlichtherle
  */
 @Singleton
+@Local(UpdateMessageListener.class)
 public class UpdateManagerBean extends BasicUpdateManager {
 
     private static final Logger

@@ -5,36 +5,23 @@
 package net.java.trueupdate.agent.impl.javaee;
 
 import java.net.URI;
-import static java.util.Objects.requireNonNull;
-import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
-import javax.jms.*;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
+
 /**
+ * A basic update agent.
+ * This class has no dependencies on the JMS or Java EE API.
+ *
  * @author Christian Schlichtherle
  */
-final class BasicUpdateAgent implements UpdateAgent {
+abstract class BasicUpdateAgent implements UpdateAgent {
 
     private static final URI
             AGENT_URI = URI.create("agent"),
             MANAGER_URI = URI.create("manager");
-
-    private final ConnectionFactory connectionFactory;
-    private final Destination destination;
-    private final ApplicationParameters parameters;
-
-    BasicUpdateAgent(final UpdateAgentBuilderBean b) {
-        this.connectionFactory = requireNonNull(b.connectionFactory);
-        this.destination = requireNonNull(b.destination);
-        this.parameters = requireNonNull(b.applicationParameters);
-    }
-
-    private ApplicationDescriptor applicationDescriptor() {
-        return parameters.applicationDescriptor();
-    }
 
     private ArtifactDescriptor artifactDescriptor() {
         return applicationDescriptor().artifactDescriptor();
@@ -44,7 +31,15 @@ final class BasicUpdateAgent implements UpdateAgent {
         return applicationDescriptor().currentLocation();
     }
 
-    private URI updateLocation() { return parameters.updateLocation(); }
+    private ApplicationDescriptor applicationDescriptor() {
+        return applicationParameters().applicationDescriptor();
+    }
+
+    private URI updateLocation() {
+        return applicationParameters().updateLocation();
+    }
+
+    protected abstract ApplicationParameters applicationParameters();
 
     @Override public void subscribe() throws UpdateAgentException {
         send(SUBSCRIPTION_REQUEST, null);
@@ -58,59 +53,24 @@ final class BasicUpdateAgent implements UpdateAgent {
         send(UNSUBSCRIPTION_NOTICE, null);
     }
 
-    private void send(final UpdateMessage.Type type,
-                      final @Nullable String updateVersion)
+    protected UpdateMessage send(final UpdateMessage.Type type,
+                                 final @Nullable String updateVersion)
     throws UpdateAgentException {
-        wrap(new MessageProducerTask<Void>() {
-            @Override
-            public Void use(MessageProducer mp, Session s, Connection c)
-            throws Exception {
-                final UpdateMessage um = UpdateMessage
-                            .builder()
-                            .from(AGENT_URI)
-                            .to(MANAGER_URI)
-                            .type(type)
-                            .artifactDescriptor(artifactDescriptor())
-                            .currentLocation(currentLocation())
-                            .updateLocation(updateLocation())
-                            .updateVersion(updateVersion)
-                            .build();
-                final Message m = s.createObjectMessage(um);
-                m.setBooleanProperty("manager", type.forManager());
-                mp.send(m);
-                return null;
-            }
-        });
-    }
-
-    private static @Nullable <V> V wrap(final Callable<V> task)
-    throws UpdateAgentException {
-        try { return task.call(); }
+        final UpdateMessage message = UpdateMessage
+                    .builder()
+                    .from(AGENT_URI)
+                    .to(MANAGER_URI)
+                    .type(type)
+                    .artifactDescriptor(artifactDescriptor())
+                    .currentLocation(currentLocation())
+                    .updateLocation(updateLocation())
+                    .updateVersion(updateVersion)
+                    .build();
+        try { return send(message); }
         catch (RuntimeException ex) { throw ex; }
         catch (Exception ex) { throw new UpdateAgentException(ex); }
     }
 
-    private abstract class MessageProducerTask<V> implements Callable<V> {
-
-        @Override public final V call() throws Exception {
-            final Connection c = connectionFactory.createConnection();
-            try {
-                //c.start();
-                return use(c);
-            } finally {
-                c.close();
-            }
-        }
-
-        private V use(Connection c) throws Exception {
-            return use(c.createSession(true, 0), c);
-        }
-
-        private V use(Session s, Connection c) throws Exception {
-            return use(s.createProducer(destination), s, c);
-        }
-
-        abstract V use(MessageProducer mp, Session s, Connection c)
-        throws Exception;
-    }
+    protected abstract UpdateMessage send(UpdateMessage message)
+    throws Exception;
 }

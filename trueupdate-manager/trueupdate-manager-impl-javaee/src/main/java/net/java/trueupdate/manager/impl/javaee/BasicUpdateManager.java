@@ -15,11 +15,11 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
 
 /**
  * A basic update manager.
- * This class has no dependencies on the JMS or Java EE APIs.
+ * This class has no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
  */
-public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
+abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     private static final Logger
             logger = Logger.getLogger(BasicUpdateManager.class.getName());
@@ -32,10 +32,6 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     /** Returns the update installer. */
     protected abstract UpdateInstaller updateInstaller();
-
-    /** Sends the given update message. */
-    protected abstract UpdateMessage send(final UpdateMessage message)
-    throws Exception;
 
     protected void persistSubscriptions() throws Exception {
         for (UpdateMessage subscription : subscriptions.values())
@@ -151,4 +147,8 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
         logger.log(Level.FINER, "Output update message:\n{0}", message);
         return message;
     }
+
+    /** Sends the given update message. */
+    protected abstract UpdateMessage send(UpdateMessage message)
+    throws Exception;
 }
