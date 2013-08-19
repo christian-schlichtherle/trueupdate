@@ -40,6 +40,10 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
 
     protected abstract ApplicationParameters applicationParameters();
 
+    protected URI from() { return AGENT_URI; }
+
+    protected URI to() { return MANAGER_URI; }
+
     @Override public void subscribe() throws UpdateAgentException {
         send(SUBSCRIPTION_REQUEST, null);
     }
@@ -57,8 +61,8 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
     throws UpdateAgentException {
         final UpdateMessage message = UpdateMessage
                     .builder()
-                    .from(AGENT_URI)
-                    .to(MANAGER_URI)
+                    .from(from())
+                    .to(to())
                     .type(type)
                     .artifactDescriptor(artifactDescriptor())
                     .currentLocation(currentLocation())

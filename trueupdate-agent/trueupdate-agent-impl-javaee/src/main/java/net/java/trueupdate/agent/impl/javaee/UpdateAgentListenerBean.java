@@ -32,7 +32,7 @@ public class UpdateAgentListenerBean implements MessageListener {
             logger = Logger.getLogger(UpdateAgentListenerBean.class.getName());
 
     @EJB
-    private UpdateMessageListener updateMessageListener;
+    private UpdateAgentDispatcherBean updateAgentDispatcher;
 
     @Resource
     private MessageDrivenContext context;
@@ -42,7 +42,7 @@ public class UpdateAgentListenerBean implements MessageListener {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateMessageListener.onUpdateMessage((UpdateMessage) body);
+                    updateAgentDispatcher.onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;

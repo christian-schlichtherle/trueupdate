@@ -9,16 +9,15 @@ import javax.ejb.*;
 import javax.jms.*;
 import net.java.trueupdate.agent.impl.core.BasicUpdateAgentBuilder;
 import net.java.trueupdate.agent.spec.*;
-import net.java.trueupdate.manager.spec.*;
 
 /**
  * An update agent builder bean.
  *
  * @author Christian Schlichtherle
  */
-@Singleton
+@Stateful
 @SuppressWarnings("PackageVisibleField")
-@Local({ UpdateMessageListener.class, UpdateAgent.Builder.class })
+@Local(UpdateAgent.Builder.class)
 public class UpdateAgentBuilderBean extends BasicUpdateAgentBuilder {
 
     @Resource
@@ -27,6 +26,10 @@ public class UpdateAgentBuilderBean extends BasicUpdateAgentBuilder {
     @Resource(name = "TrueUpdate")
     Topic destination;
 
+    @EJB
+    UpdateAgentDispatcherBean updateAgentDispatcher;
+
+    @Remove
     @Override public UpdateAgent build() {
         return new ConfiguredUpdateAgent(applicationParameters, this);
     }
