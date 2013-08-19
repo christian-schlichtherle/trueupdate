@@ -25,12 +25,14 @@ public final class ApplicationParameters {
     ApplicationParameters(final Builder<?> b) {
         this.applicationListener = requireNonNull(b.applicationListener);
         this.applicationDescriptor = requireNonNull(b.applicationDescriptor);
-        this.updateLocation = nonNullOr(b.updateLocation,
+        this.updateLocation = nonEmptyOr(b.updateLocation,
                 applicationDescriptor.currentLocation());
     }
 
-    private static <T> T nonNullOr(T value, T eagerDefault) {
-        return null != value ? value : eagerDefault;
+    private static URI nonEmptyOr(URI value, URI eagerDefault) {
+        return null != value && !value.toString().isEmpty()
+                ? value
+                : eagerDefault;
     }
 
     /**
