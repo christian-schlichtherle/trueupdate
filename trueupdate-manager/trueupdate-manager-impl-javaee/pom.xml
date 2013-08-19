@@ -25,6 +25,10 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-manager-spec</artifactId>
         </dependency>
         <dependency>

@@ -25,7 +25,7 @@ public final class UpdateMessage implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
-    private static final URI EMPTY = URI.create("");
+    static final URI EMPTY_URI = URI.create("");
 
     private final long timestamp;
     private final URI from, to;
@@ -41,7 +41,7 @@ public final class UpdateMessage implements Serializable {
         this.type = requireNonNull(b.type);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.updateVersion = nonNullOr(b.updateVersion, "");
-        this.currentLocation = nonNullOr(b.currentLocation, EMPTY);
+        this.currentLocation = nonNullOr(b.currentLocation, EMPTY_URI);
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
         this.status = nonNullOr(b.status, "");
     }
@@ -228,6 +228,18 @@ public final class UpdateMessage implements Serializable {
     }
 
     /**
+     * Extracts an update descriptor from the information in this update
+     * message.
+     */
+    public UpdateDescriptor updateDescriptor() {
+        return UpdateDescriptor
+                .builder()
+                .artifactDescriptor(artifactDescriptor())
+                .updateVersion(updateVersion())
+                .build();
+    }
+
+    /**
      * Returns {@code true} if and only if the given object is an
      * {@code UpdateMessage} with equal properties.
      */
@@ -275,9 +287,9 @@ public final class UpdateMessage implements Serializable {
                 .append("Artifact-Descriptor: ").append(artifactDescriptor()).append('\n');
         if (!updateVersion().isEmpty())
             sb.append("Update-Version: ").append(updateVersion()).append('\n');
-        if (!currentLocation().equals(EMPTY))
+        if (!currentLocation().equals(EMPTY_URI))
             sb.append("Current-Location: ").append(currentLocation()).append('\n');
-        if (!updateLocation().equals(EMPTY))
+        if (!updateLocation().equals(EMPTY_URI))
             sb.append("Update-Location: ").append(updateLocation()).append('\n');
         if (!status().isEmpty())
             sb.append("Status: ").append(status()).append('\n');

@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.impl.javaee;
 
+import net.java.trueupdate.manager.spec.UpdateInstaller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.*;
 import java.util.concurrent.Callable;
@@ -82,8 +83,11 @@ public class UpdateManagerBean extends BasicUpdateManager {
     @PreDestroy private void preDestroy() {
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                persistSubscriptions();
-                closeConnection();
+                try {
+                    shutdown();
+                } finally {
+                    closeConnection();
+                }
                 return null;
             }
         });

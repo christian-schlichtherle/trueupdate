@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.manager.spec;
 
-import java.net.URI;
 import static java.util.Objects.requireNonNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -12,28 +11,27 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
 /**
- * A Value Object which describes an installed application.
+ * A Value Object which describes an application update.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ApplicationDescriptor {
+public final class UpdateDescriptor {
 
     private final ArtifactDescriptor artifactDescriptor;
-    private final URI currentLocation;
+    private final String updateVersion;
 
-    ApplicationDescriptor(final Builder<?> b) {
+    UpdateDescriptor(final Builder<?> b) {
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
-        this.currentLocation = requireNonEmpty(b.currentLocation);
+        this.updateVersion = requireNonEmpty(b.updateVersion);
     }
 
-    private static URI requireNonEmpty(final URI value) {
-        if (value.equals(UpdateMessage.EMPTY_URI))
-            throw new IllegalArgumentException();
+    private static String requireNonEmpty(final String value) {
+        if (value.isEmpty()) throw new IllegalArgumentException();
         return value;
     }
 
-    /** Returns a new builder for an application descriptor. */
+    /** Returns a new builder for an update descriptor. */
     public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the artifact descriptor. */
@@ -41,31 +39,30 @@ public final class ApplicationDescriptor {
         return artifactDescriptor;
     }
 
-    /** Returns the current location. */
-    public URI currentLocation() { return currentLocation; }
+    /** Returns the update version. */
+    public String updateVersion() { return updateVersion; }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @Override public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof ApplicationDescriptor)) return false;
-        final ApplicationDescriptor that = (ApplicationDescriptor) obj;
+        if (!(obj instanceof UpdateDescriptor)) return false;
+        final UpdateDescriptor that = (UpdateDescriptor) obj;
         return  this.artifactDescriptor().equals(that.artifactDescriptor()) &&
-                this.currentLocation().equals(that.currentLocation());
+                this.updateVersion().equals(that.updateVersion());
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int hash = 17;
         hash = 31 * hash + artifactDescriptor().hashCode();
-        hash = 31 * hash + currentLocation().hashCode();
+        hash = 31 * hash + updateVersion.hashCode();
         return hash;
     }
+
 
     @SuppressWarnings(value = "PackageVisibleField")
     public static class Builder<T> {
 
         @CheckForNull ArtifactDescriptor artifactDescriptor;
-        @CheckForNull URI currentLocation;
+        @CheckForNull String updateVersion;
 
         protected Builder() { }
 
@@ -83,13 +80,13 @@ public final class ApplicationDescriptor {
             return this;
         }
 
-        public Builder<T> currentLocation(final @Nullable URI currentLocation) {
-            this.currentLocation = currentLocation;
+        public Builder<T> updateVersion(final @Nullable String updateVersion) {
+            this.updateVersion = updateVersion;
             return this;
         }
 
-        public ApplicationDescriptor build() {
-            return new ApplicationDescriptor(this);
+        public UpdateDescriptor build() {
+            return new UpdateDescriptor(this);
         }
 
         public T inject() {

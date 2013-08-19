@@ -4,24 +4,23 @@
  */
 package net.java.trueupdate.manager.spec;
 
+import java.io.File;
+
 /**
- * Cooperates with an update resolver to install artifact updates.
+ * Resolves ZIP patch files for artifact updates.
  * <p>
  * Applications have no need to implement this class and should not do so
  * because it may be subject to future expansion.
  *
  * @author Christian Schlichtherle
  */
-public interface UpdateInstaller {
+public interface UpdateResolver {
 
     /**
-     * Cooperates with the given update resolver to install the artifact update
-     * as described in the given update message.
+     * Resolves the ZIP patch file for the given update descriptor.
      *
-     * @param resolver the update resolver.
-     * @param message the update message.
+     * @param descriptor the update descriptor.
      * @throws Exception at the discretion of the implementation.
      */
-    void install(UpdateResolver resolver, UpdateMessage message)
-    throws Exception;
+    File resolve(UpdateDescriptor descriptor) throws Exception;
 }

@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.manager.impl.javaee;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage.Type;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
@@ -27,13 +27,27 @@ abstract class BasicUpdateManager extends UpdateMessageDispatcher {
     private final Map<ApplicationDescriptor, UpdateMessage>
             subscriptions = new HashMap<>();
 
+    private final BasicUpdateResolver patchManager = new BasicUpdateResolver() {
+        @Override protected UpdateClient updateClient() {
+            return BasicUpdateManager.this.updateClient();
+        }
+    };
+
     /** Returns the artifact update client. */
     protected abstract UpdateClient updateClient();
 
     /** Returns the update installer. */
     protected abstract UpdateInstaller updateInstaller();
 
-    protected void persistSubscriptions() throws Exception {
+    protected void shutdown() throws Exception {
+        try {
+            patchManager.shutdown();
+        } finally {
+            persistSubscriptions();
+        }
+    }
+
+    private void persistSubscriptions() throws Exception {
         for (UpdateMessage subscription : subscriptions.values())
             send(subscription.type(SUBSCRIPTION_NOTICE));
     }
@@ -50,12 +64,16 @@ abstract class BasicUpdateManager extends UpdateMessageDispatcher {
                         subscription.artifactDescriptor();
                 String version = versions.get(artifactDescriptor);
                 if (null == version)
-                    versions.put(artifactDescriptor, version =
-                            updateClient.version(artifactDescriptor));
-                if (!version.equals(artifactDescriptor.version()))
-                    logOutput(send(updateNotice(subscription, version)));
+                    versions.put(artifactDescriptor,
+                            version = updateClient.version(artifactDescriptor));
+                if (!version.equals(artifactDescriptor.version())) {
+                    final UpdateMessage
+                            un = updateNotice(subscription, version);
+                    patchManager.subscribe(un.updateDescriptor());
+                    logOutput(send(un));
+                }
             }
-        } catch (UpdateServiceException ex) {
+        } catch (IOException ex) {
             logger.log(Level.WARNING,
                     "Failed to resolve artifact update version:", ex);
         }
@@ -93,9 +111,10 @@ abstract class BasicUpdateManager extends UpdateMessageDispatcher {
         logOutput(send(install(logInput(message))));
     }
 
-    private UpdateMessage install(UpdateMessage message) {
+    private UpdateMessage install(final UpdateMessage message) {
         try {
-            updateInstaller().install(message);
+            updateInstaller().install(patchManager, message);
+            patchManager.unsubscribe(message.updateDescriptor());
             return installationSuccessResponse(message);
         } catch (RuntimeException ex) {
             throw ex;
