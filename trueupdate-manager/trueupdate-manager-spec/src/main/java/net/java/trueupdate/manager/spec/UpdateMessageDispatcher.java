@@ -4,12 +4,15 @@
  */
 package net.java.trueupdate.manager.spec;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * An update message listener which filters and dispatches the update messages
  * to its protected stub methods.
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 public class UpdateMessageDispatcher implements UpdateMessageListener {
 
     /** Returns the filter to use before dispatching an update message. */
