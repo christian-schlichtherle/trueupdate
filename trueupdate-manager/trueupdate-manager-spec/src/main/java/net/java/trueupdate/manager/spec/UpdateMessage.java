@@ -216,7 +216,7 @@ public final class UpdateMessage implements Serializable {
     }
 
     /**
-     * Extracts an application descriptor from the information in this update
+     * Vends an application descriptor from the information in this update
      * message.
      */
     public ApplicationDescriptor applicationDescriptor() {
@@ -228,7 +228,7 @@ public final class UpdateMessage implements Serializable {
     }
 
     /**
-     * Extracts an update descriptor from the information in this update
+     * Vends an update descriptor from the information in this update
      * message.
      */
     public UpdateDescriptor updateDescriptor() {
