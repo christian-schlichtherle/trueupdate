@@ -24,6 +24,6 @@
 
     <modules>
         <module>trueupdate-artifact-api</module>
-        <module>trueupdate-artifact-maven</module>
+        <module>trueupdate-artifact-impl-maven</module>
     </modules>
 </project>

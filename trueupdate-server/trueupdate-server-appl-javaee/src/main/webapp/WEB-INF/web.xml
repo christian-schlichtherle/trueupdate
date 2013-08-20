@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <env-entry>
+        <description>
+            The URI of the XML to configure the mandatory local Maven
+            repository and the optional remote Maven repositories to
+            use for the artifact resolution, encoded as a string.
+
+            If the decoded URI is absolute (i.e. if it has a scheme
+            component), then the URI gets converted to a URL and the
+            XML gets loaded from this URL.
+            E.g. "file:///directory/repositories.xml".
+
+            Otherwise, the URI is considered to specify the name of a
+            resource on the class path and the XML gets loaded from
+            this resource.
+            E.g. "package/repositories.xml".
+
+            In either case, if the string contains references of the
+            form \${key}, then they get replaced with the value
+            of the system property with the specified key.
+            E.g. "file://\${user.home}/.repositories.xml".
+
+            The default value refers to a resource on the class path
+            which contains the XML to configure the local repository
+            path "${user.home}/.m2/repository" - thus referencing the
+            home directory of the user which runs the web app server -
+            plus the Maven Central URL "http://repo1.maven.org/maven2/"
+            as the repositories to use for the artifact resolution.
+        </description>
+        <env-entry-name>configurationUri</env-entry-name>
+        <env-entry-value>net/java/trueupdate/artifact/impl/maven/main-repositories.xml</env-entry-value>
+    </env-entry>
+</web-app>

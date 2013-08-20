@@ -24,6 +24,7 @@
 
     <modules>
         <module>trueupdate-agent-api</module>
-        <module>trueupdate-agent-javaee</module>
+        <module>trueupdate-agent-core</module>
+        <module>trueupdate-agent-impl-javaee</module>
     </modules>
 </project>

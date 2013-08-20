@@ -24,9 +24,9 @@
 
     <modules>
         <module>trueupdate-manager-api</module>
-        <module>trueupdate-manager-app-tomee-plus</module>
         <module>trueupdate-manager-core</module>
-        <module>trueupdate-manager-javaee</module>
+        <module>trueupdate-manager-impl-javaee</module>
         <module>trueupdate-manager-plugin-tomcat</module>
+        <module>trueupdate-manager-appl-tomee-plus</module>
     </modules>
 </project>

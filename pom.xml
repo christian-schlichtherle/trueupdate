@@ -107,7 +107,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-javaee</artifactId>
+                <artifactId>trueupdate-agent-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-agent-impl-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
@@ -125,12 +130,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-impl-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-impl-maven</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -181,7 +186,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-javaee</artifactId>
+                <artifactId>trueupdate-manager-impl-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
@@ -192,13 +197,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-sample-javaee</artifactId>
+                <artifactId>trueupdate-sample-impl-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-server-maven</artifactId>
+                <artifactId>trueupdate-server-impl-maven</artifactId>
                 <version>${project.version}</version>
                 <type>ejb</type>
             </dependency>
