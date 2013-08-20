@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
+import net.java.trueupdate.artifact.api.ArtifactResolver;
+import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import java.io.*;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
@@ -14,7 +16,6 @@ import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import net.java.trueupdate.artifact.spec.*;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;

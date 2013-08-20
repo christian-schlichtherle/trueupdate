@@ -13,7 +13,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.core.MediaType;
 import static javax.ws.rs.core.MediaType.*;
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;

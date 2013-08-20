@@ -36,6 +36,6 @@
             as the repositories to use for the artifact resolution.
         </description>
         <env-entry-name>configurationUri</env-entry-name>
-        <env-entry-value>net/java/trueupdate/artifact/impl/maven/main-repositories.xml</env-entry-value>
+        <env-entry-value>net/java/trueupdate/artifact/maven/main-repositories.xml</env-entry-value>
     </env-entry>
 </web-app>
