@@ -14,12 +14,11 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-impl-openejb</artifactId>
+    <artifactId>trueupdate-manager-plug-tomcat</artifactId>
 
-    <name>TrueUpdate Manager Implementation OpenEJB</name>
+    <name>TrueUpdate Manager Plugin Tomcat</name>
     <description>
-        Provides an update installer for applications running in an OpenEJB
-        container.
+        Provides an update installer for applications running in Tomcat.
     </description>
 
     <properties>

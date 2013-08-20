@@ -23,9 +23,9 @@
     </description>
 
     <modules>
-        <module>trueupdate-manager-appl-openejb</module>
+        <module>trueupdate-manager-appl-tomee-plus</module>
         <module>trueupdate-manager-impl-javaee</module>
-        <module>trueupdate-manager-impl-openejb</module>
+        <module>trueupdate-manager-plug-tomcat</module>
         <module>trueupdate-manager-spec</module>
     </modules>
 </project>
