@@ -7,6 +7,7 @@ package net.java.trueupdate.manager.impl.core;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
+import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
@@ -18,6 +19,7 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
  *
  * @author Christian Schlichtherle
  */
+@NotThreadSafe
 public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     private static final Logger

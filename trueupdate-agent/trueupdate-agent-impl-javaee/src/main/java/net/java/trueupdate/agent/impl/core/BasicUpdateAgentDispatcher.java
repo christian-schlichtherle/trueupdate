@@ -7,6 +7,7 @@ package net.java.trueupdate.agent.impl.core;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.*;
+import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
 
@@ -15,6 +16,7 @@ import net.java.trueupdate.manager.spec.*;
  *
  * @author Christian Schlichtherle
  */
+@NotThreadSafe
 @SuppressWarnings("ProtectedField")
 public abstract class BasicUpdateAgentDispatcher
 extends UpdateMessageDispatcher {
