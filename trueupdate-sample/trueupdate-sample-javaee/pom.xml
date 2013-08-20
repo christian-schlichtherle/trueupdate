@@ -10,20 +10,26 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-sample</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-artifact</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>trueupdate-sample-javaee</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate Artifact</name>
+    <name>TrueUpdate Sample Java EE</name>
     <description>
-        The parent POM for TrueUpdate Artifact modules.
+        Provides a singleton session bean for using the TrueUpdate Agent.
     </description>
 
-    <modules>
-        <module>trueupdate-artifact-api</module>
-        <module>trueupdate-artifact-maven</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-agent-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

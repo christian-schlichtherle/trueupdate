@@ -23,7 +23,7 @@
     </description>
 
     <modules>
-        <module>trueupdate-agent-impl-javaee</module>
-        <module>trueupdate-agent-spec</module>
+        <module>trueupdate-agent-api</module>
+        <module>trueupdate-agent-javaee</module>
     </modules>
 </project>

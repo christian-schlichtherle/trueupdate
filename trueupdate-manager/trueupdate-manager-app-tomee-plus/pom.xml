@@ -10,33 +10,28 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-jax-rs</artifactId>
+        <artifactId>trueupdate-manager</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-jax-rs-client</artifactId>
+    <artifactId>trueupdate-manager-app-tomee-plus</artifactId>
+    <packaging>ear</packaging>
 
-    <name>TrueUpdate JAX-RS Client</name>
+    <name>TrueUpdate Manager Application TomEE+</name>
     <description>
-        Provides a RESTful web service client for artifact updates.
+        Bundles the components for deploying the TrueUpdate Manager application
+        to a TomEE+ container.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-api</artifactId>
+            <artifactId>trueupdate-manager-javaee</artifactId>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
+            <artifactId>trueupdate-manager-plugin-tomcat</artifactId>
         </dependency>
     </dependencies>
 </project>

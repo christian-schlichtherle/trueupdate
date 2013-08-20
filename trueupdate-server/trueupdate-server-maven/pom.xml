@@ -10,32 +10,33 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-jax-rs</artifactId>
+        <artifactId>trueupdate-server</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-jax-rs-server</artifactId>
+    <artifactId>trueupdate-server-maven</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate JAX-RS Server</name>
+    <name>TrueUpdate Server Maven</name>
     <description>
-        Provides a RESTful web service implementation for artifact updates.
+        Provides a RESTful web service for diffing JARs in one or more Maven
+        repositories.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>trueupdate-artifact-maven</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>trueupdate-artifact-maven</artifactId>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-core</artifactId>
+            <artifactId>trueupdate-artifact-api</artifactId>
+            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -49,30 +50,25 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs-util</artifactId>
+            <artifactId>trueupdate-jax-rs-server</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-jax-rs-server</artifactId>
+            <type>test-jar</type>
+        </dependency>
+        <!--dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency-->
         <dependency>
             <groupId>com.sun.jersey.jersey-test-framework</groupId>
-            <artifactId>jersey-test-framework-core</artifactId>
+            <artifactId>jersey-test-framework-embedded-glassfish</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

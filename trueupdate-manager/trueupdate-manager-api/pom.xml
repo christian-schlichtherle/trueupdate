@@ -10,20 +10,21 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate</artifactId>
+        <artifactId>trueupdate-manager</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-artifact</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>trueupdate-manager-api</artifactId>
 
-    <name>TrueUpdate Artifact</name>
+    <name>TrueUpdate Manager API</name>
     <description>
-        The parent POM for TrueUpdate Artifact modules.
+        Specifies an update manager for updating applications.
     </description>
 
-    <modules>
-        <module>trueupdate-artifact-api</module>
-        <module>trueupdate-artifact-maven</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-artifact-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

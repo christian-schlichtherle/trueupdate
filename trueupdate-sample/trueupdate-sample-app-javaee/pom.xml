@@ -10,33 +10,29 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-jax-rs</artifactId>
+        <artifactId>trueupdate-sample</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-jax-rs-client</artifactId>
+    <artifactId>trueupdate-sample-app-javaee</artifactId>
+    <packaging>ear</packaging>
 
-    <name>TrueUpdate JAX-RS Client</name>
+    <name>TrueUpdate Sample Application Java EE</name>
     <description>
-        Provides a RESTful web service client for artifact updates.
+        Bundles the components for deploying the TrueUpdate Sample application
+        to a Java EE container.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-api</artifactId>
+            <artifactId>trueupdate-agent-javaee</artifactId>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
+            <artifactId>trueupdate-sample-javaee</artifactId>
+            <type>ejb</type>
         </dependency>
     </dependencies>
 </project>

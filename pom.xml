@@ -102,35 +102,35 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-impl-javaee</artifactId>
+                <artifactId>trueupdate-agent-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-agent-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-spec</artifactId>
+                <artifactId>trueupdate-artifact-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-impl-maven</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-impl-maven</artifactId>
+                <artifactId>trueupdate-artifact-api</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-spec</artifactId>
+                <artifactId>trueupdate-artifact-maven</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-spec</artifactId>
+                <artifactId>trueupdate-artifact-maven</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -171,29 +171,34 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-impl-javaee</artifactId>
+                <artifactId>trueupdate-manager-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-plug-tomcat</artifactId>
+                <artifactId>trueupdate-manager-plugin-tomcat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-spec</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-sample-impl-javaee</artifactId>
+                <artifactId>trueupdate-sample-javaee</artifactId>
                 <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-server-impl-maven</artifactId>
+                <artifactId>trueupdate-server-maven</artifactId>
                 <version>${project.version}</version>
                 <type>ejb</type>
             </dependency>
