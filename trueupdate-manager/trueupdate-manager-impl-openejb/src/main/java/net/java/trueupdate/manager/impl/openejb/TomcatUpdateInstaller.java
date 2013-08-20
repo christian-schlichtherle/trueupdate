@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.manager.impl.openejb;
 
-import javax.ejb.Singleton;
+import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.spec.*;
 
 /**
@@ -12,7 +12,7 @@ import net.java.trueupdate.manager.spec.*;
  *
  * @author Christian Schlichtherle
  */
-@Singleton
+@Immutable
 public class TomcatUpdateInstaller implements UpdateInstaller {
 
     @Override

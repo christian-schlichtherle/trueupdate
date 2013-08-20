@@ -7,6 +7,7 @@ package net.java.trueupdate.manager.impl.openejb;
 import java.io.File;
 import java.util.*;
 import java.util.logging.*;
+import javax.annotation.concurrent.Immutable;
 import javax.management.*;
 import net.java.trueupdate.manager.spec.*;
 import org.apache.catalina.*;
@@ -16,6 +17,7 @@ import org.apache.catalina.*;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 final class ConfiguredTomcatUpdateInstaller {
 
     private static final Logger logger =
