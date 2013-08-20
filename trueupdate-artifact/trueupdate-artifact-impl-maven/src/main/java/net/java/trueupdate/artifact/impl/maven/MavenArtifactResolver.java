@@ -84,11 +84,15 @@ public final class MavenArtifactResolver implements ArtifactResolver {
     }
 
     /** Returns the local repository. */
-    public LocalRepository local() { return local; }
+    public LocalRepository localRepository() { return local; }
 
-    /** Returns the unmodifiable list of remote repositories. */
+    /**
+     * Returns a list of remote repositories.
+     * The returned list may be unmodifiable.
+     * If it is modifiable, then changing it has no effect on this class.
+     */
     @SuppressWarnings("ReturnOfCollectionOrArrayField")
-    public List<RemoteRepository> remotes() { return remotes; }
+    public List<RemoteRepository> remoteRepositories() { return remotes; }
 
     @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
     throws RepositoryException {
@@ -166,13 +170,13 @@ public final class MavenArtifactResolver implements ArtifactResolver {
 
     private VersionRangeRequest versionRangeRequest(Artifact artifact) {
         return new VersionRangeRequest()
-                .setRepositories(remotes)
+                .setRepositories(remoteRepositories())
                 .setArtifact(artifact);
     }
 
     private ArtifactRequest artifactRequest(Artifact artifact) {
         return new ArtifactRequest()
-                .setRepositories(remotes)
+                .setRepositories(remoteRepositories())
                 .setArtifact(artifact);
     }
 
@@ -191,7 +195,7 @@ public final class MavenArtifactResolver implements ArtifactResolver {
                 .setTransferListener(new LogTransferListener(loggerFactory))
                 .setRepositoryListener(new LogRepositoryListener(loggerFactory));
         session.setLocalRepositoryManager(
-                repositorySystem().newLocalRepositoryManager(session, local));
+                repositorySystem().newLocalRepositoryManager(session, localRepository()));
         return session;
     }
 
@@ -237,14 +241,14 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         if (this == obj) return true;
         if (!(obj instanceof MavenArtifactResolver)) return false;
         final MavenArtifactResolver that = (MavenArtifactResolver) obj;
-        return  this.local().equals(that.local()) &&
-                this.remotes().equals(that.remotes());
+        return  this.localRepository().equals(that.localRepository()) &&
+                this.remoteRepositories().equals(that.remoteRepositories());
     }
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + local().hashCode();
-        hash = 31 * hash + remotes().hashCode();
+        hash = 31 * hash + localRepository().hashCode();
+        hash = 31 * hash + remoteRepositories().hashCode();
         return hash;
     }
 

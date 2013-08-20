@@ -37,7 +37,7 @@ extends WordSpec with MavenArtifactResolverTestContext {
   def resolvedPath(descriptor: ArtifactDescriptor) =
     new File(baseDir, relativePath(descriptor))
 
-  def baseDir = artifactResolver.local.getBasedir.getAbsoluteFile
+  def baseDir = artifactResolver.localRepository.getBasedir.getAbsoluteFile
 
   "A maven artifact resolver" should {
     "be round-trip XML-serializable" in {
