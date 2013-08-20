@@ -32,7 +32,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-manager-impl-openejb</artifactId>
-            <type>ejb</type>
         </dependency>
     </dependencies>
 </project>

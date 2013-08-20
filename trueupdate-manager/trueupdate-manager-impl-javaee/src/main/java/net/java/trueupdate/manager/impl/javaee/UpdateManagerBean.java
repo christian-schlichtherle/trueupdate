@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
+import javax.inject.Inject;
 import javax.jms.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
@@ -36,7 +37,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
 
     private Connection connection;
 
-    @EJB
+    @Inject
     private UpdateInstaller installer;
 
     @Resource(name = "TrueUpdate")
@@ -105,7 +106,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
         }
     }
 
-    @Timeout @Override public void checkUpdates() throws Exception {
+    @Timeout @Override protected void checkUpdates() throws Exception {
         super.checkUpdates();
     }
 

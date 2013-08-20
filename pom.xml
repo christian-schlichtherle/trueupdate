@@ -93,6 +93,9 @@
           -->
         <slf4j.version>1.5.11</slf4j.version>
         <wagon.version>1.2.1</wagon.version>
+
+        <tomee.classifier>plus</tomee.classifier>
+        <tomee.version>1.5.2</tomee.version>
     </properties>
 
     <dependencyManagement>
@@ -175,7 +178,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-impl-openejb</artifactId>
-                <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -194,6 +196,13 @@
                 <artifactId>trueupdate-server-impl-maven</artifactId>
                 <version>${project.version}</version>
                 <type>ejb</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.1.1.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>asm</groupId>
@@ -252,6 +261,21 @@
                 <version>${maven.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.openejb</groupId>
+                <artifactId>arquillian-openejb-embedded-4</artifactId>
+                <version>4.5.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openejb</groupId>
+                <artifactId>arquillian-tomee-embedded</artifactId>
+                <version>${tomee.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-catalina</artifactId>
+                <version>7.0.37</version>
+            </dependency>
+            <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
                 <version>3.0.14</version>
@@ -278,7 +302,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ear-plugin</artifactId>
                     <version>2.8</version>
                     <configuration>
@@ -291,7 +314,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ejb-plugin</artifactId>
                     <version>2.3</version>
                     <configuration>
@@ -299,6 +321,15 @@
                         <filterDeploymentDescriptor>true</filterDeploymentDescriptor>
                     </configuration>
                 </plugin>
+                <!--plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <tomee.classifier>${tomee.classifier}</tomee.classifier>
+                            <tomee.version>${tomee.version}</tomee.version>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin-->
             </plugins>
         </pluginManagement>
     </build>
