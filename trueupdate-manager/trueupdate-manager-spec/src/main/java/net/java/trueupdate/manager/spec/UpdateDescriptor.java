@@ -11,7 +11,10 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
 /**
- * A Value Object which describes an application update.
+ * An update descriptor comprises of an artifact descriptor plus an update
+ * version.
+ * This class implements an immutable value object, so you can easily share it
+ * with anyone.
  *
  * @author Christian Schlichtherle
  */

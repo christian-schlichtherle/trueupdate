@@ -9,7 +9,13 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * A Value Object which describes an artifact by its Maven coordinates.
+ * An artifact descriptor comprises of a group ID, an artifact ID, a version,
+ * an optional classifier and an optional extension.
+ * The model is the same as used in Maven in order to enable a Maven based
+ * implementation of an {@linkplain ArtifactResolver artifact resolver} without
+ * actually depending on Maven in this specification.
+ * This class implements an immutable value object, so you can easily share it
+ * with anyone.
  *
  * @see    <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven - POM Reference - Maven Coordinates</a>
  * @author Christian Schlichtherle
