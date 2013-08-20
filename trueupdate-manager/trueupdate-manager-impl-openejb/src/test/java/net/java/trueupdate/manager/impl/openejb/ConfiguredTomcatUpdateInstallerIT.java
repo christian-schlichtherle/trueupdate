@@ -5,8 +5,7 @@
 package net.java.trueupdate.manager.impl.openejb;
 
 import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 import org.apache.catalina.Context;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -19,7 +18,8 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class ConfiguredTomcatUpdateInstallerIT {
 
-    private static final String NAME = ConfiguredTomcatUpdateInstallerIT.class.getSimpleName();
+    private static final String
+            NAME = ConfiguredTomcatUpdateInstallerIT.class.getSimpleName();
 
     private static final String CONTEXT_PATH = '/' + NAME;
 
@@ -28,22 +28,21 @@ public class ConfiguredTomcatUpdateInstallerIT {
     private static final Logger
             logger = Logger.getLogger(ConfiguredTomcatUpdateInstallerIT.class.getName());
 
-    @Deployment
-    public static WebArchive createDeployment() {
+    public static @Deployment WebArchive createDeployment() {
         final WebArchive archive = ShrinkWrap
                 .create(WebArchive.class, ARCHIVE_NAME);
         logger.config(archive.toString(true));
         return archive;
     }
 
-    @Test
-    public void testContext() throws Exception {
-        final Context context = configuredTomEeInstaller().context();
+    public @Test void testContext() throws Exception {
+        final Context context = configuredTomcatUpdateInstaller().context();
         assert CONTEXT_PATH.equals(context.getPath());
         logger.log(Level.INFO, "The resolved context is {0}.", context);
     }
 
-    private static ConfiguredTomcatUpdateInstaller configuredTomEeInstaller() {
+    private static ConfiguredTomcatUpdateInstaller
+            configuredTomcatUpdateInstaller() {
         return new ConfiguredTomcatUpdateInstaller(installationRequest());
     }
 
