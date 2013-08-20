@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
-  - All rights reserved. Use is subject to license terms.
-  -->
+- Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+- All rights reserved. Use is subject to license terms.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -23,15 +23,70 @@
         container.
     </description>
 
+    <properties>
+        <tomee.classifier>plus</tomee.classifier>
+        <tomee.version>1.5.2</tomee.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.1.1.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-catalina</artifactId>
+                <version>7.0.37</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-impl-javaee</artifactId>
-            <type>ejb</type>
+            <artifactId>trueupdate-manager-spec</artifactId>
+        </dependency>
+        <!--dependency>
+            <groupId>org.apache.openejb</groupId>
+            <artifactId>arquillian-openejb-embedded-4</artifactId>
+            <version>4.5.2</version>
+            <scope>test</scope>
+        </dependency-->
+        <dependency>
+            <groupId>org.apache.openejb</groupId>
+            <artifactId>arquillian-tomee-embedded</artifactId>
+            <version>${tomee.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
+            <groupId>org.apache.openejb</groupId>
             <artifactId>javaee-api</artifactId>
+            <version>6.0-5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <!--forkMode>always</forkMode-->
+                    <systemPropertyVariables>
+                        <!--tomee.classifier>${tomee.classifier}</tomee.classifier>
+                        <tomee.version>${tomee.version}</tomee.version-->
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -26,6 +26,11 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-manager-impl-javaee</artifactId>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-manager-impl-openejb</artifactId>
             <type>ejb</type>
         </dependency>
