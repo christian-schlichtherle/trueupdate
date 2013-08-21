@@ -23,24 +23,24 @@ abstract class BasicUpdateResolver implements UpdateResolver {
     private static final Logger
             logger = Logger.getLogger(BasicUpdateResolver.class.getName());
 
-    private final Map<UpdateDescriptor, FileAndCount>
-            subscriptions = new HashMap<>();
+    private final Map<UpdateDescriptor, FileResource>
+            resources = new HashMap<>();
 
     /** Returns the artifact update client. */
     abstract UpdateClient updateClient();
 
-    FileAndCount fileAndCount(final UpdateDescriptor updateDescriptor) {
-        final FileAndCount fac = subscriptions.get(updateDescriptor);
-        return null != fac ? fac : new FileAndCount();
+    FileResource resource(final UpdateDescriptor updateDescriptor) {
+        final FileResource resource = resources.get(updateDescriptor);
+        return null != resource ? resource : new FileResource();
     }
 
-    void fileAndCount(final UpdateDescriptor updateDescriptor,
-                      final FileAndCount fac) {
-        if (0 < fac.count()) {
-            subscriptions.put(updateDescriptor, fac);
+    void resource(final UpdateDescriptor updateDescriptor,
+                  final FileResource resource) {
+        if (0 < resource.usages()) {
+            resources.put(updateDescriptor, resource);
         } else {
-            assert 0 == fac.count();
-            subscriptions.remove(updateDescriptor);
+            assert 0 == resource.usages();
+            resources.remove(updateDescriptor);
         }
     }
 
@@ -59,18 +59,18 @@ abstract class BasicUpdateResolver implements UpdateResolver {
     }
 
     void shutdown() throws IOException {
-        for (final Iterator<FileAndCount> it = subscriptions.values().iterator();
+        for (final Iterator<FileResource> it = resources.values().iterator();
                 it.hasNext(); ) {
             deleteResolvedFile(it.next());
             it.remove();
         }
     }
 
-    static void deleteResolvedFile(final FileAndCount fac) {
-        if (!fac.fileResolved()) return;
-        assert 0 <= fac.count();
-        final File file = fac.file();
-        if (fac.deleteResolvedFile()) {
+    static void deleteResolvedFile(final FileResource resource) {
+        if (!resource.fileResolved()) return;
+        assert 0 <= resource.usages();
+        final File file = resource.file();
+        if (resource.deleteResolvedFile()) {
             logger.log(Level.INFO, "Deleted ZIP patch file {0}.", file);
         } else {
             logger.log(Level.WARNING, "Could not delete ZIP patch file {0}.",
@@ -86,22 +86,21 @@ abstract class BasicUpdateResolver implements UpdateResolver {
             this.updateDescriptor = Objects.requireNonNull(updateDescriptor);
         }
 
-        FileAndCount fileAndCount() {
-            return BasicUpdateResolver.this.fileAndCount(updateDescriptor);
+        FileResource resource() {
+            return BasicUpdateResolver.this.resource(updateDescriptor);
         }
 
-        void fileAndCount(FileAndCount fac) {
-            BasicUpdateResolver.this.fileAndCount(updateDescriptor, fac);
+        void resource(FileResource resource) {
+            BasicUpdateResolver.this.resource(updateDescriptor, resource);
         }
 
         void subscribe() {
-            final FileAndCount fac = fileAndCount();
-            fileAndCount(fac.count(fac.count() + 1));
+            resource(resource().allocate());
         }
 
         File resolveZipPatchFile() throws Exception {
-            final FileAndCount fac = fileAndCount();
-            if (fac.fileResolved()) return fac.file();
+            final FileResource resource = resource();
+            if (resource.fileResolved()) return resource.file();
             final ArtifactDescriptor ad = updateDescriptor.artifactDescriptor();
             final String uv = updateDescriptor.updateVersion();
             final File patch = File.createTempFile("patch", ".zip");
@@ -114,34 +113,34 @@ abstract class BasicUpdateResolver implements UpdateResolver {
             logger.log(Level.INFO,
                     "Downloaded ZIP patch file {0} for artifact {1} and update version {2}.",
                     new Object[] { patch, ad, uv });
-            fileAndCount(fac.file(patch));
+            resource(resource.file(patch));
             return patch;
         }
 
         void unsubscribe() {
-            FileAndCount fac = fileAndCount();
-            fileAndCount(fac = fac.count(fac.count() - 1));
-            if (0 >= fac.count()) {
-                assert 0 == fac.count();
-                deleteResolvedFile(fac);
+            final FileResource resource = resource().release();
+            resource(resource);
+            if (0 >= resource.usages()) {
+                assert 0 == resource.usages();
+                deleteResolvedFile(resource);
             }
         }
     } // ConfiguredUpdateResolver
 }
 
 @Immutable
-final class FileAndCount {
+final class FileResource {
 
     private final File file;
-    private final int count;
+    private final int usages;
 
-    FileAndCount() { this(new File(""), 0); }
+    FileResource() { this(new File(""), 0); }
 
-    FileAndCount(final File file, final int count) {
+    FileResource(final File file, final int usages) {
         assert null != file;
         this.file = file;
-        assert 0 <= count;
-        this.count = count;
+        assert 0 <= usages;
+        this.usages = usages;
     }
 
     boolean fileResolved() { return !file().getPath().isEmpty(); }
@@ -150,25 +149,29 @@ final class FileAndCount {
 
     File file() { return file; }
 
-    FileAndCount file(File file) { return new FileAndCount(file, count); }
+    FileResource file(File file) { return new FileResource(file, usages); }
 
-    int count() { return count; }
+    FileResource allocate() { return usages(usages() + 1); }
 
-    FileAndCount count(int count) { return new FileAndCount(file, count); }
+    FileResource release() { return usages(usages() - 1); }
+
+    int usages() { return usages; }
+
+    FileResource usages(int usages) { return new FileResource(file, usages); }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof FileAndCount)) return false;
-        final FileAndCount that = (FileAndCount) obj;
+        if (!(obj instanceof FileResource)) return false;
+        final FileResource that = (FileResource) obj;
         return  this.file().equals(that.file()) &&
-                this.count() == that.count();
+                this.usages() == that.usages();
     }
 
     @Override public int hashCode() {
         int hash = 17;
         hash = 31 * hash + file().hashCode();
-        hash = 31 * hash + count();
+        hash = 31 * hash + usages();
         return hash;
     }
 }
