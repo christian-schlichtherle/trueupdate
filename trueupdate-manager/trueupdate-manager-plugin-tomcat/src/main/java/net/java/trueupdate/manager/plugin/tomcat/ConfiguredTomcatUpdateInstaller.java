@@ -12,7 +12,7 @@ import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
 import net.java.trueupdate.artifact.api.*;
-import net.java.trueupdate.manager.api.UpdateMessage;
+import net.java.trueupdate.manager.api.*;
 import net.java.trueupdate.manager.core.UpdateResolver;
 import org.apache.catalina.*;
 
