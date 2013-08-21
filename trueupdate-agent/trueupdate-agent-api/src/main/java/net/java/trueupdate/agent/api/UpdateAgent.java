@@ -23,7 +23,7 @@ public interface UpdateAgent {
      * Sends a request to subscribe to the list of recipients for update
      * announcements for the application.
      *
-     * @throws UpdateMessageException if sending the request is not possible
+     * @throws UpdateAgentException if sending the request is not possible
      *         for some reason.
      */
     void subscribe() throws UpdateAgentException;
@@ -36,7 +36,7 @@ public interface UpdateAgent {
      *        Specifying the current version shows no effect.
      *        Specifying a higher version upgrades the application.
      *        Specifying a prior version downgrades the application.
-     * @throws UpdateMessageException if sending the request is not possible
+     * @throws UpdateAgentException if sending the request is not possible
      *         for some reason.
      */
     void install(String version) throws UpdateAgentException;
@@ -45,7 +45,7 @@ public interface UpdateAgent {
      * Sends a request to unsubscribe from the list of recipients for update
      * announcements for the application.
      *
-     * @throws UpdateMessageException if sending the request is not possible
+     * @throws UpdateAgentException if sending the request is not possible
      *         for some reason.
      */
     void unsubscribe() throws UpdateAgentException;
