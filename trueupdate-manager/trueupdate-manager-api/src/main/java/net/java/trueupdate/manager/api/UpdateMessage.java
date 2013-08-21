@@ -85,7 +85,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given update message timestamp. */
     public UpdateMessage timestamp(long timestamp) {
-        return this.timestamp == timestamp
+        return timestamp() == timestamp
                 ? this
                 : update().timestamp(timestamp).build();
     }
@@ -95,7 +95,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given update message sender. */
     public UpdateMessage from(URI from) {
-        return this.from.equals(from)
+        return from().equals(from)
                 ? this
                 : update().from(from).build();
     }
@@ -105,7 +105,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given update message recipient. */
     public UpdateMessage to(URI to) {
-        return this.to.equals(to)
+        return to().equals(to)
                 ? this
                 : update().to(to).build();
     }
@@ -115,7 +115,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given update message type. */
     public UpdateMessage type(Type type) {
-        return this.type.equals(type)
+        return type().equals(type)
                 ? this
                 : update().type(type).build();
     }
@@ -127,7 +127,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given artifact descriptor. */
     public UpdateMessage artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
-        return this.artifactDescriptor.equals(artifactDescriptor)
+        return artifactDescriptor().equals(artifactDescriptor)
                 ? this
                 : update().artifactDescriptor(artifactDescriptor).build();
     }
@@ -137,7 +137,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given update version. */
     public UpdateMessage updateVersion(String updateVersion) {
-        return this.updateVersion.equals(updateVersion)
+        return updateVersion().equals(updateVersion)
                 ? this
                 : update().updateVersion(updateVersion).build();
     }
@@ -147,7 +147,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given current location. */
     public UpdateMessage currentLocation(URI currentLocation) {
-        return this.currentLocation.equals(currentLocation)
+        return currentLocation().equals(currentLocation)
                 ? this
                 : update().currentLocation(currentLocation).build();
     }
@@ -161,7 +161,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given update location. */
     public UpdateMessage updateLocation(URI newLocation) {
-        return this.updateLocation.equals(newLocation)
+        return updateLocation().equals(newLocation)
                 ? this
                 : update().updateLocation(newLocation).build();
     }
@@ -171,7 +171,7 @@ public final class UpdateMessage implements Serializable {
 
     /** Returns an update message with the given status text. */
     public UpdateMessage status(final String status) {
-        return this.status.equals(status)
+        return status().equals(status)
                 ? this
                 : update().status(status).build();
     }

@@ -10,26 +10,27 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
 import net.java.trueupdate.artifact.api.ArtifactDescriptor
+import java.net.URI
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class UpdateDescriptorTest extends WordSpec {
+class ApplicationDescriptorTest extends WordSpec {
 
-  "An update descriptor" when {
+  "An application descriptor" when {
     "build" should {
-      def builder = UpdateDescriptor.builder
+      def builder = ApplicationDescriptor.builder
 
       "reflect the specified properties" in {
         val table = Table(
-          ("builder", "artifactDescriptor", "updateVersion"),
-          (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.updateVersion("update-version"),
+          ("builder", "artifactDescriptor", "currentLocation"),
+          (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.currentLocation(URI create "here"),
             ArtifactDescriptor.builder.groupId("groupId").artifactId("artifactId").version("version").build,
-            "update-version")
+            URI create "here")
         )
-        forAll (table) { (builder, artifactDescriptor, updateVersion) =>
+        forAll (table) { (builder, artifactDescriptor, currentLocation) =>
           val descriptor1 = builder.build
           descriptor1.artifactDescriptor should equal (artifactDescriptor)
-          descriptor1.updateVersion should be (updateVersion)
+          descriptor1.currentLocation should be (currentLocation)
 
           val descriptor2 = builder.build
           descriptor2 should not be theSameInstanceAs (descriptor1)
