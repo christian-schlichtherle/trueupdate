@@ -11,7 +11,7 @@ import net.java.trueupdate.server.impl.maven._
 import javax.ws.rs.core.Application
 
 /** @author Christian Schlichtherle */
-final class MavenizedUpdateServiceIT
+final class MavenUpdateServiceIT
 extends UpdateServiceITSuite
 with MavenArtifactResolverTestContext {
 
@@ -19,7 +19,7 @@ with MavenArtifactResolverTestContext {
 
   override protected def configure =
     new WebAppDescriptor
-      .Builder(packagesOf(new MavenizedUpdateServerApplication): _*)
+      .Builder(packagesOf(new MavenUpdateServerApplication): _*)
       .contextPath("test")
       .build
 

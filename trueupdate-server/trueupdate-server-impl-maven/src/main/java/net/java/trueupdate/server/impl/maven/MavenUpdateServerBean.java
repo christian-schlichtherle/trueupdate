@@ -17,7 +17,7 @@ import net.java.trueupdate.jax.rs.server.BasicUpdateServer;
  */
 @Stateless
 @Path("/")
-public class MavenizedUpdateServerBean extends BasicUpdateServer {
+public class MavenUpdateServerBean extends BasicUpdateServer {
 
     @EJB
     private Provider<ArtifactResolver> artifactResolverProvider;

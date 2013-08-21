@@ -4,11 +4,10 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.artifact.api.ArtifactResolver;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import java.util.concurrent.Callable;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;
+import net.java.trueupdate.artifact.api.*;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**
@@ -25,7 +24,7 @@ public abstract class BasicUpdateServer {
 
     /** Returns a parameterized artifact update server. */
     @Path("artifact")
-    public ConfiguredUpdateServer configure(
+    public ConfiguredUpdateServer artifact(
             final @QueryParam("groupId") String groupId,
             final @QueryParam("artifactId") String artifactId,
             final @QueryParam("version") String version,
