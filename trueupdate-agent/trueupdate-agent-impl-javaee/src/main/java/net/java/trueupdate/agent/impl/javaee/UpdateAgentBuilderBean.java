@@ -4,10 +4,10 @@
  */
 package net.java.trueupdate.agent.impl.javaee;
 
-import net.java.trueupdate.agent.api.UpdateAgent;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
+import net.java.trueupdate.agent.api.UpdateAgent;
 import net.java.trueupdate.agent.core.BasicUpdateAgentBuilder;
 
 /**
