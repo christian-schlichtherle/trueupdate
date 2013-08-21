@@ -23,5 +23,5 @@ public interface UpdateResolver {
      * @param descriptor the update descriptor.
      * @throws Exception at the discretion of the implementation.
      */
-    File resolve(UpdateDescriptor descriptor) throws Exception;
+    File resolveZipPatchFile(UpdateDescriptor descriptor) throws Exception;
 }

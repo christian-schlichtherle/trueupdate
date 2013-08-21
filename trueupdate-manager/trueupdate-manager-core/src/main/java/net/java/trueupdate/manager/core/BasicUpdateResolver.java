@@ -48,9 +48,10 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         new ConfiguredUpdateResolver(updateDescriptor).subscribe();
     }
 
-    @Override public File resolve(UpdateDescriptor updateDescriptor)
+    @Override public File resolveZipPatchFile(UpdateDescriptor updateDescriptor)
     throws Exception {
-        return new ConfiguredUpdateResolver(updateDescriptor).resolve();
+        return new ConfiguredUpdateResolver(updateDescriptor)
+                .resolveZipPatchFile();
     }
 
     void unsubscribe(UpdateDescriptor updateDescriptor) {
@@ -98,7 +99,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
             fileAndCount(fac.count(fac.count() + 1));
         }
 
-        File resolve() throws Exception {
+        File resolveZipPatchFile() throws Exception {
             final FileAndCount fac = fileAndCount();
             if (fac.fileResolved()) return fac.file();
             final ArtifactDescriptor ad = updateDescriptor.artifactDescriptor();
