@@ -128,6 +128,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         }
     } // ConfiguredUpdateResolver
 }
+
 @Immutable
 final class FileAndCount {
 

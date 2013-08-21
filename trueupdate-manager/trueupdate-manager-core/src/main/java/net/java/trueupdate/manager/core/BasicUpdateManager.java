@@ -28,7 +28,8 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
     private final Map<ApplicationDescriptor, UpdateMessage>
             subscriptions = new HashMap<>();
 
-    private final BasicUpdateResolver patchManager = new BasicUpdateResolver() {
+    private final BasicUpdateResolver
+            updateResolver = new BasicUpdateResolver() {
         @Override protected UpdateClient updateClient() {
             return BasicUpdateManager.this.updateClient();
         }
@@ -42,7 +43,7 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     protected void shutdown() throws Exception {
         try {
-            patchManager.shutdown();
+            updateResolver.shutdown();
         } finally {
             persistSubscriptions();
         }
@@ -70,7 +71,7 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
                 if (!updateVersion.equals(artifactDescriptor.version())) {
                     final UpdateMessage
                             un = updateNotice(subscription, updateVersion);
-                    patchManager.subscribe(un.updateDescriptor());
+                    updateResolver.subscribe(un.updateDescriptor());
                     sendAndLog(un);
                 }
             }
@@ -114,8 +115,8 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     private UpdateMessage install(final UpdateMessage message) {
         try {
-            updateInstaller().install(patchManager, message);
-            patchManager.unsubscribe(message.updateDescriptor());
+            updateInstaller().install(updateResolver, message);
+            updateResolver.unsubscribe(message.updateDescriptor());
             return installationSuccessResponse(message);
         } catch (RuntimeException ex) {
             throw ex;
