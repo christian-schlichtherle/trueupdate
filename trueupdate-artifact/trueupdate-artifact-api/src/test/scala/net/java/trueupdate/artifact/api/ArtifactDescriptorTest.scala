@@ -9,7 +9,6 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
-import ArtifactDescriptor.Builder
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
@@ -17,7 +16,7 @@ class ArtifactDescriptorTest extends WordSpec {
 
   "An artifact descriptor" when {
     "build" should {
-      def builder = new Builder
+      def builder = ArtifactDescriptor.builder
 
       "reflect the specified properties" in {
         val table = Table(
