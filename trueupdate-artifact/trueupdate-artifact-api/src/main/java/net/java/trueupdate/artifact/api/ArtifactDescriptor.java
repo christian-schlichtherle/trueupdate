@@ -171,7 +171,8 @@ public final class ArtifactDescriptor implements Serializable {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<T> {
 
-        @CheckForNull String groupId, artifactId, version, classifier, extension;
+        @CheckForNull String groupId, artifactId, version, classifier,
+                             extension;
 
         protected Builder() { }
 
