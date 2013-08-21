@@ -4,9 +4,6 @@
  */
 package net.java.trueupdate.manager.impl.javaee;
 
-import net.java.trueupdate.manager.api.UpdateMessageListener;
-import net.java.trueupdate.manager.api.UpdateMessage;
-import net.java.trueupdate.manager.core.UpdateInstaller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.*;
 import java.util.concurrent.Callable;
@@ -17,15 +14,15 @@ import javax.inject.Inject;
 import javax.jms.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.manager.core.BasicUpdateManager;
+import net.java.trueupdate.manager.api.UpdateMessage;
+import net.java.trueupdate.manager.core.*;
 
 /**
- * An update manager EJB.
+ * An update manager bean.
  *
  * @author Christian Schlichtherle
  */
 @Singleton
-@Local(UpdateMessageListener.class)
 public class UpdateManagerBean extends BasicUpdateManager {
 
     private static final Logger

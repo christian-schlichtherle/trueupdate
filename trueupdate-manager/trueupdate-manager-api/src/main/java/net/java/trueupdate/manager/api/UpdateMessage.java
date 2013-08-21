@@ -305,26 +305,33 @@ public final class UpdateMessage implements Serializable {
      * order to subscribe to the list of recipients for update announcements
      * for the application.
      * <li>
-     * The update manager needs to send a
+     * The update manager then needs to send a
      * {@link #SUBSCRIPTION_SUCCESS_RESPONSE} or a
      * {@link #SUBSCRIPTION_FAILURE_RESPONSE}.
      * <li>
      * Upon a successful subscription, the update manager needs to send an
-     * {@link #UPDATE_ANNOUNCEMENT} for every update.
+     * {@link #UPDATE_NOTICE} for every update.
      * <li>
-     * The update agent may send an {@link #INSTALLATION_REQUEST}.
+     * The update agent may then send an {@link #INSTALLATION_REQUEST}.
      * <li>
-     * The update manager needs to install the application update and send an
-     * {@link #INSTALLATION_SUCCESS_RESPONSE} or an
+     * The update manager then needs to install the application update and send
+     * an {@link #INSTALLATION_SUCCESS_RESPONSE} or an
      * {@link #INSTALLATION_FAILURE_RESPONSE}.
      * <li>
-     * The update agent may send an {@link #UNSUBSCRIPTION_REQUEST} in order to
-     * unsubscribe from the list of recipients for update announcements for the
-     * application.
+     * The update agent may send an {@link #UNSUBSCRIPTION_REQUEST} or
+     * {@link #UNSUBSCRIPTION_NOTICE} in order to unsubscribe from the list of
+     * recipients for update announcements for the application.
      * <li>
-     * The update manager needs to send an
+     * If and only if the message is an {@link #UNSUBSCRIPTION_REQUEST}, then
+     * the update manager needs to send an
      * {@link #UNSUBSCRIPTION_SUCCESS_RESPONSE} or an
      * {@link #UNSUBSCRIPTION_FAILURE_RESPONSE}.
+     * <li>
+     * Finally, the update manager may send itself a
+     * {@link #SUBSCRIPTION_NOTICE} for every subscription before shutting down
+     * in order to persist them.
+     * Upon startup, the manager then needs to process the messages without
+     * responding to the update agents.
      * </ol>
      * <p>
      * Note that messages may get lost or duplicated and no timeout is defined.

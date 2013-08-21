@@ -5,6 +5,7 @@
 package net.java.trueupdate.agent.api;
 
 import javax.annotation.CheckForNull;
+import net.java.trueupdate.manager.api.UpdateMessage;
 
 /**
  * Indicates an error while sending an {@link UpdateMessage}.

@@ -4,16 +4,16 @@
  */
 package net.java.trueupdate.agent.impl.javaee;
 
-import net.java.trueupdate.manager.api.UpdateMessage;
 import java.io.Serializable;
 import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.*;
+import net.java.trueupdate.manager.api.UpdateMessage;
 
 /**
  * Filters JMS messages and forwards update messages to the injected
- * {@link UpdateMessageListener}.
+ * {@link UpdateAgentDispatcherBean}.
  *
  * @author Christian Schlichtherle
  */
