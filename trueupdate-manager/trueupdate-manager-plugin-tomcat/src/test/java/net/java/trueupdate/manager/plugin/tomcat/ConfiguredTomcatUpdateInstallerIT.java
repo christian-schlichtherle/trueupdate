@@ -7,13 +7,14 @@ package net.java.trueupdate.manager.plugin.tomcat;
 import java.net.URI;
 import java.util.Collection;
 import java.util.logging.*;
+import javax.management.JMException;
 import net.java.trueupdate.manager.api.UpdateMessage;
 import org.apache.catalina.Context;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
@@ -36,19 +37,17 @@ public class ConfiguredTomcatUpdateInstallerIT {
         return archive;
     }
 
-    public @Test void testContext() throws Exception {
-        final Collection<Context>
-                contexts = configuredTomcatUpdateInstaller().contexts();
+    private final ConfiguredTomcatUpdateInstaller installer =
+            new ConfiguredTomcatUpdateInstaller(installationRequest());
+
+    public @Test void testContexts() throws JMException {
+        final Collection<Context> contexts = installer.contexts();
         assert !contexts.isEmpty();
         for (final Context context : contexts) {
             assert CONTEXT_PATH.equals(context.getPath());
-            logger.log(Level.INFO, "The resolved context is {0}.", context);
+            logger.log(Level.INFO, "The resolved context is {0} at {1}.",
+                    new Object[] { context, context.getDocBase() });
         }
-    }
-
-    private static ConfiguredTomcatUpdateInstaller
-            configuredTomcatUpdateInstaller() {
-        return new ConfiguredTomcatUpdateInstaller(installationRequest());
     }
 
     private static UpdateMessage installationRequest() {

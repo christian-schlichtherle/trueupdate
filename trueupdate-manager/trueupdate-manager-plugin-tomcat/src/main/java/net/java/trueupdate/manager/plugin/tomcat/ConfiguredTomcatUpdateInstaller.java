@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
+import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import net.java.trueupdate.manager.api.UpdateDescriptor;
 import net.java.trueupdate.manager.api.UpdateMessage;
 import net.java.trueupdate.manager.core.UpdateResolver;
@@ -34,15 +35,30 @@ final class ConfiguredTomcatUpdateInstaller {
     void install(final UpdateResolver resolver) throws Exception {
         final File patch = resolver.resolve(updateDescriptor());
         logger.log(Level.FINE, "Resolved ZIP patch file {0}.", patch);
-        for (final Context context : contexts())
-            logger.log(Level.FINE, "Updating context {0}.", context);
+        for (Context context : contexts()) install(context, patch);
+    }
+
+    void install(final Context context, final File patch) throws Exception {
+        final String docBase = context.getDocBase();
+        logger.log(Level.INFO, "Updating {0} with {1} to version {2} using {3}.",
+                new Object[] { docBase, artifactDescriptor(), updateVersion(),
+                               patch });
+        // TODO...
+    }
+
+    private ArtifactDescriptor artifactDescriptor() {
+        return updateDescriptor().artifactDescriptor();
+    }
+
+    private String updateVersion() {
+        return updateDescriptor().updateVersion();
     }
 
     private UpdateDescriptor updateDescriptor() {
         return message.updateDescriptor();
     }
 
-    Collection<Context> contexts() throws Exception {
+    Collection<Context> contexts() throws JMException {
 
         class Finder {
             final String name = name();
@@ -73,7 +89,7 @@ final class ConfiguredTomcatUpdateInstaller {
         return finder.matchingContexts;
     }
 
-    Engine engine() throws Exception {
+    private Engine engine() throws JMException {
         final ObjectName pattern = new ObjectName("*", "type", "Engine");
         final String[] attributes = new String[] { "managedResource" };
         for (final MBeanServer mbs : MBeanServerFactory.findMBeanServer(null)) {
