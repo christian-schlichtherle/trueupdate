@@ -2,7 +2,9 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.artifact.api;
+package net.java.trueupdate.manager.api;
+
+import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 
 import static java.util.Objects.requireNonNull;
 import javax.annotation.CheckForNull;
