@@ -51,13 +51,9 @@ extends WordSpec with MavenArtifactResolverTestContext {
     }
 
     "resolve an update descriptor and a readable artifact file" in {
-      val updateDescriptor = artifactResolver resolveUpdateDescriptor artifactDescriptor
-      updateDescriptor.groupId should equal (artifactDescriptor.groupId)
-      updateDescriptor.artifactId should equal (artifactDescriptor.artifactId)
-      // The version may change over time.
-      updateDescriptor.version should not equal (artifactDescriptor.version)
-      updateDescriptor.classifier should equal (artifactDescriptor.classifier)
-      updateDescriptor.extension should equal (artifactDescriptor.extension)
+      val updateVersion = artifactResolver resolveUpdateVersion artifactDescriptor
+      updateVersion should not equal (artifactDescriptor.version)
+      val updateDescriptor = artifactDescriptor version updateVersion
       val updateFile = artifactResolver resolveArtifactFile updateDescriptor
       updateFile should equal (resolvedPath(updateDescriptor))
       updateFile canRead () should be (true)

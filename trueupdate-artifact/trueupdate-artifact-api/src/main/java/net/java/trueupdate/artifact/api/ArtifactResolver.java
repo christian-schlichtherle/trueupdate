@@ -24,13 +24,12 @@ public interface ArtifactResolver {
     File resolveArtifactFile(ArtifactDescriptor descriptor) throws Exception;
 
     /**
-     * Resolves the descriptor for the latest update for the described artifact.
+     * Resolves the latest update version for the described artifact.
      *
      * @param  descriptor the descriptor for the artifact.
-     * @return the descriptor for the latest update for the described artifact.
-     * @throws Exception if resolving the update descriptor is not possible for
-     *         some reason.
+     * @return the latest update version for the described artifact.
+     * @throws Exception if resolving the latest update version is not possible
+     *         for some reason.
      */
-    ArtifactDescriptor resolveUpdateDescriptor(ArtifactDescriptor descriptor)
-    throws Exception;
+    String resolveUpdateVersion(ArtifactDescriptor descriptor) throws Exception;
 }

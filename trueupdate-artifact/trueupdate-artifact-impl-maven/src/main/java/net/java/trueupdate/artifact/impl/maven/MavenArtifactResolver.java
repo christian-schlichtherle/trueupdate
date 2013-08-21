@@ -4,8 +4,6 @@
  */
 package net.java.trueupdate.artifact.impl.maven;
 
-import net.java.trueupdate.artifact.api.ArtifactResolver;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
@@ -16,6 +14,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
+import net.java.trueupdate.artifact.api.ArtifactDescriptor;
+import net.java.trueupdate.artifact.api.ArtifactResolver;
 import static net.java.trueupdate.artifact.impl.maven.ArtifactConverters.*;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.Source;
@@ -96,7 +96,7 @@ public final class MavenArtifactResolver implements ArtifactResolver {
     public List<RemoteRepository> remoteRepositories() { return remotes; }
 
     @Override public File resolveArtifactFile(ArtifactDescriptor descriptor)
-    throws RepositoryException {
+    throws Exception {
         return resolveArtifact(descriptor).getFile();
     }
 
@@ -118,10 +118,9 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         return resolved;
     }
 
-    @Override public ArtifactDescriptor resolveUpdateDescriptor(
-            ArtifactDescriptor descriptor)
-    throws RepositoryException {
-        return descriptor(resolveUpdateArtifact(descriptor));
+    @Override public String resolveUpdateVersion(ArtifactDescriptor descriptor)
+    throws Exception {
+        return resolveUpdateArtifact(descriptor).getVersion();
     }
 
     private Artifact resolveUpdateArtifact(ArtifactDescriptor descriptor)

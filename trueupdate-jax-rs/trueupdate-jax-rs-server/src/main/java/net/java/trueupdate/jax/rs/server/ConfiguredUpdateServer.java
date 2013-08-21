@@ -16,6 +16,7 @@ import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
@@ -55,7 +56,7 @@ public final class ConfiguredUpdateServer {
     public String versionAsText() throws UpdateServiceException {
         return wrap(new Callable<String>() {
             @Override public String call() throws Exception {
-                return resolveUpdateDescriptor().version();
+                return resolveUpdateVersion();
             }
         });
     }
@@ -74,8 +75,8 @@ public final class ConfiguredUpdateServer {
         return new JAXBElement<>(VERSION_NAME, String.class, versionAsText());
     }
 
-    ArtifactDescriptor resolveUpdateDescriptor() throws Exception {
-        return resolver.resolveUpdateDescriptor(currentDescriptor);
+    String resolveUpdateVersion() throws Exception {
+        return resolver.resolveUpdateVersion(currentDescriptor);
     }
 
     @GET
