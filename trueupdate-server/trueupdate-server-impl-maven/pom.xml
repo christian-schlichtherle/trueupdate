@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-api</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
             <type>test-jar</type>
         </dependency>
         <dependency>

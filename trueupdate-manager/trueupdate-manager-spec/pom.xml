@@ -14,17 +14,17 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-api</artifactId>
+    <artifactId>trueupdate-manager-spec</artifactId>
 
-    <name>TrueUpdate Manager API</name>
+    <name>TrueUpdate Manager Specification</name>
     <description>
-        Provides an API for a manager for updating applications.
+        Specifies an API for a manager for updating applications.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-artifact-api</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
         </dependency>
     </dependencies>
 </project>

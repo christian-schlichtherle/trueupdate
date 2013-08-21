@@ -14,18 +14,17 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent-api</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>trueupdate-agent-spec</artifactId>
 
-    <name>TrueUpdate Agent API</name>
+    <name>TrueUpdate Agent Specification</name>
     <description>
-        Provides an API for an agent for updating an application.
+        Specifies an API for an agent for updating an application.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-api</artifactId>
+            <artifactId>trueupdate-manager-spec</artifactId>
         </dependency>
     </dependencies>
 </project>

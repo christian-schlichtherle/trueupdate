@@ -14,17 +14,12 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-plugin-tomcat</artifactId>
+    <artifactId>trueupdate-manager-plug-tomcat</artifactId>
 
     <name>TrueUpdate Manager Plugin Tomcat</name>
     <description>
         Provides an update installer for applications running in Tomcat.
     </description>
-
-    <properties>
-        <tomee.classifier>plus</tomee.classifier>
-        <tomee.version>1.5.2</tomee.version>
-    </properties>
 
     <dependencies>
         <dependency>

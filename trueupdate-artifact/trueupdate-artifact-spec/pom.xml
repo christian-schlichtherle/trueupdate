@@ -14,12 +14,11 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-artifact-api</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>trueupdate-artifact-spec</artifactId>
 
-    <name>TrueUpdate Artifact API</name>
+    <name>TrueUpdate Artifact Specification</name>
     <description>
-        Provides an API for describing and resolving software artifacts.
+        Specifies an API for describing and resolving software artifacts.
     </description>
 
     <build>

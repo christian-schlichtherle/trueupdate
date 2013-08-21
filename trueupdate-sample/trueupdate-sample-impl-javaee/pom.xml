@@ -25,7 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-agent-api</artifactId>
+            <artifactId>trueupdate-agent-spec</artifactId>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

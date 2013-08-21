@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-api</artifactId>
+            <artifactId>trueupdate-manager-spec</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
