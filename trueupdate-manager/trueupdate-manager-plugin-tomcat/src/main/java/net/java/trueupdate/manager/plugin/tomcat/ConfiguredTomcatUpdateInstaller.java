@@ -5,6 +5,8 @@
 package net.java.trueupdate.manager.plugin.tomcat;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
@@ -35,13 +37,36 @@ final class ConfiguredTomcatUpdateInstaller {
     void install(final UpdateResolver resolver) throws Exception {
         final File patch = resolver.resolve(updateDescriptor());
         logger.log(Level.FINE, "Resolved ZIP patch file {0}.", patch);
-        for (Context context : contexts()) install(context, patch);
+        final Collection<Context> contexts = contexts();
+        if (contexts.isEmpty())
+            throw new Exception(String.format(
+                    "There are no contexts with the name %s.", name()));
+        for (Context context : contexts()) apply(patch, context);
     }
 
-    void install(final Context context, final File patch) throws Exception {
-        final String docBase = context.getDocBase();
+    void apply(final File patch, final Context context) throws Exception {
+        final String docBaseString = context.getDocBase();
+        try {
+            final URI docBaseUri = new URI(docBaseString);
+            if (docBaseUri.isAbsolute()) {
+                try {
+                    apply(patch, new File(docBaseUri));
+                } catch (IllegalArgumentException notAFileBasedUri) {
+                    logger.log(Level.WARNING,
+                            "Not updating {0} to version {1} at {2} because the document base URI is not file based.",
+                            new Object[] { artifactDescriptor(),
+                                           updateVersion(), docBaseUri });
+                }
+                return;
+            }
+        } catch (URISyntaxException ex) {
+        }
+        apply(patch, new File(docBaseString));
+    }
+
+    void apply(final File patch, final File location) throws Exception {
         logger.log(Level.INFO, "Updating {0} with {1} to version {2} using {3}.",
-                new Object[] { docBase, artifactDescriptor(), updateVersion(),
+                new Object[] { location, artifactDescriptor(), updateVersion(),
                                patch });
         // TODO...
     }
