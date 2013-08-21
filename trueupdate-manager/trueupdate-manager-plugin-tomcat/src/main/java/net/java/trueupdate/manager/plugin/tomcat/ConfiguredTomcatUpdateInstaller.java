@@ -124,7 +124,7 @@ final class ConfiguredTomcatUpdateInstaller {
                 }
             }
         }
-        throw new InstanceNotFoundException("Cannot find Tomcat engine.");
+        throw new IllegalStateException("Cannot find Tomcat engine.");
     }
 
     private String name() {
