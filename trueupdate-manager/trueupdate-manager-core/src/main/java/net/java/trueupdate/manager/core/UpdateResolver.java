@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.manager.core;
 
-import net.java.trueupdate.artifact.api.UpdateDescriptor;
+import net.java.trueupdate.manager.api.UpdateDescriptor;
 import java.io.File;
 
 /**

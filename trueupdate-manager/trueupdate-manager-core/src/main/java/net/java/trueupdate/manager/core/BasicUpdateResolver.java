@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.artifact.api.UpdateDescriptor;
+import net.java.trueupdate.manager.api.UpdateDescriptor;
 
 /**
  * Resolves ZIP patch files for artifact updates and manages their life cycle.
