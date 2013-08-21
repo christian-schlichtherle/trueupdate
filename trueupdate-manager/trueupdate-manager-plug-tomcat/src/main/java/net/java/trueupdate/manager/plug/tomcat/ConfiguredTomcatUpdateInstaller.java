@@ -12,8 +12,8 @@ import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
 import net.java.trueupdate.artifact.spec.*;
-import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.manager.core.UpdateResolver;
+import net.java.trueupdate.manager.spec.*;
 import org.apache.catalina.*;
 
 /**
@@ -49,7 +49,7 @@ final class ConfiguredTomcatUpdateInstaller {
             final URI docBaseUri = new URI(docBaseString);
             if (docBaseUri.isAbsolute()) {
                 try {
-                    apply(patch, new File(docBaseUri));
+                    apply(patch, context, new File(docBaseUri));
                 } catch (IllegalArgumentException notAFileBasedUri) {
                     logger.log(Level.WARNING,
                             "Not updating {0} to version {1} at {2} because the document base URI is not file based.",
@@ -58,16 +58,24 @@ final class ConfiguredTomcatUpdateInstaller {
                 }
                 return;
             }
-        } catch (URISyntaxException ex) {
+        } catch (URISyntaxException notAValidUri) {
         }
-        apply(patch, new File(docBaseString));
+        apply(patch, context, new File(docBaseString));
     }
 
-    void apply(final File patch, final File location) throws Exception {
+    void apply(final File patch, final Context context, final File location)
+    throws Exception {
         logger.log(Level.INFO, "Updating {0} with {1} to version {2} using {3}.",
                 new Object[] { location, artifactDescriptor(), updateVersion(),
                                patch });
-        // TODO...
+        if (true) return;
+        context.stop();
+        try {
+            // TODO...
+
+        } finally {
+            context.start();
+        }
     }
 
     private ArtifactDescriptor artifactDescriptor() {
@@ -82,7 +90,7 @@ final class ConfiguredTomcatUpdateInstaller {
         return message.updateDescriptor();
     }
 
-    Collection<Context> contexts() throws JMException {
+    Collection<Context> contexts() {
 
         class Finder {
             final String name = name();
@@ -113,18 +121,25 @@ final class ConfiguredTomcatUpdateInstaller {
         return finder.matchingContexts;
     }
 
-    private Engine engine() throws JMException {
-        final ObjectName pattern = new ObjectName("*", "type", "Engine");
-        final String[] attributes = new String[] { "managedResource" };
-        for (final MBeanServer mbs : MBeanServerFactory.findMBeanServer(null)) {
-            for (final ObjectName name : mbs.queryNames(pattern, null)) {
-                for (final Object attr : mbs.getAttributes(name, attributes)) {
-                    final Object value = ((Attribute) attr).getValue();
-                    if (value instanceof Engine) return (Engine) value;
+    private Engine engine() {
+        final RuntimeException ex = new IllegalStateException(
+                "This application is not running in Tomcat.");
+        try {
+            final ObjectName pattern = new ObjectName("*", "type", "Engine");
+            final String[] attributes = new String[] { "managedResource" };
+            for (final MBeanServer mbs : MBeanServerFactory.findMBeanServer(null)) {
+                for (final ObjectName name : mbs.queryNames(pattern, null)) {
+                    for (final Object attr : mbs.getAttributes(name, attributes)) {
+                        final Object value = ((Attribute) attr).getValue();
+                        if (value instanceof Engine) return (Engine) value;
+                    }
                 }
             }
+            throw new InstanceNotFoundException("Cannot find Tomcat engine.");
+        } catch (JMException cause) {
+            ex.initCause(cause);
         }
-        throw new IllegalStateException("Cannot find Tomcat engine.");
+        throw ex;
     }
 
     private String name() {
