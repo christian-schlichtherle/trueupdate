@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a basic implementation of an agent for updating this application.
+ * Provides a basic implementation of an agent for updating an application.
  * The classes in this package have no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle

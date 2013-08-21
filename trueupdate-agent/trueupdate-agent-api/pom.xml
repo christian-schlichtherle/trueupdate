@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Agent API</name>
     <description>
-        Specifies an update agent for updating an application.
+        Provides an API for an agent for updating an application.
     </description>
 
     <dependencies>

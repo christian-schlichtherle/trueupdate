@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Specifies an update manager for updating applications.
+ * Provides an API for a manager for updating applications.
  *
  * @author Christian Schlichtherle
  */

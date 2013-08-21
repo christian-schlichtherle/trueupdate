@@ -19,7 +19,7 @@
 
     <name>TrueUpdate Artifact API</name>
     <description>
-        Specifies artifacts.
+        Provides an API for describing and resolving software artifacts.
     </description>
 
     <build>

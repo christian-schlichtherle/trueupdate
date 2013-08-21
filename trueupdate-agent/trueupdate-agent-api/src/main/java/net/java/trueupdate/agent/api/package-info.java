@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Specifies an update agent for updating an application.
+ * Provides an API for an agent for updating an application.
  *
  * @author Christian Schlichtherle
  */

@@ -18,7 +18,7 @@
 
     <name>TrueUpdate Agent Core</name>
     <description>
-        Specifies an update agent for updating an application.
+        Provides a basic implementation of an agent for updating an application.
     </description>
 
     <dependencies>

@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Specifies artifacts.
+ * Provides an API for describing and resolving software artifacts.
  *
  * @author Christian Schlichtherle
  */
