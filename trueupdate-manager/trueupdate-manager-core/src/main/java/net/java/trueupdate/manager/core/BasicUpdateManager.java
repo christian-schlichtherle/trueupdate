@@ -4,15 +4,13 @@
  */
 package net.java.trueupdate.manager.core;
 
-import net.java.trueupdate.manager.api.UpdateMessageDispatcher;
-import net.java.trueupdate.manager.api.ApplicationDescriptor;
-import net.java.trueupdate.manager.api.UpdateMessage;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
+import net.java.trueupdate.manager.api.*;
 import net.java.trueupdate.manager.api.UpdateMessage.Type;
 import static net.java.trueupdate.manager.api.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
 
@@ -58,22 +56,22 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
     protected void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
-        logger.log(Level.INFO, "Checking for artifact updates from: {0}",
+        logger.log(Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient.baseUri());
-        final Map<ArtifactDescriptor, String> versions = new HashMap<>();
+        final Map<ArtifactDescriptor, String> updateVersions = new HashMap<>();
         try {
             for (final UpdateMessage subscription : subscriptions.values()) {
                 final ArtifactDescriptor artifactDescriptor =
                         subscription.artifactDescriptor();
-                String version = versions.get(artifactDescriptor);
-                if (null == version)
-                    versions.put(artifactDescriptor,
-                            version = updateClient.version(artifactDescriptor));
-                if (!version.equals(artifactDescriptor.version())) {
+                String updateVersion = updateVersions.get(artifactDescriptor);
+                if (null == updateVersion)
+                    updateVersions.put(artifactDescriptor, updateVersion =
+                            updateClient.version(artifactDescriptor));
+                if (!updateVersion.equals(artifactDescriptor.version())) {
                     final UpdateMessage
-                            un = updateNotice(subscription, version);
+                            un = updateNotice(subscription, updateVersion);
                     patchManager.subscribe(un.updateDescriptor());
-                    logOutput(send(un));
+                    sendAndLog(un);
                 }
             }
         } catch (IOException ex) {
@@ -92,15 +90,15 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
                 .build();
     }
 
-    @Override protected void onSubscriptionNotice(UpdateMessage message)
+    @Override protected void onSubscriptionNotice(final UpdateMessage message)
     throws Exception {
-        logOutput(subscribe(logInput(message)));
+        subscribe(logReceived(message));
         checkUpdates();
     }
 
-    @Override protected void onSubscriptionRequest(UpdateMessage message)
+    @Override protected void onSubscriptionRequest(final UpdateMessage message)
     throws Exception {
-        logOutput(send(subscribe(logInput(message))));
+        sendAndLog(subscribe(logReceived(message)));
         checkUpdates();
     }
 
@@ -111,7 +109,7 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     @Override protected void onInstallationRequest(UpdateMessage message)
     throws Exception {
-        logOutput(send(install(logInput(message))));
+        sendAndLog(install(logReceived(message)));
     }
 
     private UpdateMessage install(final UpdateMessage message) {
@@ -147,12 +145,12 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
 
     @Override protected void onUnsubscriptionNotice(UpdateMessage message)
     throws Exception {
-        logOutput(unsubscribe(logInput(message)));
+        unsubscribe(logReceived(message));
     }
 
     @Override protected void onUnsubscriptionRequest(UpdateMessage message)
     throws Exception {
-        logOutput(send(unsubscribe(logInput(message))));
+        sendAndLog(unsubscribe(logReceived(message)));
     }
 
     private UpdateMessage unsubscribe(final UpdateMessage message) {
@@ -160,17 +158,21 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
         return message.successResponse();
     }
 
-    private static UpdateMessage logInput(final UpdateMessage message) {
-        logger.log(Level.FINE, "Input update message:\n{0}", message);
-        return message;
-    }
-
-    private static UpdateMessage logOutput(final UpdateMessage message) {
-        logger.log(Level.FINER, "Output update message:\n{0}", message);
-        return message;
+    private UpdateMessage sendAndLog(UpdateMessage message) throws Exception {
+        return logSent(send(message));
     }
 
     /** Sends the given update message. */
     protected abstract UpdateMessage send(UpdateMessage message)
     throws Exception;
+
+    private static UpdateMessage logReceived(final UpdateMessage message) {
+        logger.log(Level.FINE, "Received update message:\n{0}", message);
+        return message;
+    }
+
+    private static UpdateMessage logSent(final UpdateMessage message) {
+        logger.log(Level.FINER, "Sent update message:\n{0}", message);
+        return message;
+    }
 }
