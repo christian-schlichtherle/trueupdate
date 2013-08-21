@@ -6,9 +6,9 @@ package net.java.trueupdate.agent.impl.javaee;
 
 import static java.util.Objects.requireNonNull;
 import javax.jms.*;
-import net.java.trueupdate.agent.api.*;
+import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.agent.core.BasicUpdateAgent;
-import net.java.trueupdate.manager.api.UpdateMessage;
+import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * A configured update agent.

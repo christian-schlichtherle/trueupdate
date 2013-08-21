@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import javax.jms.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.manager.api.UpdateMessage;
+import net.java.trueupdate.manager.spec.UpdateMessage;
 import net.java.trueupdate.manager.core.*;
 
 /**

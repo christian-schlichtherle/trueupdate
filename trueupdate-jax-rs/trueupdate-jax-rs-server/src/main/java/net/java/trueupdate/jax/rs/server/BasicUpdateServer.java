@@ -7,7 +7,7 @@ package net.java.trueupdate.jax.rs.server;
 import java.util.concurrent.Callable;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;
-import net.java.trueupdate.artifact.api.*;
+import net.java.trueupdate.artifact.spec.*;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
 /**

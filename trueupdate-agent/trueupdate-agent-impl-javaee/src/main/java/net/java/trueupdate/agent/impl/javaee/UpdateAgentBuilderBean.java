@@ -7,7 +7,7 @@ package net.java.trueupdate.agent.impl.javaee;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
-import net.java.trueupdate.agent.api.UpdateAgent;
+import net.java.trueupdate.agent.spec.UpdateAgent;
 import net.java.trueupdate.agent.core.BasicUpdateAgentBuilder;
 
 /**

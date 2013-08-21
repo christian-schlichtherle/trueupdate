@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.agent.core;
 
-import net.java.trueupdate.manager.api.UpdateMessage;
-import net.java.trueupdate.manager.api.ApplicationDescriptor;
-import net.java.trueupdate.manager.api.UpdateMessageDispatcher;
-import net.java.trueupdate.agent.api.ApplicationListener;
-import net.java.trueupdate.agent.api.ApplicationParameters;
+import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.manager.spec.ApplicationDescriptor;
+import net.java.trueupdate.manager.spec.UpdateMessageDispatcher;
+import net.java.trueupdate.agent.spec.ApplicationListener;
+import net.java.trueupdate.agent.spec.ApplicationParameters;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.*;

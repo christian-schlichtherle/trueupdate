@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.manager.core;
 
-import net.java.trueupdate.manager.api.UpdateMessage;
+import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * Cooperates with an update resolver to install artifact updates.

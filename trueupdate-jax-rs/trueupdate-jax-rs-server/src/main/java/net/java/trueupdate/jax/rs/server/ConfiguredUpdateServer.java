@@ -4,8 +4,8 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.artifact.api.ArtifactResolver;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactResolver;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import java.io.*;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;

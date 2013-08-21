@@ -4,10 +4,10 @@
  */
 package net.java.trueupdate.agent.core;
 
-import net.java.trueupdate.agent.api.UpdateAgent;
-import net.java.trueupdate.agent.api.ApplicationParameters;
+import net.java.trueupdate.agent.spec.UpdateAgent;
+import net.java.trueupdate.agent.spec.ApplicationParameters;
 import javax.annotation.CheckForNull;
-import net.java.trueupdate.agent.api.UpdateAgent.Builder;
+import net.java.trueupdate.agent.spec.UpdateAgent.Builder;
 
 /**
  * A basic update agent builder.

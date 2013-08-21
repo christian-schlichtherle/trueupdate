@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.inject.Provider;
 import net.java.trueupdate.artifact.impl.maven.MavenArtifactResolver;
-import net.java.trueupdate.artifact.api.ArtifactResolver;
+import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.SystemProperties;
 

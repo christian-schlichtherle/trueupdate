@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.WordSpec
-import net.java.trueupdate.artifact.api.ArtifactDescriptor
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import MavenArtifactResolverIT._
 
 private object MavenArtifactResolverIT {

@@ -4,15 +4,15 @@
  */
 package net.java.trueupdate.agent.core;
 
-import net.java.trueupdate.manager.api.UpdateMessage;
-import net.java.trueupdate.manager.api.ApplicationDescriptor;
-import net.java.trueupdate.agent.api.UpdateAgent;
-import net.java.trueupdate.agent.api.ApplicationParameters;
-import net.java.trueupdate.agent.api.UpdateAgentException;
+import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.manager.spec.ApplicationDescriptor;
+import net.java.trueupdate.agent.spec.UpdateAgent;
+import net.java.trueupdate.agent.spec.ApplicationParameters;
+import net.java.trueupdate.agent.spec.UpdateAgentException;
 import java.net.URI;
 import javax.annotation.Nullable;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
-import static net.java.trueupdate.manager.api.UpdateMessage.Type.*;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 
 /**
  * A basic update agent.

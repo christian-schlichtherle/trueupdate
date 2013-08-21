@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.artifact.impl.maven;
 
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import org.eclipse.aether.artifact.*;
 
 /**

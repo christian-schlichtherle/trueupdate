@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.artifact.impl.maven.it
 
-import net.java.trueupdate.artifact.api._
+import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io.Sources
 import net.java.trueupdate.artifact.impl.maven.MavenArtifactResolver

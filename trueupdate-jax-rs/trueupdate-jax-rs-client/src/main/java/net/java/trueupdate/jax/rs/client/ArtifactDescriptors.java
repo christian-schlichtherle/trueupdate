@@ -7,7 +7,7 @@ package net.java.trueupdate.jax.rs.client;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import java.util.concurrent.Callable;
 import javax.ws.rs.core.MultivaluedMap;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 
 /**
  * Utility functions for {@link ArtifactDescriptor}s.

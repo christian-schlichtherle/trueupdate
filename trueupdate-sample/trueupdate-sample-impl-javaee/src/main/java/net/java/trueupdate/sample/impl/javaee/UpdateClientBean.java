@@ -4,9 +4,9 @@
  */
 package net.java.trueupdate.sample.impl.javaee;
 
-import net.java.trueupdate.manager.api.UpdateMessage;
-import net.java.trueupdate.agent.api.UpdateAgent;
-import net.java.trueupdate.agent.api.ApplicationListener;
+import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.agent.spec.UpdateAgent;
+import net.java.trueupdate.agent.spec.ApplicationListener;
 import java.net.URI;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

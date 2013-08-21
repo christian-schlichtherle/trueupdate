@@ -2,26 +2,26 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.core;
-
-import net.java.trueupdate.manager.spec.UpdateDescriptor;
-import java.io.File;
+package net.java.trueupdate.manager.spec;
 
 /**
- * Resolves ZIP patch files for artifact updates.
+ * Processes update messages.
+ * <p>
+ * Implementations should be immutable and hence, thread-safe.
  * <p>
  * Applications have no need to implement this class and should not do so
  * because it may be subject to future expansion.
  *
+ * @see UpdateMessageDispatcher
  * @author Christian Schlichtherle
  */
-public interface UpdateResolver {
+public interface UpdateMessageListener {
 
     /**
-     * Resolves the ZIP patch file for the given update descriptor.
+     * Processes the given update message.
      *
-     * @param descriptor the update descriptor.
+     * @param message the update message to process.
      * @throws Exception at the discretion of the implementation.
      */
-    File resolveZipPatchFile(UpdateDescriptor descriptor) throws Exception;
+    void onUpdateMessage(UpdateMessage message) throws Exception;
 }

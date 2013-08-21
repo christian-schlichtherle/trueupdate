@@ -16,7 +16,7 @@ import net.java.trueupdate.jax.rs.client.UpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.core.TestContext
-import net.java.trueupdate.artifact.api.ArtifactResolverTestContext
+import net.java.trueupdate.artifact.spec.ArtifactResolverTestContext
 import java.util.logging.Level
 
 /** @author Christian Schlichtherle */

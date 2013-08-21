@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.NotThreadSafe;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.manager.api.*;
-import net.java.trueupdate.manager.api.UpdateMessage.Type;
-import static net.java.trueupdate.manager.api.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
+import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.manager.spec.UpdateMessage.Type;
+import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
 
 /**
  * A basic update manager.

@@ -9,7 +9,7 @@ import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.*;
-import net.java.trueupdate.manager.api.*;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * Filters JMS messages and forwards update messages to the injected

@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.artifact.impl.maven
 
-import net.java.trueupdate.artifact.api.ArtifactDescriptor
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec

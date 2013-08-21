@@ -8,10 +8,10 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.manager.api.UpdateDescriptor;
+import net.java.trueupdate.manager.spec.UpdateDescriptor;
 
 /**
  * Resolves ZIP patch files for artifact updates and manages their life cycle.

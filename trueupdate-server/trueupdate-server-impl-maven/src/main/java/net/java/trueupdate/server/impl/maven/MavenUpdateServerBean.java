@@ -7,7 +7,7 @@ package net.java.trueupdate.server.impl.maven;
 import javax.ejb.*;
 import javax.inject.Provider;
 import javax.ws.rs.Path;
-import net.java.trueupdate.artifact.api.ArtifactResolver;
+import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.jax.rs.server.BasicUpdateServer;
 
 /**
