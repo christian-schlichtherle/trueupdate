@@ -4,8 +4,8 @@
  */
 package net.java.trueupdate.manager.plugin.tomcat;
 
-import net.java.trueupdate.manager.plugin.tomcat.ConfiguredTomcatUpdateInstaller;
 import java.net.URI;
+import java.util.Collection;
 import java.util.logging.*;
 import net.java.trueupdate.manager.api.UpdateMessage;
 import org.apache.catalina.Context;
@@ -37,9 +37,13 @@ public class ConfiguredTomcatUpdateInstallerIT {
     }
 
     public @Test void testContext() throws Exception {
-        final Context context = configuredTomcatUpdateInstaller().context();
-        assert CONTEXT_PATH.equals(context.getPath());
-        logger.log(Level.INFO, "The resolved context is {0}.", context);
+        final Collection<Context>
+                contexts = configuredTomcatUpdateInstaller().contexts();
+        assert !contexts.isEmpty();
+        for (final Context context : contexts) {
+            assert CONTEXT_PATH.equals(context.getPath());
+            logger.log(Level.INFO, "The resolved context is {0}.", context);
+        }
     }
 
     private static ConfiguredTomcatUpdateInstaller

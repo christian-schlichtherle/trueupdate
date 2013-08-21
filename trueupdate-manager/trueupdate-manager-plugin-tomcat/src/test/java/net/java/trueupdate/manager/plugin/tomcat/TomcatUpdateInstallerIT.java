@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.manager.plugin.tomcat;
 
-import net.java.trueupdate.manager.plugin.tomcat.TomcatUpdateInstaller;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 import net.java.trueupdate.manager.core.UpdateInstaller;
