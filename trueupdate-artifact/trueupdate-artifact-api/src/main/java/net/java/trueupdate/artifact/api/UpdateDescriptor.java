@@ -2,13 +2,12 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.api;
+package net.java.trueupdate.artifact.api;
 
 import static java.util.Objects.requireNonNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.api.ArtifactDescriptor;
 
 /**
  * An update descriptor comprises of an artifact descriptor plus an update
@@ -34,6 +33,13 @@ public final class UpdateDescriptor {
         return value;
     }
 
+    /** Returns a new builder with all properties set from this instance. */
+    public Builder<Void> update() {
+        return builder()
+                .artifactDescriptor(artifactDescriptor())
+                .updateVersion(updateVersion());
+    }
+
     /** Returns a new builder for an update descriptor. */
     public static Builder<Void> builder() { return new Builder<>(); }
 
@@ -42,8 +48,22 @@ public final class UpdateDescriptor {
         return artifactDescriptor;
     }
 
+    /** Returns an update descriptor with the given artifact descriptor. */
+    public UpdateDescriptor artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
+        return artifactDescriptor().equals(artifactDescriptor)
+                ? this
+                : update().artifactDescriptor(artifactDescriptor).build();
+    }
+
     /** Returns the update version. */
     public String updateVersion() { return updateVersion; }
+
+    /** Returns an update descriptor with the given update version. */
+    public UpdateDescriptor updateVersion(String updateVersion) {
+        return updateVersion().equals(updateVersion)
+                ? this
+                : update().updateVersion(updateVersion).build();
+    }
 
     @Override public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -60,7 +80,7 @@ public final class UpdateDescriptor {
         return hash;
     }
 
-
+    /** A builder for an update descriptor. */
     @SuppressWarnings(value = "PackageVisibleField")
     public static class Builder<T> {
 
