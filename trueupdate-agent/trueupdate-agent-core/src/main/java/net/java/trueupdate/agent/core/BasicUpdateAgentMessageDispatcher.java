@@ -12,17 +12,18 @@ import javax.annotation.concurrent.*;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
 
+
 /**
  * A basic update message dispatcher.
  *
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class BasicUpdateMessageDispatcher
+public abstract class BasicUpdateAgentMessageDispatcher
 extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
 
     private static final Logger
-            logger = Logger.getLogger(BasicUpdateMessageDispatcher.class.getName());
+            logger = Logger.getLogger(BasicUpdateAgentMessageDispatcher.class.getName());
 
     private final Map<ApplicationDescriptor, ApplicationAccount>
             applicationAccounts = new HashMap<>();
@@ -129,7 +130,6 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
         return account(message.applicationDescriptor()).listener();
     }
 }
-
 final class ApplicationAccount {
 
     private final ApplicationDescriptor descriptor;

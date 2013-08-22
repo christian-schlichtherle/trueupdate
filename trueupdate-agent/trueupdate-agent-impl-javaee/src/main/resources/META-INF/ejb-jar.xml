@@ -19,7 +19,7 @@
             </resource-env-ref>
         </session>
         <message-driven>
-            <ejb-name>UpdateMessageListenerBean</ejb-name>
+            <ejb-name>UpdateAgentMessageListenerBean</ejb-name>
             <resource-env-ref>
                 <resource-env-ref-name>TrueUpdate</resource-env-ref-name>
                 <resource-env-ref-type>javax.jms.Topic</resource-env-ref-type>

@@ -13,5 +13,5 @@ import net.java.trueupdate.agent.core.*;
  * @author Christian Schlichtherle
  */
 @Singleton
-public class UpdateMessageDispatcherBean
-extends BasicUpdateMessageDispatcher implements UpdateMessageDispatcher { }
+public class UpdateAgentMessageDispatcherBean
+extends BasicUpdateAgentMessageDispatcher implements UpdateMessageDispatcher { }
