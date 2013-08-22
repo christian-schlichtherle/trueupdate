@@ -4,11 +4,12 @@
  */
 package net.java.trueupdate.agent.impl.javaee;
 
+import net.java.trueupdate.agent.core.UpdateMessageDispatcher;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
+import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.agent.core.BasicUpdateAgentBuilder;
 
 /**
  * An update agent builder bean.
@@ -17,8 +18,9 @@ import net.java.trueupdate.agent.core.BasicUpdateAgentBuilder;
  */
 @Stateful
 @SuppressWarnings("PackageVisibleField")
-@Local(UpdateAgent.Builder.class)
-public class UpdateAgentBuilderBean extends BasicUpdateAgentBuilder {
+public class UpdateAgentBuilderBean
+extends BasicUpdateAgentBuilder
+implements UpdateAgent.Builder {
 
     @Resource
     ConnectionFactory connectionFactory;
@@ -27,7 +29,7 @@ public class UpdateAgentBuilderBean extends BasicUpdateAgentBuilder {
     Topic destination;
 
     @EJB
-    UpdateAgentDispatcherBean updateAgentDispatcher;
+    UpdateMessageDispatcher updateMessageDispatcher;
 
     @Remove
     @Override public UpdateAgent build() {

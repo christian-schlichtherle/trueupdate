@@ -2,25 +2,26 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.impl.javaee;
+package net.java.trueupdate.agent.impl.javaee;
 
 import java.io.Serializable;
 import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.*;
-import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.agent.core.UpdateMessageDispatcher;
+import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * Filters JMS messages and forwards update messages to the injected
- * {@link UpdateManagerBean}.
+ * {@link UpdateAgentDispatcherBean}.
  *
  * @author Christian Schlichtherle
  */
 @MessageDriven(
         activationConfig = {
             @ActivationConfigProperty(propertyName = "messageSelector",
-                                      propertyValue = "manager = true"),
+                                      propertyValue = "manager = false"),
             @ActivationConfigProperty(propertyName = "destination",
                                       propertyValue = "TrueUpdate"),
             @ActivationConfigProperty(propertyName = "destinationType",
@@ -28,31 +29,34 @@ import net.java.trueupdate.manager.spec.*;
             @ActivationConfigProperty(propertyName = "subscriptionDurability",
                                       propertyValue = "Durable"),
             @ActivationConfigProperty(propertyName = "subscriptionName",
+                                      propertyValue = "TrueUpdate Agent"),
+            @ActivationConfigProperty(propertyName = "clientId",
                                       propertyValue = "TrueUpdate Manager"),
         })
-public class UpdateManagerListenerBean implements MessageListener {
+public class UpdateMessageListenerBean implements MessageListener {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateManagerListenerBean.class.getName());
+            logger = Logger.getLogger(UpdateMessageListenerBean.class.getName());
 
     @EJB
-    private UpdateManagerBean updateManager;
+    private UpdateMessageDispatcher updateMessageDispatcher;
 
     @Resource
     private MessageDrivenContext context;
 
     @Override public void onMessage(final Message message) {
+        logger.log(Level.FINEST, "Received JMS message for update agent: {0}", message);
         try {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateManager.onUpdateMessage((UpdateMessage) body);
+                    updateMessageDispatcher.onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;
         } catch (final Exception ex) {
             context.setRollbackOnly();
-            logger.log(Level.SEVERE, "Could not process message.", ex);
+            logger.log(Level.SEVERE, "Could not process JMS message.", ex);
         }
     }
 }

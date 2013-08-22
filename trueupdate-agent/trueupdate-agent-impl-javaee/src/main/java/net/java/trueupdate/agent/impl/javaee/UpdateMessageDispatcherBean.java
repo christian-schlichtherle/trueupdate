@@ -4,13 +4,16 @@
  */
 package net.java.trueupdate.agent.impl.javaee;
 
+import net.java.trueupdate.agent.core.UpdateMessageDispatcher;
 import javax.ejb.Singleton;
-import net.java.trueupdate.agent.core.BasicUpdateAgentDispatcher;
+import net.java.trueupdate.agent.core.*;
 
 /**
  * An update agent dispatcher bean.
- * 
+ *
  * @author Christian Schlichtherle
  */
 @Singleton
-public class UpdateAgentDispatcherBean extends BasicUpdateAgentDispatcher { }
+public class UpdateMessageDispatcherBean
+extends BasicUpdateMessageDispatcher
+implements UpdateMessageDispatcher { }

@@ -4,9 +4,6 @@
  */
 package net.java.trueupdate.sample.impl.javaee;
 
-import net.java.trueupdate.manager.spec.UpdateMessage;
-import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.agent.spec.ApplicationListener;
 import java.net.URI;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -14,6 +11,9 @@ import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
+import net.java.trueupdate.agent.spec.ApplicationListener;
+import net.java.trueupdate.agent.spec.UpdateAgent;
+import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * @author Christian Schlichtherle
@@ -93,41 +93,41 @@ public class UpdateClientBean extends ApplicationListener {
 
     @Override public void onSubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
-        log(message);
+        logReceived(message);
     }
 
     @Override public void onSubscriptionFailureResponse(UpdateMessage message)
     throws Exception {
-        log(message);
+        logReceived(message);
     }
 
     @Override public void onUpdateNotice(UpdateMessage message)
     throws Exception {
-        updateAgent().install(log(message).updateVersion());
+        updateAgent().install(logReceived(message).updateVersion());
     }
 
     @Override public void onInstallationSuccessResponse(UpdateMessage message)
     throws Exception {
-        log(message);
+        logReceived(message);
     }
 
     @Override public void onInstallationFailureResponse(UpdateMessage message)
     throws Exception {
-        log(message);
+        logReceived(message);
     }
 
     @Override public void onUnsubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
-        log(message);
+        logReceived(message);
     }
 
     @Override public void onUnsubscriptionFailureResponse(UpdateMessage message)
     throws Exception {
-        log(message);
+        logReceived(message);
     }
 
-    private UpdateMessage log(final UpdateMessage message) {
-        logger.log(Level.FINE, "Received update message:\n{0}", message);
+    private UpdateMessage logReceived(final UpdateMessage message) {
+        logger.log(Level.FINE, "Received update message from update manager:\n{0}", message);
         return message;
     }
 }

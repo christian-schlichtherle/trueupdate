@@ -6,8 +6,8 @@ package net.java.trueupdate.agent.impl.javaee;
 
 import static java.util.Objects.requireNonNull;
 import javax.jms.*;
+import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.agent.spec.*;
-import net.java.trueupdate.agent.core.BasicUpdateAgent;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
@@ -20,28 +20,22 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     private final ApplicationParameters applicationParameters;
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
-    private final UpdateAgentDispatcherBean updateAgentDispatcher;
+    private final UpdateMessageDispatcher updateMessageDispatcher;
 
     ConfiguredUpdateAgent(final ApplicationParameters applicationParameters,
                           final UpdateAgentBuilderBean b) {
         this.applicationParameters = requireNonNull(applicationParameters);
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.destination = requireNonNull(b.destination);
-        this.updateAgentDispatcher = requireNonNull(b.updateAgentDispatcher);
+        this.updateMessageDispatcher = requireNonNull(b.updateMessageDispatcher);
+    }
+
+    @Override protected UpdateMessageDispatcher updateMessageDispatcher() {
+        return updateMessageDispatcher;
     }
 
     @Override protected ApplicationParameters applicationParameters() {
         return applicationParameters;
-    }
-
-    @Override public void subscribe() throws UpdateAgentException {
-        super.subscribe();
-        updateAgentDispatcher.subscribe(applicationParameters());
-    }
-
-    @Override public void unsubscribe() throws UpdateAgentException {
-        updateAgentDispatcher.unsubscribe(applicationParameters());
-        super.unsubscribe();
     }
 
     @Override

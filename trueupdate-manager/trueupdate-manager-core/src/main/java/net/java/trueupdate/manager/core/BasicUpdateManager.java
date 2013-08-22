@@ -20,7 +20,7 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
+public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
 
     private static final Logger
             logger = Logger.getLogger(BasicUpdateManager.class.getName());
@@ -168,12 +168,12 @@ public abstract class BasicUpdateManager extends UpdateMessageDispatcher {
     throws Exception;
 
     private static UpdateMessage logReceived(final UpdateMessage message) {
-        logger.log(Level.FINE, "Received update message:\n{0}", message);
+        logger.log(Level.FINE, "Received update message from update agent:\n{0}", message);
         return message;
     }
 
     private static UpdateMessage logSent(final UpdateMessage message) {
-        logger.log(Level.FINER, "Sent update message:\n{0}", message);
+        logger.log(Level.FINER, "Sent update message to update agent:\n{0}", message);
         return message;
     }
 }
