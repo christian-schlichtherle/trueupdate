@@ -35,7 +35,7 @@ final class ConfiguredTomcatUpdateInstaller {
 
     void install(final UpdateResolver resolver) throws Exception {
         final File patch = resolver.resolveZipPatchFile(updateDescriptor());
-        logger.log(Level.FINE, "Resolved ZIP patch file {0}.", patch);
+        if (true) return;
         final Collection<Context> contexts = contexts();
         if (contexts.isEmpty())
             throw new Exception(String.format(
@@ -68,7 +68,6 @@ final class ConfiguredTomcatUpdateInstaller {
         logger.log(Level.INFO, "Updating {0} with {1} to version {2} using {3}.",
                 new Object[] { location, artifactDescriptor(), updateVersion(),
                                patch });
-        if (true) return;
         context.stop();
         try {
             // TODO...
