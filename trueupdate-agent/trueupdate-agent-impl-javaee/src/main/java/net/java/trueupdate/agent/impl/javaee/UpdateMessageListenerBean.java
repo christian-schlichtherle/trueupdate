@@ -31,7 +31,7 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
             @ActivationConfigProperty(propertyName = "subscriptionName",
                                       propertyValue = "TrueUpdate Agent"),
             @ActivationConfigProperty(propertyName = "clientId",
-                                      propertyValue = "TrueUpdate Manager"),
+                                      propertyValue = "TrueUpdate Agent"),
         })
 public class UpdateMessageListenerBean implements MessageListener {
 
