@@ -14,8 +14,8 @@ import javax.inject.Inject;
 import javax.jms.*;
 import net.java.trueupdate.core.util.SystemProperties;
 import net.java.trueupdate.jax.rs.client.UpdateClient;
-import net.java.trueupdate.manager.spec.UpdateMessage;
 import net.java.trueupdate.manager.core.*;
+import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * An update manager bean.
@@ -58,7 +58,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
 
     @Override protected UpdateInstaller updateInstaller() { return installer; }
 
-    @PostConstruct private void postConstruct() {
+    @PostConstruct private void init() {
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 initConnection();

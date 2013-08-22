@@ -27,11 +27,11 @@ abstract class BasicUpdateResolver implements UpdateResolver {
     /** Returns the artifact update client. */
     abstract UpdateClient updateClient();
 
-    void allocate(UpdateDescriptor descriptor) {
-        account(descriptor).incrementAndGet();
+    final void allocate(UpdateDescriptor descriptor) {
+        account(descriptor).incrementUsagesAndGet();
     }
 
-    FileAccount account(final UpdateDescriptor descriptor) {
+    private FileAccount account(final UpdateDescriptor descriptor) {
         FileAccount account = accounts.get(descriptor);
         if (null == account) {
             account = new FileAccount();
@@ -40,9 +40,9 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         return account;
     }
 
-    void release(UpdateDescriptor descriptor) {
+    final void release(UpdateDescriptor descriptor) {
         final FileAccount account = account(descriptor);
-        final int usages = account.decrementAndGet();
+        final int usages = account.decrementUsagesAndGet();
         if (0 >= usages) {
             assert 0 == usages;
             accounts.remove(descriptor);
@@ -50,7 +50,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         }
     }
 
-    @Override public File resolveZipPatchFile(UpdateDescriptor descriptor)
+    @Override public final File resolveZipPatchFile(UpdateDescriptor descriptor)
     throws Exception {
         final FileAccount account = account(descriptor);
         if (account.fileResolved()) return account.file();
@@ -70,7 +70,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         return patch;
     }
 
-    void shutdown() throws IOException {
+    final void shutdown() throws IOException {
         for (final Iterator<FileAccount> it = accounts.values().iterator();
                 it.hasNext(); ) {
             deleteResolvedFile(it.next());
@@ -78,11 +78,11 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         }
     }
 
-    static void deleteResolvedFile(final FileAccount account) {
+    private static void deleteResolvedFile(final FileAccount account) {
         if (!account.fileResolved()) return;
         assert 0 <= account.usages();
         final File file = account.file();
-        if (account.deleteResolvedFile()) {
+        if (file.delete()) {
             logger.log(Level.INFO, "Deleted ZIP patch file {0}.", file);
         } else {
             logger.log(Level.WARNING, "Could not delete ZIP patch file {0}.",
@@ -98,17 +98,13 @@ final class FileAccount {
 
     boolean fileResolved() { return !file().getPath().isEmpty(); }
 
-    boolean deleteResolvedFile() { return fileResolved() && file().delete(); }
-
     File file() { return file; }
 
     void file(File file) { this.file = file; }
 
-    int incrementAndGet() { return ++usages; }
-
-    int decrementAndGet() { return --usages; }
-
     int usages() { return usages; }
 
-    void usages(int usages) { this.usages = usages; }
+    int incrementUsagesAndGet() { return ++usages; }
+
+    int decrementUsagesAndGet() { return --usages; }
 }
