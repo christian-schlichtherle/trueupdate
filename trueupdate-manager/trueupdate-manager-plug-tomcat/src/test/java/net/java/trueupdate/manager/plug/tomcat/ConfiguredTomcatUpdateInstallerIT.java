@@ -37,10 +37,9 @@ public class ConfiguredTomcatUpdateInstallerIT {
         return archive;
     }
 
-    private final ConfiguredTomcatUpdateInstaller installer =
-            new ConfiguredTomcatUpdateInstaller(installationRequest());
-
     public @Test void testContexts() throws JMException {
+        final ConfiguredTomcatUpdateInstaller installer =
+            new ConfiguredTomcatUpdateInstaller(installationRequest());
         final Collection<Context> contexts = installer.contexts();
         assert !contexts.isEmpty();
         for (final Context context : contexts) {

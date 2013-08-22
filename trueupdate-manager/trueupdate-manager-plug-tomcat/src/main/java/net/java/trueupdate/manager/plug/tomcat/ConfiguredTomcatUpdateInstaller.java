@@ -22,7 +22,7 @@ import org.apache.catalina.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class ConfiguredTomcatUpdateInstaller {
+class ConfiguredTomcatUpdateInstaller {
 
     private static final Logger logger =
             Logger.getLogger(ConfiguredTomcatUpdateInstaller.class.getName());
