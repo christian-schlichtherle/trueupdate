@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
@@ -30,12 +29,8 @@ implements ExceptionMapper<UpdateServiceException> {
 
     private static final QName message = new QName(MESSAGE);
 
-    private final HttpHeaders headers;
-
-    public UpdateServiceExceptionMapper(
-            final @Context HttpHeaders headers) {
-        this.headers = Objects.requireNonNull(headers);
-    }
+    @Context
+    private HttpHeaders headers;
 
     @Override
     public Response toResponse(final UpdateServiceException ex) {
