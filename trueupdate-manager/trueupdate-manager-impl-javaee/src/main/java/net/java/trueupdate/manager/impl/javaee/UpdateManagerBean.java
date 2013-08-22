@@ -32,7 +32,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
     private String updateServiceBaseString;
 
     @Resource
-    private ConnectionFactory connectionFactory;
+    private TopicConnectionFactory connectionFactory;
 
     private Connection connection;
 

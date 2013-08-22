@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.agent.impl.javaee;
 
-import net.java.trueupdate.agent.core.UpdateMessageDispatcher;
 import javax.annotation.*;
 import javax.ejb.*;
 import javax.jms.*;
@@ -23,7 +22,7 @@ extends BasicUpdateAgentBuilder
 implements UpdateAgent.Builder {
 
     @Resource
-    ConnectionFactory connectionFactory;
+    TopicConnectionFactory connectionFactory;
 
     @Resource(name = "TrueUpdate")
     Topic destination;
