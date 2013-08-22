@@ -7,12 +7,10 @@ package net.java.trueupdate.agent.core;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.*;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 import javax.annotation.concurrent.*;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
-
 
 /**
  * A basic update agent dispatcher.
@@ -20,7 +18,6 @@ import net.java.trueupdate.manager.spec.*;
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-@SuppressWarnings("ProtectedField")
 public abstract class BasicUpdateMessageDispatcher
 extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
 
@@ -40,18 +37,17 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
      */
     @Override
     public void subscribe(ApplicationParameters parameters) {
-        applicationAccount(parameters.applicationDescriptor())
-                .applicationListener(parameters.applicationListener());
+        account(parameters.applicationDescriptor())
+                .listener(parameters.applicationListener());
     }
 
-    private ApplicationAccount applicationAccount(
-            final ApplicationDescriptor descriptor) {
-        ApplicationAccount aa = applicationAccounts.get(descriptor);
-        if (null == aa) {
-            aa = new ApplicationAccount(descriptor, capacity());
-            applicationAccounts.put(descriptor, aa);
+    private ApplicationAccount account(final ApplicationDescriptor descriptor) {
+        ApplicationAccount account = applicationAccounts.get(descriptor);
+        if (null == account) {
+            account = new ApplicationAccount(descriptor, capacity());
+            applicationAccounts.put(descriptor, account);
         }
-        return aa;
+        return account;
     }
 
     /**
@@ -61,20 +57,28 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
      */
     @Override
     public void unsubscribe(ApplicationParameters parameters) {
-        applicationAccounts.remove(parameters.applicationDescriptor());
+        final ApplicationAccount account =
+                applicationAccounts.remove(parameters.applicationDescriptor());
+        if (null != account) {
+            final int size = account.size();
+            if (0 != size)
+                logger.log(Level.FINE,
+                        "Discarding {0} undelivered updates messages because the addressed application has unsubscribed.",
+                        size);
+        }
     }
 
     @Override
     public void onUpdateMessage(final UpdateMessage message) throws Exception {
-        final ApplicationDescriptor ad = message.applicationDescriptor();
-        final ApplicationAccount aa = applicationAccount(ad);
-        aa.enqueue(message);
-        if (null != aa.applicationListener()) {
-            for (UpdateMessage polled; null != (polled = aa.poll()); )
+        final ApplicationDescriptor descriptor = message.applicationDescriptor();
+        final ApplicationAccount account = account(descriptor);
+        account.enqueue(message);
+        if (null != account.listener()) {
+            for (UpdateMessage polled; null != (polled = account.poll()); )
                 super.onUpdateMessage(polled);
         } else {
             logger.log(Level.FINE,
-                    "Stored update message from update manager in volatile queue because there is no registered listener for the described application:\n{0}",
+                    "Stored update message from update manager in volatile queue because there is no registered listener for the addressed application:\n{0}",
                     message);
         }
     }
@@ -122,43 +126,41 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
     }
 
     private ApplicationListener applicationListener(UpdateMessage message) {
-        return applicationAccount(message.applicationDescriptor())
-                .applicationListener();
+        return account(message.applicationDescriptor())
+                .listener();
     }
 }
-@Immutable
+
 final class ApplicationAccount {
 
-    private final ApplicationDescriptor applicationDescriptor;
-    private final Queue<UpdateMessage> updateMessages;
-    private @CheckForNull ApplicationListener applicationListener;
+    private final ApplicationDescriptor descriptor;
+    private final Queue<UpdateMessage> queue;
+    private @CheckForNull ApplicationListener listener;
 
     public ApplicationAccount(
-            final ApplicationDescriptor applicationDescriptor,
+            final ApplicationDescriptor descriptor,
             final int capacity) {
-        assert null != applicationDescriptor;
-        this.applicationDescriptor = applicationDescriptor;
+        assert null != descriptor;
+        this.descriptor = descriptor;
         if (0 >= capacity) throw new IllegalArgumentException();
-        this.updateMessages = new LinkedBlockingQueue<>(capacity);
+        this.queue = new LinkedBlockingQueue<>(capacity);
     }
 
-    ApplicationDescriptor applicationDescriptor() {
-        return applicationDescriptor;
+    ApplicationDescriptor descriptor() { return descriptor; }
+
+    @Nullable ApplicationListener listener() { return listener; }
+
+    void listener(final ApplicationListener listener) {
+        assert null != listener;
+        this.listener = listener;
     }
 
-    @Nullable ApplicationListener applicationListener() {
-        return applicationListener;
-    }
-
-    void applicationListener(final ApplicationListener applicationListener) {
-        assert null != applicationListener;
-        this.applicationListener = applicationListener;
-    }
+    int size() { return queue.size(); }
 
     void enqueue(final UpdateMessage message) {
-        assert applicationDescriptor().equals(message.applicationDescriptor());
-        while (!updateMessages.offer(message)) updateMessages.remove();
+        assert descriptor().equals(message.applicationDescriptor());
+        while (!queue.offer(message)) queue.remove();
     }
 
-    @CheckForNull UpdateMessage poll() { return updateMessages.poll(); }
+    @CheckForNull UpdateMessage poll() { return queue.poll(); }
 }

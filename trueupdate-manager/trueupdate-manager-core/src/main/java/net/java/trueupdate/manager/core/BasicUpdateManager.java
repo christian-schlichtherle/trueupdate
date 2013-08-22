@@ -71,7 +71,7 @@ public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
                 if (!updateVersion.equals(artifactDescriptor.version())) {
                     final UpdateMessage
                             un = updateNotice(subscription, updateVersion);
-                    updateResolver.subscribe(un.updateDescriptor());
+                    updateResolver.allocate(un.updateDescriptor());
                     sendAndLog(un);
                 }
             }
@@ -116,7 +116,7 @@ public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
     private UpdateMessage install(final UpdateMessage message) {
         try {
             updateInstaller().install(updateResolver, message);
-            updateResolver.unsubscribe(message.updateDescriptor());
+            updateResolver.release(message.updateDescriptor());
             return installationSuccessResponse(message);
         } catch (RuntimeException ex) {
             throw ex;
