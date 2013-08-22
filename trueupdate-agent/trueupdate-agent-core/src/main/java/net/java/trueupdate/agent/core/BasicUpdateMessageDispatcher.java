@@ -13,7 +13,7 @@ import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
 
 /**
- * A basic update agent dispatcher.
+ * A basic update message dispatcher.
  *
  * @author Christian Schlichtherle
  */
@@ -126,8 +126,7 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
     }
 
     private ApplicationListener applicationListener(UpdateMessage message) {
-        return account(message.applicationDescriptor())
-                .listener();
+        return account(message.applicationDescriptor()).listener();
     }
 }
 
