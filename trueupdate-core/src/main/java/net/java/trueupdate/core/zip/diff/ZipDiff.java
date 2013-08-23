@@ -53,29 +53,13 @@ public abstract class ZipDiff {
     throws IOException {
         out.setLevel(Deflater.BEST_COMPRESSION);
 
-        class EntrySink implements Sink {
-
-            final String name;
-
-            EntrySink(final String name) { this.name = name; }
-
-            @Override public OutputStream output() throws IOException {
-                out.putNextEntry(new ZipEntry(name));
-                return new FilterOutputStream(out) {
-                    @Override public void close() throws IOException {
-                        ((ZipOutputStream) out).closeEntry();
-                    }
-                };
-            }
-        } // EntrySink
-
         class ZipPatchFileStreamer {
 
             final DiffModel model;
 
             ZipPatchFileStreamer(final DiffModel model) throws IOException {
                 try {
-                    model.encodeToXml(new EntrySink(DiffModel.ENTRY_NAME));
+                    model.encodeToXml(entrySink(DiffModel.ENTRY_NAME));
                 } catch (IOException | RuntimeException ex) {
                     throw ex;
                 } catch (Exception ex) {
@@ -92,9 +76,13 @@ public abstract class ZipDiff {
                     final String name = entry.getName();
                     if (changedOrAdded(name))
                         Copy.copy(new EntrySource(entry, secondZipFile()),
-                                  new EntrySink(name));
+                                  entrySink(name));
                 }
                 return this;
+            }
+
+            Sink entrySink(String name) {
+                return new EntrySink(new ZipEntry(name), out);
             }
 
             boolean changedOrAdded(String name) {
