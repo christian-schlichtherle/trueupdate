@@ -18,20 +18,10 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
  *
  * @author Christian Schlichtherle
  */
-@MessageDriven(
+@MessageDriven(mappedName = "jms/TrueUpdate Agent",
         activationConfig = {
             @ActivationConfigProperty(propertyName = "messageSelector",
                                       propertyValue = "manager = false"),
-            @ActivationConfigProperty(propertyName = "destination",
-                                      propertyValue = "TrueUpdate"),
-            @ActivationConfigProperty(propertyName = "destinationType",
-                                      propertyValue = "javax.jms.Topic"),
-            @ActivationConfigProperty(propertyName = "subscriptionDurability",
-                                      propertyValue = "Durable"),
-            @ActivationConfigProperty(propertyName = "subscriptionName",
-                                      propertyValue = "TrueUpdate Agent"),
-            @ActivationConfigProperty(propertyName = "clientId",
-                                      propertyValue = "TrueUpdate Agent"),
         })
 public class UpdateAgentMessageListenerBean implements MessageListener {
 

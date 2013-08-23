@@ -32,15 +32,15 @@ public class UpdateManagerBean extends BasicUpdateManager {
     private String updateServiceBaseString;
 
     @Resource
-    private TopicConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
     private Connection connection;
 
     @Inject
     private UpdateInstaller installer;
 
-    @Resource(name = "TrueUpdate")
-    private Topic destination;
+    @Resource(name = "destination", lookup = "jms/TrueUpdate Agent")
+    private Destination destination;
 
     @Resource(name = "checkUpdatesIntervalMinutes")
     private int checkUpdatesIntervalMinutes;

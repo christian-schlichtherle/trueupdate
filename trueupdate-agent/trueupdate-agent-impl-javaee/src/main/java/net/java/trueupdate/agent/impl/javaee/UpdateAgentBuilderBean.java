@@ -22,10 +22,10 @@ extends BasicUpdateAgentBuilder
 implements UpdateAgent.Builder {
 
     @Resource
-    TopicConnectionFactory connectionFactory;
+    ConnectionFactory connectionFactory;
 
-    @Resource(name = "TrueUpdate")
-    Topic destination;
+    @Resource(name = "destination", lookup = "jms/TrueUpdate Manager")
+    Destination destination;
 
     @EJB
     UpdateMessageDispatcher updateMessageDispatcher;
