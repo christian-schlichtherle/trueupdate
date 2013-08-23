@@ -28,10 +28,10 @@ public class UpdateManagerBean extends BasicUpdateManager {
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
 
-    @Resource
+    @Resource(name = "connectionFactory")
     private ConnectionFactory connectionFactory;
 
-    @Resource(name = "destination", mappedName = "jms/TrueUpdate Agent")
+    @Resource(name = "destination", lookup = "jms/TrueUpdate Agent")
     private Destination destination;
 
     private Connection connection;
@@ -42,7 +42,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
     @Resource(name = "checkUpdatesIntervalMinutes")
     private int checkUpdatesIntervalMinutes;
 
-    @Resource
+    @Resource(name = "timerService")
     private TimerService timerService;
 
     @Inject

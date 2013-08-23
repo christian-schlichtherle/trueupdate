@@ -33,6 +33,11 @@
                 <env-entry-name>checkUpdatesIntervalMinutes</env-entry-name>
                 <env-entry-value>360</env-entry-value>
             </env-entry>
+            <resource-env-ref>
+                <resource-env-ref-name>destination</resource-env-ref-name>
+                <resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
+                <mapped-name>jms/TrueUpdate Agent</mapped-name>
+            </resource-env-ref>
         </session>
     </enterprise-beans>
 </ejb-jar>

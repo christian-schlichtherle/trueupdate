@@ -21,10 +21,10 @@ public class UpdateAgentBuilderBean
 extends BasicUpdateAgentBuilder
 implements UpdateAgent.Builder {
 
-    @Resource
+    @Resource(name = "connectionFactory")
     ConnectionFactory connectionFactory;
 
-    @Resource(name = "destination", mappedName = "jms/TrueUpdate Manager")
+    @Resource(name = "destination", lookup = "jms/TrueUpdate Manager")
     Destination destination;
 
     @EJB
