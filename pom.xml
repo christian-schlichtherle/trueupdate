@@ -96,6 +96,8 @@
 
         <tomee.classifier>plus</tomee.classifier>
         <tomee.version>1.5.2</tomee.version>
+
+        <openejb.version>4.5.2</openejb.version>
     </properties>
 
     <dependencyManagement>
@@ -273,7 +275,7 @@
             <dependency>
                 <groupId>org.apache.openejb</groupId>
                 <artifactId>arquillian-openejb-embedded-4</artifactId>
-                <version>4.5.2</version>
+                <version>${openejb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openejb</groupId>
@@ -281,9 +283,9 @@
                 <version>${tomee.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-catalina</artifactId>
-                <version>7.0.37</version>
+                <groupId>org.apache.openejb</groupId>
+                <artifactId>openejb-core</artifactId>
+                <version>${openejb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>

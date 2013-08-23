@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.plug.tomcat;
+package net.java.trueupdate.manager.plug.openejb;
 
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -19,15 +19,15 @@ import org.junit.runner.RunWith;
  * @author Christian Schlichtherle
  */
 @RunWith(Arquillian.class)
-public class TomcatUpdateInstallerIT {
+public class OpenEjbUpdateInstallerIT {
 
     private static final Logger
-            logger = Logger.getLogger(TomcatUpdateInstallerIT.class.getName());
+            logger = Logger.getLogger(OpenEjbUpdateInstallerIT.class.getName());
 
     public static @Deployment WebArchive createDeployment() {
         final WebArchive archive = ShrinkWrap
                 .create(WebArchive.class)
-                .addClass(TomcatUpdateInstaller.class)
+                .addClass(OpenEjbUpdateInstaller.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         logger.config(archive.toString(true));
         return archive;
@@ -36,6 +36,6 @@ public class TomcatUpdateInstallerIT {
     private @Inject UpdateInstaller installer;
 
     public @Test void testInjection() {
-        assert null != installer;
+        assert installer instanceof OpenEjbUpdateInstaller;
     }
 }

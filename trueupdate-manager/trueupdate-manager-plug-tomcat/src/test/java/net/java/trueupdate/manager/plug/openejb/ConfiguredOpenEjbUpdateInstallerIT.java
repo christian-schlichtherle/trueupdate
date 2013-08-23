@@ -2,51 +2,37 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.plug.tomcat;
+package net.java.trueupdate.manager.plug.openejb;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.logging.*;
-import javax.management.JMException;
 import net.java.trueupdate.manager.spec.UpdateMessage;
-import org.apache.catalina.Context;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.*;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
+@Ignore
 @RunWith(Arquillian.class)
-public class ConfiguredTomcatUpdateInstallerIT {
+public class ConfiguredOpenEjbUpdateInstallerIT {
 
     private static final String
-            NAME = ConfiguredTomcatUpdateInstallerIT.class.getSimpleName();
+            NAME = ConfiguredOpenEjbUpdateInstallerIT.class.getSimpleName();
 
     private static final String CONTEXT_PATH = '/' + NAME;
 
     private static final String ARCHIVE_NAME = NAME + ".war";
 
     private static final Logger
-            logger = Logger.getLogger(ConfiguredTomcatUpdateInstallerIT.class.getName());
+            logger = Logger.getLogger(ConfiguredOpenEjbUpdateInstallerIT.class.getName());
 
     public static @Deployment WebArchive createDeployment() {
         final WebArchive archive = ShrinkWrap
                 .create(WebArchive.class, ARCHIVE_NAME);
         logger.config(archive.toString(true));
         return archive;
-    }
-
-    public @Test void testContexts() throws JMException {
-        final ConfiguredTomcatUpdateInstaller installer =
-            new ConfiguredTomcatUpdateInstaller(installationRequest());
-        final Collection<Context> contexts = installer.contexts();
-        assert !contexts.isEmpty();
-        for (final Context context : contexts) {
-            assert CONTEXT_PATH.equals(context.getPath());
-            logger.log(Level.INFO, "The resolved context is {0} at {1}.",
-                    new Object[] { context, context.getDocBase() });
-        }
     }
 
     private static UpdateMessage installationRequest() {

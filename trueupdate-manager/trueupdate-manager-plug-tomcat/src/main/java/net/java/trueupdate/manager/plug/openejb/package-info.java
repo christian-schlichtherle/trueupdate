@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update installer for applications running in Tomcat.
+ * Provides an update installer for applications running in OpenEJB.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.manager.plug.tomcat;
+package net.java.trueupdate.manager.plug.openejb;

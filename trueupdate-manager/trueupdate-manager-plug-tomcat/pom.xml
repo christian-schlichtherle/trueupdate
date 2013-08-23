@@ -18,7 +18,7 @@
 
     <name>TrueUpdate Manager Plugin Tomcat</name>
     <description>
-        Provides an update installer for applications running in Tomcat.
+        Provides an update installer for applications running in OpenEJB.
     </description>
 
     <dependencies>
@@ -28,12 +28,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openejb</groupId>
-            <artifactId>arquillian-tomee-embedded</artifactId>
+            <artifactId>arquillian-openejb-embedded-4</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-catalina</artifactId>
+            <groupId>org.apache.openejb</groupId>
+            <artifactId>openejb-core</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
