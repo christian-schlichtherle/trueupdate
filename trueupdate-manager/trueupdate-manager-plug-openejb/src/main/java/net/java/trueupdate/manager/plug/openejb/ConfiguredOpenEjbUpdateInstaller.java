@@ -7,6 +7,7 @@ package net.java.trueupdate.manager.plug.openejb;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
+import java.util.jar.JarFile;
 import java.util.logging.*;
 import java.util.regex.Pattern;
 import java.util.zip.*;
@@ -14,6 +15,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.util.EntrySink;
+import net.java.trueupdate.core.zip.patch.ZipPatch;
 import net.java.trueupdate.manager.core.UpdateResolver;
 import net.java.trueupdate.manager.spec.*;
 import org.apache.openejb.assembler.Deployer;
@@ -44,50 +46,106 @@ class ConfiguredOpenEjbUpdateInstaller {
     }
 
     void install(final UpdateResolver resolver) throws Exception {
-        final File directory = resolveInstallationDirectory();
+        final AppInfo info = resolveAppInfo();
+        final File directory = new File(info.path);
         logger.log(Level.FINE, "Resolved current location {0} to installation directory {1} .",
                 new Object[] { currentLocation(), directory });
-        final File patch = resolver.resolveZipPatchFile(updateDescriptor());
+        final File zipPatchFile = resolver.resolveZipPatchFile(updateDescriptor());
         logger.log(Level.FINER, "Resolved update descriptor {0} to ZIP patch file {1} .",
-                new Object[] { updateDescriptor(), patch });
+                new Object[] { updateDescriptor(), zipPatchFile });
+
+        class RedeployTask implements FileTask {
+            @Override
+            public void process(final File patchedJarFile) throws Exception {
+                deployer.undeploy(info.appId);
+                deployer.deploy(patchedJarFile.getPath());
+            }
+        } // RedeployTask
 
         class PatchTask implements FileTask {
-            @Override public void process(final File input) throws IOException {
-                // TODO...
+            @Override
+            public void process(final File originalJarFile) throws Exception {
+                withPatchedJarFile(originalJarFile, zipPatchFile, new RedeployTask());
             }
         } // PatchTask
 
-        withZipFile(directory, new PatchTask());
+        withOriginalJarFile(directory, new PatchTask());
     }
 
-    private File resolveInstallationDirectory() throws FileNotFoundException {
+    private AppInfo resolveAppInfo() throws FileNotFoundException {
         final URI location = currentLocation();
         final Scheme scheme = Scheme.valueOf(location.getScheme());
         for (final AppInfo info : deployer.getDeployedApps())
             if (scheme.matches(location, info))
-                return new File(info.path);
+                return info;
         throw new FileNotFoundException(
                 String.format("Cannot locate installation directory of %s .", location));
     }
 
-    private interface FileTask {
-        void process(File file) throws IOException;
+    private void withPatchedJarFile(
+            final File originalJarFile,
+            final File zipPatchFile,
+            final FileTask task)
+    throws Exception {
+
+        class MakePatchedJarFile implements FileTask {
+            @Override
+            public void process(File patchedJarFile) throws Exception {
+                applyPatchTo(originalJarFile, zipPatchFile, patchedJarFile);
+                logger.log(Level.FINER, "Patched {0} with {1} to {2} .",
+                        new Object[] { originalJarFile, zipPatchFile, patchedJarFile });
+                task.process(patchedJarFile);
+            }
+        } // MakePatchedJarFile
+
+        withTempFile("output", new MakePatchedJarFile());
     }
 
-    private void withZipFile(final File directory, final FileTask task)
+    private void withOriginalJarFile(
+            final File inputDirectory,
+            final FileTask task)
     throws Exception {
-        final File temp = File.createTempFile("input", ".zip");
+
+        class MakeOriginalJarFile implements FileTask {
+            @Override
+            public void process(File originalJarFile) throws Exception {
+                zipUpTo(inputDirectory, originalJarFile);
+                logger.log(Level.FINER, "Zipped up {0} to {1} .",
+                        new Object[] { inputDirectory, originalJarFile });
+                task.process(originalJarFile);
+            }
+        } // MakeOriginalJarFile
+
+        withTempFile("input", new MakeOriginalJarFile());
+    }
+
+    private void withTempFile(final String prefix, final FileTask task)
+    throws Exception {
+        final File temp = File.createTempFile(prefix, ".zip");
         try {
             logger.log(Level.FINEST, "Created temporary file {0} .", temp);
-            zipUpTo(directory, temp);
-            logger.log(Level.FINER, "Zipped up {0} to {1} .",
-                    new Object[] { directory, temp });
             task.process(temp);
         } finally {
             if (!temp.delete())
                 throw new IOException(String.format(
-                        "Cannot delete temporary file %s .", temp));
+                        "Could delete temporary file %s .", temp));
             logger.log(Level.FINEST, "Deleted temporary file {0} .", temp);
+        }
+    }
+
+    private static void applyPatchTo(
+            final File originalJarFile,
+            final File zipPatchFile,
+            final File patchedJarFile)
+    throws IOException {
+        try (   JarFile originalJar = new JarFile(originalJarFile);
+                ZipFile zipPatch = new ZipFile(zipPatchFile)) {
+            ZipPatch.builder()
+                    .inputZipFile(originalJar)
+                    .zipPatchFile(zipPatch)
+                    .outputJarFile(true)
+                    .build()
+                    .applyZipPatchFileTo(new FileStore(patchedJarFile));
         }
     }
 
@@ -189,5 +247,9 @@ class ConfiguredOpenEjbUpdateInstaller {
         };
 
         abstract boolean matches(URI location, AppInfo info);
+    }
+
+    private interface FileTask {
+        void process(File file) throws Exception;
     }
 }
