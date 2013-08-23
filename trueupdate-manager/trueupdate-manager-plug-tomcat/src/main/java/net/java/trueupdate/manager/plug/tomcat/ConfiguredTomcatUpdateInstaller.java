@@ -39,7 +39,7 @@ class ConfiguredTomcatUpdateInstaller {
         final Collection<Context> contexts = contexts();
         if (contexts.isEmpty())
             throw new Exception(String.format(
-                    "There are no contexts with the name %s.", name()));
+                    "There are no contexts with the name %s .", name()));
         for (Context context : contexts()) apply(patch, context);
     }
 
@@ -65,7 +65,7 @@ class ConfiguredTomcatUpdateInstaller {
 
     void apply(final File patch, final Context context, final File location)
     throws Exception {
-        logger.log(Level.INFO, "Updating {0} with {1} to version {2} using {3}.",
+        logger.log(Level.INFO, "Updating {0} with {1} to version {2} using {3} .",
                 new Object[] { location, artifactDescriptor(), updateVersion(),
                                patch });
         context.stop();
