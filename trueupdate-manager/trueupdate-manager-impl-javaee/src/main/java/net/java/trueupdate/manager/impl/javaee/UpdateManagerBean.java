@@ -28,25 +28,25 @@ public class UpdateManagerBean extends BasicUpdateManager {
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
 
-    @Resource(name = "updateServiceBaseUri")
-    private String updateServiceBaseString;
-
     @Resource
     private ConnectionFactory connectionFactory;
 
-    private Connection connection;
-
-    @Inject
-    private UpdateInstaller installer;
-
     @Resource(name = "destination", lookup = "jms/TrueUpdate Agent")
     private Destination destination;
+
+    private Connection connection;
+
+    @Resource(name = "updateServiceBaseUri")
+    private String updateServiceBaseString;
 
     @Resource(name = "checkUpdatesIntervalMinutes")
     private int checkUpdatesIntervalMinutes;
 
     @Resource
     private TimerService timerService;
+
+    @Inject
+    private UpdateInstaller installer;
 
     @Override protected UpdateClient updateClient() {
         return new UpdateClient(updateServiceBaseUri());
