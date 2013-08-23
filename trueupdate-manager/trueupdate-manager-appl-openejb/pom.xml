@@ -14,13 +14,13 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-appl-tomee-plus</artifactId>
+    <artifactId>trueupdate-manager-appl-openejb</artifactId>
     <packaging>ear</packaging>
 
-    <name>TrueUpdate Manager Application TomEE+</name>
+    <name>TrueUpdate Manager Application OpenEJB</name>
     <description>
         Bundles the components for deploying the TrueUpdate Manager application
-        to a TomEE+ container.
+        to an OpenEJB container.
     </description>
 
     <dependencies>
