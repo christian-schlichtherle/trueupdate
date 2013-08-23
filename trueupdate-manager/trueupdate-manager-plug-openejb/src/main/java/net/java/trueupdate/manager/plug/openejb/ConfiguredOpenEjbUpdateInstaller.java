@@ -57,7 +57,7 @@ class ConfiguredOpenEjbUpdateInstaller {
         class RedeployTask implements FileTask {
             @Override
             public void process(final File patchedJarFile) throws Exception {
-                deployer.undeploy(info.appId);
+                deployer.undeploy(info.path);
                 deployer.deploy(patchedJarFile.getPath());
             }
         } // RedeployTask
