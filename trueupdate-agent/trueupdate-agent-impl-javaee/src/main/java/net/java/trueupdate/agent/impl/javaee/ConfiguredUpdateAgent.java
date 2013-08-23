@@ -42,14 +42,13 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     protected UpdateMessage send(final UpdateMessage message) throws Exception {
         final Connection c = connectionFactory.createConnection();
         try {
-            //c.start();
-            final Session s = c.createSession(true, 0);
+            final Session s = c.createSession(false, Session.AUTO_ACKNOWLEDGE);
             final Message m = s.createObjectMessage(message);
             m.setBooleanProperty("manager", message.type().forManager());
             s.createProducer(destination).send(m);
-            return message;
         } finally {
             c.close();
         }
+        return message;
     }
 }

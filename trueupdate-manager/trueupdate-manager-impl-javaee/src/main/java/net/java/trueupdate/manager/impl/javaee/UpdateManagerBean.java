@@ -111,14 +111,14 @@ public class UpdateManagerBean extends BasicUpdateManager {
 
     @Override
     protected UpdateMessage send(final UpdateMessage message) throws Exception {
-        final Session s = connection.createSession(true, 0);
+        final Session s = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         try {
             final Message m = s.createObjectMessage(message);
             m.setBooleanProperty("manager", message.type().forManager());
             s.createProducer(destination).send(m);
-            return message;
         } finally {
             s.close();
         }
+        return message;
     }
 }
