@@ -194,7 +194,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-plug-tomcat</artifactId>
+                <artifactId>trueupdate-manager-plug-openejb</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
