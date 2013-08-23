@@ -31,7 +31,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
     @Resource
     private ConnectionFactory connectionFactory;
 
-    @Resource(name = "destination", lookup = "jms/TrueUpdate Agent")
+    @Resource(name = "destination", mappedName = "jms/TrueUpdate Agent")
     private Destination destination;
 
     private Connection connection;

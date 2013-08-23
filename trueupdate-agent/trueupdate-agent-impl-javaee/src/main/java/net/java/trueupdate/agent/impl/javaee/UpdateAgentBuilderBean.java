@@ -24,7 +24,7 @@ implements UpdateAgent.Builder {
     @Resource
     ConnectionFactory connectionFactory;
 
-    @Resource(name = "destination", lookup = "jms/TrueUpdate Manager")
+    @Resource(name = "destination", mappedName = "jms/TrueUpdate Manager")
     Destination destination;
 
     @EJB

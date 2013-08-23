@@ -33,37 +33,6 @@
                 <env-entry-name>checkUpdatesIntervalMinutes</env-entry-name>
                 <env-entry-value>360</env-entry-value>
             </env-entry>
-            <resource-env-ref>
-                <resource-env-ref-name>destination</resource-env-ref-name>
-                <resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
-                <mapped-name>jms/TrueUpdate Agent</mapped-name>
-            </resource-env-ref>
         </session>
-        <message-driven>
-            <ejb-name>UpdateManagerMessageListenerBean</ejb-name>
-            <mapped-name>jms/TrueUpdate Manager</mapped-name>
-            <activation-config>
-                <activation-config-property>
-                    <activation-config-property-name>destination</activation-config-property-name>
-                    <activation-config-property-value>TrueUpdate</activation-config-property-value>
-                </activation-config-property>
-                <activation-config-property>
-                    <activation-config-property-name>destinationType</activation-config-property-name>
-                    <activation-config-property-value>javax.jms.Queue</activation-config-property-value>
-                </activation-config-property>
-                <!--activation-config-property>
-                    <activation-config-property-name>subscriptionDurability</activation-config-property-name>
-                    <activation-config-property-value>Durable</activation-config-property-value>
-                </activation-config-property>
-                <activation-config-property>
-                    <activation-config-property-name>subscriptionName</activation-config-property-name>
-                    <activation-config-property-value>TrueUpdateManager</activation-config-property-value>
-                </activation-config-property>
-                <activation-config-property>
-                    <activation-config-property-name>clientId</activation-config-property-name>
-                    <activation-config-property-value>TrueUpdateManager</activation-config-property-value>
-                </activation-config-property-->
-            </activation-config>
-        </message-driven>
     </enterprise-beans>
 </ejb-jar>
