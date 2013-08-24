@@ -18,18 +18,19 @@ import net.java.trueupdate.core.io.Sources
 class MessageDigestsTest extends WordSpec {
 
   "Computation of digests" should {
-    "yield correct results" in {
-      val sha1 = MessageDigests.sha1
+    "yield correct values" in {
       val table = Table(
-        ("SHA-1 digest", "resource name"),
+        ("SHA-1 digest reference value", "resource name"),
         ("47a013e660d408619d894b20806b1d5086aab03b", "helloWorld"),
         // Note that the most significant bit is set to test signum conversion
         ("f3172822c7d08f23764aa5baee9d73ef32797b46", "twoTimesHelloWorld")
       )
-      forAll(table) { (digest, resourceName) =>
-        MessageDigests.digestToHexString(sha1,
-          Sources.forResource(resourceName, classOf[MessageDigestsTest])) should
-          equal (digest)
+      forAll(table) { (referenceValue, resourceName) =>
+        import MessageDigests._
+        val digest = sha1
+        updateDigestFrom(digest,
+          Sources.forResource(resourceName, classOf[MessageDigestsTest]))
+        valueOf(digest) should equal (referenceValue)
       }
     }
   }

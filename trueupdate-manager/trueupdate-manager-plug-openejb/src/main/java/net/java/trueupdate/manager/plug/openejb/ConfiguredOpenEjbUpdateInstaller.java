@@ -7,14 +7,13 @@ package net.java.trueupdate.manager.plug.openejb;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
-import java.util.jar.JarFile;
+import java.util.jar.*;
 import java.util.logging.*;
 import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.util.EntrySink;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import net.java.trueupdate.manager.core.UpdateResolver;
 import net.java.trueupdate.manager.spec.*;
@@ -51,8 +50,9 @@ class ConfiguredOpenEjbUpdateInstaller {
         logger.log(Level.FINE, "Resolved current location {0} to installation directory {1} .",
                 new Object[] { currentLocation(), directory });
         final File zipPatchFile = resolver.resolveZipPatchFile(updateDescriptor());
-        logger.log(Level.FINER, "Resolved update descriptor {0} to ZIP patch file {1} .",
-                new Object[] { updateDescriptor(), zipPatchFile });
+        logger.log(Level.FINER, "Resolved ZIP patch file {0} for artifact descriptor {1} and update version {2} .",
+                new Object[] { zipPatchFile, artifactDescriptor(),
+                               updateVersion() });
 
         class RedeployTask implements FileTask {
             @Override
@@ -92,44 +92,48 @@ class ConfiguredOpenEjbUpdateInstaller {
             @Override
             public void process(File patchedJarFile) throws Exception {
                 applyPatchTo(originalJarFile, zipPatchFile, patchedJarFile);
-                logger.log(Level.FINER, "Patched {0} with {1} to {2} .",
+                logger.log(Level.FINER, "Patched JAR file {0} with ZIP patch file {1} to JAR file {2} .",
                         new Object[] { originalJarFile, zipPatchFile, patchedJarFile });
                 task.process(patchedJarFile);
             }
         } // MakePatchedJarFile
 
-        withTempFile("output", new MakePatchedJarFile());
+        withTempFile("output", ".jar", new MakePatchedJarFile());
     }
 
     private void withOriginalJarFile(
-            final File inputDirectory,
+            final File directory,
             final FileTask task)
     throws Exception {
 
         class MakeOriginalJarFile implements FileTask {
             @Override
-            public void process(File originalJarFile) throws Exception {
-                zipUpTo(inputDirectory, originalJarFile);
-                logger.log(Level.FINER, "Zipped up {0} to {1} .",
-                        new Object[] { inputDirectory, originalJarFile });
-                task.process(originalJarFile);
+            public void process(final File file) throws Exception {
+                jarTo(directory, file);
+                logger.log(Level.FINER, "Rebuilt original JAR file {0} from directory {1} .",
+                        new Object[] { file, directory });
+                task.process(file);
             }
         } // MakeOriginalJarFile
 
-        withTempFile("input", new MakeOriginalJarFile());
+        withTempFile("input", ".jar", new MakeOriginalJarFile());
     }
 
-    private void withTempFile(final String prefix, final FileTask task)
+    private void withTempFile(
+            final String prefix,
+            String suffix,
+            final FileTask task)
     throws Exception {
-        final File temp = File.createTempFile(prefix, ".zip");
+        final File temp = File.createTempFile(prefix, ".jar");
         try {
             logger.log(Level.FINEST, "Created temporary file {0} .", temp);
             task.process(temp);
         } finally {
-            if (!temp.delete())
-                throw new IOException(String.format(
-                        "Could delete temporary file %s .", temp));
-            logger.log(Level.FINEST, "Deleted temporary file {0} .", temp);
+            if (temp.delete()) {
+                logger.log(Level.FINEST, "Deleted temporary file {0} .", temp);
+            } else {
+                logger.log(Level.WARNING, "Cannot delete temporary file {0} .", temp);
+            }
         }
     }
 
@@ -138,8 +142,8 @@ class ConfiguredOpenEjbUpdateInstaller {
             final File zipPatchFile,
             final File patchedJarFile)
     throws IOException {
-        try (   JarFile originalJar = new JarFile(originalJarFile);
-                ZipFile zipPatch = new ZipFile(zipPatchFile)) {
+        try (JarFile originalJar = new JarFile(originalJarFile);
+             ZipFile zipPatch = new ZipFile(zipPatchFile)) {
             ZipPatch.builder()
                     .inputZipFile(originalJar)
                     .zipPatchFile(zipPatch)
@@ -149,14 +153,14 @@ class ConfiguredOpenEjbUpdateInstaller {
         }
     }
 
-    private static void zipUpTo(final File directory, final File zipFile)
+    private static void jarTo(final File directory, final File jarFile)
     throws IOException {
         assert directory.isDirectory();
-        try (ZipOutputStream
-                out = new ZipOutputStream(new FileOutputStream(zipFile))) {
+        try (JarOutputStream
+                out = new JarOutputStream(new FileOutputStream(jarFile))) {
 
-            class Zipper  {
-                void zipDirectory(final File directory, final String name)
+            class Jar  {
+                void jar(final File directory, final String name)
                 throws IOException {
                     final File[] memberFiles = directory.listFiles();
                     Arrays.sort(memberFiles); // courtesy
@@ -166,7 +170,7 @@ class ConfiguredOpenEjbUpdateInstaller {
                                 + memberFile.getName();
                         if (memberFile.isDirectory()) {
                             addDirectoryEntry(memberName);
-                            zipDirectory(memberFile, memberName);
+                            jar(memberFile, memberName);
                         } else {
                             addFileEntry(memberName, memberFile);
                         }
@@ -192,7 +196,7 @@ class ConfiguredOpenEjbUpdateInstaller {
                         entry.setCompressedSize(length);
                         entry.setCrc(crc32(input));
                     }
-                    Copy.copy(new FileStore(input), entrySink(entry));
+                    Copy.copy(new FileStore(input), zipEntrySink(entry));
                 }
 
                 long crc32(File input) throws IOException {
@@ -206,14 +210,14 @@ class ConfiguredOpenEjbUpdateInstaller {
                     return checksum.getValue();
                 }
 
-                Sink entrySink(ZipEntry entry) {
-                    return new EntrySink(entry, out);
+                Sink zipEntrySink(ZipEntry entry) {
+                    return new ZipEntrySink(entry, out);
                 }
 
                 ZipEntry entry(String name) { return new ZipEntry(name); }
-            } // ZipUp
+            } // Jar
 
-            new Zipper().zipDirectory(directory, "");
+            new Jar().jar(directory, "");
         }
     }
 
@@ -233,23 +237,23 @@ class ConfiguredOpenEjbUpdateInstaller {
         return message.currentLocation();
     }
 
-    private enum Scheme {
-        app {
-            @Override boolean matches(URI location, AppInfo info) {
-                return location.getSchemeSpecificPart().equals(info.appId);
-            }
-        },
-
-        file {
-            @Override boolean matches(URI location, AppInfo info) {
-                return new File(location).equals(new File(info.path));
-            }
-        };
-
-        abstract boolean matches(URI location, AppInfo info);
-    }
-
     private interface FileTask {
         void process(File file) throws Exception;
     }
+}
+
+enum Scheme {
+    app {
+        @Override boolean matches(URI location, AppInfo info) {
+            return location.getSchemeSpecificPart().equals(info.appId);
+        }
+    },
+
+    file {
+        @Override boolean matches(URI location, AppInfo info) {
+            return new File(location).equals(new File(info.path));
+        }
+    };
+
+    abstract boolean matches(URI location, AppInfo info);
 }

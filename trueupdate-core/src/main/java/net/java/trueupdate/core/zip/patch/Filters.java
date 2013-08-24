@@ -4,30 +4,29 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import net.java.trueupdate.core.util.EntrySource;
-
 /**
- * A filter for {@linkplain EntrySource entry sources}.
+ * A filter for ZIP entry names.
  *
  * @author Christian Schlichtherle
  */
-interface Filter {
+interface ZipEntryNameFilter {
 
     /**
-     * Returns {@code true} if and only if the filter accepts the given entry
-     * source.
+     * Returns {@code true} if and only if the filter accepts the given ZIP
+     * entry name.
      */
-    boolean accept(EntrySource entrySource);
+    boolean accept(String name);
 }
 
+
 /**
- * A filter which accepts all {@linkplain EntrySource entry sources}.
+ * A filter which accepts all ZIP entry names.
  *
  * @author Christian Schlichtherle
  */
-final class AcceptAllFilter implements Filter {
+final class AcceptAllZipEntryNameFilter implements ZipEntryNameFilter {
 
-    @Override public boolean accept(EntrySource entrySource) { return true; }
+    @Override public boolean accept(String name) { return true; }
 }
 
 /**
@@ -35,30 +34,28 @@ final class AcceptAllFilter implements Filter {
  *
  * @author Christian Schlichtherle
  */
-final class InverseFilter implements Filter {
+final class InverseZipEntryNameFilter implements ZipEntryNameFilter {
 
-    private final Filter filter;
+    private final ZipEntryNameFilter filter;
 
-    InverseFilter(final Filter filter) {
+    InverseZipEntryNameFilter(final ZipEntryNameFilter filter) {
         assert null != filter;
         this.filter = filter;
     }
 
-    @Override public boolean accept(EntrySource entrySource) {
-        return !filter.accept(entrySource);
+    @Override public boolean accept(String name) {
+        return !filter.accept(name);
     }
 }
-
 /**
  * Accepts only entry sources with the name "META-INF/" or
  * "META-INF/MANIFEST.MF".
  *
  * @author Christian Schlichtherle
  */
-final class ManifestFilter implements Filter {
+final class ManifestZipEntryNameFilter implements ZipEntryNameFilter {
 
-    @Override public boolean accept(EntrySource entrySource) {
-        final String name = entrySource.name();
+    @Override public boolean accept(String name) {
         return "META-INF/".equals(name) || "META-INF/MANIFEST.MF".equals(name);
     }
 }

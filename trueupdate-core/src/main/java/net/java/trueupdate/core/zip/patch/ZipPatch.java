@@ -23,7 +23,7 @@ import net.java.trueupdate.core.zip.model.*;
 @NotThreadSafe
 public abstract class ZipPatch {
 
-    private DiffModel model;
+    private ZipDiffModel model;
 
     /** Returns the ZIP patch file. */
     abstract @WillNotClose ZipFile zipPatchFile();
@@ -37,15 +37,15 @@ public abstract class ZipPatch {
     /**
      * Applies the configured ZIP patch file.
      *
-     * @param outputZipFile the sink for writing the output ZIP file.
+     * @param outputZipFile the sink for writing the output ZIP or JAR file.
      */
     public final void applyZipPatchFileTo(final Sink outputZipFile)
     throws IOException {
-        final Filter[] passFilters = passFilters();
+        final ZipEntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
         try (ZipOutputStream out = newZipOutputStream(outputZipFile)) {
-            for (Filter filter : passFilters)
+            for (ZipEntryNameFilter filter : passFilters)
                 applyZipPatchFileTo(filter, out);
         }
     }
@@ -65,40 +65,52 @@ public abstract class ZipPatch {
      * The filters should properly partition the set of entry sources,
      * i.e. each entry source should be accepted by exactly one filter.
      */
-    Filter[] passFilters() { return new Filter[] { new AcceptAllFilter() }; }
+    ZipEntryNameFilter[] passFilters() { return new ZipEntryNameFilter[] { new AcceptAllZipEntryNameFilter() }; }
 
     private void applyZipPatchFileTo(
-            final Filter filter,
+            final ZipEntryNameFilter filter,
             final @WillNotClose ZipOutputStream out)
     throws IOException {
 
-        class EntrySink implements Sink {
+        final MessageDigest messageDigest = messageDigest();
 
-            final EntryNameAndDigest entryNameAndDigest;
+        final class ZipEntrySink implements Sink {
 
-            EntrySink(final EntryNameAndDigest entryNameAndDigest) {
-                this.entryNameAndDigest = entryNameAndDigest;
+            final ZipEntryNameAndDigestValue zipEntryNameAndDigestValue;
+
+            ZipEntrySink(final ZipEntryNameAndDigestValue
+                                 zipEntryNameAndDigestValue) {
+                assert null != zipEntryNameAndDigestValue;
+                this.zipEntryNameAndDigestValue = zipEntryNameAndDigestValue;
             }
 
             @Override public OutputStream output() throws IOException {
-                out.putNextEntry(newZipEntry(entryNameAndDigest.name()));
-                return new DigestOutputStream(out, messageDigest()) {
-
-                    { digest.reset(); }
+                final ZipEntry entry =
+                        newZipEntry(zipEntryNameAndDigestValue.entryName());
+                if (entry.isDirectory()) {
+                    entry.setMethod(ZipOutputStream.STORED);
+                    entry.setSize(0);
+                    entry.setCompressedSize(0);
+                    entry.setCrc(0);
+                }
+                out.putNextEntry(entry);
+                messageDigest.reset();
+                return new DigestOutputStream(out, messageDigest) {
 
                     @Override public void close() throws IOException {
                         ((ZipOutputStream) out).closeEntry();
-                        if (!digestToHexString().equals(entryNameAndDigest.digest()))
+                        if (!valueOfDigest().equals(
+                                zipEntryNameAndDigestValue.digestValue()))
                             throw new WrongMessageDigestException(
-                                    entryNameAndDigest.name());
+                                    zipEntryNameAndDigestValue.entryName());
                     }
 
-                    String digestToHexString() {
-                        return MessageDigests.hexString(digest.digest());
+                    String valueOfDigest() {
+                        return MessageDigests.valueOf(digest);
                     }
                 };
             }
-        } // EntrySink
+        } // ZipEntrySink
 
         abstract class PatchSet {
 
@@ -111,26 +123,22 @@ public abstract class ZipPatch {
                     final Collection<T> collection)
             throws IOException {
                 for (final T item : collection) {
-                    final EntryNameAndDigest
-                            entryNameAndDigest = transformation.apply(item);
-                    final String name = entryNameAndDigest.name();
+                    final ZipEntryNameAndDigestValue
+                            zipEntryNameAndDigestValue = transformation.apply(item);
+                    final String name = zipEntryNameAndDigestValue.entryName();
+                    if (!filter.accept(name)) continue;
                     final ZipEntry entry = source().getEntry(name);
                     if (null == entry)
                         throw ioException(new MissingZipEntryException(name));
                     try {
-                        copyIfAcceptedByFilter(
-                                new EntrySource(entry, source()),
-                                new EntrySink(entryNameAndDigest));
+                        Copy.copy(
+                                new ZipEntrySource(entry, source()),
+                                new ZipEntrySink(zipEntryNameAndDigestValue));
                     } catch (WrongMessageDigestException ex) {
                         throw ioException(ex);
                     }
                 }
                 return this;
-            }
-
-            final void copyIfAcceptedByFilter(EntrySource source, EntrySink sink)
-            throws IOException {
-                if (filter.accept(source)) Copy.copy(source, sink);
             }
         } // PatchSet
 
@@ -155,28 +163,28 @@ public abstract class ZipPatch {
         // Order is important here!
         new InputZipFilePatchSet().apply(
                 new IdentityTransformation(),
-                diffModel().unchangedEntries());
+                zipDiffModel().unchangedEntries());
         new ZipPatchFilePatchSet().apply(
-                new EntryNameWithTwoDigestsTransformation(),
-                diffModel().changedEntries());
+                new ZipEntryNameWithTwoDigestsTransformation(),
+                zipDiffModel().changedEntries());
         new ZipPatchFilePatchSet().apply(
                 new IdentityTransformation(),
-                diffModel().addedEntries());
+                zipDiffModel().addedEntries());
     }
 
     private MessageDigest messageDigest() throws IOException {
-        return MessageDigests.newDigest(diffModel().messageDigestAlgorithmName());
+        return MessageDigests.create(zipDiffModel().messageDigestAlgorithmName());
     }
 
-    private DiffModel diffModel() throws IOException {
-        final DiffModel model = this.model;
-        return null != model ? model : (this.model = loadDiffModel());
+    private ZipDiffModel zipDiffModel() throws IOException {
+        final ZipDiffModel model = this.model;
+        return null != model ? model : (this.model = loadZipDiffModel());
     }
 
-    private DiffModel loadDiffModel() throws IOException {
+    private ZipDiffModel loadZipDiffModel() throws IOException {
         try {
-            return DiffModel.decodeFromXml(
-                    new EntrySource(diffModelEntry(), zipPatchFile()));
+            return ZipDiffModel.decodeFromXml(
+                    new ZipEntrySource(zipDiffModelEntry(), zipPatchFile()));
         } catch (IOException | RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -184,8 +192,8 @@ public abstract class ZipPatch {
         }
     }
 
-    private ZipEntry diffModelEntry() throws IOException {
-        final String name = DiffModel.ENTRY_NAME;
+    private ZipEntry zipDiffModelEntry() throws IOException {
+        final String name = ZipDiffModel.ENTRY_NAME;
         final ZipEntry entry = zipPatchFile().getEntry(name);
         if (null == entry)
             throw new InvalidZipPatchFileException(zipPatchFile().getName(),

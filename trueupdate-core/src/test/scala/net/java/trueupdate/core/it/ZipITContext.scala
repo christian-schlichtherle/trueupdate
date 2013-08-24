@@ -12,7 +12,7 @@ import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.util.MessageDigests
-import net.java.trueupdate.core.zip.model.DiffModel
+import net.java.trueupdate.core.zip.model.ZipDiffModel
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.patch.ZipPatch
 
@@ -22,16 +22,16 @@ import net.java.trueupdate.core.zip.patch.ZipPatch
 trait ZipITContext extends TestContext {
 
   def withZipDiff[A](fun: ZipDiff => A) =
-    withZipFiles { (firstZipFile, secondZipFile) =>
+    withZipFiles { (zipFile1, zipFile2) =>
       fun(ZipDiff.builder
-        .firstZipFile(firstZipFile)
-        .secondZipFile(secondZipFile)
+        .zipFile1(zipFile1)
+        .zipFile2(zipFile2)
         .messageDigest(digest)
         .build)
     }
 
   def withZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) =
-    loan(firstZipFile()) to { inputZipFile =>
+    loan(zipFile1()) to { inputZipFile =>
       fun(ZipPatch.builder
         .zipPatchFile(zipPatchFile)
         .inputZipFile(inputZipFile)
@@ -40,19 +40,19 @@ trait ZipITContext extends TestContext {
     }
 
   def withZipFiles[A](fun: (ZipFile, ZipFile) => A) =
-    loan(firstZipFile()) to { firstZipFile =>
-      loan(secondZipFile()) to { secondZipFile =>
+    loan(zipFile1()) to { firstZipFile =>
+      loan(zipFile2()) to { secondZipFile =>
         fun(firstZipFile, secondZipFile)
       }
     }
 
-  @CreatesObligation def firstZipFile() = new JarFile(file("test1.jar"), false)
-  @CreatesObligation def secondZipFile() = new JarFile(file("test2.jar"), false)
+  @CreatesObligation def zipFile1() = new JarFile(file("test1.jar"), false)
+  @CreatesObligation def zipFile2() = new JarFile(file("test2.jar"), false)
 
   private def file(resourceName: String) =
     new File((classOf[ZipITContext] getResource resourceName).toURI)
 
   def digest = MessageDigests.sha1
 
-  override lazy val jaxbContext = DiffModel.jaxbContext
+  override lazy val jaxbContext = ZipDiffModel.jaxbContext
 }

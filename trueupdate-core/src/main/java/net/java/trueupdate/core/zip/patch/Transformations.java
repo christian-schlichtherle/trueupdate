@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import net.java.trueupdate.core.zip.model.EntryNameAndDigest;
-import net.java.trueupdate.core.zip.model.EntryNameAndTwoDigests;
+import net.java.trueupdate.core.zip.model.ZipEntryNameAndDigestValue;
+import net.java.trueupdate.core.zip.model.ZipEntryNameAndTwoDigestValues;
 
 /**
- * Transforms an object into an {@link EntryNameAndDigest} by applying some
+ * Transforms an object into an {@link net.java.trueupdate.core.zip.model.ZipEntryNameAndDigestValue} by applying some
  * dark magic.
  *
  * @param <T> the type of the objects to transform.
@@ -16,7 +16,7 @@ import net.java.trueupdate.core.zip.model.EntryNameAndTwoDigests;
  */
 interface Transformation<T> {
 
-    EntryNameAndDigest apply(T item);
+    ZipEntryNameAndDigestValue apply(T item);
 }
 
 /**
@@ -25,11 +25,11 @@ interface Transformation<T> {
  * @author Christian Schlichtherle
  */
 final class IdentityTransformation
-implements Transformation<EntryNameAndDigest> {
+implements Transformation<ZipEntryNameAndDigestValue> {
 
-    @Override public EntryNameAndDigest apply(
-            EntryNameAndDigest entryNameAndDigest) {
-        return entryNameAndDigest;
+    @Override public ZipEntryNameAndDigestValue apply(
+            ZipEntryNameAndDigestValue zipEntryNameAndDigestValue) {
+        return zipEntryNameAndDigestValue;
     }
 }
 
@@ -39,11 +39,11 @@ implements Transformation<EntryNameAndDigest> {
  *
  * @author Christian Schlichtherle
  */
-final class EntryNameWithTwoDigestsTransformation
-        implements Transformation<EntryNameAndTwoDigests> {
+final class ZipEntryNameWithTwoDigestsTransformation
+        implements Transformation<ZipEntryNameAndTwoDigestValues> {
 
-    @Override public EntryNameAndDigest apply(
-            EntryNameAndTwoDigests entryNameAndTwoDigests) {
-        return entryNameAndTwoDigests.entryNameWithSecondDigest();
+    @Override public ZipEntryNameAndDigestValue apply(
+            ZipEntryNameAndTwoDigestValues zipEntryNameAndTwoDigestValues) {
+        return zipEntryNameAndTwoDigestValues.entryNameWithSecondDigest();
     }
 }

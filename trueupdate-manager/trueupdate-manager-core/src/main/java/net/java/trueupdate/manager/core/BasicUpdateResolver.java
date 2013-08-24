@@ -64,7 +64,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
             throw ex;
         }
         logger.log(Level.INFO,
-                "Downloaded ZIP patch file {0} for artifact {1} and update version {2} .",
+                "Downloaded ZIP patch file {0} for artifact descriptor {1} and update version {2} .",
                 new Object[] { patch, ad, uv });
         account.file(patch);
         return patch;

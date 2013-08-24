@@ -4,8 +4,6 @@
  */
 package net.java.trueupdate.jax.rs.server;
 
-import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import java.io.*;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
@@ -16,7 +14,8 @@ import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
@@ -104,8 +103,8 @@ public final class ConfiguredUpdateServer {
     }
 
     static StreamingOutput streamingOutputWithZipPatchFile(
-            final File firstFile,
-            final File secondFile) {
+            final File file1,
+            final File file2) {
         return new StreamingOutput() {
 
             @Override
@@ -114,11 +113,11 @@ public final class ConfiguredUpdateServer {
             }
 
             void write(final Sink output) throws IOException {
-                try (ZipFile firstZipFile = new ZipFile(firstFile);
-                     ZipFile secondZipFile = new ZipFile(secondFile)) {
+                try (ZipFile zipFile1 = new ZipFile(file1);
+                     ZipFile zipFile2 = new ZipFile(file2)) {
                     ZipDiff.builder()
-                            .firstZipFile(firstZipFile)
-                            .secondZipFile(secondZipFile)
+                            .zipFile1(zipFile1)
+                            .zipFile2(zipFile2)
                             .build()
                             .writeZipPatchFileTo(output);
                 }

@@ -4,12 +4,12 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import net.java.trueupdate.core.io.Sink;
 import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import net.java.trueupdate.core.io.Sink;
 
 /**
  * Applies a ZIP patch file to an input ZIP file and writes an output JAR file.
@@ -25,9 +25,9 @@ abstract class JarPatch extends ZipPatch {
 
     @Override ZipEntry newZipEntry(String name) { return new JarEntry(name); }
 
-    @Override Filter[] passFilters() {
+    @Override ZipEntryNameFilter[] passFilters() {
         // The JarInputStream class assumes that the file entry
-        // "META-INF/MANIFEST.MF" should be either the first or the second
+        // "META-INF/MANIFEST.MF" should either be the first or the second
         // entry (if preceded by the directory entry "META-INF/"), so we need
         // to process the ZIP patch file in two passes with a corresponding
         // filter to ensure this order.
@@ -36,10 +36,10 @@ abstract class JarPatch extends ZipPatch {
         // Thus, by copying the unchanged entries before the changed entries,
         // the directory entry "META-INF/" will always appear before the file
         // entry "META-INF/MANIFEST.MF".
-        final Filter manifestFilter = new ManifestFilter();
-        return new Filter[] {
+        final ZipEntryNameFilter manifestFilter = new ManifestZipEntryNameFilter();
+        return new ZipEntryNameFilter[] {
                 manifestFilter,
-                new InverseFilter(manifestFilter)
+                new InverseZipEntryNameFilter(manifestFilter)
         };
     }
 }

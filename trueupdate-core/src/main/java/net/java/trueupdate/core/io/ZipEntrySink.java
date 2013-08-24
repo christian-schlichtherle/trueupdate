@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.util;
+package net.java.trueupdate.core.io;
 
 import java.io.*;
 import static java.util.Objects.requireNonNull;
@@ -12,14 +12,15 @@ import net.java.trueupdate.core.io.Sink;
 /**
  * Writes a ZIP entry to a ZIP output stream.
  *
+ * @see EntrySource
  * @author Christian Schlichtherle
  */
-public class EntrySink implements Sink {
+public final class ZipEntrySink implements Sink {
 
     private final ZipEntry entry;
     private final ZipOutputStream out;
 
-    public EntrySink(final ZipEntry entry, final ZipOutputStream out) {
+    public ZipEntrySink(final ZipEntry entry, final ZipOutputStream out) {
         this.entry = requireNonNull(entry);
         this.out = requireNonNull(out);
     }
@@ -27,7 +28,16 @@ public class EntrySink implements Sink {
     /** Returns the entry name. */
     public String name() { return entry.getName(); }
 
+    /** Returns {@code true} if the entry is a directory entry. */
+    public boolean directory() { return entry.isDirectory(); }
+
     @Override public OutputStream output() throws IOException {
+        if (directory()) {
+            entry.setMethod(ZipOutputStream.STORED);
+            entry.setSize(0);
+            entry.setCompressedSize(0);
+            entry.setCrc(0);
+        }
         out.putNextEntry(entry);
         return new FilterOutputStream(out) {
             @Override public void close() throws IOException {

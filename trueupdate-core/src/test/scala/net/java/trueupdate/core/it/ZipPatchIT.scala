@@ -28,36 +28,36 @@ class ZipPatchIT extends WordSpec with ZipITContext {
   "A JAR patch" when {
     "generating and applying the JAR diff file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
-        val zipPatchTemp = tempFile ()
+        val zipPatchFile = tempFile ()
         try {
-          withZipDiff { _ writeZipPatchFileTo new FileStore(zipPatchTemp) }
-          loan(new ZipFile(zipPatchTemp)) to { zipPatchFile =>
-            val firstZipTemp = tempFile ()
+          withZipDiff { _ writeZipPatchFileTo new FileStore(zipPatchFile) }
+          loan(new ZipFile(zipPatchFile)) to { zipPatchFile =>
+            val patchedJarFile = tempFile ()
             try {
               withZipPatch(zipPatchFile) {
-                _ applyZipPatchFileTo new FileStore(firstZipTemp)
+                _ applyZipPatchFileTo new FileStore(patchedJarFile)
               }
-              loan(new JarFile(firstZipTemp)) to { firstZipFile =>
-                loan(secondZipFile()) to { secondZipFile =>
+              loan(new JarFile(patchedJarFile)) to { zipFile1 =>
+                loan(zipFile2()) to { zipFile2 =>
                   val ref = List.empty[String] ++
-                    secondZipFile.entries.asScala.map(_.getName)
+                    zipFile2.entries.asScala.map(_.getName)
                   val diff = ZipDiff.builder
-                    .firstZipFile(firstZipFile)
-                    .secondZipFile(secondZipFile)
+                    .zipFile1(zipFile1)
+                    .zipFile2(zipFile2)
                     .build
-                    .computeDiffModel ()
+                    .computeZipDiffModel ()
                   diff.addedEntries.isEmpty should be (true)
                   diff.removedEntries.isEmpty should be (true)
-                  diff.unchangedEntries.asScala map (_.name) should equal (ref)
+                  diff.unchangedEntries.asScala map (_.entryName) should equal (ref)
                   diff.changedEntries.isEmpty should be (true)
                 }
               }
             } finally {
-              firstZipTemp delete ()
+              patchedJarFile delete ()
             }
           }
         } finally {
-          zipPatchTemp delete ()
+          zipPatchFile delete ()
         }
       }
     }

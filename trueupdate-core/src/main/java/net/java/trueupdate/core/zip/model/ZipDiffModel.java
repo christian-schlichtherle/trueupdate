@@ -28,7 +28,7 @@ import net.java.trueupdate.core.util.*;
 @Immutable
 @XmlRootElement(name = "diff")
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DiffModel implements Serializable {
+public final class ZipDiffModel implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
@@ -43,23 +43,25 @@ public final class DiffModel implements Serializable {
     private final String algorithm;
 
     @XmlAttribute
-    private final @CheckForNull Integer numBytes;
+    private final @CheckForNull
+    Integer numBytes;
 
-    @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
-    private final Map<String, EntryNameAndTwoDigests> changed;
+    @XmlJavaTypeAdapter(ZipEntryNameAndTwoDigestValuesMapAdapter.class)
+    private final Map<String, ZipEntryNameAndTwoDigestValues> changed;
 
-    @XmlJavaTypeAdapter(EntryNameAndDigestMapAdapter.class)
-    private final Map<String, EntryNameAndDigest> unchanged, added, removed;
+    @XmlJavaTypeAdapter(ZipEntryNameAndDigestValueMapAdapter.class)
+    private final Map<String, ZipEntryNameAndDigestValue>
+            unchanged, added, removed;
 
     /** Required for JAXB. */
-    private DiffModel() {
+    private ZipDiffModel() {
         algorithm = "";
         numBytes = null;
         changed = emptyMap();
         unchanged = added = removed = emptyMap();
     }
 
-    DiffModel(final Builder b) {
+    ZipDiffModel(final Builder b) {
         this.algorithm = b.messageDigest.getAlgorithm();
         this.numBytes = lengthBytes(b.messageDigest);
         this.changed = changedMap(b.changed);
@@ -74,7 +76,7 @@ public final class DiffModel implements Serializable {
     private static @Nullable Integer lengthBytes(final MessageDigest digest) {
         try {
             final MessageDigest
-                    clone = MessageDigests.newDigest(digest.getAlgorithm());
+                    clone = MessageDigests.create(digest.getAlgorithm());
             if (clone.getDigestLength() == digest.getDigestLength())
                 return null;
         } catch (IllegalArgumentException fallThrough) {
@@ -82,21 +84,21 @@ public final class DiffModel implements Serializable {
         return digest.getDigestLength();
     }
 
-    static Map<String, EntryNameAndTwoDigests> changedMap(
-            final Collection<EntryNameAndTwoDigests> entries) {
-        final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
+    static Map<String, ZipEntryNameAndTwoDigestValues> changedMap(
+            final Collection<ZipEntryNameAndTwoDigestValues> entries) {
+        final Map<String, ZipEntryNameAndTwoDigestValues> map = new LinkedHashMap<>(
                 initialCapacity(entries));
-        for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
-            map.put(entryNameAndTwoDigests.name(), entryNameAndTwoDigests);
+        for (ZipEntryNameAndTwoDigestValues zipEntryNameAndTwoDigestValues : entries)
+            map.put(zipEntryNameAndTwoDigestValues.entryName(), zipEntryNameAndTwoDigestValues);
         return unmodifiableMap(map);
     }
 
-    static Map<String, EntryNameAndDigest> unchangedMap(
-            final Collection<EntryNameAndDigest> entries) {
-        final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
+    static Map<String, ZipEntryNameAndDigestValue> unchangedMap(
+            final Collection<ZipEntryNameAndDigestValue> entries) {
+        final Map<String, ZipEntryNameAndDigestValue> map = new LinkedHashMap<>(
                 initialCapacity(entries));
-        for (EntryNameAndDigest entryNameAndDigest : entries)
-            map.put(entryNameAndDigest.name(), entryNameAndDigest);
+        for (ZipEntryNameAndDigestValue zipEntryNameAndDigestValue : entries)
+            map.put(zipEntryNameAndDigestValue.entryName(), zipEntryNameAndDigestValue);
         return unmodifiableMap(map);
     }
 
@@ -119,12 +121,12 @@ public final class DiffModel implements Serializable {
      * Returns a collection of the entry name and two message digests for the
      * <i>changed</i> entries.
      */
-    public Collection<EntryNameAndTwoDigests> changedEntries() {
+    public Collection<ZipEntryNameAndTwoDigestValues> changedEntries() {
         return changed.values();
     }
 
     /** Looks up the given entry name in the <i>changed</i> entries. */
-    public EntryNameAndTwoDigests changed(String name) {
+    public ZipEntryNameAndTwoDigestValues changed(String name) {
         return changed.get(name);
     }
 
@@ -132,12 +134,12 @@ public final class DiffModel implements Serializable {
      * Returns a collection of the entry name and message digest for the
      * <i>unchanged</i> entries.
      */
-    public Collection<EntryNameAndDigest> unchangedEntries() {
+    public Collection<ZipEntryNameAndDigestValue> unchangedEntries() {
         return unchanged.values();
     }
 
     /** Looks up the given entry name in the <i>unchanged</i> entries. */
-    @Deprecated public EntryNameAndDigest unchanged(String name) {
+    @Deprecated public ZipEntryNameAndDigestValue unchanged(String name) {
         return unchanged.get(name);
     }
 
@@ -145,12 +147,12 @@ public final class DiffModel implements Serializable {
      * Returns a collection of the entry name and message digest for the
      * <i>added</i> entries.
      */
-    public Collection<EntryNameAndDigest> addedEntries() {
+    public Collection<ZipEntryNameAndDigestValue> addedEntries() {
         return added.values();
     }
 
     /** Looks up the given entry name in the <i>added</i> entries. */
-    public EntryNameAndDigest added(String name) {
+    public ZipEntryNameAndDigestValue added(String name) {
         return added.get(name);
     }
 
@@ -158,20 +160,20 @@ public final class DiffModel implements Serializable {
      * Returns a collection of the entry name and message digest for the
      * <i>removed</i> entries.
      */
-    public Collection<EntryNameAndDigest> removedEntries() {
+    public Collection<ZipEntryNameAndDigestValue> removedEntries() {
         return removed.values();
     }
 
     /** Looks up the given entry name in the <i>removed</i> entries. */
-    @Deprecated public EntryNameAndDigest removed(String name) {
+    @Deprecated public ZipEntryNameAndDigestValue removed(String name) {
         return removed.get(name);
     }
 
     @Override@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
     public boolean equals(final Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof DiffModel)) return false;
-        final DiffModel that = (DiffModel) obj;
+        if (!(obj instanceof ZipDiffModel)) return false;
+        final ZipDiffModel that = (ZipDiffModel) obj;
         return  this.algorithm.equals(that.algorithm) &&
                 Objects.equals(this.numBytes, that.numBytes) &&
                 this.changed.equals(that.changed) &&
@@ -210,8 +212,8 @@ public final class DiffModel implements Serializable {
      * @throws Exception at the discretion of the JAXB codec, e.g. if the
      *         source isn't readable.
      */
-    public static DiffModel decodeFromXml(Source source) throws Exception {
-        return new JaxbCodec(jaxbContext()).decode(source, DiffModel.class);
+    public static ZipDiffModel decodeFromXml(Source source) throws Exception {
+        return new JaxbCodec(jaxbContext()).decode(source, ZipDiffModel.class);
     }
 
     /** Returns a JAXB context which binds only this class. */
@@ -222,7 +224,7 @@ public final class DiffModel implements Serializable {
         static final JAXBContext JAXB_CONTEXT;
 
         static {
-            try { JAXB_CONTEXT = JAXBContext.newInstance(DiffModel.class); }
+            try { JAXB_CONTEXT = JAXBContext.newInstance(ZipDiffModel.class); }
             catch (JAXBException ex) { throw new AssertionError(ex); }
         }
     }
@@ -240,8 +242,8 @@ public final class DiffModel implements Serializable {
     public static final class Builder {
 
         @CheckForNull MessageDigest messageDigest;
-        @CheckForNull Collection<EntryNameAndTwoDigests> changed = emptyList();
-        @CheckForNull Collection<EntryNameAndDigest>
+        @CheckForNull Collection<ZipEntryNameAndTwoDigestValues> changed = emptyList();
+        @CheckForNull Collection<ZipEntryNameAndDigestValue>
                 unchanged = emptyList(),
                 added = emptyList(),
                 removed = emptyList();
@@ -255,29 +257,29 @@ public final class DiffModel implements Serializable {
         }
 
         public Builder changedEntries(
-                final @Nullable Collection<EntryNameAndTwoDigests> changed) {
+                final @Nullable Collection<ZipEntryNameAndTwoDigestValues> changed) {
             this.changed = changed;
             return this;
         }
 
         public Builder unchangedEntries(
-                final @Nullable Collection<EntryNameAndDigest> unchanged) {
+                final @Nullable Collection<ZipEntryNameAndDigestValue> unchanged) {
             this.unchanged = unchanged;
             return this;
         }
 
         public Builder addedEntries(
-                final @Nullable Collection<EntryNameAndDigest> added) {
+                final @Nullable Collection<ZipEntryNameAndDigestValue> added) {
             this.added = added;
             return this;
         }
 
         public Builder removedEntries(
-                final @Nullable Collection<EntryNameAndDigest> removed) {
+                final @Nullable Collection<ZipEntryNameAndDigestValue> removed) {
             this.removed = removed;
             return this;
         }
 
-        public DiffModel build() { return new DiffModel(this); }
+        public ZipDiffModel build() { return new ZipDiffModel(this); }
     }
 }

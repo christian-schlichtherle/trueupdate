@@ -8,54 +8,54 @@ import java.util.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import static net.java.trueupdate.core.zip.model.DiffModel.*;
+import static net.java.trueupdate.core.zip.model.ZipDiffModel.*;
 
 @Immutable
-final class EntryNameAndDigestMapAdapter
-        extends XmlAdapter<EntryNameAndDigestCollectionHolder,
-        Map<String, EntryNameAndDigest>> {
+final class ZipEntryNameAndDigestValueMapAdapter
+        extends XmlAdapter<ZipEntryNameAndDigestValueCollectionHolder,
+        Map<String, ZipEntryNameAndDigestValue>> {
 
-    @Override public Map<String, EntryNameAndDigest> unmarshal(
-            EntryNameAndDigestCollectionHolder holder) {
+    @Override public Map<String, ZipEntryNameAndDigestValue> unmarshal(
+            ZipEntryNameAndDigestValueCollectionHolder holder) {
         return null == holder ? null : unchangedMap(holder.entries);
     }
 
-    @Override public EntryNameAndDigestCollectionHolder marshal(
-            final Map<String, EntryNameAndDigest> map) {
+    @Override public ZipEntryNameAndDigestValueCollectionHolder marshal(
+            final Map<String, ZipEntryNameAndDigestValue> map) {
         if (null == map || map.isEmpty()) return null;
-        final EntryNameAndDigestCollectionHolder
-                holder = new EntryNameAndDigestCollectionHolder();
+        final ZipEntryNameAndDigestValueCollectionHolder
+                holder = new ZipEntryNameAndDigestValueCollectionHolder();
         holder.entries = map.values();
         return holder;
     }
 }
 
-final class EntryNameAndDigestCollectionHolder {
+final class ZipEntryNameAndDigestValueCollectionHolder {
     @XmlElement(name = "entry")
-    public Collection<EntryNameAndDigest> entries;
+    public Collection<ZipEntryNameAndDigestValue> entries;
 }
 
 @Immutable
-final class EntryNameAndTwoDigestsMapAdapter
-        extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
-        Map<String, EntryNameAndTwoDigests>> {
+final class ZipEntryNameAndTwoDigestValuesMapAdapter
+        extends XmlAdapter<ZipEntryNameAndTwoDigestValuesCollectionHolder,
+        Map<String, ZipEntryNameAndTwoDigestValues>> {
 
-    @Override public Map<String, EntryNameAndTwoDigests> unmarshal(
-            EntryNameAndTwoDigestsCollectionHolder holder) {
+    @Override public Map<String, ZipEntryNameAndTwoDigestValues> unmarshal(
+            ZipEntryNameAndTwoDigestValuesCollectionHolder holder) {
         return null == holder ? null : changedMap(holder.entries);
     }
 
-    @Override public EntryNameAndTwoDigestsCollectionHolder marshal(
-            final Map<String, EntryNameAndTwoDigests> map) {
+    @Override public ZipEntryNameAndTwoDigestValuesCollectionHolder marshal(
+            final Map<String, ZipEntryNameAndTwoDigestValues> map) {
         if (null == map || map.isEmpty()) return null;
-        final EntryNameAndTwoDigestsCollectionHolder
-                holder = new EntryNameAndTwoDigestsCollectionHolder();
+        final ZipEntryNameAndTwoDigestValuesCollectionHolder
+                holder = new ZipEntryNameAndTwoDigestValuesCollectionHolder();
         holder.entries = map.values();
         return holder;
     }
 }
 
-final class EntryNameAndTwoDigestsCollectionHolder {
+final class ZipEntryNameAndTwoDigestValuesCollectionHolder {
     @XmlElement(name = "entry")
-    public Collection<EntryNameAndTwoDigests> entries;
+    public Collection<ZipEntryNameAndTwoDigestValues> entries;
 }

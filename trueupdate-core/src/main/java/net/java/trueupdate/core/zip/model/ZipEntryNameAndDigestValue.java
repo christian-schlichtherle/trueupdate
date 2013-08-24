@@ -17,39 +17,39 @@ import javax.xml.bind.annotation.*;
  */
 @Immutable
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class EntryNameAndDigest implements Serializable {
+public final class ZipEntryNameAndDigestValue implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
     @XmlAttribute(required = true)
-    private final String name, digest;
+    private final String entryName, digestValue;
 
     /** Required for JAXB. */
-    private EntryNameAndDigest() { name = digest = ""; }
+    private ZipEntryNameAndDigestValue() { entryName = digestValue = ""; }
 
-    public EntryNameAndDigest(final String name, final String digest) {
-        this.name = requireNonNull(name);
-        this.digest = requireNonNull(digest);
+    public ZipEntryNameAndDigestValue(final String entryName, final String digestValue) {
+        this.entryName = requireNonNull(entryName);
+        this.digestValue = requireNonNull(digestValue);
     }
 
     /** Returns the entry name. */
-    public String name() { return name; }
+    public String entryName() { return entryName; }
 
     /** Returns the message digest. */
-    public String digest() { return digest; }
+    public String digestValue() { return digestValue; }
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof EntryNameAndDigest)) return false;
-        final EntryNameAndDigest that = (EntryNameAndDigest) obj;
-        return  this.name().equals(that.name()) &&
-                this.digest().equals(that.digest());
+        if (!(obj instanceof ZipEntryNameAndDigestValue)) return false;
+        final ZipEntryNameAndDigestValue that = (ZipEntryNameAndDigestValue) obj;
+        return  this.entryName().equals(that.entryName()) &&
+                this.digestValue().equals(that.digestValue());
     }
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + name().hashCode();
-        hash = 31 * hash + digest().hashCode();
+        hash = 31 * hash + entryName().hashCode();
+        hash = 31 * hash + digestValue().hashCode();
         return hash;
     }
 }
