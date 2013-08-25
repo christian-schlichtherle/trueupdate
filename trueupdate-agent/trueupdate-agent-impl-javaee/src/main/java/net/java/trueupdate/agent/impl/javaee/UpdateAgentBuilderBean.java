@@ -16,6 +16,7 @@ import net.java.trueupdate.agent.spec.UpdateAgent;
  * @author Christian Schlichtherle
  */
 @Stateful
+@DependsOn("UpdateAgentMessageDispatcherBean")
 @SuppressWarnings("PackageVisibleField")
 public class UpdateAgentBuilderBean
 extends BasicUpdateAgentBuilder
@@ -28,7 +29,7 @@ implements UpdateAgent.Builder {
     Destination destination;
 
     @EJB
-    UpdateMessageDispatcher updateMessageDispatcher;
+    UpdateAgentMessageDispatcherBean updateAgentMessageDispatcher;
 
     @Remove
     @Override public UpdateAgent build() {

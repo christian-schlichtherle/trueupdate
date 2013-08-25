@@ -22,6 +22,7 @@ import net.java.trueupdate.manager.spec.*;
             @ActivationConfigProperty(propertyName = "messageSelector",
                                       propertyValue = "manager = true"),
         })
+@DependsOn("UpdateManagerBean")
 public class UpdateManagerMessageListenerBean implements MessageListener {
 
     private static final Logger

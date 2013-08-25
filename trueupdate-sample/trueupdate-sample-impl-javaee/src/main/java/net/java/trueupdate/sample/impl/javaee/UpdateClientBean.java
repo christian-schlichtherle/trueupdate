@@ -20,6 +20,7 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
  */
 @Startup
 @Singleton
+@DependsOn("UpdateAgentBuilderBean")
 public class UpdateClientBean extends ApplicationListener {
 
     private static final Logger

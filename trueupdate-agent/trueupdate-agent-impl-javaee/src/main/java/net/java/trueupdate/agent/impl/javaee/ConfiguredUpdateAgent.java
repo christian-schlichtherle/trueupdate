@@ -27,7 +27,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         this.applicationParameters = requireNonNull(applicationParameters);
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.destination = requireNonNull(b.destination);
-        this.updateMessageDispatcher = requireNonNull(b.updateMessageDispatcher);
+        this.updateMessageDispatcher = requireNonNull(b.updateAgentMessageDispatcher);
     }
 
     @Override protected UpdateMessageDispatcher updateMessageDispatcher() {
