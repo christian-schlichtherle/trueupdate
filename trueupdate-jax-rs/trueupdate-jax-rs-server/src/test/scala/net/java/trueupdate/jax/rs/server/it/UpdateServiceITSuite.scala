@@ -39,11 +39,11 @@ class UpdateServiceITSuite extends JerseyTest {
   }
 
   private def updateVersionAs(mediaType: MediaType) =
-    artifactUpdateClient.version(artifactDescriptor, mediaType)
+    updateClient.version(artifactDescriptor, mediaType)
 
   private def assertDiff() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
-    val source = artifactUpdateClient.diff(artifactDescriptor, updateVersion)
+    val source = updateClient diff (artifactDescriptor, updateVersion)
     loan(new ZipInputStream(source input ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
       entry.getName should be (DiffModel.ENTRY_NAME)
@@ -58,6 +58,5 @@ class UpdateServiceITSuite extends JerseyTest {
     }
   }
 
-  private def artifactUpdateClient =
-    new UpdateClient(resource.getURI, client)
+  private def updateClient = new UpdateClient(resource.getURI, client)
 }
