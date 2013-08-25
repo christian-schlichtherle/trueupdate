@@ -60,6 +60,7 @@ public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient.baseUri());
         final Map<ArtifactDescriptor, String> updateVersions = new HashMap<>();
+        updateResolver.restart();
         try {
             for (final UpdateMessage subscription : subscriptions.values()) {
                 final ArtifactDescriptor artifactDescriptor =

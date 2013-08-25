@@ -27,6 +27,10 @@ abstract class BasicUpdateResolver implements UpdateResolver {
     /** Returns the artifact update client. */
     abstract UpdateClient updateClient();
 
+    final void restart() {
+        for (FileAccount account : accounts.values()) account.resetUsages();
+    }
+
     final void allocate(UpdateDescriptor descriptor) {
         account(descriptor).incrementUsagesAndGet();
     }
@@ -70,7 +74,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         return patch;
     }
 
-    final void shutdown() throws IOException {
+    final void shutdown() {
         for (final Iterator<FileAccount> it = accounts.values().iterator();
                 it.hasNext(); ) {
             deleteResolvedFile(it.next());
@@ -107,4 +111,6 @@ final class FileAccount {
     int incrementUsagesAndGet() { return ++usages; }
 
     int decrementUsagesAndGet() { return --usages; }
+
+    void resetUsages() { usages = 0; }
 }
