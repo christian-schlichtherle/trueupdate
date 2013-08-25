@@ -31,7 +31,7 @@
                     The interval for checking for artifact updates in minutes.
                 </description>
                 <env-entry-name>checkUpdatesIntervalMinutes</env-entry-name>
-                <env-entry-value>360</env-entry-value>
+                <env-entry-value>720</env-entry-value>
             </env-entry>
             <resource-env-ref>
                 <resource-env-ref-name>destination</resource-env-ref-name>
