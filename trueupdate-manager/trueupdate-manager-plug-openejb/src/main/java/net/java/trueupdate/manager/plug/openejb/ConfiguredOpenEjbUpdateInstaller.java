@@ -7,15 +7,12 @@ package net.java.trueupdate.manager.plug.openejb;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
-import java.util.jar.*;
 import java.util.logging.*;
-import java.util.regex.Pattern;
-import java.util.zip.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
-import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.patch.ZipPatch;
 import net.java.trueupdate.manager.core.UpdateResolver;
+import static net.java.trueupdate.manager.plug.openejb.Files.*;
+import net.java.trueupdate.manager.plug.openejb.Files.FileTask;
 import net.java.trueupdate.manager.spec.*;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
@@ -31,9 +28,6 @@ class ConfiguredOpenEjbUpdateInstaller {
     private static final Logger logger =
             Logger.getLogger(ConfiguredOpenEjbUpdateInstaller.class.getName());
 
-    private static final Pattern ZIP_EXTENSIONS =
-            Pattern.compile(".*\\.(ear|jar|war|zip)", Pattern.CASE_INSENSITIVE);
-
     private final Deployer deployer;
     private final UpdateMessage message;
 
@@ -46,30 +40,79 @@ class ConfiguredOpenEjbUpdateInstaller {
 
     void install(final UpdateResolver resolver) throws Exception {
         final AppInfo info = resolveAppInfo();
-        final File directory = new File(info.path);
-        logger.log(Level.FINE, "Resolved current location {0} to installation directory {1} .",
-                new Object[] { currentLocation(), directory });
+        final File deploymentDir = new File(info.path);
+        logger.log(Level.FINE, "Resolved current location {0} to deployment directory {1} .",
+                new Object[] { currentLocation(), deploymentDir });
         final File zipPatchFile = resolver.resolveZipPatchFile(updateDescriptor());
         logger.log(Level.FINER, "Resolved ZIP patch file {0} for artifact descriptor {1} and update version {2} .",
                 new Object[] { zipPatchFile, artifactDescriptor(),
                                updateVersion() });
 
         class RedeployTask implements FileTask {
+
             @Override
             public void process(final File patchedJarFile) throws Exception {
-                deployer.undeploy(info.path);
-                deployer.deploy(patchedJarFile.getPath());
+                final File updateDir = createTempSlotForSibling(deploymentDir);
+                final File backupDir = createTempSlotForSibling(deploymentDir);
+
+                class UnjarUpdateCommand implements Command {
+
+                    @Override public void execute() throws Exception {
+                        unjarTo(patchedJarFile, updateDir);
+                    }
+
+                    @Override public void revert() throws Exception {
+                        if (!deleteAll(updateDir))
+                            throw new IOException(String.format(
+                                    "Cannot delete update directory %s .",
+                                    updateDir));
+                    }
+                } // UnjarUpdateCommand
+
+                final class DeployCommand implements Command {
+
+                    @Override public void execute() throws Exception {
+                        deployer.deploy(deploymentDir.getPath());
+                    }
+
+                    @Override public void revert() throws Exception {
+                        deployer.undeploy(deploymentDir.getPath());
+                    }
+                } // DeployCommand
+
+                final class DeleteBackupCommand implements Command {
+
+                    @Override public void execute() throws Exception {
+                        if (!deleteAll(backupDir))
+                            throw new IOException(String.format(
+                                    "Cannot delete backup directory %s .",
+                                    backupDir));
+                    }
+
+                    @Override public void revert() throws Exception {
+                        throw new AssertionError("This must be the last command and hence there is no need to ever revert it.");
+                    }
+                } // DeleteBackupCommand
+
+                new MacroCommand(
+                        new UnjarUpdateCommand(),
+                        new InverseCommand(new DeployCommand()),
+                        new RenameFileCommand(deploymentDir, backupDir),
+                        new RenameFileCommand(updateDir, deploymentDir),
+                        new DeployCommand(),
+                        new DeleteBackupCommand()
+                        ).execute();
             }
         } // RedeployTask
 
         class PatchTask implements FileTask {
             @Override
             public void process(final File originalJarFile) throws Exception {
-                withPatchedJarFile(originalJarFile, zipPatchFile, new RedeployTask());
+                loanUpdatedJarFile(new RedeployTask(), originalJarFile, zipPatchFile);
             }
         } // PatchTask
 
-        withOriginalJarFile(directory, new PatchTask());
+        loanOriginalJarFile(new PatchTask(), deploymentDir);
     }
 
     private AppInfo resolveAppInfo() throws FileNotFoundException {
@@ -79,13 +122,13 @@ class ConfiguredOpenEjbUpdateInstaller {
             if (scheme.matches(location, info))
                 return info;
         throw new FileNotFoundException(
-                String.format("Cannot locate installation directory of %s .", location));
+                String.format("Cannot application information for %s .", location));
     }
 
-    private void withPatchedJarFile(
+    private static void loanUpdatedJarFile(
+            final FileTask task,
             final File originalJarFile,
-            final File zipPatchFile,
-            final FileTask task)
+            final File zipPatchFile)
     throws Exception {
 
         class MakePatchedJarFile implements FileTask {
@@ -98,127 +141,25 @@ class ConfiguredOpenEjbUpdateInstaller {
             }
         } // MakePatchedJarFile
 
-        withTempFile("output", ".jar", new MakePatchedJarFile());
+        loanTempFile(new MakePatchedJarFile(), "output", ".jar");
     }
 
-    private void withOriginalJarFile(
-            final File directory,
-            final FileTask task)
+    private static void loanOriginalJarFile(
+            final FileTask task,
+            final File deploymentDir)
     throws Exception {
 
         class MakeOriginalJarFile implements FileTask {
             @Override
             public void process(final File file) throws Exception {
-                jarTo(directory, file);
+                jarTo(deploymentDir, file);
                 logger.log(Level.FINER, "Rebuilt original JAR file {0} from directory {1} .",
-                        new Object[] { file, directory });
+                        new Object[] { file, deploymentDir });
                 task.process(file);
             }
         } // MakeOriginalJarFile
 
-        withTempFile("input", ".jar", new MakeOriginalJarFile());
-    }
-
-    private void withTempFile(
-            final String prefix,
-            String suffix,
-            final FileTask task)
-    throws Exception {
-        final File temp = File.createTempFile(prefix, ".jar");
-        try {
-            logger.log(Level.FINEST, "Created temporary file {0} .", temp);
-            task.process(temp);
-        } finally {
-            if (temp.delete()) {
-                logger.log(Level.FINEST, "Deleted temporary file {0} .", temp);
-            } else {
-                logger.log(Level.WARNING, "Cannot delete temporary file {0} .", temp);
-            }
-        }
-    }
-
-    private static void applyPatchTo(
-            final File originalJarFile,
-            final File zipPatchFile,
-            final File patchedJarFile)
-    throws IOException {
-        try (JarFile originalJar = new JarFile(originalJarFile);
-             ZipFile zipPatch = new ZipFile(zipPatchFile)) {
-            ZipPatch.builder()
-                    .inputZipFile(originalJar)
-                    .zipPatchFile(zipPatch)
-                    .outputJarFile(true)
-                    .build()
-                    .applyZipPatchFileTo(new FileStore(patchedJarFile));
-        }
-    }
-
-    private static void jarTo(final File directory, final File jarFile)
-    throws IOException {
-        assert directory.isDirectory();
-        try (JarOutputStream
-                out = new JarOutputStream(new FileOutputStream(jarFile))) {
-
-            class Jar  {
-                void jar(final File directory, final String name)
-                throws IOException {
-                    final File[] memberFiles = directory.listFiles();
-                    Arrays.sort(memberFiles); // courtesy
-                    for (final File memberFile : memberFiles) {
-                        final String memberName =
-                                (name.isEmpty() ? name : name + '/')
-                                + memberFile.getName();
-                        if (memberFile.isDirectory()) {
-                            addDirectoryEntry(memberName);
-                            jar(memberFile, memberName);
-                        } else {
-                            addFileEntry(memberName, memberFile);
-                        }
-                    }
-                }
-
-                void addDirectoryEntry(final String name) throws IOException {
-                    final ZipEntry entry = entry(name + '/');
-                    entry.setMethod(ZipOutputStream.STORED);
-                    entry.setSize(0);
-                    entry.setCompressedSize(0);
-                    entry.setCrc(0);
-                    out.putNextEntry(entry);
-                    out.closeEntry();
-                }
-
-                void addFileEntry(String name, File input) throws IOException {
-                    final ZipEntry entry = entry(name);
-                    if (ZIP_EXTENSIONS.matcher(name).matches()) {
-                        final long length = input.length();
-                        entry.setMethod(ZipOutputStream.STORED);
-                        entry.setSize(length);
-                        entry.setCompressedSize(length);
-                        entry.setCrc(crc32(input));
-                    }
-                    Copy.copy(new FileStore(input), zipEntrySink(entry));
-                }
-
-                long crc32(File input) throws IOException {
-                    final Checksum checksum = new CRC32();
-                    try (InputStream in = new CheckedInputStream(
-                            new BufferedInputStream(
-                                new FileInputStream(input)), checksum)) {
-                        while (-1 != in.read()) {
-                        }
-                    }
-                    return checksum.getValue();
-                }
-
-                Sink zipEntrySink(ZipEntry entry) {
-                    return new ZipEntrySink(entry, out);
-                }
-
-                ZipEntry entry(String name) { return new ZipEntry(name); }
-            } // Jar
-
-            new Jar().jar(directory, "");
-        }
+        loanTempFile(new MakeOriginalJarFile(), "input", ".jar");
     }
 
     private ArtifactDescriptor artifactDescriptor() {
@@ -235,10 +176,6 @@ class ConfiguredOpenEjbUpdateInstaller {
 
     private URI currentLocation() {
         return message.currentLocation();
-    }
-
-    private interface FileTask {
-        void process(File file) throws Exception;
     }
 }
 
