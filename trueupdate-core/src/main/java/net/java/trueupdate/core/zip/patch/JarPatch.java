@@ -19,13 +19,13 @@ import net.java.trueupdate.core.io.Sink;
 abstract class JarPatch extends ZipPatch {
 
     @Override
-    ZipOutputStream newZipOutputStream(Sink outputZipFile) throws IOException {
-        return new JarOutputStream(outputZipFile.output());
+    ZipOutputStream newZipOutputStream(Sink outputFile) throws IOException {
+        return new JarOutputStream(outputFile.output());
     }
 
-    @Override ZipEntry newZipEntry(String name) { return new JarEntry(name); }
+    @Override ZipEntry newEntry(String name) { return new JarEntry(name); }
 
-    @Override ZipEntryNameFilter[] passFilters() {
+    @Override EntryNameFilter[] passFilters() {
         // The JarInputStream class assumes that the file entry
         // "META-INF/MANIFEST.MF" should either be the first or the second
         // entry (if preceded by the directory entry "META-INF/"), so we need
@@ -36,10 +36,10 @@ abstract class JarPatch extends ZipPatch {
         // Thus, by copying the unchanged entries before the changed entries,
         // the directory entry "META-INF/" will always appear before the file
         // entry "META-INF/MANIFEST.MF".
-        final ZipEntryNameFilter manifestFilter = new ManifestZipEntryNameFilter();
-        return new ZipEntryNameFilter[] {
+        final EntryNameFilter manifestFilter = new ManifestEntryNameFilter();
+        return new EntryNameFilter[] {
                 manifestFilter,
-                new InverseZipEntryNameFilter(manifestFilter)
+                new InverseEntryNameFilter(manifestFilter)
         };
     }
 }

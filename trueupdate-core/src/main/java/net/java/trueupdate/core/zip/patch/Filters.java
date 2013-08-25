@@ -9,7 +9,7 @@ package net.java.trueupdate.core.zip.patch;
  *
  * @author Christian Schlichtherle
  */
-interface ZipEntryNameFilter {
+interface EntryNameFilter {
 
     /**
      * Returns {@code true} if and only if the filter accepts the given ZIP
@@ -18,13 +18,12 @@ interface ZipEntryNameFilter {
     boolean accept(String name);
 }
 
-
 /**
  * A filter which accepts all ZIP entry names.
  *
  * @author Christian Schlichtherle
  */
-final class AcceptAllZipEntryNameFilter implements ZipEntryNameFilter {
+final class AcceptAllEntryNameFilter implements EntryNameFilter {
 
     @Override public boolean accept(String name) { return true; }
 }
@@ -34,11 +33,11 @@ final class AcceptAllZipEntryNameFilter implements ZipEntryNameFilter {
  *
  * @author Christian Schlichtherle
  */
-final class InverseZipEntryNameFilter implements ZipEntryNameFilter {
+final class InverseEntryNameFilter implements EntryNameFilter {
 
-    private final ZipEntryNameFilter filter;
+    private final EntryNameFilter filter;
 
-    InverseZipEntryNameFilter(final ZipEntryNameFilter filter) {
+    InverseEntryNameFilter(final EntryNameFilter filter) {
         assert null != filter;
         this.filter = filter;
     }
@@ -47,15 +46,34 @@ final class InverseZipEntryNameFilter implements ZipEntryNameFilter {
         return !filter.accept(name);
     }
 }
+
 /**
- * Accepts only entry sources with the name "META-INF/" or
- * "META-INF/MANIFEST.MF".
+ * Accepts only entry sources with the name "META-INF/MANIFEST.MF".
  *
  * @author Christian Schlichtherle
  */
-final class ManifestZipEntryNameFilter implements ZipEntryNameFilter {
+final class ManifestEntryNameFilter implements EntryNameFilter {
 
     @Override public boolean accept(String name) {
-        return "META-INF/".equals(name) || "META-INF/MANIFEST.MF".equals(name);
+        return "META-INF/MANIFEST.MF".equals(name);
+    }
+}
+
+/**
+ * Decorates another filter to suppress ZIP entries for directories.
+ *
+ * @author Christian Schlichtherle
+ */
+final class NoDirectoryEntryNameFilter implements EntryNameFilter {
+
+    private final EntryNameFilter filter;
+
+    NoDirectoryEntryNameFilter(final EntryNameFilter filter) {
+        assert null != filter;
+        this.filter = filter;
+    }
+
+    @Override public boolean accept(String name) {
+        return !name.endsWith("/") && filter.accept(name);
     }
 }

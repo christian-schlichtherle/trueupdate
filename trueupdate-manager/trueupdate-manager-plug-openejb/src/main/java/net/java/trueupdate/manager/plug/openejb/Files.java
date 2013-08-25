@@ -4,30 +4,13 @@
  */
 package net.java.trueupdate.manager.plug.openejb;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
+import java.io.*;
+import java.util.*;
+import java.util.jar.*;
 import java.util.regex.Pattern;
-import java.util.zip.CRC32;
-import java.util.zip.CheckedInputStream;
-import java.util.zip.Checksum;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.*;
 import javax.annotation.CheckForNull;
-import net.java.trueupdate.core.io.Copy;
-import net.java.trueupdate.core.io.FileStore;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.ZipEntrySink;
-import net.java.trueupdate.core.io.ZipEntrySource;
+import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 
 /**
@@ -77,15 +60,13 @@ final class Files {
         return file.delete() || !file.exists();
     }
 
-    public static void jarTo(final File directory, final File jarFile)
+    public static void jarTo(final File fileOrDirectory, final File jarFile)
     throws IOException {
-        if (!directory.isDirectory()) throw new IllegalArgumentException();
-
         try (JarOutputStream
                 out = new JarOutputStream(new FileOutputStream(jarFile))) {
 
             class Jar  {
-                void jar(final File directory, final String name)
+                void jarDirectory(final File directory, final String name)
                 throws IOException {
                     final File[] memberFiles = directory.listFiles();
                     Arrays.sort(memberFiles); // courtesy
@@ -94,34 +75,23 @@ final class Files {
                                 (name.isEmpty() ? name : name + '/')
                                 + memberFile.getName();
                         if (memberFile.isDirectory()) {
-                            addDirectoryEntry(memberName);
-                            jar(memberFile, memberName);
+                            jarDirectory(memberFile, memberName);
                         } else {
-                            addFileEntry(memberName, memberFile);
+                            jarFile(memberFile, memberName);
                         }
                     }
                 }
 
-                void addDirectoryEntry(final String name) throws IOException {
-                    final ZipEntry entry = entry(name + '/');
-                    entry.setMethod(ZipOutputStream.STORED);
-                    entry.setSize(0);
-                    entry.setCompressedSize(0);
-                    entry.setCrc(0);
-                    out.putNextEntry(entry);
-                    out.closeEntry();
-                }
-
-                void addFileEntry(String name, File input) throws IOException {
+                void jarFile(File file, String name) throws IOException {
                     final ZipEntry entry = entry(name);
                     if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
-                        final long length = input.length();
+                        final long length = file.length();
                         entry.setMethod(ZipOutputStream.STORED);
                         entry.setSize(length);
                         entry.setCompressedSize(length);
-                        entry.setCrc(crc32(input));
+                        entry.setCrc(crc32(file));
                     }
-                    Copy.copy(new FileStore(input), zipEntrySink(entry));
+                    Copy.copy(fileSource(file), zipEntrySink(entry));
                 }
 
                 long crc32(File input) throws IOException {
@@ -135,6 +105,10 @@ final class Files {
                     return checksum.getValue();
                 }
 
+                Source fileSource(File file) {
+                    return new FileStore(file);
+                }
+
                 Sink zipEntrySink(ZipEntry entry) {
                     return new ZipEntrySink(entry, out);
                 }
@@ -142,14 +116,15 @@ final class Files {
                 ZipEntry entry(String name) { return new ZipEntry(name); }
             } // Jar
 
-            new Jar().jar(directory, "");
+            if (fileOrDirectory.isDirectory())
+                new Jar().jarDirectory(fileOrDirectory, "");
+            else
+                new Jar().jarFile(fileOrDirectory, "");
         }
     }
 
     public static void unjarTo(final File jarFile, final File directory)
     throws IOException {
-        if (!jarFile.isFile()) throw new IllegalArgumentException();
-
         try (JarFile jar = new JarFile(jarFile)) {
 
             for (final Enumeration<JarEntry> en = jar.entries();
@@ -166,16 +141,16 @@ final class Files {
     public static void applyPatchTo(
             final File originalJarFile,
             final File zipPatchFile,
-            final File patchedJarFile)
+            final File updatedJarFile)
     throws IOException {
-        try (JarFile originalJar = new JarFile(originalJarFile);
+        try (JarFile originalJar = new JarFile(originalJarFile, false);
              ZipFile zipPatch = new ZipFile(zipPatchFile)) {
             ZipPatch.builder()
-                    .inputZipFile(originalJar)
-                    .zipPatchFile(zipPatch)
-                    .outputJarFile(true)
+                    .inputFile(originalJar)
+                    .patchFile(zipPatch)
+                    .createJarFile(true)
                     .build()
-                    .applyZipPatchFileTo(new FileStore(patchedJarFile));
+                    .applyZipPatchFileTo(new FileStore(updatedJarFile));
         }
     }
 
@@ -203,6 +178,7 @@ final class Files {
         }
     }
 
+    @SuppressWarnings("PackageVisibleInnerClass")
     public interface FileTask {
         void process(File file) throws Exception;
     }

@@ -24,13 +24,13 @@ import net.java.trueupdate.core.zip.model.*;
 public abstract class ZipDiff {
 
     /** Returns the first ZIP file. */
-    abstract @WillNotClose ZipFile zipFile1();
+    abstract @WillNotClose ZipFile file1();
 
     /** Returns the second ZIP file. */
-    abstract @WillNotClose ZipFile zipFile2();
+    abstract @WillNotClose ZipFile file2();
 
     /** Returns the message digest. */
-    abstract MessageDigest messageDigest();
+    abstract MessageDigest digest();
 
     /** Returns a new builder for a ZIP diff. */
     public static Builder builder() { return new Builder(); }
@@ -38,28 +38,28 @@ public abstract class ZipDiff {
     /**
      * Writes a ZIP patch file to the given sink.
      *
-     * @param zipPatchFile the sink for writing the ZIP patch file.
+     * @param patchFile the sink for writing the ZIP patch file.
      */
-    public void writeZipPatchFileTo(final Sink zipPatchFile) throws IOException {
-        final ZipDiffModel model = computeZipDiffModel();
-        try (ZipOutputStream out = new ZipOutputStream(zipPatchFile.output())) {
-            streamZipPatchFileTo(model, out);
+    public void writePatchFileTo(final Sink patchFile) throws IOException {
+        final DiffModel model = computeDiffModel();
+        try (ZipOutputStream out = new ZipOutputStream(patchFile.output())) {
+            streamPatchFileTo(model, out);
         }
     }
 
-    private void streamZipPatchFileTo(
-            final ZipDiffModel model,
+    private void streamPatchFileTo(
+            final DiffModel model,
             final @WillNotClose ZipOutputStream out)
     throws IOException {
         out.setLevel(Deflater.BEST_COMPRESSION);
 
-        final class ZipPatchFileStreamer {
+        final class PatchFileStreamer {
 
-            final ZipDiffModel model;
+            final DiffModel model;
 
-            ZipPatchFileStreamer(final ZipDiffModel model) throws IOException {
+            PatchFileStreamer(final DiffModel model) throws IOException {
                 try {
-                    model.encodeToXml(entrySink(ZipDiffModel.ENTRY_NAME));
+                    model.encodeToXml(entrySink(DiffModel.ENTRY_NAME));
                 } catch (IOException | RuntimeException ex) {
                     throw ex;
                 } catch (Exception ex) {
@@ -68,14 +68,14 @@ public abstract class ZipDiff {
                 this.model = model;
             }
 
-            ZipPatchFileStreamer streamChangedOrAdded() throws IOException {
+            PatchFileStreamer streamChangedOrAdded() throws IOException {
                 for (final Enumeration<? extends ZipEntry>
-                             entries = zipFile2().entries();
+                             entries = file2().entries();
                      entries.hasMoreElements(); ) {
                     final ZipEntry entry = entries.nextElement();
                     final String name = entry.getName();
                     if (changedOrAdded(name))
-                        Copy.copy(new ZipEntrySource(entry, zipFile2()),
+                        Copy.copy(new ZipEntrySource(entry, file2()),
                                   entrySink(name));
                 }
                 return this;
@@ -88,13 +88,13 @@ public abstract class ZipDiff {
             boolean changedOrAdded(String name) {
                 return null != model.changed(name) || null != model.added(name);
             }
-        } // ZipPatchFileStreamer
+        } // PatchFileStreamer
 
-        new ZipPatchFileStreamer(model).streamChangedOrAdded();
+        new PatchFileStreamer(model).streamChangedOrAdded();
     }
 
     /** Computes a ZIP diff model from the two ZIP files. */
-    public ZipDiffModel computeZipDiffModel() throws IOException {
+    public DiffModel computeDiffModel() throws IOException {
         return new Assembler().walkAndReturn(new Assembly()).buildZipDiffModel();
     }
 
@@ -109,29 +109,31 @@ public abstract class ZipDiff {
         <V extends Visitor> V walkAndReturn(final V visitor)
         throws IOException {
             for (final Enumeration<? extends ZipEntry>
-                         entries = zipFile1().entries();
+                         entries = file1().entries();
                  entries.hasMoreElements(); ) {
-                final ZipEntry zipEntry1 = entries.nextElement();
-                final ZipEntry zipEntry2 =
-                        zipFile2().getEntry(zipEntry1.getName());
-                final ZipEntrySource zipEntrySource1 =
-                        new ZipEntrySource(zipEntry1, zipFile1());
-                if (null == zipEntry2)
-                    visitor.visitEntryInFirstFile(zipEntrySource1);
+                final ZipEntry entry1 = entries.nextElement();
+                final String name = entry1.getName();
+                if (name.endsWith("/")) continue;
+                final ZipEntry entry2 = file2().getEntry(name);
+                final ZipEntrySource source1 =
+                        new ZipEntrySource(entry1, file1());
+                if (null == entry2)
+                    visitor.visitEntryInFirstFile(source1);
                 else
-                    visitor.visitEntriesInBothFiles(zipEntrySource1,
-                            new ZipEntrySource(zipEntry2, zipFile2()));
+                    visitor.visitEntriesInBothFiles(source1,
+                            new ZipEntrySource(entry2, file2()));
             }
 
             for (final Enumeration<? extends ZipEntry>
-                         entries = zipFile2().entries();
+                         entries = file2().entries();
                  entries.hasMoreElements(); ) {
-                final ZipEntry zipEntry2 = entries.nextElement();
-                final ZipEntry zipEntry1 =
-                        zipFile1().getEntry(zipEntry2.getName());
-                if (null == zipEntry1)
+                final ZipEntry entry2 = entries.nextElement();
+                final String name = entry2.getName();
+                if (name.endsWith("/")) continue;
+                final ZipEntry entry1 = file1().getEntry(name);
+                if (null == entry1)
                     visitor.visitEntryInSecondFile(
-                            new ZipEntrySource(zipEntry2, zipFile2()));
+                            new ZipEntrySource(entry2, file2()));
             }
 
             return visitor;
@@ -140,18 +142,18 @@ public abstract class ZipDiff {
 
     private class Assembly implements Visitor {
 
-        private final Map<String, ZipEntryNameAndTwoDigestValues>
+        private final Map<String, EntryNameAndTwoDigests>
                 changed = new TreeMap<>();
 
-        private final Map<String, ZipEntryNameAndDigestValue>
+        private final Map<String, EntryNameAndDigest>
                 unchanged = new TreeMap<>(),
                 added = new TreeMap<>(),
                 removed = new TreeMap<>();
 
-        ZipDiffModel buildZipDiffModel() {
-            return ZipDiffModel
+        DiffModel buildZipDiffModel() {
+            return DiffModel
                     .builder()
-                    .messageDigest(messageDigest())
+                    .messageDigest(digest())
                     .changedEntries(changed.values())
                     .unchangedEntries(unchanged.values())
                     .addedEntries(added.values())
@@ -166,21 +168,21 @@ public abstract class ZipDiff {
         throws IOException {
             final String name1 = source1.name();
             assert name1.equals(source2.name());
-            final String value1 = digestValueOf(source1);
-            final String value2 = digestValueOf(source2);
-            if (value1.equals(value2))
-                unchanged.put(name1, new ZipEntryNameAndDigestValue(
-                        name1, value1));
+            final String digest1 = digestValueOf(source1);
+            final String digest2 = digestValueOf(source2);
+            if (digest1.equals(digest2))
+                unchanged.put(name1,
+                        new EntryNameAndDigest(name1, digest1));
             else
-                changed.put(name1, new ZipEntryNameAndTwoDigestValues(
-                        name1, value1, value2));
+                changed.put(name1,
+                        new EntryNameAndTwoDigests(name1, digest1, digest2));
         }
 
         @Override
         public void visitEntryInFirstFile(final ZipEntrySource source1)
         throws IOException {
             final String name = source1.name();
-            removed.put(name, new ZipEntryNameAndDigestValue(name,
+            removed.put(name, new EntryNameAndDigest(name,
                     digestValueOf(source1)));
         }
 
@@ -188,12 +190,12 @@ public abstract class ZipDiff {
         public void visitEntryInSecondFile(final ZipEntrySource source2)
         throws IOException {
             final String name = source2.name();
-            added.put(name, new ZipEntryNameAndDigestValue(name,
+            added.put(name, new EntryNameAndDigest(name,
                     digestValueOf(source2)));
         }
 
         String digestValueOf(Source source) throws IOException {
-            final MessageDigest messageDigest = messageDigest();
+            final MessageDigest messageDigest = digest();
             messageDigest.reset();
             MessageDigests.updateDigestFrom(messageDigest, source);
             return MessageDigests.valueOf(messageDigest);
@@ -244,47 +246,47 @@ public abstract class ZipDiff {
      */
     public static final class Builder {
 
-        private @CheckForNull ZipFile zipFile1, zipFile2;
-        private @CheckForNull MessageDigest messageDigest;
+        private @CheckForNull ZipFile file1, file2;
+        private @CheckForNull MessageDigest digest;
 
         Builder() { }
 
-        public Builder zipFile1(final @Nullable ZipFile zipFile1) {
-            this.zipFile1 = zipFile1;
+        public Builder file1(final @Nullable ZipFile file1) {
+            this.file1 = file1;
             return this;
         }
 
-        public Builder zipFile2(final @Nullable ZipFile zipFile2) {
-            this.zipFile2 = zipFile2;
+        public Builder file2(final @Nullable ZipFile zipFile2) {
+            this.file2 = zipFile2;
             return this;
         }
 
-        public Builder messageDigest(
-                final @Nullable MessageDigest messageDigest) {
-            this.messageDigest = messageDigest;
+        public Builder digest(
+                final @Nullable MessageDigest digest) {
+            this.digest = digest;
             return this;
         }
 
         public ZipDiff build() {
-            return create(zipFile1, zipFile2, nonNullOrSha1(messageDigest));
+            return create(file1, file2, nonNullOrSha1(digest));
         }
 
         private static MessageDigest nonNullOrSha1(
-                final @CheckForNull MessageDigest messageDigest) {
-            return null != messageDigest ? messageDigest : MessageDigests.sha1();
+                final @CheckForNull MessageDigest digest) {
+            return null != digest ? digest : MessageDigests.sha1();
         }
 
         private static ZipDiff create(
-                final ZipFile zipFile1,
-                final ZipFile zipFile2,
-                final MessageDigest messageDigest) {
-            requireNonNull(zipFile1);
-            requireNonNull(zipFile2);
-            assert null != messageDigest;
+                final ZipFile file1,
+                final ZipFile file2,
+                final MessageDigest digest) {
+            requireNonNull(file1);
+            requireNonNull(file2);
+            assert null != digest;
             return new ZipDiff() {
-                @Override ZipFile zipFile1() { return zipFile1; }
-                @Override ZipFile zipFile2() { return zipFile2; }
-                @Override MessageDigest messageDigest() { return messageDigest; }
+                @Override ZipFile file1() { return file1; }
+                @Override ZipFile file2() { return file2; }
+                @Override MessageDigest digest() { return digest; }
             };
         }
     } // Builder

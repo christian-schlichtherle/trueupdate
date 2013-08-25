@@ -18,16 +18,16 @@ class ZipDiffIT extends WordSpec with ZipITContext {
   "A JAR diff" when {
     "computing  the test JAR files" should {
       "partition the entry names and digests correctly" in {
-        val diff = withZipDiff(_ computeZipDiffModel ())
+        val diff = loanZipDiff(_ computeDiffModel ())
         import collection.JavaConverters._
         import diff._
-        removedEntries.asScala map (_.entryName) should
+        removedEntries.asScala map (_.name) should
           equal (List("entryOnlyInFile1"))
-        addedEntries.asScala map (_.entryName) should
+        addedEntries.asScala map (_.name) should
           equal (List("entryOnlyInFile2"))
-        unchangedEntries.asScala map (_.entryName) should
-          equal (List("META-INF/", "META-INF/MANIFEST.MF", "differentEntryTime", "equalEntry"))
-        changedEntries.asScala map (_.entryName) should
+        unchangedEntries.asScala map (_.name) should
+          equal (List("META-INF/MANIFEST.MF", "differentEntryTime", "equalEntry"))
+        changedEntries.asScala map (_.name) should
           equal (List("differentEntrySize"))
       }
     }

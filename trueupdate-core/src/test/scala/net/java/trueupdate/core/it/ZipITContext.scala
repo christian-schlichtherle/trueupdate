@@ -12,7 +12,7 @@ import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.util.MessageDigests
-import net.java.trueupdate.core.zip.model.ZipDiffModel
+import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.patch.ZipPatch
 
@@ -21,38 +21,38 @@ import net.java.trueupdate.core.zip.patch.ZipPatch
  */
 trait ZipITContext extends TestContext {
 
-  def withZipDiff[A](fun: ZipDiff => A) =
-    withZipFiles { (zipFile1, zipFile2) =>
+  def loanZipDiff[A](fun: ZipDiff => A) =
+    loanJarFiles { (jarFile1, jarFile2) =>
       fun(ZipDiff.builder
-        .zipFile1(zipFile1)
-        .zipFile2(zipFile2)
-        .messageDigest(digest)
+        .file1(jarFile1)
+        .file2(jarFile2)
+        .digest(digest)
         .build)
     }
 
-  def withZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) =
-    loan(zipFile1()) to { inputZipFile =>
+  def loanZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) =
+    loan(testJar1()) to { inputJarFile =>
       fun(ZipPatch.builder
-        .zipPatchFile(zipPatchFile)
-        .inputZipFile(inputZipFile)
-        .outputJarFile(true)
+        .inputFile(inputJarFile)
+        .patchFile(zipPatchFile)
+        .createJarFile(true)
         .build)
     }
 
-  def withZipFiles[A](fun: (ZipFile, ZipFile) => A) =
-    loan(zipFile1()) to { firstZipFile =>
-      loan(zipFile2()) to { secondZipFile =>
-        fun(firstZipFile, secondZipFile)
+  def loanJarFiles[A](fun: (JarFile, JarFile) => A) =
+    loan(testJar1()) to { jarFile1 =>
+      loan(testJar2()) to { jarFile2 =>
+        fun(jarFile1, jarFile2)
       }
     }
 
-  @CreatesObligation def zipFile1() = new JarFile(file("test1.jar"), false)
-  @CreatesObligation def zipFile2() = new JarFile(file("test2.jar"), false)
+  @CreatesObligation def testJar1() = new JarFile(file("test1.jar"), false)
+  @CreatesObligation def testJar2() = new JarFile(file("test2.jar"), false)
 
   private def file(resourceName: String) =
     new File((classOf[ZipITContext] getResource resourceName).toURI)
 
   def digest = MessageDigests.sha1
 
-  override lazy val jaxbContext = ZipDiffModel.jaxbContext
+  override lazy val jaxbContext = DiffModel.jaxbContext
 }

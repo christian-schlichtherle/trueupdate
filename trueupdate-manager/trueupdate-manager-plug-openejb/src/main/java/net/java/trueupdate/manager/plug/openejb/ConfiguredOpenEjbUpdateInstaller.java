@@ -122,7 +122,7 @@ class ConfiguredOpenEjbUpdateInstaller {
             if (scheme.matches(location, info))
                 return info;
         throw new FileNotFoundException(
-                String.format("Cannot application information for %s .", location));
+                String.format("Cannot resolve application information for %s .", location));
     }
 
     private static void loanUpdatedJarFile(

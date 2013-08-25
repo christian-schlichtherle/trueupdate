@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.it.Loan._
-import net.java.trueupdate.core.zip.model.ZipDiffModel
+import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.jax.rs.client.UpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
@@ -46,7 +46,7 @@ class UpdateServiceITSuite extends JerseyTest {
     val source = artifactUpdateClient.diff(artifactDescriptor, updateVersion)
     loan(new ZipInputStream(source input ())) to { zipIn =>
       val entry = zipIn getNextEntry ()
-      entry.getName should be (ZipDiffModel.ENTRY_NAME)
+      entry.getName should be (DiffModel.ENTRY_NAME)
       val source = new Source {
         def input() = new FilterInputStream(zipIn) {
           override def close() { zipIn closeEntry () }

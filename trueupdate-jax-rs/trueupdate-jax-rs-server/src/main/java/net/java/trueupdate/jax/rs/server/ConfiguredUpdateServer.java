@@ -116,10 +116,10 @@ public final class ConfiguredUpdateServer {
                 try (ZipFile zipFile1 = new ZipFile(file1);
                      ZipFile zipFile2 = new ZipFile(file2)) {
                     ZipDiff.builder()
-                            .zipFile1(zipFile1)
-                            .zipFile2(zipFile2)
+                            .file1(zipFile1)
+                            .file2(zipFile2)
                             .build()
-                            .writeZipPatchFileTo(output);
+                            .writePatchFileTo(output);
                 }
             }
         };

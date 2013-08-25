@@ -13,9 +13,9 @@ import java.io.File
 import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
-import scala.collection.SortedSet
 import net.java.trueupdate.core.io.FileStore
 import net.java.trueupdate.core.zip.diff.ZipDiff
+import java.util.logging._
 
 /**
  * @author Christian Schlichtherle
@@ -25,35 +25,36 @@ class ZipPatchIT extends WordSpec with ZipITContext {
 
   def tempFile() = File.createTempFile("tmp", null)
 
-  "A JAR patch" when {
-    "generating and applying the JAR diff file to the first test JAR file" should {
+  "A ZIP patch" when {
+    "generating and applying the ZIP patch file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
         val zipPatchFile = tempFile ()
         try {
-          withZipDiff { _ writeZipPatchFileTo new FileStore(zipPatchFile) }
+          loanZipDiff(_ writePatchFileTo new FileStore(zipPatchFile))
           loan(new ZipFile(zipPatchFile)) to { zipPatchFile =>
-            val patchedJarFile = tempFile ()
+            val updatedJarFile = tempFile ()
             try {
-              withZipPatch(zipPatchFile) {
-                _ applyZipPatchFileTo new FileStore(patchedJarFile)
+              loanZipPatch(zipPatchFile) {
+                _ applyZipPatchFileTo new FileStore(updatedJarFile)
               }
-              loan(new JarFile(patchedJarFile)) to { zipFile1 =>
-                loan(zipFile2()) to { zipFile2 =>
-                  val ref = List.empty[String] ++
-                    zipFile2.entries.asScala.map(_.getName)
-                  val diff = ZipDiff.builder
-                    .zipFile1(zipFile1)
-                    .zipFile2(zipFile2)
+              loan(testJar2()) to { jarFile1 =>
+                val unchangedReference = (List.empty[String] ++
+                  jarFile1.entries.asScala.map(_.getName)).filter(!_.endsWith("/"))
+                loan(new JarFile(updatedJarFile)) to { jarFile2 =>
+                  val diffModel = ZipDiff.builder
+                    .file1(jarFile1)
+                    .file2(jarFile2)
                     .build
-                    .computeZipDiffModel ()
-                  diff.addedEntries.isEmpty should be (true)
-                  diff.removedEntries.isEmpty should be (true)
-                  diff.unchangedEntries.asScala map (_.entryName) should equal (ref)
-                  diff.changedEntries.isEmpty should be (true)
+                    .computeDiffModel ()
+                  diffModel.addedEntries.isEmpty should be (true)
+                  diffModel.removedEntries.isEmpty should be (true)
+                  diffModel.unchangedEntries.asScala map (_.name) should
+                    equal (unchangedReference)
+                  diffModel.changedEntries.isEmpty should be (true)
                 }
               }
             } finally {
-              patchedJarFile delete ()
+              updatedJarFile delete ()
             }
           }
         } finally {
