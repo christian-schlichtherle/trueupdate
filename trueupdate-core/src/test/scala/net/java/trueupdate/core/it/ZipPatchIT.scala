@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.core.it
 
-import Loan._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
@@ -31,16 +30,20 @@ class ZipPatchIT extends WordSpec with ZipITContext {
         val zipPatchFile = tempFile ()
         try {
           loanZipDiff(_ writePatchFileTo new FileStore(zipPatchFile))
-          loan(new ZipFile(zipPatchFile)) to { zipPatchFile =>
+          var ex: Throwable = null
+          val patchZipFile = new ZipFile(zipPatchFile)
+          try {
             val updatedJarFile = tempFile ()
             try {
-              loanZipPatch(zipPatchFile) {
+              loanZipPatch(patchZipFile) {
                 _ applyZipPatchFileTo new FileStore(updatedJarFile)
               }
-              loan(testJar2()) to { jarFile1 =>
+              val jarFile1 = testJar2()
+              try {
                 val unchangedReference = (List.empty[String] ++
                   jarFile1.entries.asScala.map(_.getName)).filter(!_.endsWith("/"))
-                loan(new JarFile(updatedJarFile)) to { jarFile2 =>
+                val jarFile2 = new JarFile(updatedJarFile)
+                try {
                   val diffModel = ZipDiff.builder
                     .file1(jarFile1)
                     .file2(jarFile2)
@@ -51,10 +54,34 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                   diffModel.unchangedEntries.asScala map (_.name) should
                     equal (unchangedReference)
                   diffModel.changedEntries.isEmpty should be (true)
+                } catch {
+                  case ex2: Throwable => ex = ex2; throw ex
+                } finally {
+                  try {
+                    jarFile2 close ()
+                  } catch {
+                    case ex2: Throwable => if (null == ex) throw ex2
+                  }
+                }
+              } catch {
+                case ex2: Throwable => ex = ex2; throw ex
+              } finally {
+                try {
+                  jarFile1 close ()
+                } catch {
+                  case ex2: Throwable => if (null == ex) throw ex2
                 }
               }
             } finally {
               updatedJarFile delete ()
+            }
+          } catch {
+            case ex2: Throwable => ex = ex2; throw ex
+          } finally {
+            try {
+              patchZipFile close ()
+            } catch {
+              case ex2: Throwable => if (null == ex) throw ex2
             }
           }
         } finally {

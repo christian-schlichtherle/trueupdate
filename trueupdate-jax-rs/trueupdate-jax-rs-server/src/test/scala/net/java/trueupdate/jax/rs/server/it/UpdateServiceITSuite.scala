@@ -5,12 +5,11 @@
 package net.java.trueupdate.jax.rs.server.it
 
 import com.sun.jersey.test.framework._
-import java.io.FilterInputStream
+import java.io._
 import java.util.zip.ZipInputStream
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
 import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.it.Loan._
 import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.jax.rs.client.UpdateClient
 import org.junit.Test
@@ -44,18 +43,26 @@ class UpdateServiceITSuite extends JerseyTest {
   private def assertDiff() {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
     val source = updateClient diff (artifactDescriptor, updateVersion)
-    loan(new ZipInputStream(source input ())) to { zipIn =>
-      val entry = zipIn getNextEntry ()
-      entry.getName should be (DiffModel.ENTRY_NAME)
-      val source = new Source {
-        def input() = new FilterInputStream(zipIn) {
-          override def close() { zipIn closeEntry () }
+
+    class ZipInputStreamSource extends Source {
+      override def input() = new ZipInputStream(source input ())
+    } // ZipInputStreamSink
+
+    new InputTask[Unit, IOException](new ZipInputStreamSource) {
+      override def apply(in: InputStream) {
+        val zipIn = in.asInstanceOf[ZipInputStream]
+        val entry = zipIn getNextEntry ()
+        entry.getName should be (DiffModel.ENTRY_NAME)
+        val source = new Source {
+          def input() = new FilterInputStream(zipIn) {
+            override def close() { zipIn closeEntry () }
+          }
         }
+        val store = memoryStore
+        Copy copy (source, store)
+        logger log (Level.FINE, "\n{0}", utf8String(store))
       }
-      val store = memoryStore
-      Copy copy (source, store)
-      logger log (Level.FINE, "\n{0}", utf8String(store))
-    }
+    } call ()
   }
 
   private def updateClient = new UpdateClient(resource.getURI, client)

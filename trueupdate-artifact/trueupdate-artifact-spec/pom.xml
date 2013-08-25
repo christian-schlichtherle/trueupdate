@@ -19,6 +19,13 @@
         Specifies an API for describing and resolving software artifacts.
     </description>
 
+    <dependencies>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-shed</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

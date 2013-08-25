@@ -6,7 +6,6 @@ package net.java.trueupdate.manager.plug.openejb;
 
 import java.io.*;
 import java.net.URI;
-import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
@@ -14,6 +13,7 @@ import net.java.trueupdate.manager.core.UpdateResolver;
 import static net.java.trueupdate.manager.plug.openejb.Files.*;
 import net.java.trueupdate.manager.plug.openejb.Files.FileTask;
 import net.java.trueupdate.manager.spec.*;
+import static net.java.trueupdate.shed.Objects.*;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
 
@@ -34,8 +34,8 @@ class ConfiguredOpenEjbUpdateInstaller {
     ConfiguredOpenEjbUpdateInstaller(
             final Deployer deployer,
             final UpdateMessage message) {
-        this.deployer = Objects.requireNonNull(deployer);
-        this.message = Objects.requireNonNull(message);
+        this.deployer = requireNonNull(deployer);
+        this.message = requireNonNull(message);
     }
 
     void install(final UpdateResolver resolver) throws Exception {
@@ -132,6 +132,7 @@ class ConfiguredOpenEjbUpdateInstaller {
     throws Exception {
 
         class MakePatchedJarFile implements FileTask {
+
             @Override
             public void process(File patchedJarFile) throws Exception {
                 applyPatchTo(originalJarFile, zipPatchFile, patchedJarFile);
@@ -141,7 +142,7 @@ class ConfiguredOpenEjbUpdateInstaller {
             }
         } // MakePatchedJarFile
 
-        loanTempFile(new MakePatchedJarFile(), "output", ".jar");
+        loanTempFileTo("output", ".jar", new MakePatchedJarFile());
     }
 
     private static void loanOriginalJarFile(
@@ -150,6 +151,7 @@ class ConfiguredOpenEjbUpdateInstaller {
     throws Exception {
 
         class MakeOriginalJarFile implements FileTask {
+
             @Override
             public void process(final File file) throws Exception {
                 jarTo(deploymentDir, file);
@@ -159,7 +161,7 @@ class ConfiguredOpenEjbUpdateInstaller {
             }
         } // MakeOriginalJarFile
 
-        loanTempFile(new MakeOriginalJarFile(), "input", ".jar");
+        loanTempFileTo("input", ".jar", new MakeOriginalJarFile());
     }
 
     private ArtifactDescriptor artifactDescriptor() {

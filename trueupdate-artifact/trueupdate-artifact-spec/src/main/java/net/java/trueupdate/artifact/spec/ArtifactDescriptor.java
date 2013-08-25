@@ -7,6 +7,8 @@ package net.java.trueupdate.artifact.spec;
 import java.io.Serializable;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import static net.java.trueupdate.shed.Objects.*;
+import static net.java.trueupdate.shed.Strings.*;
 
 /**
  * An artifact descriptor comprises of a group ID, an artifact ID, a version,
@@ -35,15 +37,6 @@ public final class ArtifactDescriptor implements Serializable {
         this.extension = nonNullOr(b.extension, "jar");
     }
 
-    private static String requireNonEmpty(final String string) {
-        if (string.isEmpty()) throw new IllegalArgumentException();
-        return string;
-    }
-
-    private static String nonNullOr(@CheckForNull String string, String def) {
-        return null != string ? string : def;
-    }
-
     /** Returns a new builder with all properties set from this instance. */
     public Builder<Void> update() {
         return builder()
@@ -60,7 +53,7 @@ public final class ArtifactDescriptor implements Serializable {
      * and the default value for the property {@code extension} is
      * {@code "jar"}.
      */
-    public static Builder<Void> builder() { return new Builder<>(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     /**
      * Returns the group id, e.g. {@code net.java.trueupdate}.

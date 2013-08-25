@@ -9,7 +9,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import static net.java.trueupdate.artifact.impl.maven.XmlAdapters.*;
-import net.java.trueupdate.core.util.SystemProperties;
+import net.java.trueupdate.shed.SystemProperties;
 import org.eclipse.aether.repository.*;
 
 @Immutable

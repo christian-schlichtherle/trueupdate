@@ -22,7 +22,8 @@ abstract class BasicUpdateResolver implements UpdateResolver {
     private static final Logger
             logger = Logger.getLogger(BasicUpdateResolver.class.getName());
 
-    private final Map<UpdateDescriptor, FileAccount> accounts = new HashMap<>();
+    private final Map<UpdateDescriptor, FileAccount>
+            accounts = new HashMap<UpdateDescriptor, FileAccount>();
 
     /** Returns the artifact update client. */
     abstract UpdateClient updateClient();

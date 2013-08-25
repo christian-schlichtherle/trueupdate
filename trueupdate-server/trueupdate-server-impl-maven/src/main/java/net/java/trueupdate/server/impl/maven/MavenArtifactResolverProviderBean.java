@@ -12,7 +12,7 @@ import javax.inject.Provider;
 import net.java.trueupdate.artifact.impl.maven.MavenArtifactResolver;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.util.SystemProperties;
+import net.java.trueupdate.shed.SystemProperties;
 
 /**
  * A provider for an artifact resolver which uses Maven.

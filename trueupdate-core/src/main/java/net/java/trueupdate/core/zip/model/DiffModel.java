@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.util.*;
+import net.java.trueupdate.shed.*;
 
 /**
  * A Value Object which represents the meta data in a ZIP patch file.
@@ -86,8 +86,9 @@ public final class DiffModel implements Serializable {
 
     static Map<String, EntryNameAndTwoDigests> changedMap(
             final Collection<EntryNameAndTwoDigests> entries) {
-        final Map<String, EntryNameAndTwoDigests> map = new LinkedHashMap<>(
-                initialCapacity(entries));
+        final Map<String, EntryNameAndTwoDigests> map =
+                new LinkedHashMap<String, EntryNameAndTwoDigests>(
+                    initialCapacity(entries));
         for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
             map.put(entryNameAndTwoDigests.name(), entryNameAndTwoDigests);
         return unmodifiableMap(map);
@@ -95,8 +96,9 @@ public final class DiffModel implements Serializable {
 
     static Map<String, EntryNameAndDigest> unchangedMap(
             final Collection<EntryNameAndDigest> entries) {
-        final Map<String, EntryNameAndDigest> map = new LinkedHashMap<>(
-                initialCapacity(entries));
+        final Map<String, EntryNameAndDigest> map =
+                new LinkedHashMap<String, EntryNameAndDigest>(
+                    initialCapacity(entries));
         for (EntryNameAndDigest entryNameAndDigest : entries)
             map.put(entryNameAndDigest.name(), entryNameAndDigest);
         return unmodifiableMap(map);

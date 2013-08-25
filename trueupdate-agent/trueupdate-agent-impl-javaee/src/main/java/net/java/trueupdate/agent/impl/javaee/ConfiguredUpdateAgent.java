@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.agent.impl.javaee;
 
-import static java.util.Objects.requireNonNull;
 import javax.jms.*;
 import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
+import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * A configured update agent.

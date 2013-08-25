@@ -4,12 +4,12 @@
  */
 package net.java.trueupdate.manager.spec;
 
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-
-import static java.util.Objects.requireNonNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import static net.java.trueupdate.shed.Objects.*;
+import static net.java.trueupdate.shed.Strings.*;
 
 /**
  * An update descriptor comprises of an artifact descriptor plus an update
@@ -30,11 +30,6 @@ public final class UpdateDescriptor {
         this.updateVersion = requireNonEmpty(b.updateVersion);
     }
 
-    private static String requireNonEmpty(final String value) {
-        if (value.isEmpty()) throw new IllegalArgumentException();
-        return value;
-    }
-
     /** Returns a new builder with all properties set from this instance. */
     public Builder<Void> update() {
         return builder()
@@ -43,7 +38,7 @@ public final class UpdateDescriptor {
     }
 
     /** Returns a new builder for an update descriptor. */
-    public static Builder<Void> builder() { return new Builder<>(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     /** Returns the artifact descriptor. */
     public ArtifactDescriptor artifactDescriptor() {

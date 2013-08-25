@@ -7,13 +7,12 @@ package net.java.trueupdate.core.zip.diff;
 import java.io.*;
 import java.security.MessageDigest;
 import java.util.*;
-import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.util.*;
 import net.java.trueupdate.core.zip.model.*;
+import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
  * Compares two ZIP files entry by entry.
@@ -42,9 +41,18 @@ public abstract class ZipDiff {
      */
     public void writePatchFileTo(final Sink patchFile) throws IOException {
         final DiffModel model = computeDiffModel();
-        try (ZipOutputStream out = new ZipOutputStream(patchFile.output())) {
-            streamPatchFileTo(model, out);
-        }
+        new OutputTask<Void, IOException>(
+                new Sink() {
+                    @Override public OutputStream output() throws IOException {
+                        return new ZipOutputStream(patchFile.output());
+                    }
+                }
+        ) {
+            @Override protected Void apply(final OutputStream out) throws IOException {
+                streamPatchFileTo(model, (ZipOutputStream) out);
+                return null;
+            }
+        }.call();
     }
 
     private void streamPatchFileTo(
@@ -60,7 +68,9 @@ public abstract class ZipDiff {
             PatchFileStreamer(final DiffModel model) throws IOException {
                 try {
                     model.encodeToXml(entrySink(DiffModel.ENTRY_NAME));
-                } catch (IOException | RuntimeException ex) {
+                } catch (RuntimeException ex) {
+                    throw ex;
+                } catch (IOException ex) {
                     throw ex;
                 } catch (Exception ex) {
                     throw new IOException(ex);
@@ -143,12 +153,12 @@ public abstract class ZipDiff {
     private class Assembly implements Visitor {
 
         private final Map<String, EntryNameAndTwoDigests>
-                changed = new TreeMap<>();
+                changed = new TreeMap<String, EntryNameAndTwoDigests>();
 
         private final Map<String, EntryNameAndDigest>
-                unchanged = new TreeMap<>(),
-                added = new TreeMap<>(),
-                removed = new TreeMap<>();
+                unchanged = new TreeMap<String, EntryNameAndDigest>(),
+                added = new TreeMap<String, EntryNameAndDigest>(),
+                removed = new TreeMap<String, EntryNameAndDigest>();
 
         DiffModel buildZipDiffModel() {
             return DiffModel

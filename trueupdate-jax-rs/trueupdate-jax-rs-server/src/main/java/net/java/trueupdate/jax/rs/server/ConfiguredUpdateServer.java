@@ -5,7 +5,6 @@
 package net.java.trueupdate.jax.rs.server;
 
 import java.io.*;
-import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipFile;
 import javax.annotation.concurrent.Immutable;
@@ -20,6 +19,7 @@ import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
+import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * The configured server-side implementation of a RESTful service for
@@ -71,7 +71,7 @@ public final class ConfiguredUpdateServer {
     @Path("version")
     @Produces({ APPLICATION_XML, TEXT_XML })
     public JAXBElement<String> versionAsXml() throws UpdateServiceException {
-        return new JAXBElement<>(VERSION_NAME, String.class, versionAsText());
+        return new JAXBElement<String>(VERSION_NAME, String.class, versionAsText());
     }
 
     String resolveUpdateVersion() throws Exception {
@@ -113,13 +113,33 @@ public final class ConfiguredUpdateServer {
             }
 
             void write(final Sink output) throws IOException {
-                try (ZipFile zipFile1 = new ZipFile(file1);
-                     ZipFile zipFile2 = new ZipFile(file2)) {
-                    ZipDiff.builder()
-                            .file1(zipFile1)
-                            .file2(zipFile2)
-                            .build()
-                            .writePatchFileTo(output);
+                IOException ex = null;
+                final ZipFile zip1 = new ZipFile(file1);
+                try {
+                    final ZipFile zip2 = new ZipFile(file2);
+                    try {
+                        ZipDiff.builder()
+                                .file1(zip1)
+                                .file2(zip2)
+                                .build()
+                                .writePatchFileTo(output);
+                    } catch (IOException ex2) {
+                        throw ex = ex2;
+                    } finally {
+                        try {
+                            zip2.close();
+                        } catch (IOException ex2) {
+                            if (null == ex) throw ex2;
+                        }
+                    }
+                } catch (IOException ex2) {
+                    throw ex = ex2;
+                } finally {
+                    try {
+                        zip1.close();
+                    } catch (IOException ex2) {
+                        if (null == ex) throw ex2;
+                    }
                 }
             }
         };

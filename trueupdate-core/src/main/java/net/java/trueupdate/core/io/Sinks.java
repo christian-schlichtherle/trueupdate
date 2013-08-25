@@ -8,12 +8,14 @@ package net.java.trueupdate.core.io;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Provides common {@link Sink}s.
  *
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
+@Immutable
 public class Sinks {
 
     /**

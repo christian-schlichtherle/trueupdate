@@ -2,10 +2,11 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.util;
+package net.java.trueupdate.shed;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Replaces references to system properties of the form {@code ${key}} with
@@ -13,7 +14,8 @@ import java.util.regex.Pattern;
  *
  * @author Christian Schlichtherle
  */
-public final class SystemProperties {
+@Immutable
+public class SystemProperties {
 
     private static Pattern
             REFERENCE_PATTERN = Pattern.compile("\\$\\{([^\\}]*)\\}");

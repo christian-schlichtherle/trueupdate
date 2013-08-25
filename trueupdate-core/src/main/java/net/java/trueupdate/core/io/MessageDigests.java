@@ -2,14 +2,12 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.util;
+package net.java.trueupdate.core.io;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.io.Store;
 
 /**
  * Provides message digest functions.
@@ -17,7 +15,7 @@ import net.java.trueupdate.core.io.Store;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class MessageDigests {
+public class MessageDigests {
 
     private MessageDigests() { }
 
@@ -63,10 +61,13 @@ public final class MessageDigests {
             final MessageDigest digest,
             final Source source)
     throws IOException {
-        final byte[] buffer = new byte[Store.BUFSIZE];
-        try (InputStream in = source.input()) {
-            for (int read; 0 <= (read = in.read(buffer)); )
-                digest.update(buffer, 0, read);
-        }
+        new InputTask<Void, IOException>(source) {
+            @Override protected Void apply(InputStream in) throws IOException {
+                final byte[] buffer = new byte[Store.BUFSIZE];
+                for (int read; 0 <= (read = in.read(buffer)); )
+                    digest.update(buffer, 0, read);
+                return null;
+            }
+        }.call();
     }
 }

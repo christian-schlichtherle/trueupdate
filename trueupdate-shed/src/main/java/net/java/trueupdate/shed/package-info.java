@@ -8,4 +8,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.core.util;
+package net.java.trueupdate.shed;

@@ -6,14 +6,12 @@ package net.java.trueupdate.core.zip.patch;
 
 import java.io.*;
 import java.security.*;
-
-import static java.util.Objects.requireNonNull;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.util.*;
 import net.java.trueupdate.core.zip.model.*;
+import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
  * Applies a ZIP patch file to an input ZIP file and writes an output ZIP file.
@@ -44,10 +42,19 @@ public abstract class ZipPatch {
         final EntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
-        try (ZipOutputStream out = newZipOutputStream(outputFile)) {
-            for (EntryNameFilter filter : passFilters)
-                applyPatchFileTo(new NoDirectoryEntryNameFilter(filter), out);
-        }
+        new OutputTask<Void, IOException>(
+                new Sink() {
+                    @Override public OutputStream output() throws IOException {
+                        return newZipOutputStream(outputFile);
+                    }
+                }
+        ) {
+            @Override protected Void apply(final OutputStream out) throws IOException {
+                for (EntryNameFilter filter : passFilters)
+                    applyPatchFileTo(new NoDirectoryEntryNameFilter(filter), (ZipOutputStream) out);
+                return null;
+            }
+        }.call();
     }
 
     /** Returns a new ZIP output stream which writes to the given sink. */
@@ -187,7 +194,9 @@ public abstract class ZipPatch {
         try {
             return DiffModel.decodeFromXml(
                     new ZipEntrySource(diffModelEntry(), patchFile()));
-        } catch (IOException | RuntimeException ex) {
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new InvalidZipPatchFileException(patchFile().getName(), ex);

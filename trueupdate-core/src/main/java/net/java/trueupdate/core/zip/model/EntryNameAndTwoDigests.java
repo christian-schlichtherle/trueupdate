@@ -5,9 +5,9 @@
 package net.java.trueupdate.core.zip.model;
 
 import java.io.Serializable;
-import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.*;
+import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
  * A Value Object which represents a ZIP entry name and two message digests in

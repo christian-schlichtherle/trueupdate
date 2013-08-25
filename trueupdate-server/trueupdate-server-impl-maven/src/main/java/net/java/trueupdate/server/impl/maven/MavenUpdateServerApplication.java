@@ -15,8 +15,9 @@ import net.java.trueupdate.jax.rs.server.UpdateServiceExceptionMapper;
 @ApplicationPath("/")
 public final class MavenUpdateServerApplication extends Application {
 
+    @SuppressWarnings("unchecked")
     private static final Set<Class<?>> classes = Collections.unmodifiableSet(
-            new HashSet<>(Arrays.asList(
+            new HashSet<Class<?>>(Arrays.asList(
                 MavenUpdateServerBean.class,
                 UpdateServiceExceptionMapper.class)));
 

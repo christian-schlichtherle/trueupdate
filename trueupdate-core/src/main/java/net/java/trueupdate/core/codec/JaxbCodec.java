@@ -5,14 +5,12 @@
  */
 package net.java.trueupdate.core.codec;
 
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.Source;
-
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.shed.Objects;
 
 /**
  * A codec which encodes/decodes objects to/from XML with a
@@ -57,9 +55,12 @@ public class JaxbCodec implements Codec {
 
     @Override public void encode(final Sink sink, final Object obj)
     throws Exception {
-        try (OutputStream out = sink.output()) {
-            marshaller().marshal(obj, out);
-        }
+        new OutputTask<Void, JAXBException>(sink) {
+            @Override protected Void apply(OutputStream out) throws JAXBException {
+                marshaller().marshal(obj, out);
+                return null;
+            }
+        }.call();
     }
 
     /** Returns a new marshaller. */
@@ -71,9 +72,11 @@ public class JaxbCodec implements Codec {
     @SuppressWarnings("unchecked")
     public <T> T decode(final Source source, final Type expected)
     throws Exception {
-        try (InputStream in = source.input()) {
-            return (T) unmarshaller().unmarshal(in);
-        }
+        return new InputTask<T, JAXBException>(source) {
+            @Override protected T apply(InputStream in) throws JAXBException {
+                return (T) unmarshaller().unmarshal(in);
+            }
+        }.call();
     }
 
     /** Returns a new unmarshaller. */

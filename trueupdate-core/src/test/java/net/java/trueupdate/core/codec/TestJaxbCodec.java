@@ -4,8 +4,6 @@
  */
 package net.java.trueupdate.core.codec;
 
-import net.java.trueupdate.core.codec.JaxbCodec;
-
 import javax.xml.bind.*;
 
 /**

@@ -10,13 +10,17 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.Callable;
 import javax.annotation.CheckForNull;
+import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.shed.Objects;
 
 /**
  * Provides common {@link Source}s.
  *
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
+@Immutable
 public class Sources {
 
     /**

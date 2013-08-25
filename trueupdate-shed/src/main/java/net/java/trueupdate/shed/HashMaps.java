@@ -3,17 +3,17 @@
  * Copyright (C) 2013 Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.util;
+package net.java.trueupdate.shed;
 
 import javax.annotation.concurrent.Immutable;
 
 /**
  * Utility functions for hash maps.
  *
- * @author Christian Schlichtherle
+ * @author Christian Schlichtherle (copied from TrueCommons Shed 2.3.2)
  */
 @Immutable
-public final class HashMaps {
+public class HashMaps {
 
     /**
      * The number of entries which should be additionally accomodatable by a

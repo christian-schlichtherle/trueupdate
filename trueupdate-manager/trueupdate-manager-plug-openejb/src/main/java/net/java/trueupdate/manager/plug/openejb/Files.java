@@ -10,6 +10,7 @@ import java.util.jar.*;
 import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
+import javax.annotation.WillClose;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 
@@ -18,7 +19,7 @@ import net.java.trueupdate.core.zip.patch.ZipPatch;
  *
  * @author Christian Schlichtherle
  */
-final class Files {
+class Files {
 
     private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
@@ -62,102 +63,170 @@ final class Files {
 
     public static void jarTo(final File fileOrDirectory, final File jarFile)
     throws IOException {
-        try (JarOutputStream
-                out = new JarOutputStream(new FileOutputStream(jarFile))) {
 
-            class Jar  {
-                void jarDirectory(final File directory, final String name)
-                throws IOException {
-                    final File[] memberFiles = directory.listFiles();
-                    Arrays.sort(memberFiles); // courtesy
-                    for (final File memberFile : memberFiles) {
-                        final String memberName =
-                                (name.isEmpty() ? name : name + '/')
-                                + memberFile.getName();
-                        if (memberFile.isDirectory()) {
-                            jarDirectory(memberFile, memberName);
-                        } else {
-                            jarFile(memberFile, memberName);
+        class JarOutputStreamSink implements Sink {
+            @Override public OutputStream output() throws IOException {
+                return new JarOutputStream(new FileOutputStream(jarFile));
+            }
+        } // JarOutputStreamSink
+
+        new OutputTask<Void, IOException>(new JarOutputStreamSink()) {
+            @Override
+            protected Void apply(final OutputStream out) throws IOException {
+
+                class Jar  {
+                    void jarDirectory(final File directory, final String name)
+                    throws IOException {
+                        final File[] memberFiles = directory.listFiles();
+                        Arrays.sort(memberFiles); // courtesy
+                        for (final File memberFile : memberFiles) {
+                            final String memberName =
+                                    (name.isEmpty() ? name : name + '/')
+                                    + memberFile.getName();
+                            if (memberFile.isDirectory()) {
+                                jarDirectory(memberFile, memberName);
+                            } else {
+                                jarFile(memberFile, memberName);
+                            }
                         }
                     }
-                }
 
-                void jarFile(File file, String name) throws IOException {
-                    final ZipEntry entry = entry(name);
-                    if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
-                        final long length = file.length();
-                        entry.setMethod(ZipOutputStream.STORED);
-                        entry.setSize(length);
-                        entry.setCompressedSize(length);
-                        entry.setCrc(crc32(file));
-                    }
-                    Copy.copy(fileSource(file), zipEntrySink(entry));
-                }
-
-                long crc32(File input) throws IOException {
-                    final Checksum checksum = new CRC32();
-                    try (InputStream in = new CheckedInputStream(
-                            new BufferedInputStream(
-                                new FileInputStream(input)), checksum)) {
-                        while (-1 != in.read()) {
+                    void jarFile(File file, String name) throws IOException {
+                        final ZipEntry entry = entry(name);
+                        if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
+                            final long length = file.length();
+                            entry.setMethod(ZipOutputStream.STORED);
+                            entry.setSize(length);
+                            entry.setCompressedSize(length);
+                            entry.setCrc(crc32(file));
                         }
+                        Copy.copy(fileSource(file), zipEntrySink(entry));
                     }
-                    return checksum.getValue();
-                }
 
-                Source fileSource(File file) {
-                    return new FileStore(file);
-                }
+                    long crc32(final File input) throws IOException {
+                        final Checksum checksum = new CRC32();
 
-                Sink zipEntrySink(ZipEntry entry) {
-                    return new ZipEntrySink(entry, out);
-                }
+                        class CheckedInputStreamSource implements Source {
+                            @Override
+                            public InputStream input() throws IOException {
+                                return new CheckedInputStream(
+                                new BufferedInputStream(
+                                    new FileInputStream(input)), checksum);
+                            }
+                        } // CheckedInputStreamSource
 
-                ZipEntry entry(String name) { return new ZipEntry(name); }
-            } // Jar
+                        new InputTask<Void, IOException>(new CheckedInputStreamSource()) {
+                            @Override
+                            protected Void apply(InputStream in) throws IOException {
+                                while (-1 != in.read()) {
+                                }
+                                return null;
+                            }
+                        }.call();
+                        return checksum.getValue();
+                    }
 
-            if (fileOrDirectory.isDirectory())
-                new Jar().jarDirectory(fileOrDirectory, "");
-            else
-                new Jar().jarFile(fileOrDirectory, "");
-        }
+                    Source fileSource(File file) {
+                        return new FileStore(file);
+                    }
+
+                    Sink zipEntrySink(ZipEntry entry) {
+                        return new ZipEntrySink(entry, (JarOutputStream) out);
+                    }
+
+                    ZipEntry entry(String name) { return new ZipEntry(name); }
+                } // Jar
+
+                if (fileOrDirectory.isDirectory())
+                    new Jar().jarDirectory(fileOrDirectory, "");
+                else
+                    new Jar().jarFile(fileOrDirectory, "");
+                return null;
+            }
+        }.call();
     }
 
     public static void unjarTo(final File jarFile, final File directory)
-    throws IOException {
-        try (JarFile jar = new JarFile(jarFile)) {
+    throws Exception {
 
-            for (final Enumeration<JarEntry> en = jar.entries();
-                    en.hasMoreElements(); ) {
-                final JarEntry entry = en.nextElement();
-                if (entry.isDirectory()) continue;
-                final File file = new File(directory, entry.getName());
-                file.getParentFile().mkdirs();
-                Copy.copy(new ZipEntrySource(entry, jar), new FileStore(file));
+        class WithJarFile implements ZipFileTask {
+
+            @Override
+            public void execute(final ZipFile jar) throws Exception {
+                for (final Enumeration<JarEntry> en = ((JarFile) jar).entries();
+                        en.hasMoreElements(); ) {
+                    final JarEntry entry = en.nextElement();
+                    if (entry.isDirectory()) continue;
+                    final File file = new File(directory, entry.getName());
+                    file.getParentFile().mkdirs();
+                    Copy.copy(new ZipEntrySource(entry, jar), new FileStore(file));
+                }
             }
-        }
+
+        } // WithJarFile
+
+        loanZipFileTo(new JarFile(jarFile), new WithJarFile());
     }
 
     public static void applyPatchTo(
             final File originalJarFile,
             final File zipPatchFile,
             final File updatedJarFile)
-    throws IOException {
-        try (JarFile originalJar = new JarFile(originalJarFile, false);
-             ZipFile zipPatch = new ZipFile(zipPatchFile)) {
-            ZipPatch.builder()
-                    .inputFile(originalJar)
-                    .patchFile(zipPatch)
-                    .createJarFile(true)
-                    .build()
-                    .applyZipPatchFileTo(new FileStore(updatedJarFile));
+    throws Exception {
+
+        class WithOriginalJarFile implements ZipFileTask {
+
+            @Override
+            public void execute(final ZipFile originalJarFile) throws Exception {
+
+                class WithZipPatchFile implements ZipFileTask {
+
+                    @Override
+                    public void execute(final ZipFile zipPatchFile) throws Exception {
+                        ZipPatch.builder()
+                                .inputFile(originalJarFile)
+                                .patchFile(zipPatchFile)
+                                .createJarFile(true)
+                                .build()
+                                .applyZipPatchFileTo(new FileStore(updatedJarFile));
+                    }
+
+                } // WithZipPatchFile
+
+                loanZipFileTo(new ZipFile(zipPatchFile), new WithZipPatchFile());
+            }
+        } // WithOriginalJarFile
+
+        loanZipFileTo(new JarFile(originalJarFile, false), new WithOriginalJarFile());
+    }
+
+    public static void loanZipFileTo(
+            final @WillClose ZipFile zipFile,
+            final ZipFileTask task)
+    throws Exception {
+        Exception ex = null;
+        try {
+            task.execute(zipFile);
+        } catch (final Exception ex2) {
+            throw ex = ex2;
+        } finally {
+            try {
+                zipFile.close();
+            } catch (IOException ex2) {
+                if (null == ex) throw ex2;
+            }
         }
     }
 
-    public static void loanTempFile(
-            final FileTask task,
+    @SuppressWarnings("PackageVisibleInnerClass")
+    public interface ZipFileTask {
+        void execute(ZipFile zipFile) throws Exception;
+    }
+
+    public static void loanTempFileTo(
             final String prefix,
-            final @CheckForNull String suffix)
+            final @CheckForNull String suffix,
+            final FileTask task)
     throws Exception {
         final File temp = File.createTempFile(prefix, suffix);
         Exception ex = null;
@@ -166,15 +235,9 @@ final class Files {
         } catch (Exception ex2) {
             throw ex = ex2;
         } finally {
-            if (!temp.delete()) {
-                final Exception ex2 = new IOException(String.format(
-                        "Cannot delete temporary file %s .", temp));
-                if (null != ex) {
-                    ex.addSuppressed(ex2);
-                    throw ex;
-                }
-                throw ex2;
-            }
+            if (!temp.delete() && null == ex)
+                throw new IOException(String.format(
+                    "Cannot delete temporary file %s .", temp));
         }
     }
 

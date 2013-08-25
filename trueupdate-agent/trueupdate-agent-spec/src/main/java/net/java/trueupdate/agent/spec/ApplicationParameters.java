@@ -5,10 +5,10 @@
 package net.java.trueupdate.agent.spec;
 
 import java.net.URI;
-import static java.util.Objects.requireNonNull;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.spec.ApplicationDescriptor;
+import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * Application Parameters.
@@ -40,7 +40,7 @@ public final class ApplicationParameters {
      * The default value for the property {@code updateLocation} is the
      * current location as found in the application descriptor.
      */
-    public static Builder<Void> builder() { return new Builder<>(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     public ApplicationListener applicationListener() {
         return applicationListener;

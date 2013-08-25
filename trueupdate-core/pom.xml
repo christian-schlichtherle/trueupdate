@@ -19,6 +19,13 @@
         Provides core functionality for updating web apps.
     </description>
 
+    <dependencies>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-shed</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

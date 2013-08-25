@@ -26,7 +26,7 @@ public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
             logger = Logger.getLogger(BasicUpdateManager.class.getName());
 
     private final Map<ApplicationDescriptor, UpdateMessage>
-            subscriptions = new HashMap<>();
+            subscriptions = new HashMap<ApplicationDescriptor, UpdateMessage>();
 
     private final BasicUpdateResolver
             updateResolver = new BasicUpdateResolver() {
@@ -59,7 +59,8 @@ public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
         final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient.baseUri());
-        final Map<ArtifactDescriptor, String> updateVersions = new HashMap<>();
+        final Map<ArtifactDescriptor, String>
+                updateVersions = new HashMap<ArtifactDescriptor, String>();
         updateResolver.restart();
         try {
             for (final UpdateMessage subscription : subscriptions.values()) {

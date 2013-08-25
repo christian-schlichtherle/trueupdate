@@ -14,11 +14,12 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
+import static net.java.trueupdate.artifact.impl.maven.ArtifactConverters.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import static net.java.trueupdate.artifact.impl.maven.ArtifactConverters.*;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.Source;
+import static net.java.trueupdate.shed.Objects.*;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
 import org.eclipse.aether.artifact.Artifact;
@@ -80,8 +81,9 @@ public final class MavenArtifactResolver implements ArtifactResolver {
      */
     public MavenArtifactResolver(final LocalRepository local,
                                  final List<RemoteRepository> remotes) {
-        this.local = Objects.requireNonNull(local);
-        this.remotes = Collections.unmodifiableList(new ArrayList<>(remotes));
+        this.local = requireNonNull(local);
+        this.remotes = Collections.unmodifiableList(
+                new ArrayList<RemoteRepository>(remotes));
     }
 
     /** Returns the local repository. */
@@ -111,10 +113,8 @@ public final class MavenArtifactResolver implements ArtifactResolver {
                 resolveArtifact(artifactRequest(artifact));
         final @CheckForNull Artifact resolved = artifactResult.getArtifact();
         if (null == resolved)
-            throw addSuppressed(
-                    new ArtifactResolutionException(asList(artifactResult),
-                            "Artifact not found."),
-                    artifactResult.getExceptions());
+            throw new ArtifactResolutionException(asList(artifactResult),
+                    "Artifact not found.");
         return resolved;
     }
 
@@ -140,12 +140,9 @@ public final class MavenArtifactResolver implements ArtifactResolver {
                 resolveVersionRange(versionRangeRequest(updateRangeArtifact));
         final @CheckForNull Version highestVersion =
                 result.getHighestVersion();
-        if (null == highestVersion) {
-            throw addSuppressed(
-                    new VersionRangeResolutionException(result,
-                            "Update artifact not found."),
-                    result.getExceptions());
-        }
+        if (null == highestVersion)
+            throw new VersionRangeResolutionException(result,
+                    "Update artifact not found.");
         return updateRangeArtifact.setVersion(highestVersion.toString());
     }
 
@@ -159,13 +156,6 @@ public final class MavenArtifactResolver implements ArtifactResolver {
     throws ArtifactResolutionException {
         return repositorySystem().resolveArtifact(repositorySystemSession(),
                 request);
-    }
-
-    private static RepositoryException addSuppressed(
-            final RepositoryException head,
-            final List<Exception> exceptions) {
-        for (Exception ex : exceptions) head.addSuppressed(ex);
-        return head;
     }
 
     private VersionRangeRequest versionRangeRequest(Artifact artifact) {

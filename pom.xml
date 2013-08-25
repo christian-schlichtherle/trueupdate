@@ -69,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <javase.version>7</javase.version>
+        <javase.version>6</javase.version>
         <javaee.version>6</javaee.version>
 
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -210,6 +210,11 @@
                 <type>ejb</type>
             </dependency>
             <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-shed</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
                 <version>1.1.1.Final</version>
@@ -335,6 +340,11 @@
     <profiles>
         <profile>
             <id>use-endorsed-dir</id>
+            <activation>
+                <file>
+                    <exists>src/main/resources/META-INF/ejb-jar.xml</exists>
+                </file>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -382,5 +392,6 @@
         <module>trueupdate-manager</module>
         <module>trueupdate-sample</module>
         <module>trueupdate-server</module>
+        <module>trueupdate-shed</module>
     </modules>
 </project>

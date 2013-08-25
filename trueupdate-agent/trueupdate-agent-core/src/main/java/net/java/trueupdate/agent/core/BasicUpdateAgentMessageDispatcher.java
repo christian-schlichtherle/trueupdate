@@ -26,7 +26,7 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
             logger = Logger.getLogger(BasicUpdateAgentMessageDispatcher.class.getName());
 
     private final Map<ApplicationDescriptor, ApplicationAccount>
-            applicationAccounts = new HashMap<>();
+            accounts = new HashMap<ApplicationDescriptor, ApplicationAccount>();
 
     /** Returns the capacity of the queue to use for update messages. */
     protected int capacity() { return 100; }
@@ -43,10 +43,10 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
     }
 
     private ApplicationAccount account(final ApplicationDescriptor descriptor) {
-        ApplicationAccount account = applicationAccounts.get(descriptor);
+        ApplicationAccount account = accounts.get(descriptor);
         if (null == account) {
             account = new ApplicationAccount(descriptor, capacity());
-            applicationAccounts.put(descriptor, account);
+            accounts.put(descriptor, account);
         }
         return account;
     }
@@ -59,7 +59,7 @@ extends BasicUpdateMessageListener implements UpdateMessageDispatcher {
     @Override
     public void unsubscribe(ApplicationParameters parameters) {
         final ApplicationAccount account =
-                applicationAccounts.remove(parameters.applicationDescriptor());
+                accounts.remove(parameters.applicationDescriptor());
         if (null != account) {
             final int size = account.size();
             if (0 != size)
@@ -142,7 +142,7 @@ final class ApplicationAccount {
         assert null != descriptor;
         this.descriptor = descriptor;
         if (0 >= capacity) throw new IllegalArgumentException();
-        this.queue = new LinkedBlockingQueue<>(capacity);
+        this.queue = new LinkedBlockingQueue<UpdateMessage>(capacity);
     }
 
     ApplicationDescriptor descriptor() { return descriptor; }

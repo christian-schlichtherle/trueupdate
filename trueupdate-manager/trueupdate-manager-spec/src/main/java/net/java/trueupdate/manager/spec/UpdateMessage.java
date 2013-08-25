@@ -7,10 +7,10 @@ package net.java.trueupdate.manager.spec;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
-import static java.util.Objects.requireNonNull;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
+import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * An immutable Value Object which gets exchanged between update agents and
@@ -48,10 +48,6 @@ public final class UpdateMessage implements Serializable {
 
     private static long nonNullOrNow(Long timestamp) {
         return null != timestamp ? timestamp : System.currentTimeMillis();
-    }
-
-    private static <T> T nonNullOr(T value, T eagerDefault) {
-        return null != value ? value : eagerDefault;
     }
 
     /** Returns a new builder with all properties set from this instance. */

@@ -8,7 +8,6 @@ import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import java.io.*;
 import java.net.URI;
-import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.core.MediaType;
@@ -17,6 +16,7 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.jax.rs.client.ArtifactDescriptors.queryParameters;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
+import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * The client-side implementation of a RESTful service for artifact updates.
@@ -46,7 +46,7 @@ public final class UpdateClient {
      */
     public UpdateClient(final URI baseUri,
                         final @CheckForNull Client client) {
-        this.baseUri = Objects.requireNonNull(baseUri);
+        this.baseUri = requireNonNull(baseUri);
         this.client = null != client ? client : Client.create();
     }
 

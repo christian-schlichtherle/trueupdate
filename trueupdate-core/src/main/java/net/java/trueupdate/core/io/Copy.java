@@ -13,7 +13,7 @@ import javax.annotation.concurrent.Immutable;
  * The implementation in this class is suitable for only small amounts of data,
  * say a few kilobytes.
  *
- * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
+ * @author Christian Schlichtherle (copied from TrueLicense Core 2.3.1)
  */
 @Immutable
 public final class Copy {

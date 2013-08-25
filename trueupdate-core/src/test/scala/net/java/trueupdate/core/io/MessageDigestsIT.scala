@@ -2,20 +2,19 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.util
+package net.java.trueupdate.core.io
 
 import org.scalatest.WordSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
-import net.java.trueupdate.core.io.Sources
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class MessageDigestsTest extends WordSpec {
+class MessageDigestsIT extends WordSpec {
 
   "Computation of digests" should {
     "yield correct values" in {
@@ -29,7 +28,7 @@ class MessageDigestsTest extends WordSpec {
         import MessageDigests._
         val digest = sha1
         updateDigestFrom(digest,
-          Sources.forResource(resourceName, classOf[MessageDigestsTest]))
+          Sources.forResource(resourceName, classOf[MessageDigestsIT]))
         valueOf(digest) should equal (referenceValue)
       }
     }

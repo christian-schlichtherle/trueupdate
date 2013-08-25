@@ -75,8 +75,7 @@ final class MacroCommand implements Command {
         } catch (final Exception ex) {
             try {
                 while (0 <= --i) commands[i].revert();
-            } catch (final Exception ex2) {
-                ex.addSuppressed(ex2);
+            } catch (final Exception ignored) {
             }
             throw ex;
         }

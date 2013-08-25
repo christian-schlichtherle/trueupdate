@@ -5,11 +5,11 @@
 package net.java.trueupdate.manager.spec;
 
 import java.net.URI;
-import static java.util.Objects.requireNonNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * An application descriptor comprises of an artifact descriptor plus a current
@@ -37,7 +37,7 @@ public final class ApplicationDescriptor {
     }
 
     /** Returns a new builder for an application descriptor. */
-    public static Builder<Void> builder() { return new Builder<>(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     /** Returns the artifact descriptor. */
     public ArtifactDescriptor artifactDescriptor() {

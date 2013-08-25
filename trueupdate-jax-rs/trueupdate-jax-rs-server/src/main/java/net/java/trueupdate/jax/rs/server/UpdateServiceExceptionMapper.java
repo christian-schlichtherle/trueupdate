@@ -42,10 +42,10 @@ implements ExceptionMapper<UpdateServiceException> {
               .entity('"' + msg + '"');
         else if (APPLICATION_XML_TYPE.equals(mt))
             rb.type(APPLICATION_XML_TYPE)
-              .entity(new JAXBElement<>(message, String.class, msg));
+              .entity(new JAXBElement<String>(message, String.class, msg));
         else if (TEXT_XML_TYPE.equals(mt))
             rb.type(TEXT_XML_TYPE)
-              .entity(new JAXBElement<>(message, String.class, msg));
+              .entity(new JAXBElement<String>(message, String.class, msg));
         else
             rb.type(TEXT_PLAIN_TYPE)
               .entity(msg);
