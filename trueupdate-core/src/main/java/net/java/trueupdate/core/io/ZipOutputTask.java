@@ -4,41 +4,16 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.IOException;
-import java.util.concurrent.Callable;
 import java.util.zip.ZipOutputStream;
-import net.java.trueupdate.shed.Objects;
 
 /**
- * A poor man's substitute for Java SE 7' try-with-resources statement.
+ * Executes a task on a {@link ZipOutputStream}.
  *
+ * @see ZipSinks#execute
+ * @see ZipSinks#bind
  * @author Christian Schlichtherle
  */
-public abstract class ZipOutputTask<V, X extends Exception>
-implements Callable<V> {
+public interface ZipOutputTask<V, X extends Exception> {
 
-    private final ZipSink sink;
-
-    public ZipOutputTask(final ZipSink sink) {
-        this.sink = Objects.requireNonNull(sink);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override public final V call() throws X, IOException {
-        X ex = null;
-        final ZipOutputStream out = sink.output();
-        try {
-            return execute(out);
-        } catch (Exception ex2) {
-            throw ex = (X) ex2;
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex2) {
-                if (null == ex) throw ex2;
-            }
-        }
-    }
-
-    protected abstract V execute(ZipOutputStream zipOut) throws X;
+    V execute(ZipOutputStream zipOut) throws X;
 }

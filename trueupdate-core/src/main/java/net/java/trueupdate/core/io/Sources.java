@@ -5,18 +5,13 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.FileNotFoundException;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
-import java.util.concurrent.Callable;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.shed.Objects;
 
 /**
- * Provides common {@link Source}s.
+ * Provides functions for {@link Source}s.
  *
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
@@ -106,6 +101,25 @@ public class Sources {
             throws FileNotFoundException {
         if (null == in) throw new FileNotFoundException(name);
         return in;
+    }
+
+    public static <V, X extends Exception>
+            ExecuteStatement<V, X> execute(InputTask<V, X> task) {
+        return new WithInputTask<V, X>(task);
+    }
+
+    public interface ExecuteStatement<V, X extends Exception> {
+        V on(InputStream in) throws X, IOException;
+        V on(Source source) throws X, IOException;
+    }
+
+    public static <V, X extends Exception>
+            BindStatement<V, X> bind(InputTask<V, X> task) {
+        return new WithInputTask<V, X>(task);
+    }
+
+    public interface BindStatement<V, X extends Exception> {
+        IoCallable<V, X> to(Source source);
     }
 
     private Sources() { }

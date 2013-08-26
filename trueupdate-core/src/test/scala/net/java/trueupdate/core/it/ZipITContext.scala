@@ -30,7 +30,7 @@ trait ZipITContext extends TestContext {
     }
 
   def loanZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) = {
-    new ZipInputTask[A, Exception](new TestJar1Source) {
+    class FunTask extends ZipInputTask[A, Exception] {
       override def execute(inputJarFile: ZipFile) = {
         fun(ZipPatch.builder
           .inputFile(inputJarFile)
@@ -38,19 +38,25 @@ trait ZipITContext extends TestContext {
           .createJarFile(true)
           .build)
       }
-    } call ()
+    }
+
+    ZipSources execute new FunTask on new TestJar1Source
   }
 
   def loanJarFiles[A](fun: (JarFile, JarFile) => A) = {
-    new ZipInputTask[A, Exception](new TestJar1Source) {
+    class Fun1Task extends ZipInputTask[A, Exception]() {
       override def execute(jarFile1: ZipFile) = {
-        new ZipInputTask[A, Exception](new TestJar2Source) {
+        class Fun2Task extends ZipInputTask[A, Exception] {
           override def execute(jarFile2: ZipFile) = {
             fun(jarFile1.asInstanceOf[JarFile], jarFile2.asInstanceOf[JarFile])
           }
-        } call ()
+        }
+
+        ZipSources execute new Fun2Task on new TestJar2Source
       }
-    } call ()
+    }
+
+    ZipSources execute new Fun1Task on new TestJar1Source
   }
 
   final class TestJar1Source extends ZipSource {

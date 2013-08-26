@@ -41,18 +41,17 @@ public abstract class ZipDiff {
      */
     public void writePatchFileTo(final Sink patchFile) throws IOException {
         final DiffModel model = computeDiffModel();
-        new ZipOutputTask<Void, IOException>(
-                new ZipSink() {
-                    @Override public ZipOutputStream output() throws IOException {
-                        return new ZipOutputStream(patchFile.output());
-                    }
-                }
-        ) {
-            @Override protected Void execute(final ZipOutputStream zipOut) throws IOException {
+
+        class StreamPatchFileTask implements ZipOutputTask<Void, IOException> {
+            @Override public Void execute(final ZipOutputStream zipOut)
+            throws IOException {
                 streamPatchFileTo(model, zipOut);
                 return null;
             }
-        }.call();
+        }
+
+        ZipSinks.execute(new StreamPatchFileTask())
+                .on(new ZipOutputStream(patchFile.output()));
     }
 
     private void streamPatchFileTo(

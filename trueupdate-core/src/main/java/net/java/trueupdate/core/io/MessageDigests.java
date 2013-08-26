@@ -61,13 +61,14 @@ public class MessageDigests {
             final MessageDigest digest,
             final Source source)
     throws IOException {
-        new InputTask<Void, IOException>(source) {
-            @Override protected Void execute(final InputStream in) throws IOException {
+        class DigestTask implements InputTask<Void, IOException> {
+            @Override public Void execute(final InputStream in) throws IOException {
                 final byte[] buffer = new byte[Store.BUFSIZE];
                 for (int read; 0 <= (read = in.read(buffer)); )
                     digest.update(buffer, 0, read);
                 return null;
             }
-        }.call();
+        }
+        Sources.execute(new DigestTask()).on(source);
     }
 }

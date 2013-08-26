@@ -44,11 +44,7 @@ class UpdateServiceITSuite extends JerseyTest {
     val updateVersion = updateVersionAs(TEXT_PLAIN_TYPE)
     val source = updateClient diff (artifactDescriptor, updateVersion)
 
-    class ZipInputStreamSource extends Source {
-      override def input() = new ZipInputStream(source input ())
-    } // ZipInputStreamSink
-
-    new InputTask[Unit, IOException](new ZipInputStreamSource) {
+    class DiffTask extends InputTask[Unit, IOException] {
       override def execute(in: InputStream) {
         val zipIn = in.asInstanceOf[ZipInputStream]
         val entry = zipIn getNextEntry ()
@@ -62,7 +58,9 @@ class UpdateServiceITSuite extends JerseyTest {
         Copy copy (source, store)
         logger log (Level.FINE, "\n{0}", utf8String(store))
       }
-    } call ()
+    }
+
+    Sources execute new DiffTask on new ZipInputStream(source input ())
   }
 
   private def updateClient = new UpdateClient(resource.getURI, client)

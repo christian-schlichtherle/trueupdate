@@ -43,19 +43,18 @@ public abstract class ZipPatch {
         final EntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
-        new ZipOutputTask<Void, IOException>(
-                new ZipSink() {
-                    @Override public ZipOutputStream output() throws IOException {
-                        return newZipOutputStream(outputFile);
-                    }
-                }
-        ) {
-            @Override protected Void execute(final ZipOutputStream zipOut) throws IOException {
+
+        class ApplyPatchFileTask implements ZipOutputTask<Void, IOException> {
+            @Override public Void execute(final ZipOutputStream zipOut)
+            throws IOException {
                 for (EntryNameFilter filter : passFilters)
                     applyPatchFileTo(new NoDirectoryEntryNameFilter(filter), zipOut);
                 return null;
             }
-        }.call();
+        }
+
+        ZipSinks.execute(new ApplyPatchFileTask())
+                .on(newZipOutputStream(outputFile));
     }
 
     /** Returns a new ZIP output stream which writes to the given sink. */

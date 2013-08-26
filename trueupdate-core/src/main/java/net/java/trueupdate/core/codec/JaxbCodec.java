@@ -55,12 +55,13 @@ public class JaxbCodec implements Codec {
 
     @Override public void encode(final Sink sink, final Object obj)
     throws Exception {
-        new OutputTask<Void, JAXBException>(sink) {
-            @Override protected Void execute(OutputStream out) throws JAXBException {
+        class EncodeTask implements OutputTask<Void, JAXBException> {
+            @Override public Void execute(OutputStream out) throws JAXBException {
                 marshaller().marshal(obj, out);
                 return null;
             }
-        }.call();
+        }
+        Sinks.execute(new EncodeTask()).on(sink);
     }
 
     /** Returns a new marshaller. */
@@ -72,11 +73,12 @@ public class JaxbCodec implements Codec {
     @SuppressWarnings("unchecked")
     public <T> T decode(final Source source, final Type expected)
     throws Exception {
-        return new InputTask<T, JAXBException>(source) {
-            @Override protected T execute(InputStream in) throws JAXBException {
+        class DecodeTask implements InputTask<T, JAXBException> {
+            @Override public T execute(InputStream in) throws JAXBException {
                 return (T) unmarshaller().unmarshal(in);
             }
-        }.call();
+        }
+        return Sources.execute(new DecodeTask()).on(source);
     }
 
     /** Returns a new unmarshaller. */

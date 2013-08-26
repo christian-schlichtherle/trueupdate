@@ -10,7 +10,6 @@ import java.util.jar.*;
 import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
-import javax.annotation.WillClose;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 
@@ -64,14 +63,8 @@ class Files {
     public static void jarTo(final File fileOrDirectory, final File jarFile)
     throws IOException {
 
-        class JarFileSink implements ZipSink {
-            @Override public ZipOutputStream output() throws IOException {
-                return new JarOutputStream(new FileOutputStream(jarFile));
-            }
-        } // JarOutputStreamSink
-
-        new ZipOutputTask<Void, IOException>(new JarFileSink()) {
-            @Override protected Void execute(final ZipOutputStream zipOut)
+        class JarTask implements ZipOutputTask<Void, IOException> {
+            @Override public Void execute(final ZipOutputStream zipOut)
             throws IOException {
 
                 class Jar  {
@@ -106,23 +99,20 @@ class Files {
                     long crc32(final File input) throws IOException {
                         final Checksum checksum = new CRC32();
 
-                        class CheckedInputStreamSource implements Source {
+                        class ReadTask implements InputTask<Void, IOException> {
                             @Override
-                            public InputStream input() throws IOException {
-                                return new CheckedInputStream(
-                                new BufferedInputStream(
-                                    new FileInputStream(input)), checksum);
-                            }
-                        } // CheckedInputStreamSource
-
-                        new InputTask<Void, IOException>(new CheckedInputStreamSource()) {
-                            @Override
-                            protected Void execute(InputStream in) throws IOException {
+                            public Void execute(InputStream in) throws IOException {
                                 while (-1 != in.read()) {
                                 }
                                 return null;
                             }
-                        }.call();
+                        } // ReadTask
+
+                        Sources.execute(new ReadTask())
+                                .on(new CheckedInputStream(
+                                    new BufferedInputStream(
+                                        new FileInputStream(input)),
+                                    checksum));
                         return checksum.getValue();
                     }
 
@@ -143,16 +133,19 @@ class Files {
                     new Jar().jarFile(fileOrDirectory, "");
                 return null;
             }
-        }.call();
+        } // JarTask
+
+        ZipSinks.execute(new JarTask())
+                .on(new JarOutputStream(new FileOutputStream(jarFile)));
     }
 
     public static void unjarTo(final File jarFile, final File directory)
-    throws Exception {
+    throws IOException {
 
-        class WithJarFile implements ZipFileTask {
+        class WithJarFile implements ZipInputTask<Void, IOException> {
 
             @Override
-            public void execute(final ZipFile jar) throws Exception {
+            public Void execute(final ZipFile jar) throws IOException {
                 for (final Enumeration<JarEntry> en = ((JarFile) jar).entries();
                         en.hasMoreElements(); ) {
                     final JarEntry entry = en.nextElement();
@@ -161,67 +154,46 @@ class Files {
                     file.getParentFile().mkdirs();
                     Copy.copy(new ZipEntrySource(entry, jar), new FileStore(file));
                 }
+                return null;
             }
-
         } // WithJarFile
 
-        loanZipFileTo(new JarFile(jarFile), new WithJarFile());
+        ZipSources.execute(new WithJarFile()).on(new JarFile(jarFile));
     }
 
     public static void applyPatchTo(
             final File originalJarFile,
             final File zipPatchFile,
             final File updatedJarFile)
-    throws Exception {
+    throws IOException {
 
-        class WithOriginalJarFile implements ZipFileTask {
+        class WithOriginalJarFile implements ZipInputTask<Void, IOException> {
 
             @Override
-            public void execute(final ZipFile originalJarFile) throws Exception {
+            public Void execute(final ZipFile originalJarFile) throws IOException {
 
-                class WithZipPatchFile implements ZipFileTask {
+                class WithZipPatchFile implements ZipInputTask<Void, IOException> {
 
                     @Override
-                    public void execute(final ZipFile zipPatchFile) throws Exception {
+                    public Void execute(final ZipFile zipPatchFile) throws IOException {
                         ZipPatch.builder()
                                 .inputFile(originalJarFile)
                                 .patchFile(zipPatchFile)
                                 .createJarFile(true)
                                 .build()
                                 .applyZipPatchFileTo(new FileStore(updatedJarFile));
+                        return null;
                     }
-
                 } // WithZipPatchFile
 
-                loanZipFileTo(new ZipFile(zipPatchFile), new WithZipPatchFile());
+                ZipSources.execute(new WithZipPatchFile())
+                        .on(new ZipFile(zipPatchFile));
+                return null;
             }
         } // WithOriginalJarFile
 
-        loanZipFileTo(new JarFile(originalJarFile, false), new WithOriginalJarFile());
-    }
-
-    public static void loanZipFileTo(
-            final @WillClose ZipFile zipFile,
-            final ZipFileTask task)
-    throws Exception {
-
-        class ZipFileSource implements ZipSource {
-            @Override public ZipFile input() throws IOException {
-                return zipFile;
-            }
-        } // ZipFileSource
-
-        new ZipInputTask<Void, Exception>(new ZipFileSource()) {
-            @Override protected Void execute(ZipFile zipFile) throws Exception {
-                task.execute(zipFile);
-                return null;
-            }
-        }.call();
-    }
-
-    @SuppressWarnings("PackageVisibleInnerClass")
-    public interface ZipFileTask {
-        void execute(ZipFile zipFile) throws Exception;
+        ZipSources.execute(new WithOriginalJarFile())
+                .on(new JarFile(originalJarFile, false));
     }
 
     public static void loanTempFileTo(

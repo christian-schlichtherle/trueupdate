@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Provides common {@link Sink}s.
+ * Provides functions for {@link Sink}s.
  *
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
@@ -45,6 +45,25 @@ public class Sinks {
                 };
             }
         };
+    }
+
+    public static <V, X extends Exception>
+            ExecuteStatement<V, X> execute(OutputTask<V, X> task) {
+        return new WithOutputTask<V, X>(task);
+    }
+
+    public interface ExecuteStatement<V, X extends Exception> {
+        V on(OutputStream out) throws X, IOException;
+        V on(Sink sink) throws X, IOException;
+    }
+
+    public static <V, X extends Exception>
+            BindStatement<V, X> bind(OutputTask<V, X> task) {
+        return new WithOutputTask<V, X>(task);
+    }
+
+    public interface BindStatement<V, X extends Exception> {
+        IoCallable<V, X> to(Sink sink);
     }
 
     private Sinks() { }

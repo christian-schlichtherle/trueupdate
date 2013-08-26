@@ -5,39 +5,15 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
-import java.util.concurrent.Callable;
-import net.java.trueupdate.shed.Objects;
 
 /**
- * A poor man's substitute for Java SE 7' try-with-resources statement.
+ * Executes a task on an {@link InputStream}.
  *
+ * @see Sources#execute
+ * @see Sources#bind
  * @author Christian Schlichtherle
  */
-public abstract class InputTask<V, X extends Exception>
-implements Callable<V> {
+public interface InputTask<V, X extends Exception> {
 
-    private final Source source;
-
-    public InputTask(final Source source) {
-        this.source = Objects.requireNonNull(source);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override public final V call() throws X, IOException {
-        X ex = null;
-        final InputStream in = source.input();
-        try {
-            return execute(in);
-        } catch (Exception ex2) {
-            throw ex = (X) ex2;
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex2) {
-                if (null == ex) throw ex2;
-            }
-        }
-    }
-
-    protected abstract V execute(InputStream in) throws X;
+    V execute(InputStream in) throws X;
 }
