@@ -49,7 +49,7 @@ class UpdateServiceITSuite extends JerseyTest {
     } // ZipInputStreamSink
 
     new InputTask[Unit, IOException](new ZipInputStreamSource) {
-      override def apply(in: InputStream) {
+      override def execute(in: InputStream) {
         val zipIn = in.asInstanceOf[ZipInputStream]
         val entry = zipIn getNextEntry ()
         entry.getName should be (DiffModel.ENTRY_NAME)

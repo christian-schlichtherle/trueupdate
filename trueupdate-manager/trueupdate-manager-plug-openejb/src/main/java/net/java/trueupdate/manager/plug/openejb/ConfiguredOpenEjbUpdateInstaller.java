@@ -134,7 +134,7 @@ class ConfiguredOpenEjbUpdateInstaller {
         class MakePatchedJarFile implements FileTask {
 
             @Override
-            public void process(File patchedJarFile) throws Exception {
+            public void process(final File patchedJarFile) throws Exception {
                 applyPatchTo(originalJarFile, zipPatchFile, patchedJarFile);
                 logger.log(Level.FINER, "Patched JAR file {0} with ZIP patch file {1} to JAR file {2} .",
                         new Object[] { originalJarFile, zipPatchFile, patchedJarFile });
@@ -152,8 +152,7 @@ class ConfiguredOpenEjbUpdateInstaller {
 
         class MakeOriginalJarFile implements FileTask {
 
-            @Override
-            public void process(final File file) throws Exception {
+            @Override public void process(final File file) throws Exception {
                 jarTo(deploymentDir, file);
                 logger.log(Level.FINER, "Rebuilt original JAR file {0} from directory {1} .",
                         new Object[] { file, deploymentDir });

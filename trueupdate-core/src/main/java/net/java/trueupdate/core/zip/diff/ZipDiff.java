@@ -41,15 +41,15 @@ public abstract class ZipDiff {
      */
     public void writePatchFileTo(final Sink patchFile) throws IOException {
         final DiffModel model = computeDiffModel();
-        new OutputTask<Void, IOException>(
-                new Sink() {
-                    @Override public OutputStream output() throws IOException {
+        new ZipOutputTask<Void, IOException>(
+                new ZipSink() {
+                    @Override public ZipOutputStream output() throws IOException {
                         return new ZipOutputStream(patchFile.output());
                     }
                 }
         ) {
-            @Override protected Void apply(final OutputStream out) throws IOException {
-                streamPatchFileTo(model, (ZipOutputStream) out);
+            @Override protected Void execute(final ZipOutputStream zipOut) throws IOException {
+                streamPatchFileTo(model, zipOut);
                 return null;
             }
         }.call();
@@ -57,9 +57,9 @@ public abstract class ZipDiff {
 
     private void streamPatchFileTo(
             final DiffModel model,
-            final @WillNotClose ZipOutputStream out)
+            final @WillNotClose ZipOutputStream zipOut)
     throws IOException {
-        out.setLevel(Deflater.BEST_COMPRESSION);
+        zipOut.setLevel(Deflater.BEST_COMPRESSION);
 
         final class PatchFileStreamer {
 
@@ -92,7 +92,7 @@ public abstract class ZipDiff {
             }
 
             Sink entrySink(String name) {
-                return new ZipEntrySink(new ZipEntry(name), out);
+                return new ZipEntrySink(new ZipEntry(name), zipOut);
             }
 
             boolean changedOrAdded(String name) {

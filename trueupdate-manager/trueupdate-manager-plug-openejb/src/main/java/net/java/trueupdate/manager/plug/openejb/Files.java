@@ -64,15 +64,15 @@ class Files {
     public static void jarTo(final File fileOrDirectory, final File jarFile)
     throws IOException {
 
-        class JarOutputStreamSink implements Sink {
-            @Override public OutputStream output() throws IOException {
+        class JarFileSink implements ZipSink {
+            @Override public ZipOutputStream output() throws IOException {
                 return new JarOutputStream(new FileOutputStream(jarFile));
             }
         } // JarOutputStreamSink
 
-        new OutputTask<Void, IOException>(new JarOutputStreamSink()) {
-            @Override
-            protected Void apply(final OutputStream out) throws IOException {
+        new ZipOutputTask<Void, IOException>(new JarFileSink()) {
+            @Override protected Void execute(final ZipOutputStream zipOut)
+            throws IOException {
 
                 class Jar  {
                     void jarDirectory(final File directory, final String name)
@@ -117,7 +117,7 @@ class Files {
 
                         new InputTask<Void, IOException>(new CheckedInputStreamSource()) {
                             @Override
-                            protected Void apply(InputStream in) throws IOException {
+                            protected Void execute(InputStream in) throws IOException {
                                 while (-1 != in.read()) {
                                 }
                                 return null;
@@ -131,7 +131,7 @@ class Files {
                     }
 
                     Sink zipEntrySink(ZipEntry entry) {
-                        return new ZipEntrySink(entry, (JarOutputStream) out);
+                        return new ZipEntrySink(entry, zipOut);
                     }
 
                     ZipEntry entry(String name) { return new ZipEntry(name); }
@@ -204,18 +204,19 @@ class Files {
             final @WillClose ZipFile zipFile,
             final ZipFileTask task)
     throws Exception {
-        Exception ex = null;
-        try {
-            task.execute(zipFile);
-        } catch (final Exception ex2) {
-            throw ex = ex2;
-        } finally {
-            try {
-                zipFile.close();
-            } catch (IOException ex2) {
-                if (null == ex) throw ex2;
+
+        class ZipFileSource implements ZipSource {
+            @Override public ZipFile input() throws IOException {
+                return zipFile;
             }
-        }
+        } // ZipFileSource
+
+        new ZipInputTask<Void, Exception>(new ZipFileSource()) {
+            @Override protected Void execute(ZipFile zipFile) throws Exception {
+                task.execute(zipFile);
+                return null;
+            }
+        }.call();
     }
 
     @SuppressWarnings("PackageVisibleInnerClass")

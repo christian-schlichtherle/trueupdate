@@ -15,6 +15,7 @@ import java.io.*;
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
 public interface Source {
+
     /**
      * Returns a new input stream for reading the binary data from this source.
      */

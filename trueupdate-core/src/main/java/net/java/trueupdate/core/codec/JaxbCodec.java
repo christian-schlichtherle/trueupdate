@@ -56,7 +56,7 @@ public class JaxbCodec implements Codec {
     @Override public void encode(final Sink sink, final Object obj)
     throws Exception {
         new OutputTask<Void, JAXBException>(sink) {
-            @Override protected Void apply(OutputStream out) throws JAXBException {
+            @Override protected Void execute(OutputStream out) throws JAXBException {
                 marshaller().marshal(obj, out);
                 return null;
             }
@@ -73,7 +73,7 @@ public class JaxbCodec implements Codec {
     public <T> T decode(final Source source, final Type expected)
     throws Exception {
         return new InputTask<T, JAXBException>(source) {
-            @Override protected T apply(InputStream in) throws JAXBException {
+            @Override protected T execute(InputStream in) throws JAXBException {
                 return (T) unmarshaller().unmarshal(in);
             }
         }.call();

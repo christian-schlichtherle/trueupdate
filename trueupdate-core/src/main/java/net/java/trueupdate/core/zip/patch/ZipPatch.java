@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
+import edu.umd.cs.findbugs.annotations.CreatesObligation;
 import java.io.*;
 import java.security.*;
 import java.util.zip.*;
@@ -42,23 +43,24 @@ public abstract class ZipPatch {
         final EntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
-        new OutputTask<Void, IOException>(
-                new Sink() {
-                    @Override public OutputStream output() throws IOException {
+        new ZipOutputTask<Void, IOException>(
+                new ZipSink() {
+                    @Override public ZipOutputStream output() throws IOException {
                         return newZipOutputStream(outputFile);
                     }
                 }
         ) {
-            @Override protected Void apply(final OutputStream out) throws IOException {
+            @Override protected Void execute(final ZipOutputStream zipOut) throws IOException {
                 for (EntryNameFilter filter : passFilters)
-                    applyPatchFileTo(new NoDirectoryEntryNameFilter(filter), (ZipOutputStream) out);
+                    applyPatchFileTo(new NoDirectoryEntryNameFilter(filter), zipOut);
                 return null;
             }
         }.call();
     }
 
     /** Returns a new ZIP output stream which writes to the given sink. */
-    ZipOutputStream newZipOutputStream(Sink outputFile) throws IOException {
+    @CreatesObligation ZipOutputStream newZipOutputStream(Sink outputFile)
+    throws IOException {
         return new ZipOutputStream(outputFile.output());
     }
 
@@ -78,7 +80,7 @@ public abstract class ZipPatch {
 
     private void applyPatchFileTo(
             final EntryNameFilter filter,
-            final @WillNotClose ZipOutputStream out)
+            final @WillNotClose ZipOutputStream zipOut)
     throws IOException {
 
         final MessageDigest digest = digest();
@@ -102,9 +104,9 @@ public abstract class ZipPatch {
                     entry.setCompressedSize(0);
                     entry.setCrc(0);
                 }
-                out.putNextEntry(entry);
+                zipOut.putNextEntry(entry);
                 digest.reset();
-                return new DigestOutputStream(out, digest) {
+                return new DigestOutputStream(zipOut, digest) {
 
                     @Override public void close() throws IOException {
                         ((ZipOutputStream) out).closeEntry();

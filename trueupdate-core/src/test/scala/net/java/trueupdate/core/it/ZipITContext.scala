@@ -10,7 +10,7 @@ import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
-import net.java.trueupdate.core.io.MessageDigests
+import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.patch.ZipPatch
@@ -30,50 +30,35 @@ trait ZipITContext extends TestContext {
     }
 
   def loanZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) = {
-    var ex: Throwable = null
-    val inputJarFile = testJar1()
-    try {
-      fun(ZipPatch.builder
-        .inputFile(inputJarFile)
-        .patchFile(zipPatchFile)
-        .createJarFile(true)
-        .build)
-    } catch {
-      case ex2: Throwable => ex = ex2; throw ex
-    } finally {
-      try {
-        inputJarFile close ()
-      } catch {
-        case ex2: Throwable => if (null == ex) throw ex2
+    new ZipInputTask[A, Exception](new TestJar1Source) {
+      override def execute(inputJarFile: ZipFile) = {
+        fun(ZipPatch.builder
+          .inputFile(inputJarFile)
+          .patchFile(zipPatchFile)
+          .createJarFile(true)
+          .build)
       }
-    }
+    } call ()
   }
 
   def loanJarFiles[A](fun: (JarFile, JarFile) => A) = {
-    var ex: Throwable = null
-    val jarFile1 = testJar1()
-    try {
-      val jarFile2 = testJar2()
-      try {
-        fun(jarFile1, jarFile2)
-      } catch {
-        case ex2: Throwable => ex = ex2; throw ex
-      } finally {
-        try {
-          jarFile2 close ()
-        } catch {
-          case ex2: Throwable => if (null == ex) throw ex2
-        }
+    new ZipInputTask[A, Exception](new TestJar1Source) {
+      override def execute(jarFile1: ZipFile) = {
+        new ZipInputTask[A, Exception](new TestJar2Source) {
+          override def execute(jarFile2: ZipFile) = {
+            fun(jarFile1.asInstanceOf[JarFile], jarFile2.asInstanceOf[JarFile])
+          }
+        } call ()
       }
-    } catch {
-      case ex2: Throwable => ex = ex2; throw ex
-    } finally {
-      try {
-        jarFile1 close ()
-      } catch {
-        case ex2: Throwable => if (null == ex) throw ex2
-      }
-    }
+    } call ()
+  }
+
+  final class TestJar1Source extends ZipSource {
+    override def input() = testJar1()
+  }
+
+  final class TestJar2Source extends ZipSource {
+    override def input() = testJar2()
   }
 
   @CreatesObligation def testJar1() = new JarFile(file("test1.jar"), false)

@@ -4,8 +4,7 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.concurrent.Callable;
 import net.java.trueupdate.shed.Objects;
 
@@ -28,7 +27,7 @@ implements Callable<V> {
         X ex = null;
         final OutputStream out = sink.output();
         try {
-            return apply(out);
+            return execute(out);
         } catch (Exception ex2) {
             throw ex = (X) ex2;
         } finally {
@@ -40,5 +39,5 @@ implements Callable<V> {
         }
     }
 
-    protected abstract V apply(OutputStream out) throws X;
+    protected abstract V execute(OutputStream out) throws X;
 }

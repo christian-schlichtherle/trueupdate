@@ -15,6 +15,7 @@ import java.io.*;
  * @author Christian Schlichtherle (copied and edited from TrueLicense Core 2.3.1)
  */
 public interface Sink {
+
     /**
      * Returns a new output stream for writing the binary data to this sink.
      */
