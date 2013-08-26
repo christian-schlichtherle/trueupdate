@@ -20,21 +20,23 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     private final ApplicationParameters applicationParameters;
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
-    private final UpdateMessageDispatcher updateMessageDispatcher;
+    private final UpdateAgentMessageDispatcher updateAgentMessageDispatcher;
 
     ConfiguredUpdateAgent(final ApplicationParameters applicationParameters,
                           final UpdateAgentBuilderBean b) {
         this.applicationParameters = requireNonNull(applicationParameters);
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.destination = requireNonNull(b.destination);
-        this.updateMessageDispatcher = requireNonNull(b.updateAgentMessageDispatcher);
+        this.updateAgentMessageDispatcher = requireNonNull(b.updateAgentMessageDispatcher);
     }
 
-    @Override protected UpdateMessageDispatcher updateMessageDispatcher() {
-        return updateMessageDispatcher;
+    @Override
+    protected UpdateAgentMessageDispatcher updateAgentMessageDispatcher() {
+        return updateAgentMessageDispatcher;
     }
 
-    @Override protected ApplicationParameters applicationParameters() {
+    @Override
+    protected ApplicationParameters applicationParameters() {
         return applicationParameters;
     }
 

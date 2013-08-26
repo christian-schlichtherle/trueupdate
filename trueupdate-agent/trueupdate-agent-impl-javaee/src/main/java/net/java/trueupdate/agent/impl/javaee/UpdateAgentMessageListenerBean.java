@@ -13,7 +13,7 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * Filters JMS messages and forwards update messages to the injected
- * {@link UpdateAgentDispatcherBean}.
+ * {@link UpdateAgentMessageDispatcherBean}.
  *
  * @author Christian Schlichtherle
  */

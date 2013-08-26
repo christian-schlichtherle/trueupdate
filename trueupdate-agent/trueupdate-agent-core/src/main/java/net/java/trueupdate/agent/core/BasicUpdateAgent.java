@@ -24,7 +24,7 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
             AGENT_URI = URI.create("agent"),
             MANAGER_URI = URI.create("manager");
 
-    protected abstract UpdateMessageDispatcher updateMessageDispatcher();
+    protected abstract UpdateAgentMessageDispatcher updateAgentMessageDispatcher();
 
     protected abstract ApplicationParameters applicationParameters();
 
@@ -33,13 +33,13 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
     protected URI to() { return MANAGER_URI; }
 
     @Override public void subscribe() throws UpdateAgentException {
-        updateMessageDispatcher().subscribe(applicationParameters());
+        updateAgentMessageDispatcher().subscribe(applicationParameters());
         send(SUBSCRIPTION_REQUEST, null);
     }
 
     @Override public void unsubscribe() throws UpdateAgentException {
         send(UNSUBSCRIPTION_NOTICE, null);
-        updateMessageDispatcher().unsubscribe(applicationParameters());
+        updateAgentMessageDispatcher().unsubscribe(applicationParameters());
     }
 
     @Override public void install(String version) throws UpdateAgentException {

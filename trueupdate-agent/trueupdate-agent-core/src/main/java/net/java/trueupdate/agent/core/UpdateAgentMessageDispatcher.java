@@ -19,10 +19,10 @@ import net.java.trueupdate.manager.spec.*;
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public class UpdateMessageDispatcher extends UpdateMessageListener {
+public class UpdateAgentMessageDispatcher extends UpdateMessageListener {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateMessageDispatcher.class.getName());
+            logger = Logger.getLogger(UpdateAgentMessageDispatcher.class.getName());
 
     private final Map<ApplicationDescriptor, ApplicationAccount>
             accounts = new HashMap<ApplicationDescriptor, ApplicationAccount>();
