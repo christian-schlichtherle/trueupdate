@@ -32,7 +32,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
         val zipPatchFile = tempFile ()
 
         try {
-          loanZipDiff(_ writePatchFileTo new FileStore(zipPatchFile))
+          loanZipDiff(_ writePatchZipTo new FileStore(zipPatchFile))
 
           class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
             override def execute(patchZipFile: ZipFile) {
@@ -40,18 +40,18 @@ class ZipPatchIT extends WordSpec with ZipITContext {
 
               try {
                 loanZipPatch(patchZipFile) {
-                  _ applyZipPatchFileTo new FileStore(updatedJarFile)
+                  _ applyPatchZipTo new FileStore(updatedJarFile)
                 }
 
                 class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-                  override def execute(jarFile1: ZipFile) {
-                    val unchangedReference = fileEntryNames(jarFile1)
+                  override def execute(jar1: ZipFile) {
+                    val unchangedReference = fileEntryNames(jar1)
 
                     class DiffTask extends ZipInputTask[Unit, Exception] {
-                      override def execute(jarFile2: ZipFile) {
+                      override def execute(jar2: ZipFile) {
                         val diffModel = ZipDiff.builder
-                          .file1(jarFile1)
-                          .file2(jarFile2)
+                          .zip1(jar1)
+                          .zip2(jar2)
                           .build
                           .computeDiffModel ()
                         diffModel.addedEntries.isEmpty should be (true)

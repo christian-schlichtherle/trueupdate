@@ -30,6 +30,8 @@ public class ZipSinks {
     }
 
     public interface BindStatement<V, X extends Exception> {
-        IoCallable<V, X> to(ZipSink sink);
+        Job<V, X> to(ZipSink sink);
     }
+
+    private ZipSinks() { }
 }

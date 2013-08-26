@@ -13,7 +13,5 @@ import java.util.zip.ZipFile;
  * @see ZipSources#bind
  * @author Christian Schlichtherle
  */
-public interface ZipInputTask<V, X extends Exception> {
-
-    V execute(ZipFile zipFile) throws X;
-}
+public interface ZipInputTask<V, X extends Exception>
+extends Task<V, ZipFile, X> { }

@@ -24,6 +24,10 @@
             <groupId>net.java.trueupdate</groupId>
             <artifactId>trueupdate-shed</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

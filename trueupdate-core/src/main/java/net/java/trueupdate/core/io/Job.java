@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 
 /**
- * A specialized {@link Callable}.
+ * A {@link Callable} for doing I/O.
  *
  * @author Christian Schlichtherle
  */
-public interface IoCallable<V, X extends Exception> extends Callable<V> {
+public interface Job<V, X extends Exception> extends Callable<V> {
     @Override V call() throws X, IOException;
 }

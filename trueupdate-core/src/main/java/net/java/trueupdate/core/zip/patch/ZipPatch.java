@@ -24,27 +24,27 @@ public abstract class ZipPatch {
 
     private DiffModel model;
 
-    /** Returns the ZIP patch file. */
-    abstract @WillNotClose ZipFile patchFile();
-
     /** Returns the input ZIP file. */
-    abstract @WillNotClose ZipFile inputFile();
+    abstract @WillNotClose ZipFile inputZip();
+
+    /** Returns the patch ZIP file. */
+    abstract @WillNotClose ZipFile patchZip();
 
     /** Returns a new builder for a ZIP patch. */
     public static Builder builder() { return new Builder(); }
 
     /**
-     * Applies the configured ZIP patch file.
+     * Applies the configured patch ZIP file.
      *
-     * @param outputFile the sink for writing the output ZIP or JAR file.
+     * @param outputZip the sink for writing the output ZIP or JAR file.
      */
-    public final void applyZipPatchFileTo(final Sink outputFile)
+    public final void applyPatchZipTo(final Sink outputZip)
     throws IOException {
         final EntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
 
-        class ApplyPatchFileTask implements ZipOutputTask<Void, IOException> {
+        class ApplyPatchZipTask implements ZipOutputTask<Void, IOException> {
             @Override public Void execute(final ZipOutputStream zipOut)
             throws IOException {
                 for (EntryNameFilter filter : passFilters)
@@ -53,8 +53,8 @@ public abstract class ZipPatch {
             }
         }
 
-        ZipSinks.execute(new ApplyPatchFileTask())
-                .on(newZipOutputStream(outputFile));
+        ZipSinks.execute(new ApplyPatchZipTask())
+                .on(newZipOutputStream(outputZip));
     }
 
     /** Returns a new ZIP output stream which writes to the given sink. */
@@ -154,7 +154,7 @@ public abstract class ZipPatch {
 
         class InputFilePatchSet extends PatchSet {
 
-            @Override ZipFile source() { return inputFile(); }
+            @Override ZipFile source() { return inputZip(); }
 
             @Override IOException ioException(Throwable cause) {
                 return new WrongInputZipFile(source().getName(), cause);
@@ -163,7 +163,7 @@ public abstract class ZipPatch {
 
         class PatchFilePatchSet extends PatchSet {
 
-            @Override ZipFile source() { return patchFile(); }
+            @Override ZipFile source() { return patchZip(); }
 
             @Override IOException ioException(Throwable cause) {
                 return new InvalidZipPatchFileException(source().getName(), cause);
@@ -194,21 +194,21 @@ public abstract class ZipPatch {
     private DiffModel loadDiffModel() throws IOException {
         try {
             return DiffModel.decodeFromXml(
-                    new ZipEntrySource(diffModelEntry(), patchFile()));
+                    new ZipEntrySource(diffModelEntry(), patchZip()));
         } catch (RuntimeException ex) {
             throw ex;
         } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new InvalidZipPatchFileException(patchFile().getName(), ex);
+            throw new InvalidZipPatchFileException(patchZip().getName(), ex);
         }
     }
 
     private ZipEntry diffModelEntry() throws IOException {
         final String name = DiffModel.ENTRY_NAME;
-        final ZipEntry entry = patchFile().getEntry(name);
+        final ZipEntry entry = patchZip().getEntry(name);
         if (null == entry)
-            throw new InvalidZipPatchFileException(patchFile().getName(),
+            throw new InvalidZipPatchFileException(patchZip().getName(),
                     new MissingZipEntryException(name));
         return entry;
     }
@@ -216,45 +216,45 @@ public abstract class ZipPatch {
     /** A builder for a ZIP patch. */
     public static final class Builder {
 
-        private @CheckForNull ZipFile patchFile, inputFile;
-        private boolean createJarFile;
+        private @CheckForNull ZipFile patchZip, inputZip;
+        private boolean createJar;
 
         Builder() { }
 
-        public Builder patchFile(final @Nullable ZipFile patchFile) {
-            this.patchFile = patchFile;
+        public Builder inputZip(final @Nullable ZipFile inputZip) {
+            this.inputZip = inputZip;
             return this;
         }
 
-        public Builder inputFile(final @Nullable ZipFile inputFile) {
-            this.inputFile = inputFile;
+        public Builder patchZip(final @Nullable ZipFile patchZip) {
+            this.patchZip = patchZip;
             return this;
         }
 
-        public Builder createJarFile(final boolean createJarFile) {
-            this.createJarFile = createJarFile;
+        public Builder createJar(final boolean createJar) {
+            this.createJar = createJar;
             return this;
         }
 
         public ZipPatch build() {
-            return create(patchFile, inputFile, createJarFile);
+            return create(inputZip, patchZip, createJar);
         }
 
         private static ZipPatch create(
-                final ZipFile patchFile,
-                final ZipFile inputFile,
-                final boolean createJarFile) {
-            requireNonNull(patchFile);
-            requireNonNull(inputFile);
-            if (createJarFile) {
+                final ZipFile inputZip,
+                final ZipFile patchZip,
+                final boolean createJar) {
+            requireNonNull(inputZip);
+            requireNonNull(patchZip);
+            if (createJar) {
                 return new JarPatch() {
-                    @Override ZipFile patchFile() { return patchFile; }
-                    @Override ZipFile inputFile() { return inputFile; }
+                    @Override ZipFile inputZip() { return inputZip; }
+                    @Override ZipFile patchZip() { return patchZip; }
                 };
             } else {
                 return new ZipPatch() {
-                    @Override ZipFile patchFile() { return patchFile; }
-                    @Override ZipFile inputFile() { return inputFile; }
+                    @Override ZipFile inputZip() { return inputZip; }
+                    @Override ZipFile patchZip() { return patchZip; }
                 };
             }
         }

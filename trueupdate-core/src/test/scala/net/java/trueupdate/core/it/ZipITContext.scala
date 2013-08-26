@@ -21,21 +21,21 @@ import net.java.trueupdate.core.zip.patch.ZipPatch
 trait ZipITContext extends TestContext {
 
   def loanZipDiff[A](fun: ZipDiff => A) =
-    loanJarFiles { (jarFile1, jarFile2) =>
+    loanJarFiles { (jar1, jar2) =>
       fun(ZipDiff.builder
-        .file1(jarFile1)
-        .file2(jarFile2)
+        .zip1(jar1)
+        .zip2(jar2)
         .digest(digest)
         .build)
     }
 
-  def loanZipPatch[A](@WillNotClose zipPatchFile: ZipFile)(fun: ZipPatch => A) = {
+  def loanZipPatch[A](@WillNotClose patchZip: ZipFile)(fun: ZipPatch => A) = {
     class FunTask extends ZipInputTask[A, Exception] {
-      override def execute(inputJarFile: ZipFile) = {
+      override def execute(inputZip: ZipFile) = {
         fun(ZipPatch.builder
-          .inputFile(inputJarFile)
-          .patchFile(zipPatchFile)
-          .createJarFile(true)
+          .inputZip(inputZip)
+          .patchZip(patchZip)
+          .createJar(true)
           .build)
       }
     }
@@ -45,10 +45,10 @@ trait ZipITContext extends TestContext {
 
   def loanJarFiles[A](fun: (JarFile, JarFile) => A) = {
     class Fun1Task extends ZipInputTask[A, Exception]() {
-      override def execute(jarFile1: ZipFile) = {
+      override def execute(jar1: ZipFile) = {
         class Fun2Task extends ZipInputTask[A, Exception] {
-          override def execute(jarFile2: ZipFile) = {
-            fun(jarFile1.asInstanceOf[JarFile], jarFile2.asInstanceOf[JarFile])
+          override def execute(jar2: ZipFile) = {
+            fun(jar1.asInstanceOf[JarFile], jar2.asInstanceOf[JarFile])
           }
         }
 

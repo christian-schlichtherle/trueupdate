@@ -6,7 +6,6 @@ package net.java.trueupdate.manager.plug.openejb;
 
 import java.io.*;
 import java.util.*;
-import java.util.jar.*;
 import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
@@ -60,14 +59,14 @@ class Files {
         return file.delete() || !file.exists();
     }
 
-    public static void jarTo(final File fileOrDirectory, final File jarFile)
+    public static void zipTo(final File fileOrDirectory, final File zipFile)
     throws IOException {
 
-        class JarTask implements ZipOutputTask<Void, IOException> {
+        class ZipTask implements ZipOutputTask<Void, IOException> {
             @Override public Void execute(final ZipOutputStream zipOut)
             throws IOException {
 
-                class Jar  {
+                class WithZipOutputStream  {
                     void jarDirectory(final File directory, final String name)
                     throws IOException {
                         final File[] memberFiles = directory.listFiles();
@@ -125,63 +124,63 @@ class Files {
                     }
 
                     ZipEntry entry(String name) { return new ZipEntry(name); }
-                } // Jar
+                } // WithZipOutputStream
 
                 if (fileOrDirectory.isDirectory())
-                    new Jar().jarDirectory(fileOrDirectory, "");
+                    new WithZipOutputStream().jarDirectory(fileOrDirectory, "");
                 else
-                    new Jar().jarFile(fileOrDirectory, "");
+                    new WithZipOutputStream().jarFile(fileOrDirectory, "");
                 return null;
             }
         } // JarTask
 
-        ZipSinks.execute(new JarTask())
-                .on(new JarOutputStream(new FileOutputStream(jarFile)));
+        ZipSinks.execute(new ZipTask())
+                .on(new ZipOutputStream(new FileOutputStream(zipFile)));
     }
 
-    public static void unjarTo(final File jarFile, final File directory)
+    public static void unzipTo(final File zipFile, final File directory)
     throws IOException {
 
-        class WithJarFile implements ZipInputTask<Void, IOException> {
+        class WithZipFile implements ZipInputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipFile jar) throws IOException {
-                for (final Enumeration<JarEntry> en = ((JarFile) jar).entries();
+            public Void execute(final ZipFile zip) throws IOException {
+                for (final Enumeration<? extends ZipEntry> en = zip.entries();
                         en.hasMoreElements(); ) {
-                    final JarEntry entry = en.nextElement();
+                    final ZipEntry entry = en.nextElement();
                     if (entry.isDirectory()) continue;
                     final File file = new File(directory, entry.getName());
                     file.getParentFile().mkdirs();
-                    Copy.copy(new ZipEntrySource(entry, jar), new FileStore(file));
+                    Copy.copy(new ZipEntrySource(entry, zip), new FileStore(file));
                 }
                 return null;
             }
         } // WithJarFile
 
-        ZipSources.execute(new WithJarFile()).on(new JarFile(jarFile));
+        ZipSources.execute(new WithZipFile()).on(new ZipFile(zipFile));
     }
 
     public static void applyPatchTo(
-            final File originalJarFile,
+            final File inputZipFile,
             final File zipPatchFile,
-            final File updatedJarFile)
+            final File patchedJarFile)
     throws IOException {
 
-        class WithOriginalJarFile implements ZipInputTask<Void, IOException> {
+        class WithInputZipFile implements ZipInputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipFile originalJarFile) throws IOException {
+            public Void execute(final ZipFile inputFile) throws IOException {
 
                 class WithZipPatchFile implements ZipInputTask<Void, IOException> {
 
                     @Override
-                    public Void execute(final ZipFile zipPatchFile) throws IOException {
+                    public Void execute(final ZipFile patchFile) throws IOException {
                         ZipPatch.builder()
-                                .inputFile(originalJarFile)
-                                .patchFile(zipPatchFile)
-                                .createJarFile(true)
+                                .inputZip(inputFile)
+                                .patchZip(patchFile)
+                                .createJar(true)
                                 .build()
-                                .applyZipPatchFileTo(new FileStore(updatedJarFile));
+                                .applyPatchZipTo(new FileStore(patchedJarFile));
                         return null;
                     }
                 } // WithZipPatchFile
@@ -192,8 +191,8 @@ class Files {
             }
         } // WithOriginalJarFile
 
-        ZipSources.execute(new WithOriginalJarFile())
-                .on(new JarFile(originalJarFile, false));
+        ZipSources.execute(new WithInputZipFile())
+                .on(new ZipFile(inputZipFile));
     }
 
     public static void loanTempFileTo(
@@ -204,7 +203,7 @@ class Files {
         final File temp = File.createTempFile(prefix, suffix);
         Exception ex = null;
         try {
-            task.process(temp);
+            task.execute(temp);
         } catch (Exception ex2) {
             throw ex = ex2;
         } finally {
@@ -216,6 +215,6 @@ class Files {
 
     @SuppressWarnings("PackageVisibleInnerClass")
     public interface FileTask {
-        void process(File file) throws Exception;
+        void execute(File file) throws Exception;
     }
 }

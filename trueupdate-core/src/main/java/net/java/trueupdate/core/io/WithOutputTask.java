@@ -22,13 +22,13 @@ implements Sinks.BindStatement<V, X>, Sinks.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
-    @Override public IoCallable<V, X> to(final Sink sink) {
-        class WithTaskAndSource implements IoCallable<V, X> {
+    @Override public Job<V, X> to(final Sink sink) {
+        class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
                 return on(sink);
             }
         }
-        return new WithTaskAndSource();
+        return new WithTaskAndSourceJob();
     }
 
     @Override public V on(final OutputStream out) throws X, IOException {
@@ -41,21 +41,7 @@ implements Sinks.BindStatement<V, X>, Sinks.ExecuteStatement<V, X> {
     }
 
     @Override @SuppressWarnings("unchecked")
-    public V on(final Sink sink) throws X, IOException {
-        X ex = null;
-        final OutputStream out = sink.output();
-        try {
-            return task.execute(out);
-        } catch (Exception ex2) {
-            throw ex = (X) ex2;
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex2) {
-                if (null == ex) {
-                    throw ex2;
-                }
-            }
-        }
+    public V on(Sink sink) throws X, IOException {
+        return Closeables.execute(task, sink.output());
     }
 }

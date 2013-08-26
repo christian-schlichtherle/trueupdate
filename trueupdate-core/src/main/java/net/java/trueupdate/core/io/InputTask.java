@@ -13,7 +13,5 @@ import java.io.*;
  * @see Sources#bind
  * @author Christian Schlichtherle
  */
-public interface InputTask<V, X extends Exception> {
-
-    V execute(InputStream in) throws X;
-}
+public interface InputTask<V, X extends Exception>
+extends Task<V, InputStream, X> { }

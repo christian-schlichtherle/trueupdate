@@ -63,7 +63,7 @@ public class Sinks {
     }
 
     public interface BindStatement<V, X extends Exception> {
-        IoCallable<V, X> to(Sink sink);
+        Job<V, X> to(Sink sink);
     }
 
     private Sinks() { }

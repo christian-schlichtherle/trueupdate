@@ -22,13 +22,13 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
-    @Override public IoCallable<V, X> to(final ZipSink sink) {
-        class WithTaskAndSource implements IoCallable<V, X> {
+    @Override public Job<V, X> to(final ZipSink sink) {
+        class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
                 return on(sink);
             }
         }
-        return new WithTaskAndSource();
+        return new WithTaskAndSourceJob();
     }
 
     @Override public V on(final ZipOutputStream zipOut) throws X, IOException {
@@ -41,21 +41,7 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
     }
 
     @Override @SuppressWarnings("unchecked")
-    public V on(final ZipSink sink) throws X, IOException {
-        X ex = null;
-        final ZipOutputStream zipOut = sink.output();
-        try {
-            return task.execute(zipOut);
-        } catch (Exception ex2) {
-            throw ex = (X) ex2;
-        } finally {
-            try {
-                zipOut.close();
-            } catch (IOException ex2) {
-                if (null == ex) {
-                    throw ex2;
-                }
-            }
-        }
+    public V on(ZipSink sink) throws X, IOException {
+        return Closeables.execute(task, sink.output());
     }
 }

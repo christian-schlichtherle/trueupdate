@@ -119,7 +119,7 @@ public class Sources {
     }
 
     public interface BindStatement<V, X extends Exception> {
-        IoCallable<V, X> to(Source source);
+        Job<V, X> to(Source source);
     }
 
     private Sources() { }

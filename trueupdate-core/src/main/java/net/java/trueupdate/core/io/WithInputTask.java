@@ -22,13 +22,13 @@ implements Sources.BindStatement<V, X>, Sources.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
-    @Override public IoCallable<V, X> to(final Source source) {
-        class WithTaskAndSource implements IoCallable<V, X> {
+    @Override public Job<V, X> to(final Source source) {
+        class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
                 return on(source);
             }
         }
-        return new WithTaskAndSource();
+        return new WithTaskAndSourceJob();
     }
 
     @Override public V on(final InputStream in) throws X, IOException {
@@ -41,21 +41,7 @@ implements Sources.BindStatement<V, X>, Sources.ExecuteStatement<V, X> {
     }
 
     @Override @SuppressWarnings("unchecked")
-    public V on(final Source source) throws X, IOException {
-        X ex = null;
-        final InputStream in = source.input();
-        try {
-            return task.execute(in);
-        } catch (Exception ex2) {
-            throw ex = (X) ex2;
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex2) {
-                if (null == ex) {
-                    throw ex2;
-                }
-            }
-        }
+    public V on(Source source) throws X, IOException {
+        return Closeables.execute(task, source.input());
     }
 }

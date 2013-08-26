@@ -22,13 +22,13 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
-    @Override public IoCallable<V, X> to(final ZipSource source) {
-        class WithTaskAndSource implements IoCallable<V, X> {
+    @Override public Job<V, X> to(final ZipSource source) {
+        class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
                 return on(source);
             }
         }
-        return new WithTaskAndSource();
+        return new WithTaskAndSourceJob();
     }
 
     @Override public V on(final ZipFile zipFile) throws X, IOException {
@@ -42,6 +42,10 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
 
     @Override @SuppressWarnings("unchecked")
     public V on(final ZipSource source) throws X, IOException {
+        // Unfortunately, in Java SE 6, ZipFile is not a Closeable.
+        // In Java SE 7, the entire DSL is replaceable with the
+        // try-with-resources statement.
+        //return Closeables.execute(task, sink.output());
         X ex = null;
         final ZipFile zipFile = source.input();
         try {

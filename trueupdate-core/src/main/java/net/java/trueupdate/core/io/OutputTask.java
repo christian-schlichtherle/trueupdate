@@ -13,7 +13,5 @@ import java.io.*;
  * @see Sinks#bind
  * @author Christian Schlichtherle
  */
-public interface OutputTask<V, X extends Exception> {
-
-    V execute(OutputStream out) throws X;
-}
+public interface OutputTask<V, X extends Exception>
+extends Task<V, OutputStream, X> { }
