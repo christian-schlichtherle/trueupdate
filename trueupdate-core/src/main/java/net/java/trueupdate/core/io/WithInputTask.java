@@ -31,17 +31,12 @@ implements Sources.BindStatement<V, X>, Sources.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override public V on(final InputStream in) throws X, IOException {
-        class OneTimeSource implements Source {
-            @Override public InputStream input() {
-                return in;
-            }
-        }
-        return on(new OneTimeSource());
-    }
-
     @Override @SuppressWarnings("unchecked")
     public V on(Source source) throws X, IOException {
-        return Closeables.execute(task, source.input());
+        return on(source.input());
+    }
+
+    @Override public V on(InputStream in) throws X, IOException {
+        return Closeables.execute(task, in);
     }
 }

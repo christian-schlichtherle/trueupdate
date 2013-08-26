@@ -31,17 +31,12 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override public V on(final ZipOutputStream zipOut) throws X, IOException {
-        class OneTimeSink implements ZipSink {
-            @Override public ZipOutputStream output() {
-                return zipOut;
-            }
-        }
-        return on(new OneTimeSink());
-    }
-
     @Override @SuppressWarnings("unchecked")
     public V on(ZipSink sink) throws X, IOException {
-        return Closeables.execute(task, sink.output());
+        return on(sink.output());
+    }
+
+    @Override public V on(ZipOutputStream out) throws X, IOException {
+        return Closeables.execute(task, out);
     }
 }

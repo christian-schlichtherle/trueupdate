@@ -19,11 +19,11 @@ import net.java.trueupdate.core.io.Sink;
 abstract class JarPatch extends ZipPatch {
 
     @Override
-    ZipOutputStream newZipOutputStream(Sink outputFile) throws IOException {
-        return new JarOutputStream(outputFile.output());
+    ZipOutputStream newZipOutputStream(Sink outputArchive) throws IOException {
+        return new JarOutputStream(outputArchive.output());
     }
 
-    @Override ZipEntry newEntry(String name) { return new JarEntry(name); }
+    @Override ZipEntry newZipEntry(String name) { return new JarEntry(name); }
 
     @Override EntryNameFilter[] passFilters() {
         // The JarInputStream class assumes that the file entry

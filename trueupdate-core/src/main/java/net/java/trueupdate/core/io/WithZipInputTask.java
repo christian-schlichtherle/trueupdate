@@ -31,30 +31,24 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override public V on(final ZipFile zipFile) throws X, IOException {
-        class OneTimeSource implements ZipSource {
-            @Override public ZipFile input() {
-                return zipFile;
-            }
-        }
-        return on(new OneTimeSource());
+    @Override public V on(ZipSource source) throws X, IOException {
+        return on(source.input());
     }
 
     @Override @SuppressWarnings("unchecked")
-    public V on(final ZipSource source) throws X, IOException {
+    public V on(final ZipFile archive) throws X, IOException {
         // Unfortunately, in Java SE 6, ZipFile is not a Closeable.
         // In Java SE 7, the entire DSL is replaceable with the
         // try-with-resources statement.
         //return Closeables.execute(task, sink.output());
         X ex = null;
-        final ZipFile zipFile = source.input();
         try {
-            return task.execute(zipFile);
+            return task.execute(archive);
         } catch (Exception ex2) {
             throw ex = (X) ex2;
         } finally {
             try {
-                zipFile.close();
+                archive.close();
             } catch (IOException ex2) {
                 if (null == ex) {
                     throw ex2;

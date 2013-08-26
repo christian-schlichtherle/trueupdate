@@ -62,12 +62,13 @@ class Files {
     public static void zipTo(final File fileOrDirectory, final File zipFile)
     throws IOException {
 
-        class ZipTask implements ZipOutputTask<Void, IOException> {
-            @Override public Void execute(final ZipOutputStream zipOut)
+        class WithZipArchive implements ZipOutputTask<Void, IOException> {
+
+            @Override public Void execute(final ZipOutputStream zipArchive)
             throws IOException {
 
-                class WithZipOutputStream  {
-                    void jarDirectory(final File directory, final String name)
+                class Zipper {
+                    void zipDirectory(final File directory, final String name)
                     throws IOException {
                         final File[] memberFiles = directory.listFiles();
                         Arrays.sort(memberFiles); // courtesy
@@ -76,14 +77,14 @@ class Files {
                                     (name.isEmpty() ? name : name + '/')
                                     + memberFile.getName();
                             if (memberFile.isDirectory()) {
-                                jarDirectory(memberFile, memberName);
+                                zipDirectory(memberFile, memberName);
                             } else {
-                                jarFile(memberFile, memberName);
+                                zipFile(memberFile, memberName);
                             }
                         }
                     }
 
-                    void jarFile(File file, String name) throws IOException {
+                    void zipFile(File file, String name) throws IOException {
                         final ZipEntry entry = entry(name);
                         if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
                             final long length = file.length();
@@ -120,79 +121,81 @@ class Files {
                     }
 
                     Sink zipEntrySink(ZipEntry entry) {
-                        return new ZipEntrySink(entry, zipOut);
+                        return new ZipEntrySink(entry, zipArchive);
                     }
 
                     ZipEntry entry(String name) { return new ZipEntry(name); }
-                } // WithZipOutputStream
+                } // Zipper
 
                 if (fileOrDirectory.isDirectory())
-                    new WithZipOutputStream().jarDirectory(fileOrDirectory, "");
+                    new Zipper().zipDirectory(fileOrDirectory, "");
                 else
-                    new WithZipOutputStream().jarFile(fileOrDirectory, "");
+                    new Zipper().zipFile(fileOrDirectory, "");
                 return null;
             }
-        } // JarTask
+        } // WithZipArchive
 
-        ZipSinks.execute(new ZipTask())
+        ZipSinks.execute(new WithZipArchive())
                 .on(new ZipOutputStream(new FileOutputStream(zipFile)));
     }
 
     public static void unzipTo(final File zipFile, final File directory)
     throws IOException {
 
-        class WithZipFile implements ZipInputTask<Void, IOException> {
+        class WithArchive implements ZipInputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipFile zip) throws IOException {
-                for (final Enumeration<? extends ZipEntry> en = zip.entries();
+            public Void execute(final ZipFile zipArchive) throws IOException {
+                for (final Enumeration<? extends ZipEntry>
+                             en = zipArchive.entries();
                         en.hasMoreElements(); ) {
                     final ZipEntry entry = en.nextElement();
                     if (entry.isDirectory()) continue;
                     final File file = new File(directory, entry.getName());
                     file.getParentFile().mkdirs();
-                    Copy.copy(new ZipEntrySource(entry, zip), new FileStore(file));
+                    Copy.copy(new ZipEntrySource(entry, zipArchive),
+                              new FileStore(file));
                 }
                 return null;
             }
-        } // WithJarFile
+        } // WithZipArchive
 
-        ZipSources.execute(new WithZipFile()).on(new ZipFile(zipFile));
+        ZipSources.execute(new WithArchive()).on(new ZipFile(zipFile));
     }
 
     public static void applyPatchTo(
-            final File inputZipFile,
-            final File zipPatchFile,
-            final File patchedJarFile)
+            final File inputFile,
+            final File patchFile,
+            final File patchedFile)
     throws IOException {
 
-        class WithInputZipFile implements ZipInputTask<Void, IOException> {
+        class WithInputArchive implements ZipInputTask<Void, IOException> {
 
-            @Override
-            public Void execute(final ZipFile inputFile) throws IOException {
+            @Override public Void execute(final ZipFile inputArchive)
+            throws IOException {
 
-                class WithZipPatchFile implements ZipInputTask<Void, IOException> {
+                class WithPatchArchive implements ZipInputTask<Void, IOException> {
 
-                    @Override
-                    public Void execute(final ZipFile patchFile) throws IOException {
+                    @Override public Void execute(final ZipFile patchArchive)
+                    throws IOException {
                         ZipPatch.builder()
-                                .inputZip(inputFile)
-                                .patchZip(patchFile)
+                                .inputArchive(inputArchive)
+                                .patchArchive(patchArchive)
                                 .createJar(true)
                                 .build()
-                                .applyPatchZipTo(new FileStore(patchedJarFile));
+                                .applyTo(new FileStore(patchedFile));
                         return null;
                     }
-                } // WithZipPatchFile
+                } // WithPatchArchive
 
-                ZipSources.execute(new WithZipPatchFile())
-                        .on(new ZipFile(zipPatchFile));
+                ZipSources.execute(new WithPatchArchive())
+                        .on(new ZipFile(patchFile));
                 return null;
             }
-        } // WithOriginalJarFile
+        } // WithInputArchive
 
-        ZipSources.execute(new WithInputZipFile())
-                .on(new ZipFile(inputZipFile));
+        ZipSources.execute(new WithInputArchive())
+                .on(new ZipFile(inputFile));
     }
 
     public static void loanTempFileTo(

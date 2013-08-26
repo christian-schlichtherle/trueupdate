@@ -29,29 +29,29 @@ class ZipPatchIT extends WordSpec with ZipITContext {
   "A ZIP patch" when {
     "generating and applying the ZIP patch file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
-        val zipPatchFile = tempFile ()
+        val patchFile = tempFile ()
 
         try {
-          loanZipDiff(_ writePatchZipTo new FileStore(zipPatchFile))
+          loanZipDiff(_ writePatchArchiveTo new FileStore(patchFile))
 
           class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-            override def execute(patchZipFile: ZipFile) {
-              val updatedJarFile = tempFile ()
+            override def execute(patchFile: ZipFile) {
+              val patchedFile = tempFile ()
 
               try {
-                loanZipPatch(patchZipFile) {
-                  _ applyPatchZipTo new FileStore(updatedJarFile)
+                loanZipPatch(patchFile) {
+                  _ applyTo new FileStore(patchedFile)
                 }
 
                 class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-                  override def execute(jar1: ZipFile) {
-                    val unchangedReference = fileEntryNames(jar1)
+                  override def execute(archive1: ZipFile) {
+                    val unchangedReference = fileEntryNames(archive1)
 
                     class DiffTask extends ZipInputTask[Unit, Exception] {
-                      override def execute(jar2: ZipFile) {
+                      override def execute(archive2: ZipFile) {
                         val diffModel = ZipDiff.builder
-                          .zip1(jar1)
-                          .zip2(jar2)
+                          .archive1(archive1)
+                          .archive2(archive2)
                           .build
                           .computeDiffModel ()
                         diffModel.addedEntries.isEmpty should be (true)
@@ -62,20 +62,20 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                       }
                     }
 
-                    ZipSources execute new DiffTask on new JarFile(updatedJarFile)
+                    ZipSources execute new DiffTask on new JarFile(patchedFile)
                   }
                 }
 
                 ZipSources execute new ComputeReferenceAndDiffTask on new TestJar2Source
               } finally {
-                updatedJarFile delete ()
+                patchedFile delete ()
               }
             }
           }
 
-          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on new JarFile(zipPatchFile)
+          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on new JarFile(patchFile)
         } finally {
-          zipPatchFile delete ()
+          patchFile delete ()
         }
       }
     }

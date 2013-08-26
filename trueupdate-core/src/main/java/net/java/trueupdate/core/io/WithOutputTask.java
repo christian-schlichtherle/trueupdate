@@ -31,17 +31,12 @@ implements Sinks.BindStatement<V, X>, Sinks.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override public V on(final OutputStream out) throws X, IOException {
-        class OneTimeSink implements Sink {
-            @Override public OutputStream output() {
-                return out;
-            }
-        }
-        return on(new OneTimeSink());
-    }
-
     @Override @SuppressWarnings("unchecked")
     public V on(Sink sink) throws X, IOException {
-        return Closeables.execute(task, sink.output());
+        return on(sink.output());
+    }
+
+    @Override public V on(OutputStream out) throws X, IOException {
+        return Closeables.execute(task, out);
     }
 }

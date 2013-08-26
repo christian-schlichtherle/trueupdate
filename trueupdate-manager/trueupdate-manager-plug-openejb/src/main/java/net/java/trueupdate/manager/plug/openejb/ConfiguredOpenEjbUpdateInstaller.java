@@ -39,13 +39,17 @@ class ConfiguredOpenEjbUpdateInstaller {
     }
 
     void install(final UpdateResolver resolver) throws Exception {
-        final AppInfo info = resolveAppInfo();
-        final File deploymentDir = new File(info.path);
-        logger.log(Level.FINE, "Resolved current location {0} to deployment directory {1} .",
+        final AppInfo appInfo = resolveAppInfo();
+        final File deploymentDir = new File(appInfo.path);
+        if (!deploymentDir.isDirectory())
+            throw new Exception("Deployment to an EAR or WAR file is not yet supported - please use a directory.");
+        logger.log(Level.FINE,
+                "Resolved current location {0} to deployment directory {1} .",
                 new Object[] { currentLocation(), deploymentDir });
-        final File zipPatchFile = resolver.resolveZipPatchFile(updateDescriptor());
-        logger.log(Level.FINER, "Resolved ZIP patch file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { zipPatchFile, artifactDescriptor(),
+        final File patchFile = resolver.resolveZipPatchFile(updateDescriptor());
+        logger.log(Level.FINER,
+                "Resolved patch ZIP file {0} for artifact descriptor {1} and update version {2} .",
+                new Object[] { patchFile, artifactDescriptor(),
                                updateVersion() });
 
         class RedeployTask implements FileTask {
@@ -90,7 +94,8 @@ class ConfiguredOpenEjbUpdateInstaller {
                     }
 
                     @Override public void revert() throws Exception {
-                        throw new AssertionError("This must be the last command and hence there is no need to ever revert it.");
+                        throw new AssertionError(
+                                "This must be the last command and hence there is no need to ever revert it.");
                     }
                 } // DeleteBackupCommand
 
@@ -107,12 +112,12 @@ class ConfiguredOpenEjbUpdateInstaller {
 
         class PatchTask implements FileTask {
             @Override
-            public void execute(final File inputZipFile) throws Exception {
-                loanPatchedJarFile(new RedeployTask(), inputZipFile, zipPatchFile);
+            public void execute(final File inputFile) throws Exception {
+                loanPatchedFile(new RedeployTask(), inputFile, patchFile);
             }
         } // PatchTask
 
-        loanInputZipFile(new PatchTask(), deploymentDir);
+        loanInputFile(new PatchTask(), deploymentDir);
     }
 
     private AppInfo resolveAppInfo() throws FileNotFoundException {
@@ -121,46 +126,48 @@ class ConfiguredOpenEjbUpdateInstaller {
         for (final AppInfo info : deployer.getDeployedApps())
             if (scheme.matches(location, info))
                 return info;
-        throw new FileNotFoundException(
-                String.format("Cannot resolve application information for %s .", location));
+        throw new FileNotFoundException(String.format(
+                "Cannot resolve application information for %s .", location));
     }
 
-    private static void loanPatchedJarFile(
-            final FileTask task,
-            final File inputZipFile,
-            final File zipPatchFile)
-    throws Exception {
-
-        class MakePatchedJarFile implements FileTask {
-
-            @Override
-            public void execute(final File patchedJarFile) throws Exception {
-                applyPatchTo(inputZipFile, zipPatchFile, patchedJarFile);
-                logger.log(Level.FINER, "Patched JAR file {0} with ZIP patch file {1} to JAR file {2} .",
-                        new Object[] { inputZipFile, zipPatchFile, patchedJarFile });
-                task.execute(patchedJarFile);
-            }
-        } // MakePatchedJarFile
-
-        loanTempFileTo("output", ".jar", new MakePatchedJarFile());
-    }
-
-    private static void loanInputZipFile(
+    private static void loanInputFile(
             final FileTask task,
             final File deploymentDir)
+            throws Exception {
+
+        class MakeInputFile implements FileTask {
+
+            @Override public void execute(final File inputFile) throws Exception {
+                zipTo(deploymentDir, inputFile);
+                logger.log(Level.FINER,
+                        "Rebuilt input ZIP file {0} from deployment directory {1} .",
+                        new Object[] { inputFile, deploymentDir });
+                task.execute(inputFile);
+            }
+        } // MakeInputFile
+
+        loanTempFileTo("input", ".zip", new MakeInputFile());
+    }
+
+    private static void loanPatchedFile(
+            final FileTask task,
+            final File inputFile,
+            final File patchFile)
     throws Exception {
 
-        class MakeInputZipFile implements FileTask {
+        class MakePatchedFile implements FileTask {
 
-            @Override public void execute(final File file) throws Exception {
-                zipTo(deploymentDir, file);
-                logger.log(Level.FINER, "Rebuilt original JAR file {0} from directory {1} .",
-                        new Object[] { file, deploymentDir });
-                task.execute(file);
+            @Override
+            public void execute(final File patchedFile) throws Exception {
+                applyPatchTo(inputFile, patchFile, patchedFile);
+                logger.log(Level.FINER,
+                        "Patched input ZIP file {0} with patch ZIP file {1} to patched JAR file {2} .",
+                        new Object[] { inputFile, patchFile, patchedFile });
+                task.execute(patchedFile);
             }
-        } // MakeOriginalJarFile
+        } // MakeOutputJarFile
 
-        loanTempFileTo("input", ".jar", new MakeInputZipFile());
+        loanTempFileTo("patched", ".jar", new MakePatchedFile());
     }
 
     private ArtifactDescriptor artifactDescriptor() {

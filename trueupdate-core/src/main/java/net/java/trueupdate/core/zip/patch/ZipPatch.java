@@ -15,7 +15,8 @@ import net.java.trueupdate.core.zip.model.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * Applies a ZIP patch file to an input ZIP file and writes an output ZIP file.
+ * Applies a patch archive to an input archive and writes an output archive.
+ * Archives may be ZIP, JAR, EAR or WAR files.
  *
  * @author Christian Schlichtherle
  */
@@ -24,21 +25,21 @@ public abstract class ZipPatch {
 
     private DiffModel model;
 
-    /** Returns the input ZIP file. */
-    abstract @WillNotClose ZipFile inputZip();
+    /** Returns the input archive. */
+    abstract @WillNotClose ZipFile inputArchive();
 
-    /** Returns the patch ZIP file. */
-    abstract @WillNotClose ZipFile patchZip();
+    /** Returns the patch archive. */
+    abstract @WillNotClose ZipFile patchArchive();
 
-    /** Returns a new builder for a ZIP patch. */
+    /** Returns a new builder for a patch ZIP archive. */
     public static Builder builder() { return new Builder(); }
 
     /**
-     * Applies the configured patch ZIP file.
+     * Applies the configured patch archive.
      *
-     * @param outputZip the sink for writing the output ZIP or JAR file.
+     * @param outputArchive the sink for writing the output archive.
      */
-    public final void applyPatchZipTo(final Sink outputZip)
+    public void applyTo(final Sink outputArchive)
     throws IOException {
         final EntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
@@ -48,23 +49,23 @@ public abstract class ZipPatch {
             @Override public Void execute(final ZipOutputStream zipOut)
             throws IOException {
                 for (EntryNameFilter filter : passFilters)
-                    applyPatchFileTo(new NoDirectoryEntryNameFilter(filter), zipOut);
+                    applyTo(new NoDirectoryEntryNameFilter(filter), zipOut);
                 return null;
             }
         }
 
         ZipSinks.execute(new ApplyPatchZipTask())
-                .on(newZipOutputStream(outputZip));
+                .on(newZipOutputStream(outputArchive));
     }
 
     /** Returns a new ZIP output stream which writes to the given sink. */
-    @CreatesObligation ZipOutputStream newZipOutputStream(Sink outputFile)
+    @CreatesObligation ZipOutputStream newZipOutputStream(Sink outputArchive)
     throws IOException {
-        return new ZipOutputStream(outputFile.output());
+        return new ZipOutputStream(outputArchive.output());
     }
 
     /** Returns a new ZIP entry with the given name. */
-    ZipEntry newEntry(String name) { return new ZipEntry(name); }
+    ZipEntry newZipEntry(String name) { return new ZipEntry(name); }
 
     /**
      * Returns a list of filters for the different passes required to process
@@ -77,7 +78,7 @@ public abstract class ZipPatch {
         return new EntryNameFilter[] { new AcceptAllEntryNameFilter() };
     }
 
-    private void applyPatchFileTo(
+    private void applyTo(
             final EntryNameFilter filter,
             final @WillNotClose ZipOutputStream zipOut)
     throws IOException {
@@ -86,17 +87,15 @@ public abstract class ZipPatch {
 
         class ZipEntrySink implements Sink {
 
-            final EntryNameAndDigest zipEntryNameAndDigestValue;
+            final EntryNameAndDigest entryNameAndDigest;
 
-            ZipEntrySink(final EntryNameAndDigest
-                                 zipEntryNameAndDigestValue) {
-                assert null != zipEntryNameAndDigestValue;
-                this.zipEntryNameAndDigestValue = zipEntryNameAndDigestValue;
+            ZipEntrySink(final EntryNameAndDigest entryNameAndDigest) {
+                assert null != entryNameAndDigest;
+                this.entryNameAndDigest = entryNameAndDigest;
             }
 
             @Override public OutputStream output() throws IOException {
-                final ZipEntry entry =
-                        newEntry(zipEntryNameAndDigestValue.name());
+                final ZipEntry entry = newZipEntry(entryNameAndDigest.name());
                 if (entry.isDirectory()) {
                     entry.setMethod(ZipOutputStream.STORED);
                     entry.setSize(0);
@@ -110,9 +109,9 @@ public abstract class ZipPatch {
                     @Override public void close() throws IOException {
                         ((ZipOutputStream) out).closeEntry();
                         if (!valueOfDigest().equals(
-                                zipEntryNameAndDigestValue.digest()))
+                                entryNameAndDigest.digest()))
                             throw new WrongMessageDigestException(
-                                    zipEntryNameAndDigestValue.name());
+                                    entryNameAndDigest.name());
                     }
 
                     String valueOfDigest() {
@@ -124,7 +123,7 @@ public abstract class ZipPatch {
 
         abstract class PatchSet {
 
-            abstract ZipFile source();
+            abstract ZipFile archive();
 
             abstract IOException ioException(Throwable cause);
 
@@ -137,12 +136,12 @@ public abstract class ZipPatch {
                             entryNameAndDigest = transformation.apply(item);
                     final String name = entryNameAndDigest.name();
                     if (!filter.accept(name)) continue;
-                    final ZipEntry entry = source().getEntry(name);
+                    final ZipEntry entry = archive().getEntry(name);
                     if (null == entry)
                         throw ioException(new MissingZipEntryException(name));
                     try {
                         Copy.copy(
-                                new ZipEntrySource(entry, source()),
+                                new ZipEntrySource(entry, archive()),
                                 new ZipEntrySink(entryNameAndDigest));
                     } catch (WrongMessageDigestException ex) {
                         throw ioException(ex);
@@ -152,32 +151,32 @@ public abstract class ZipPatch {
             }
         } // PatchSet
 
-        class InputFilePatchSet extends PatchSet {
+        class InputArchivePatchSet extends PatchSet {
 
-            @Override ZipFile source() { return inputZip(); }
-
-            @Override IOException ioException(Throwable cause) {
-                return new WrongInputZipFile(source().getName(), cause);
-            }
-        } // InputFilePatchSet
-
-        class PatchFilePatchSet extends PatchSet {
-
-            @Override ZipFile source() { return patchZip(); }
+            @Override ZipFile archive() { return inputArchive(); }
 
             @Override IOException ioException(Throwable cause) {
-                return new InvalidZipPatchFileException(source().getName(), cause);
+                return new WrongInputZipFile(archive().getName(), cause);
             }
-        } // PatchFilePatchSet
+        } // InputArchivePatchSet
+
+        class PatchArchivePatchSet extends PatchSet {
+
+            @Override ZipFile archive() { return patchArchive(); }
+
+            @Override IOException ioException(Throwable cause) {
+                return new InvalidZipPatchFileException(archive().getName(), cause);
+            }
+        } // PatchArchivePatchSet
 
         // Order is important here!
-        new InputFilePatchSet().apply(
+        new InputArchivePatchSet().apply(
                 new IdentityTransformation(),
                 diffModel().unchangedEntries());
-        new PatchFilePatchSet().apply(
+        new PatchArchivePatchSet().apply(
                 new EntryNameAndTwoDigestsTransformation(),
                 diffModel().changedEntries());
-        new PatchFilePatchSet().apply(
+        new PatchArchivePatchSet().apply(
                 new IdentityTransformation(),
                 diffModel().addedEntries());
     }
@@ -194,40 +193,40 @@ public abstract class ZipPatch {
     private DiffModel loadDiffModel() throws IOException {
         try {
             return DiffModel.decodeFromXml(
-                    new ZipEntrySource(diffModelEntry(), patchZip()));
+                    new ZipEntrySource(diffModelZipEntry(), patchArchive()));
         } catch (RuntimeException ex) {
             throw ex;
         } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new InvalidZipPatchFileException(patchZip().getName(), ex);
+            throw new InvalidZipPatchFileException(patchArchive().getName(), ex);
         }
     }
 
-    private ZipEntry diffModelEntry() throws IOException {
+    private ZipEntry diffModelZipEntry() throws IOException {
         final String name = DiffModel.ENTRY_NAME;
-        final ZipEntry entry = patchZip().getEntry(name);
+        final ZipEntry entry = patchArchive().getEntry(name);
         if (null == entry)
-            throw new InvalidZipPatchFileException(patchZip().getName(),
+            throw new InvalidZipPatchFileException(patchArchive().getName(),
                     new MissingZipEntryException(name));
         return entry;
     }
 
     /** A builder for a ZIP patch. */
-    public static final class Builder {
+    public static class Builder {
 
-        private @CheckForNull ZipFile patchZip, inputZip;
+        private @CheckForNull ZipFile inputArchive, patchArchive;
         private boolean createJar;
 
         Builder() { }
 
-        public Builder inputZip(final @Nullable ZipFile inputZip) {
-            this.inputZip = inputZip;
+        public Builder inputArchive(final @Nullable ZipFile inputArchive) {
+            this.inputArchive = inputArchive;
             return this;
         }
 
-        public Builder patchZip(final @Nullable ZipFile patchZip) {
-            this.patchZip = patchZip;
+        public Builder patchArchive(final @Nullable ZipFile patchArchive) {
+            this.patchArchive = patchArchive;
             return this;
         }
 
@@ -237,24 +236,24 @@ public abstract class ZipPatch {
         }
 
         public ZipPatch build() {
-            return create(inputZip, patchZip, createJar);
+            return create(inputArchive, patchArchive, createJar);
         }
 
         private static ZipPatch create(
-                final ZipFile inputZip,
-                final ZipFile patchZip,
-                final boolean createJar) {
-            requireNonNull(inputZip);
-            requireNonNull(patchZip);
-            if (createJar) {
+                final ZipFile inputArchive,
+                final ZipFile patchArchive,
+                final boolean createJarArchive) {
+            requireNonNull(inputArchive);
+            requireNonNull(patchArchive);
+            if (createJarArchive) {
                 return new JarPatch() {
-                    @Override ZipFile inputZip() { return inputZip; }
-                    @Override ZipFile patchZip() { return patchZip; }
+                    @Override ZipFile inputArchive() { return inputArchive; }
+                    @Override ZipFile patchArchive() { return patchArchive; }
                 };
             } else {
                 return new ZipPatch() {
-                    @Override ZipFile inputZip() { return inputZip; }
-                    @Override ZipFile patchZip() { return patchZip; }
+                    @Override ZipFile inputArchive() { return inputArchive; }
+                    @Override ZipFile patchArchive() { return patchArchive; }
                 };
             }
         }

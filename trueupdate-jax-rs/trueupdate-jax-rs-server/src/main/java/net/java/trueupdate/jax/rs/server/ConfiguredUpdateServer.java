@@ -119,10 +119,10 @@ public final class ConfiguredUpdateServer {
                     final ZipFile zip2 = new ZipFile(file2);
                     try {
                         ZipDiff.builder()
-                                .zip1(zip1)
-                                .zip2(zip2)
+                                .archive1(zip1)
+                                .archive2(zip2)
                                 .build()
-                                .writePatchZipTo(output);
+                                .writePatchArchiveTo(output);
                     } catch (IOException ex2) {
                         throw ex = ex2;
                     } finally {
