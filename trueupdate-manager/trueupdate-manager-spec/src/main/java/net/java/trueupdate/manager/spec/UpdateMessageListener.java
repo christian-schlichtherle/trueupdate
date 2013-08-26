@@ -4,24 +4,66 @@
  */
 package net.java.trueupdate.manager.spec;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
- * Processes update messages.
- * <p>
- * Implementations should be immutable and hence, thread-safe.
- * <p>
- * Applications have no need to implement this class and should not do so
- * because it may be subject to future expansion.
+ * An update message listener which filters and dispatches the update messages
+ * to its protected stub methods.
  *
- * @see UpdateMessageDispatcher
  * @author Christian Schlichtherle
  */
-public interface UpdateMessageListener {
+@Immutable
+public class UpdateMessageListener {
+
+    /** Returns the filter to use before dispatching an update message. */
+    protected UpdateMessageFilter filter() {
+        return UpdateMessageFilter.ACCEPT_ALL;
+    }
 
     /**
-     * Processes the given update message.
-     *
-     * @param message the update message to process.
-     * @throws Exception at the discretion of the implementation.
+     * Filters the given update message and dispatches the call to the
+     * corresponding {@code visit<Type>(UpdateMessage)} method, where
+     * {@code <Type>} is the {@link UpdateMessage.Type} obtained from calling
+     * the {@link UpdateMessage#type()} method.
      */
-    void onUpdateMessage(UpdateMessage message) throws Exception;
+    public void onUpdateMessage(UpdateMessage message) throws Exception {
+        if (filter().accept(message))
+            message.type().dispatchMessageTo(message, this);
+    }
+
+    protected void onSubscriptionNotice(UpdateMessage message)
+    throws Exception { }
+
+    protected void onSubscriptionRequest(UpdateMessage message)
+    throws Exception { }
+
+    protected void onSubscriptionSuccessResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onSubscriptionFailureResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onUpdateNotice(UpdateMessage message)
+    throws Exception { }
+
+    protected void onInstallationRequest(UpdateMessage message)
+    throws Exception { }
+
+    protected void onInstallationSuccessResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onInstallationFailureResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onUnsubscriptionNotice(UpdateMessage message)
+    throws Exception { }
+
+    protected void onUnsubscriptionRequest(UpdateMessage message)
+    throws Exception { }
+
+    protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onUnsubscriptionFailureResponse(UpdateMessage message)
+    throws Exception { }
 }

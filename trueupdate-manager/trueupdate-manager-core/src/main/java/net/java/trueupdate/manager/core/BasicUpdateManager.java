@@ -20,7 +20,7 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class BasicUpdateManager extends BasicUpdateMessageListener {
+public abstract class BasicUpdateManager extends UpdateMessageListener {
 
     private static final Logger
             logger = Logger.getLogger(BasicUpdateManager.class.getName());

@@ -347,7 +347,7 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onSubscriptionNotice(message);
             }
@@ -366,7 +366,7 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onSubscriptionRequest(message);
             }
@@ -377,7 +377,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onSubscriptionSuccessResponse(message);
             }
@@ -388,7 +388,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onSubscriptionFailureResponse(message);
             }
@@ -399,7 +399,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onUpdateNotice(message);
             }
@@ -418,7 +418,7 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onInstallationRequest(message);
             }
@@ -429,7 +429,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onInstallationSuccessResponse(message);
             }
@@ -440,7 +440,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onInstallationFailureResponse(message);
             }
@@ -459,7 +459,7 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onUnsubscriptionNotice(message);
             }
@@ -478,7 +478,7 @@ public final class UpdateMessage implements Serializable {
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onUnsubscriptionRequest(message);
             }
@@ -489,7 +489,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onUnsubscriptionSuccessResponse(message);
             }
@@ -500,7 +500,7 @@ public final class UpdateMessage implements Serializable {
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
-                                             BasicUpdateMessageListener listener)
+                                             UpdateMessageListener listener)
             throws Exception {
                 listener.onUnsubscriptionFailureResponse(message);
             }
@@ -531,7 +531,7 @@ public final class UpdateMessage implements Serializable {
         }
 
         abstract void dispatchMessageTo(UpdateMessage message,
-                                        BasicUpdateMessageListener listener)
+                                        UpdateMessageListener listener)
         throws Exception;
     } // Type
 
