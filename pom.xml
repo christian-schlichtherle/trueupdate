@@ -19,7 +19,7 @@
 
     <name>TrueUpdate</name>
     <description>
-        A configurable web app for updating web apps.
+        An enterprise app for updating enterprise apps.
     </description>
     <url>https://trueupdate.java.net</url>
     <inceptionYear>2013</inceptionYear>
@@ -77,7 +77,6 @@
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.jdkPlatform>JDK_1.${javase.version}</netbeans.hint.jdkPlatform>
         <netbeans.hint.j2eeVersion>1.${javaee.version}</netbeans.hint.j2eeVersion>
-        <!--netbeans.hint.j2eeVersion>1.6-web</netbeans.hint.j2eeVersion-->
 
         <!-- Set defaults of maven-compiler-plugin for NetBeans. -->
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
@@ -89,6 +88,7 @@
         <aether.version>0.9.0.M2</aether.version>
         <jersey.version>1.17.1</jersey.version>
         <maven.version>3.1.0</maven.version>
+        <openejb.version>4.5.2</openejb.version>
         <!--
           - jersey-test-framework-embedded-glassfish 1.17.1 does not work with
           - slf4j-api 1.6.0 or higher because glassfish-embedded-all 3.1.1
@@ -96,8 +96,6 @@
           -->
         <slf4j.version>1.5.11</slf4j.version>
         <wagon.version>1.2.1</wagon.version>
-
-        <openejb.version>4.5.2</openejb.version>
     </properties>
 
     <dependencyManagement>
@@ -206,8 +204,8 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-server-impl-maven</artifactId>
-                <version>${project.version}</version>
                 <type>ejb</type>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
