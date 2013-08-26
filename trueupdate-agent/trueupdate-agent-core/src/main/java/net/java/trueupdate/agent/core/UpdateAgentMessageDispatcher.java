@@ -44,7 +44,7 @@ public class UpdateAgentMessageDispatcher extends UpdateMessageListener {
     private ApplicationAccount account(final ApplicationDescriptor descriptor) {
         ApplicationAccount account = accounts.get(descriptor);
         if (null == account) {
-            account = new ApplicationAccount(descriptor, capacity());
+            account = new ApplicationAccount(capacity());
             accounts.put(descriptor, account);
         }
         return account;
@@ -129,22 +129,17 @@ public class UpdateAgentMessageDispatcher extends UpdateMessageListener {
         return account(message.applicationDescriptor()).listener();
     }
 }
+
 final class ApplicationAccount {
 
-    private final ApplicationDescriptor descriptor;
     private final Queue<UpdateMessage> queue;
     private @CheckForNull ApplicationListener listener;
 
     public ApplicationAccount(
-            final ApplicationDescriptor descriptor,
             final int capacity) {
-        assert null != descriptor;
-        this.descriptor = descriptor;
         if (0 >= capacity) throw new IllegalArgumentException();
         this.queue = new LinkedBlockingQueue<UpdateMessage>(capacity);
     }
-
-    ApplicationDescriptor descriptor() { return descriptor; }
 
     @Nullable ApplicationListener listener() { return listener; }
 
@@ -156,7 +151,6 @@ final class ApplicationAccount {
     int size() { return queue.size(); }
 
     void enqueue(final UpdateMessage message) {
-        assert descriptor().equals(message.applicationDescriptor());
         while (!queue.offer(message)) queue.remove();
     }
 
