@@ -11,7 +11,7 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
 /**
  * Writes a ZIP entry to a ZIP output stream.
  *
- * @see EntrySource
+ * @see ZipEntrySource
  * @author Christian Schlichtherle
  */
 public final class ZipEntrySink implements Sink {

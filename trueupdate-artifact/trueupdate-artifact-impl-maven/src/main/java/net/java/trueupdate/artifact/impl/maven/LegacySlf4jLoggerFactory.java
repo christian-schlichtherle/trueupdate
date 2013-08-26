@@ -21,7 +21,7 @@ import org.slf4j.spi.LocationAwareLogger;
 /**
  * A logger factory that delegates to Slf4J logging.
  * This is based on the original
- * {@link org.eclipse.aether.internal.impl.Slf4jLoggerFactory} and has been
+ * {@code org.eclipse.aether.internal.impl.Slf4jLoggerFactory} and has been
  * patched to work with SLF4J API versions prior to 1.6.0, as endorsed by
  * Glassfish Embedded 3.1.1.
  *

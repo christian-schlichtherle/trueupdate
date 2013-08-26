@@ -11,7 +11,7 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
 /**
  * Reads a ZIP entry from a ZIP file.
  *
- * @see EntrySink
+ * @see ZipEntrySink
  * @author Christian Schlichtherle
  */
 public final class ZipEntrySource implements Source {
