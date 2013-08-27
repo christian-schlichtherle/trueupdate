@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.spec;
 
+import java.io.Serializable;
 import java.net.URI;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -20,7 +21,9 @@ import static net.java.trueupdate.shed.Objects.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ApplicationDescriptor {
+public final class ApplicationDescriptor implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private final ArtifactDescriptor artifactDescriptor;
     private final URI currentLocation;

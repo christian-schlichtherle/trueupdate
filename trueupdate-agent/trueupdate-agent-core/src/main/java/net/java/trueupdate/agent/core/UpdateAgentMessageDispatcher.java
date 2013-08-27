@@ -12,7 +12,6 @@ import javax.annotation.concurrent.*;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
 
-
 /**
  * An update message dispatcher.
  *

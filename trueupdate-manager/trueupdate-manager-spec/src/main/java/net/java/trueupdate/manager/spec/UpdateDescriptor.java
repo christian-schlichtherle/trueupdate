@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.spec;
 
+import java.io.Serializable;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -20,7 +21,9 @@ import static net.java.trueupdate.shed.Strings.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class UpdateDescriptor {
+public final class UpdateDescriptor implements Serializable {
+
+    private static final long serialVersionUID = 0L;
 
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion;
