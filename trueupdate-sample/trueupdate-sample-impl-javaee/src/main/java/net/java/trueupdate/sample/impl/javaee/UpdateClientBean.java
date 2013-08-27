@@ -85,9 +85,11 @@ public class UpdateClientBean extends ApplicationListener {
                 .build();
     }
 
-    private URI lookupUri(String key) { return URI.create(lookupString(key)); }
+    private static URI lookupUri(String key) {
+        return URI.create(lookupString(key));
+    }
 
-    private @Nullable String lookupString(String key) {
+    private static @Nullable String lookupString(String key) {
         try { return bundle.getString(key); }
         catch (MissingResourceException ex) { return null; }
     }
@@ -127,7 +129,7 @@ public class UpdateClientBean extends ApplicationListener {
         logReceived(message);
     }
 
-    private UpdateMessage logReceived(final UpdateMessage message) {
+    private static UpdateMessage logReceived(final UpdateMessage message) {
         logger.log(Level.FINE, "Received update message from update manager:\n{0}", message);
         return message;
     }
