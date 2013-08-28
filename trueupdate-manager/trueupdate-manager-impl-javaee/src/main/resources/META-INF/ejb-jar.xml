@@ -19,7 +19,7 @@
                     with a slash forward character.
 
                     If the string contains references of the form
-                    \${key}, then they get replaced with the value of
+                    ${key}, then they get replaced with the value of
                     the system property with the specified key.
                     E.g. "http://localhost/\${user.name}/trueupdate-server/".
                 </description>
