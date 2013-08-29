@@ -25,24 +25,6 @@ class Files {
     private Files() { }
 
     /**
-     * Creates an empty slot in the file system for a sibling of the given file
-     * in the same directory.
-     * Upon return, the slot can be subsequently created as a file or directory.
-     *
-     * @param sibling the file the caller wishes to have a sibling for in the
-     *        same directory.
-     * @return the empty slot for the file or directory to be subsequently
-     *         created by the caller.
-     */
-    public static File createTempSlotForSibling(final File sibling)
-    throws IOException {
-        final File temp = File.createTempFile("temp", null, sibling.getParentFile());
-        if (!temp.delete())
-            throw new IOException(String.format("Cannot delete temporary file %s .", temp));
-        return temp;
-    }
-
-    /**
      * Deletes the given file or directory with all members.
      *
      * @param file the file or directory to delete.
@@ -196,6 +178,24 @@ class Files {
 
         ZipSources.execute(new WithInputArchive())
                 .on(new ZipFile(inputFile));
+    }
+
+    /**
+     * Creates an temporary file and deletes it immediately in order to create
+     * an empty slot in the file system.
+     * Upon return, the slot can be subsequently created as a file or directory.
+     *
+     * @return the empty slot for the file or directory to be subsequently
+     *         created by the caller.
+     */
+    public static File createEmptySlot(
+            final String prefix,
+            final @CheckForNull String suffix)
+    throws IOException {
+        final File temp = File.createTempFile(prefix, suffix);
+        if (!temp.delete())
+            throw new IOException(String.format("Cannot delete temporary file %s .", temp));
+        return temp;
     }
 
     public static void loanTempFileTo(

@@ -56,8 +56,8 @@ class ConfiguredOpenEjbUpdateInstaller {
 
             @Override
             public void execute(final File patchedJarFile) throws Exception {
-                final File updateDir = createTempSlotForSibling(deploymentDir);
-                final File backupDir = createTempSlotForSibling(deploymentDir);
+                final File updateDir = createEmptySlot("update", ".dir");
+                final File backupDir = createEmptySlot("backup", ".dir");
 
                 class UnjarUpdateCommand implements Command {
 
