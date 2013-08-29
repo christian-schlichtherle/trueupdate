@@ -35,11 +35,6 @@
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>720</env-entry-value>
             </env-entry>
-            <resource-env-ref>
-                <resource-env-ref-name>destination</resource-env-ref-name>
-                <resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
-                <mapped-name>jms/TrueUpdate Agent</mapped-name>
-            </resource-env-ref>
         </session>
     </enterprise-beans>
 </ejb-jar>
