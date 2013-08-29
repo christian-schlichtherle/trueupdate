@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.java.trueupdate</groupId>
         <artifactId>trueupdate-server</artifactId>
-        <version>0.1.7-SNAPSHOT</version>
+        <version>0.1.7</version>
     </parent>
 
     <artifactId>trueupdate-server-impl-maven</artifactId>
