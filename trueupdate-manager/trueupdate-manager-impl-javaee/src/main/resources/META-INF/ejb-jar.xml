@@ -24,6 +24,7 @@
                     E.g. "http://localhost/\${user.name}/trueupdate-server/".
                 </description>
                 <env-entry-name>updateServiceBaseUri</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
                 <env-entry-value>http://localhost:8080/trueupdate-server/</env-entry-value>
             </env-entry>
             <env-entry>
@@ -31,6 +32,7 @@
                     The interval for checking for artifact updates in minutes.
                 </description>
                 <env-entry-name>checkUpdatesIntervalMinutes</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>720</env-entry-value>
             </env-entry>
             <resource-env-ref>
