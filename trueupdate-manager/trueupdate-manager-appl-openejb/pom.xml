@@ -13,7 +13,7 @@
     </parent>
 
     <artifactId>trueupdate-manager-appl-openejb</artifactId>
-    <packaging>ear</packaging>
+    <packaging>war</packaging>
 
     <name>TrueUpdate Manager Application OpenEJB</name>
     <description>
