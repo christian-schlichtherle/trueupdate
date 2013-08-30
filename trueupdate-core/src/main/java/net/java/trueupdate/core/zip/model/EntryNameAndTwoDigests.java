@@ -54,12 +54,12 @@ public final class EntryNameAndTwoDigests implements Serializable {
 
     /** Returns the first ZIP entry name and digest value. */
     @Deprecated
-    public EntryNameAndDigest zipEntryNameAndDigestValue1() {
+    public EntryNameAndDigest entryNameAndDigest1() {
         return new EntryNameAndDigest(name(), first());
     }
 
     /** Returns the second ZIP entry name and digest value. */
-    public EntryNameAndDigest zipEntryNameAndDigestValue2() {
+    public EntryNameAndDigest entryNameAndDigest2() {
         return new EntryNameAndDigest(name(), second());
     }
 

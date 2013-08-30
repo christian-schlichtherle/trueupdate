@@ -38,11 +38,11 @@ implements Transformation<EntryNameAndDigest> {
  *
  * @author Christian Schlichtherle
  */
-final class EntryNameAndTwoDigestsTransformation
+final class EntryNameAndDigest2Transformation
 implements Transformation<EntryNameAndTwoDigests> {
 
     @Override public EntryNameAndDigest apply(
             EntryNameAndTwoDigests entryNameAndTwoDigests) {
-        return entryNameAndTwoDigests.zipEntryNameAndDigestValue2();
+        return entryNameAndTwoDigests.entryNameAndDigest2();
     }
 }

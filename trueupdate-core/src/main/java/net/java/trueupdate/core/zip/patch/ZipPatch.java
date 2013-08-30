@@ -174,7 +174,7 @@ public abstract class ZipPatch {
                 new IdentityTransformation(),
                 diffModel().unchangedEntries());
         new PatchArchivePatchSet().apply(
-                new EntryNameAndTwoDigestsTransformation(),
+                new EntryNameAndDigest2Transformation(),
                 diffModel().changedEntries());
         new PatchArchivePatchSet().apply(
                 new IdentityTransformation(),
