@@ -124,25 +124,25 @@ class Files {
     public static void unzipTo(final File zipFile, final File directory)
     throws IOException {
 
-        class WithArchive implements ZipInputTask<Void, IOException> {
+        class OnArchiveTask implements ZipInputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipFile zipArchive) throws IOException {
+            public Void execute(final ZipFile archive) throws IOException {
                 for (final Enumeration<? extends ZipEntry>
-                             en = zipArchive.entries();
+                             en = archive.entries();
                         en.hasMoreElements(); ) {
                     final ZipEntry entry = en.nextElement();
                     if (entry.isDirectory()) continue;
                     final File file = new File(directory, entry.getName());
                     file.getParentFile().mkdirs();
-                    Copy.copy(new ZipEntrySource(entry, zipArchive),
+                    Copy.copy(new ZipEntrySource(entry, archive),
                               new FileStore(file));
                 }
                 return null;
             }
-        } // WithZipArchive
+        } // OnArchiveTask
 
-        ZipSources.execute(new WithArchive()).on(new ZipFile(zipFile));
+        ZipSources.execute(new OnArchiveTask()).on(new ZipFile(zipFile));
     }
 
     public static void applyPatchTo(
@@ -151,15 +151,15 @@ class Files {
             final File patchedFile)
     throws IOException {
 
-        class WithInputArchive implements ZipInputTask<Void, IOException> {
+        class OnInputArchiveTask implements ZipInputTask<Void, IOException> {
 
-            @Override public Void execute(final ZipFile inputArchive)
-            throws IOException {
+            @Override
+            public Void execute(final ZipFile inputArchive) throws IOException {
 
-                class WithPatchArchive implements ZipInputTask<Void, IOException> {
+                class OnPatchArchiveTask implements ZipInputTask<Void, IOException> {
 
-                    @Override public Void execute(final ZipFile patchArchive)
-                    throws IOException {
+                    @Override
+                    public Void execute(final ZipFile patchArchive) throws IOException {
                         ZipPatch.builder()
                                 .inputArchive(inputArchive)
                                 .patchArchive(patchArchive)
@@ -168,16 +168,15 @@ class Files {
                                 .applyTo(new FileStore(patchedFile));
                         return null;
                     }
-                } // WithPatchArchive
+                } // OnPatchArchiveTask
 
-                ZipSources.execute(new WithPatchArchive())
+                ZipSources.execute(new OnPatchArchiveTask())
                         .on(new ZipFile(patchFile));
                 return null;
             }
-        } // WithInputArchive
+        } // OnInputArchiveTask
 
-        ZipSources.execute(new WithInputArchive())
-                .on(new ZipFile(inputFile));
+        ZipSources.execute(new OnInputArchiveTask()).on(new ZipFile(inputFile));
     }
 
     /**
@@ -199,9 +198,9 @@ class Files {
     }
 
     public static void loanTempFileTo(
+            final FileTask task,
             final String prefix,
-            final @CheckForNull String suffix,
-            final FileTask task)
+            final @CheckForNull String suffix)
     throws Exception {
         final File temp = File.createTempFile(prefix, suffix);
         Exception ex = null;

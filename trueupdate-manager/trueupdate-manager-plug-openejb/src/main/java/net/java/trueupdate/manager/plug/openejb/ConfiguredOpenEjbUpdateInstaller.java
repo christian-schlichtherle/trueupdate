@@ -146,7 +146,7 @@ class ConfiguredOpenEjbUpdateInstaller {
             }
         } // MakeInputFile
 
-        loanTempFileTo("input", ".zip", new MakeInputFile());
+        loanTempFileTo(new MakeInputFile(), "input", ".zip");
     }
 
     private static void loanPatchedFile(
@@ -167,7 +167,7 @@ class ConfiguredOpenEjbUpdateInstaller {
             }
         } // MakeOutputJarFile
 
-        loanTempFileTo("patched", ".jar", new MakePatchedFile());
+        loanTempFileTo(new MakePatchedFile(), "patched", ".jar");
     }
 
     private ArtifactDescriptor artifactDescriptor() {
