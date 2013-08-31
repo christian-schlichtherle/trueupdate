@@ -19,11 +19,12 @@ import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.diff.ZipDiff;
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
-import static net.java.trueupdate.shed.Objects.*;
 
 /**
  * The configured server-side implementation of a RESTful service for
  * artifact updates.
+ * Instances of this class can only get obtained by calling the method
+ * {@link BasicUpdateServer#artifact}.
  *
  * @author Christian Schlichtherle
  */
@@ -35,29 +36,20 @@ public final class ConfiguredUpdateServer {
     private final ArtifactResolver resolver;
     private final ArtifactDescriptor currentDescriptor;
 
-    /**
-     * Constructs a configured update service with the given properties.
-     *
-     * @param resolver the artifact resolver.
-     * @param currentDescriptor the artifact descriptor for the client's
-     *                          current version.
-     */
-    public ConfiguredUpdateServer(
+    ConfiguredUpdateServer(
             final ArtifactResolver resolver,
             final ArtifactDescriptor currentDescriptor) {
-        this.resolver = requireNonNull(resolver);
-        this.currentDescriptor = requireNonNull(currentDescriptor);
+        assert null != resolver;
+        this.resolver = resolver;
+        assert null != currentDescriptor;
+        this.currentDescriptor = currentDescriptor;
     }
 
     @GET
     @Path("version")
-    @Produces(TEXT_PLAIN)
-    public String versionAsText() throws UpdateServiceException {
-        return wrap(new Callable<String>() {
-            @Override public String call() throws Exception {
-                return resolveUpdateVersion();
-            }
-        });
+    @Produces({ APPLICATION_XML, TEXT_XML })
+    public JAXBElement<String> versionAsXml() throws UpdateServiceException {
+        return new JAXBElement<String>(VERSION_NAME, String.class, versionAsText());
     }
 
     @GET
@@ -69,9 +61,13 @@ public final class ConfiguredUpdateServer {
 
     @GET
     @Path("version")
-    @Produces({ APPLICATION_XML, TEXT_XML })
-    public JAXBElement<String> versionAsXml() throws UpdateServiceException {
-        return new JAXBElement<String>(VERSION_NAME, String.class, versionAsText());
+    @Produces(TEXT_PLAIN)
+    public String versionAsText() throws UpdateServiceException {
+        return wrap(new Callable<String>() {
+            @Override public String call() throws Exception {
+                return resolveUpdateVersion();
+            }
+        });
     }
 
     String resolveUpdateVersion() throws Exception {
@@ -108,39 +104,38 @@ public final class ConfiguredUpdateServer {
         return new StreamingOutput() {
 
             @Override
-            public void write(final OutputStream output) throws IOException {
+            public void write(OutputStream output) throws IOException {
                 write(Sinks.uncloseable(output));
             }
 
-            void write(final Sink output) throws IOException {
-                IOException ex = null;
-                final ZipFile zip1 = new ZipFile(file1);
-                try {
-                    final ZipFile zip2 = new ZipFile(file2);
-                    try {
-                        ZipDiff.builder()
-                                .archive1(zip1)
-                                .archive2(zip2)
-                                .build()
-                                .writePatchArchiveTo(output);
-                    } catch (IOException ex2) {
-                        throw ex = ex2;
-                    } finally {
-                        try {
-                            zip2.close();
-                        } catch (IOException ex2) {
-                            if (null == ex) throw ex2;
-                        }
+            void write(final Sink patchArchive) throws IOException {
+
+                class OnArchive1Task implements ZipInputTask<Void, IOException> {
+
+                    @Override
+                    public Void execute(final ZipFile archive1) throws IOException {
+
+                        class OnArchive2Task implements ZipInputTask<Void, IOException> {
+
+                            @Override
+                            public Void execute(final ZipFile archive2) throws IOException {
+                                ZipDiff .builder()
+                                        .archive1(archive1)
+                                        .archive2(archive2)
+                                        .build()
+                                        .writePatchArchiveTo(patchArchive);
+                                return null;
+                            }
+                        } // OnArchive2Task
+
+                        ZipSources.execute(new OnArchive2Task())
+                                  .on(new ZipFile(file2));
+
+                        return null;
                     }
-                } catch (IOException ex2) {
-                    throw ex = ex2;
-                } finally {
-                    try {
-                        zip1.close();
-                    } catch (IOException ex2) {
-                        if (null == ex) throw ex2;
-                    }
-                }
+                } // OnArchive1Task
+
+                ZipSources.execute(new OnArchive1Task()).on(new ZipFile(file1));
             }
         };
     }
