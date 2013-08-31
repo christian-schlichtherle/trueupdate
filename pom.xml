@@ -204,7 +204,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-server-impl-maven</artifactId>
-                <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -243,7 +242,7 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey.jersey-test-framework</groupId>
-                <artifactId>jersey-test-framework-embedded-glassfish</artifactId>
+                <artifactId>jersey-test-framework-grizzly2</artifactId>
                 <version>${jersey.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -281,6 +280,12 @@
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.0.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

@@ -16,10 +16,10 @@ import net.java.trueupdate.jax.rs.server.UpdateServiceExceptionMapper;
 public final class MavenUpdateServerApplication extends Application {
 
     @SuppressWarnings("unchecked")
-    private static final Set<Class<?>> classes = Collections.unmodifiableSet(
-            new HashSet<Class<?>>(Arrays.asList(
-                MavenUpdateServerBean.class,
-                UpdateServiceExceptionMapper.class)));
-
-    @Override public Set<Class<?>> getClasses() { return classes; }
+    @Override public Set<Class<?>> getClasses() {
+        return new HashSet<Class<?>>(Arrays.asList(
+                UpdateServiceExceptionMapper.class,
+                MavenArtifactResolverContextResolver.class,
+                MavenUpdateServer.class));
+    }
 }
