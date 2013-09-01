@@ -197,7 +197,7 @@ class Files {
         return temp;
     }
 
-    public static void loanTempFileTo(
+    public static void loanTempFile(
             final FileTask task,
             final String prefix,
             final @CheckForNull String suffix)

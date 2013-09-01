@@ -39,10 +39,10 @@ class ConfiguredOpenEjbUpdateInstaller {
     }
 
     void install(final UpdateResolver resolver) throws Exception {
-        final AppInfo appInfo = resolveAppInfo();
+        final AppInfo appInfo = appInfo();
         final File deploymentDir = new File(appInfo.path);
         if (!deploymentDir.isDirectory())
-            throw new Exception("Deployment to an EAR or WAR file is not yet supported - please use an expanded directory.");
+            throw new Exception("Deployment to an EAR or WAR file is not supported yet - please use an expanded directory.");
         logger.log(Level.FINE,
                 "Resolved current location {0} to deployment directory {1} .",
                 new Object[] { currentLocation(), deploymentDir });
@@ -120,14 +120,14 @@ class ConfiguredOpenEjbUpdateInstaller {
         loanInputFile(new PatchTask(), deploymentDir);
     }
 
-    private AppInfo resolveAppInfo() throws FileNotFoundException {
+    private AppInfo appInfo() throws Exception {
         final URI location = currentLocation();
         final Scheme scheme = Scheme.valueOf(location.getScheme());
         for (final AppInfo info : deployer.getDeployedApps())
             if (scheme.matches(location, info))
                 return info;
         throw new FileNotFoundException(String.format(
-                "Cannot resolve application information for %s .", location));
+                "Cannot locate application at %s .", location));
     }
 
     private static void loanInputFile(
@@ -146,7 +146,7 @@ class ConfiguredOpenEjbUpdateInstaller {
             }
         } // MakeInputFile
 
-        loanTempFileTo(new MakeInputFile(), "input", ".zip");
+        loanTempFile(new MakeInputFile(), "input", ".zip");
     }
 
     private static void loanPatchedFile(
@@ -165,9 +165,9 @@ class ConfiguredOpenEjbUpdateInstaller {
                         new Object[] { inputFile, patchFile, patchedFile });
                 task.execute(patchedFile);
             }
-        } // MakeOutputJarFile
+        } // MakePatchedFile
 
-        loanTempFileTo(new MakePatchedFile(), "patched", ".jar");
+        loanTempFile(new MakePatchedFile(), "patched", ".jar");
     }
 
     private ArtifactDescriptor artifactDescriptor() {
