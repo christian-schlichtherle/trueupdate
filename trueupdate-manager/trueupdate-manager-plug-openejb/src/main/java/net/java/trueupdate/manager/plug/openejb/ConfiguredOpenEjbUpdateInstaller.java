@@ -185,20 +185,20 @@ class ConfiguredOpenEjbUpdateInstaller {
     private URI currentLocation() {
         return message.currentLocation();
     }
-}
 
-enum Scheme {
-    app {
-        @Override boolean matches(URI location, AppInfo info) {
-            return location.getSchemeSpecificPart().equals(info.appId);
-        }
-    },
+    private enum Scheme {
+        app {
+            @Override boolean matches(URI location, AppInfo info) {
+                return location.getSchemeSpecificPart().equals(info.appId);
+            }
+        },
 
-    file {
-        @Override boolean matches(URI location, AppInfo info) {
-            return new File(location).equals(new File(info.path));
-        }
-    };
+        file {
+            @Override boolean matches(URI location, AppInfo info) {
+                return new File(location).equals(new File(info.path));
+            }
+        };
 
-    abstract boolean matches(URI location, AppInfo info);
+        abstract boolean matches(URI location, AppInfo info);
+    }
 }
