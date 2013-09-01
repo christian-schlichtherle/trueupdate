@@ -5,6 +5,7 @@
 package net.java.trueupdate.manager.plug.cargo;
 
 import java.io.*;
+import java.io.File;
 import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
@@ -13,10 +14,7 @@ import net.java.trueupdate.manager.core.UpdateResolver;
 import static net.java.trueupdate.manager.plug.cargo.Files.*;
 import net.java.trueupdate.manager.plug.cargo.Files.FileTask;
 import net.java.trueupdate.manager.spec.*;
-import static net.java.trueupdate.shed.Objects.*;
-import org.codehaus.cargo.container.deployable.Deployable;
-import org.codehaus.cargo.container.deployer.DeployableMonitor;
-import org.codehaus.cargo.container.deployer.Deployer;
+import org.codehaus.cargo.container.deployable.*;
 
 /**
  * Installs updates for applications running in OpenEJB.
@@ -29,22 +27,20 @@ class ConfiguredCargoUpdateInstaller {
     private static final Logger logger =
             Logger.getLogger(ConfiguredCargoUpdateInstaller.class.getName());
 
-    private final Deployer deployer;
     private final UpdateMessage message;
+    private final CargoContext cargoContext;
 
-    ConfiguredCargoUpdateInstaller(
-            final Deployer deployer,
-            final UpdateMessage message) {
-        this.deployer = requireNonNull(deployer);
-        this.message = requireNonNull(message);
+    ConfiguredCargoUpdateInstaller(final UpdateMessage message) {
+        this.cargoContext = new CargoContext(message.currentLocation());
+        this.message = message;
     }
 
     void install(final UpdateResolver resolver) throws Exception {
-        final Deployable deployable = resolveDeployable();
+        final Deployable deployable = cargoContext.deployable();
         if (!deployable.isExpanded())
-            throw new Exception("Deployment to an EAR or WAR file is not yet supported - please use an expanded directory.");
-        final DeployableMonitor monitor = resolveDeployableMonitor();
+            throw new Exception("Deployment of a file (EAR, RAR, WAR et al) is not supported yet - please use an expanded directory.");
         final File deploymentDir = new File(deployable.getFile());
+        assert deploymentDir.isDirectory();
         logger.log(Level.FINE,
                 "Resolved current location {0} to deployment directory {1} .",
                 new Object[] { currentLocation(), deploymentDir });
@@ -78,11 +74,11 @@ class ConfiguredCargoUpdateInstaller {
                 class DeployCommand implements Command {
 
                     @Override public void execute() throws Exception {
-                        deployer.deploy(deployable, monitor);
+                        cargoContext.deploy();
                     }
 
                     @Override public void revert() throws Exception {
-                        deployer.undeploy(deployable, monitor);
+                        cargoContext.undeploy();
                     }
                 } // DeployCommand
 
@@ -122,20 +118,6 @@ class ConfiguredCargoUpdateInstaller {
         loanInputFile(new PatchTask(), deploymentDir);
     }
 
-    private Deployable resolveDeployable()
-    throws FileNotFoundException {
-        final URI uri = currentLocation();
-        throw new FileNotFoundException(String.format(
-                "Cannot resolve deployable for %s .", uri));
-    }
-
-    private DeployableMonitor resolveDeployableMonitor()
-    throws FileNotFoundException {
-        final URI uri = currentLocation();
-        throw new FileNotFoundException(String.format(
-                "Cannot resolve deployable monitor for %s .", uri));
-    }
-
     private static void loanInputFile(
             final FileTask task,
             final File deploymentDir)
@@ -152,7 +134,7 @@ class ConfiguredCargoUpdateInstaller {
             }
         } // MakeInputFile
 
-        loanTempFileTo(new MakeInputFile(), "input", ".zip");
+        loanTempFile(new MakeInputFile(), "input", ".zip");
     }
 
     private static void loanPatchedFile(
@@ -171,9 +153,9 @@ class ConfiguredCargoUpdateInstaller {
                         new Object[] { inputFile, patchFile, patchedFile });
                 task.execute(patchedFile);
             }
-        } // MakeOutputJarFile
+        } // MakePatchedFile
 
-        loanTempFileTo(new MakePatchedFile(), "patched", ".jar");
+        loanTempFile(new MakePatchedFile(), "patched", ".jar");
     }
 
     private ArtifactDescriptor artifactDescriptor() {
