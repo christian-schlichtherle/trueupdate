@@ -6,6 +6,8 @@ package net.java.trueupdate.manager.plug.openejb;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Defines a simple API for revertable commands.
@@ -59,11 +61,14 @@ final class InverseCommand implements Command {
     }
 }
 
-final class MacroCommand implements Command {
+final class Transaction implements Command {
+
+    private static final Logger
+            logger = Logger.getLogger(Transaction.class.getName());
 
     private final Command[] commands;
 
-    MacroCommand(final Command... commands) {
+    Transaction(final Command... commands) {
         this.commands = commands.clone();
     }
 
@@ -75,7 +80,9 @@ final class MacroCommand implements Command {
         } catch (final Exception ex) {
             try {
                 while (0 <= --i) commands[i].revert();
-            } catch (final Exception ignored) {
+            } catch (Exception ex2) {
+                logger.log(Level.SEVERE,
+                        "Failed to rollback transaction:", ex2);
             }
             throw ex;
         }

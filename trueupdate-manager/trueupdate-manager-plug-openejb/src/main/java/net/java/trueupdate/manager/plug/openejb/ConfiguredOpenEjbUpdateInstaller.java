@@ -42,7 +42,7 @@ class ConfiguredOpenEjbUpdateInstaller {
         final AppInfo appInfo = resolveAppInfo();
         final File deploymentDir = new File(appInfo.path);
         if (!deploymentDir.isDirectory())
-            throw new Exception("Deployment to an EAR or WAR file is not yet supported - please use a directory.");
+            throw new Exception("Deployment to an EAR or WAR file is not yet supported - please use an expanded directory.");
         logger.log(Level.FINE,
                 "Resolved current location {0} to deployment directory {1} .",
                 new Object[] { currentLocation(), deploymentDir });
@@ -73,7 +73,7 @@ class ConfiguredOpenEjbUpdateInstaller {
                     }
                 } // UnjarUpdateCommand
 
-                final class DeployCommand implements Command {
+                class DeployCommand implements Command {
 
                     @Override public void execute() throws Exception {
                         deployer.deploy(deploymentDir.getPath());
@@ -84,7 +84,7 @@ class ConfiguredOpenEjbUpdateInstaller {
                     }
                 } // DeployCommand
 
-                final class DeleteBackupCommand implements Command {
+                class DeleteBackupCommand implements Command {
 
                     @Override public void execute() throws Exception {
                         if (!deleteAll(backupDir))
@@ -99,7 +99,7 @@ class ConfiguredOpenEjbUpdateInstaller {
                     }
                 } // DeleteBackupCommand
 
-                new MacroCommand(
+                new Transaction(
                         new UnjarUpdateCommand(),
                         new InverseCommand(new DeployCommand()),
                         new RenameFileCommand(deploymentDir, backupDir),
