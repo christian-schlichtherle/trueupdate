@@ -6,8 +6,7 @@ package net.java.trueupdate.manager.plug.openejb;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 /**
  * Defines a simple API for revertable commands.
