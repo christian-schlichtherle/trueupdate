@@ -5,10 +5,11 @@
 package net.java.trueupdate.core.io;
 
 /**
- * A task operates on a resource and returns a result or throws an exception.
+ * When executed, a task operates on a resource and returns a result or throws
+ * an exception.
  *
- * @param <V> the type of the return value.
- * @param <R> the type of the resource parameter.
+ * @param <V> the type of the result.
+ * @param <R> the type of the resource.
  * @param <X> the type of the exception.
  * @author Christian Schlichtherle
  */

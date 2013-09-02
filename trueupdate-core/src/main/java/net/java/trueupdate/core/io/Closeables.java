@@ -10,6 +10,7 @@ import java.io.IOException;
  */
 final class Closeables {
 
+    @SuppressWarnings("unchecked")
     static <V, R extends Closeable, X extends Exception>
             V execute(final Task<V, R, X> task, final R resource)
     throws X, IOException {
