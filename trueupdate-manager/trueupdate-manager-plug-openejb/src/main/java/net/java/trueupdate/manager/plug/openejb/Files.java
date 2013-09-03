@@ -161,11 +161,11 @@ class Files {
                     @Override
                     public Void execute(final ZipFile patchArchive) throws IOException {
                         ZipPatch.builder()
-                                .inputArchive(inputArchive)
-                                .patchArchive(patchArchive)
+                                .input(inputArchive)
+                                .diff(patchArchive)
                                 .createJar(true)
                                 .build()
-                                .applyTo(new FileStore(patchedFile));
+                                .outputTo(new FileStore(patchedFile));
                         return null;
                     }
                 } // OnPatchArchiveTask

@@ -6,6 +6,7 @@ package net.java.trueupdate.core.io;
 
 import java.io.IOException;
 import java.util.zip.ZipFile;
+import javax.annotation.WillClose;
 
 /**
  * Provides functions for {@link ZipSource}s.
@@ -20,7 +21,7 @@ public class ZipSources {
     }
 
     public interface ExecuteStatement<V, X extends Exception> {
-        V on(ZipFile zipFile) throws X, IOException;
+        V on(@WillClose ZipFile zipFile) throws X, IOException;
         V on(ZipSource source) throws X, IOException;
     }
 

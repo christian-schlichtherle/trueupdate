@@ -8,6 +8,7 @@ package net.java.trueupdate.core.io;
 import java.io.*;
 import java.net.URL;
 import javax.annotation.CheckForNull;
+import javax.annotation.WillClose;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -109,7 +110,7 @@ public class Sources {
     }
 
     public interface ExecuteStatement<V, X extends Exception> {
-        V on(InputStream in) throws X, IOException;
+        V on(@WillClose InputStream in) throws X, IOException;
         V on(Source source) throws X, IOException;
     }
 

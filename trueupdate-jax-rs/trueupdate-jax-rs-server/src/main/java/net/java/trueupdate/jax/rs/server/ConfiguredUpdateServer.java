@@ -82,7 +82,7 @@ public final class ConfiguredUpdateServer {
     throws UpdateServiceException {
         return wrap(new Callable<StreamingOutput>() {
             @Override public StreamingOutput call() throws Exception {
-                return streamingOutputWithZipPatchFile(
+                return streamingOutputWithZipDiffFile(
                         resolveArtifactFile(currentDescriptor),
                         resolveArtifactFile(updateDescriptor(updateVersion)));
             }
@@ -98,44 +98,44 @@ public final class ConfiguredUpdateServer {
         return resolver.resolveArtifactFile(descriptor);
     }
 
-    static StreamingOutput streamingOutputWithZipPatchFile(
-            final File file1,
-            final File file2) {
+    static StreamingOutput streamingOutputWithZipDiffFile(
+            final File input1,
+            final File input2) {
         return new StreamingOutput() {
 
             @Override
-            public void write(OutputStream output) throws IOException {
-                write(Sinks.uncloseable(output));
+            public void write(OutputStream out) throws IOException {
+                write(Sinks.uncloseable(out));
             }
 
-            void write(final Sink patchArchive) throws IOException {
+            void write(final Sink diff) throws IOException {
 
                 class OnArchive1Task implements ZipInputTask<Void, IOException> {
 
                     @Override
-                    public Void execute(final ZipFile archive1) throws IOException {
+                    public Void execute(final ZipFile input1) throws IOException {
 
                         class OnArchive2Task implements ZipInputTask<Void, IOException> {
 
                             @Override
-                            public Void execute(final ZipFile archive2) throws IOException {
+                            public Void execute(final ZipFile input2) throws IOException {
                                 ZipDiff .builder()
-                                        .archive1(archive1)
-                                        .archive2(archive2)
+                                        .input1(input1)
+                                        .input2(input2)
                                         .build()
-                                        .writePatchArchiveTo(patchArchive);
+                                        .diffTo(diff);
                                 return null;
                             }
                         } // OnArchive2Task
 
                         ZipSources.execute(new OnArchive2Task())
-                                  .on(new ZipFile(file2));
+                                  .on(new ZipFile(input2));
 
                         return null;
                     }
                 } // OnArchive1Task
 
-                ZipSources.execute(new OnArchive1Task()).on(new ZipFile(file1));
+                ZipSources.execute(new OnArchive1Task()).on(new ZipFile(input1));
             }
         };
     }

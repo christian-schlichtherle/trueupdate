@@ -18,7 +18,7 @@ class ZipDiffIT extends WordSpec with ZipITContext {
   "A JAR diff" when {
     "computing  the test JAR files" should {
       "partition the entry names and digests correctly" in {
-        val diff = loanZipDiff(_ computeDiffModel ())
+        val diff = loanZipDiff(_ diffModel ())
         import collection.JavaConverters._
         import diff._
         removedEntries.asScala map (_.name) should

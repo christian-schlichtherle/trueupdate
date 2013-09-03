@@ -23,8 +23,8 @@ trait ZipITContext extends TestContext {
   def loanZipDiff[A](fun: ZipDiff => A) =
     loanArchives { (archive1, archive2) =>
       fun(ZipDiff.builder
-        .archive1(archive1)
-        .archive2(archive2)
+        .input1(archive1)
+        .input2(archive2)
         .digest(digest)
         .build)
     }
@@ -33,8 +33,8 @@ trait ZipITContext extends TestContext {
     class FunTask extends ZipInputTask[A, Exception] {
       override def execute(inputArchive: ZipFile) = {
         fun(ZipPatch.builder
-          .inputArchive(inputArchive)
-          .patchArchive(patchArchive)
+          .input(inputArchive)
+          .diff(patchArchive)
           .createJar(true)
           .build)
       }

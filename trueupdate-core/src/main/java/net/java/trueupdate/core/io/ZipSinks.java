@@ -6,6 +6,7 @@ package net.java.trueupdate.core.io;
 
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
+import javax.annotation.WillClose;
 
 /**
  * Provides functions for {@link ZipSink}s.
@@ -20,7 +21,7 @@ public class ZipSinks {
     }
 
     public interface ExecuteStatement<V, X extends Exception> {
-        V on(ZipOutputStream out) throws X, IOException;
+        V on(@WillClose ZipOutputStream out) throws X, IOException;
         V on(ZipSink sink) throws X, IOException;
     }
 

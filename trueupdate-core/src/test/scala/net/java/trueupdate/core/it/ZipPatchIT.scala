@@ -32,7 +32,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
         val patchFile = tempFile ()
 
         try {
-          loanZipDiff(_ writePatchArchiveTo new FileStore(patchFile))
+          loanZipDiff(_ diffTo new FileStore(patchFile))
 
           class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
             override def execute(patchFile: ZipFile) {
@@ -40,7 +40,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
 
               try {
                 loanZipPatch(patchFile) {
-                  _ applyTo new FileStore(patchedFile)
+                  _ outputTo new FileStore(patchedFile)
                 }
 
                 class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
@@ -50,10 +50,10 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                     class DiffTask extends ZipInputTask[Unit, Exception] {
                       override def execute(archive2: ZipFile) {
                         val diffModel = ZipDiff.builder
-                          .archive1(archive1)
-                          .archive2(archive2)
+                          .input1(archive1)
+                          .input2(archive2)
                           .build
-                          .computeDiffModel ()
+                          .diffModel ()
                         diffModel.addedEntries.isEmpty should be (true)
                         diffModel.removedEntries.isEmpty should be (true)
                         diffModel.unchangedEntries.asScala map (_.name) should

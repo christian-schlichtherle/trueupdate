@@ -8,6 +8,7 @@ package net.java.trueupdate.core.io;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.annotation.WillClose;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -53,7 +54,7 @@ public class Sinks {
     }
 
     public interface ExecuteStatement<V, X extends Exception> {
-        V on(OutputStream out) throws X, IOException;
+        V on(@WillClose OutputStream out) throws X, IOException;
         V on(Sink sink) throws X, IOException;
     }
 
