@@ -4,7 +4,6 @@
  */
 /**
  * Provides a basic implementation of a manager for updating applications.
- * The classes in this package have no dependencies on the JMS or Java EE API.
  *
  * @author Christian Schlichtherle
  */
