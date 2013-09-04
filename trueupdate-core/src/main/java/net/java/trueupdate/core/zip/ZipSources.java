@@ -4,12 +4,10 @@
  */
 package net.java.trueupdate.core.zip;
 
-import net.java.trueupdate.core.io.Job;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipFile;
 import javax.annotation.WillClose;
+import net.java.trueupdate.core.io.Job;
 
 /**
  * Provides functions for {@link ZipSource}s.
@@ -37,7 +35,7 @@ public class ZipSources {
     public interface ExecuteStatement<V, X extends Exception> {
         V on(File file) throws X, IOException;
         V on(ZipSource source) throws X, IOException;
-        V on(@WillClose ZipFile archive) throws X, IOException;
+        V on(@WillClose ZipInput input) throws X, IOException;
     }
 
     private ZipSources() { }

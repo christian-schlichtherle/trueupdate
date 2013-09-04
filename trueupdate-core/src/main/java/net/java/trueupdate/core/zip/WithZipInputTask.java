@@ -6,9 +6,8 @@ package net.java.trueupdate.core.zip;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipFile;
 import javax.annotation.WillClose;
-
+import net.java.trueupdate.core.io.Closeables;
 import net.java.trueupdate.core.io.Job;
 import net.java.trueupdate.shed.Objects;
 
@@ -45,32 +44,14 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
     }
 
     @Override public V on(File file) throws X, IOException {
-        return on(new ZipFile(file));
+        return on(new ZipFileStore(file));
     }
 
     @Override public V on(ZipSource source) throws X, IOException {
         return on(source.input());
     }
 
-    @Override @SuppressWarnings("unchecked")
-    public V on(final @WillClose ZipFile archive) throws X, IOException {
-        // Unfortunately, in Java SE 6, ZipFile is not a Closeable.
-        // In Java SE 7, the entire DSL is replaceable with the
-        // try-with-resources statement.
-        //return Closeables.execute(task, sink.output());
-        X ex = null;
-        try {
-            return task.execute(archive);
-        } catch (Exception ex2) {
-            throw ex = (X) ex2;
-        } finally {
-            try {
-                archive.close();
-            } catch (IOException ex2) {
-                if (null == ex) {
-                    throw ex2;
-                }
-            }
-        }
+    @Override public V on(@WillClose ZipInput input) throws X, IOException {
+        return Closeables.execute(task, input);
     }
 }

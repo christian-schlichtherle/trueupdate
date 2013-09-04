@@ -7,7 +7,6 @@ package net.java.trueupdate.core.zip.diff;
 import edu.umd.cs.findbugs.annotations.CreatesObligation;
 import java.io.*;
 import java.security.MessageDigest;
-import java.util.zip.ZipFile;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.io.*;
@@ -27,11 +26,11 @@ public abstract class ZipDiff {
     public static Builder builder() { return new Builder(); }
 
     public abstract Job<Void, IOException> bindTo(File file);
-    public abstract Job<Void, IOException> bindTo(Sink sink);
+    public abstract Job<Void, IOException> bindTo(ZipSink sink);
 
     public abstract void output(File file) throws IOException;
-    public abstract void output(Sink sink) throws IOException;
-    public abstract void output(@WillClose OutputStream out) throws IOException;
+    public abstract void output(ZipSink sink) throws IOException;
+    public abstract void output(@WillClose ZipOutput output) throws IOException;
 
     /**
      * A builder for a ZIP diff.
@@ -45,7 +44,7 @@ public abstract class ZipDiff {
         Builder() { }
 
         public Builder input1(final @CheckForNull File input1) {
-            return input1(null == input1 ? null : new FileZipStore(input1));
+            return input1(null == input1 ? null : new ZipFileStore(input1));
         }
 
         public Builder input1(final @Nullable ZipSource input1) {
@@ -54,7 +53,7 @@ public abstract class ZipDiff {
         }
 
         public Builder input2(final @CheckForNull File input2) {
-            return input2(null == input2 ? null : new FileZipStore(input2));
+            return input2(null == input2 ? null : new ZipFileStore(input2));
         }
 
         public Builder input2(final @Nullable ZipSource input2) {
@@ -82,10 +81,10 @@ public abstract class ZipDiff {
             return new ZipDiff() {
 
                 @Override public Job<Void, IOException> bindTo(File file) {
-                    return bindTo(new FileStore(file));
+                    return bindTo(new ZipFileStore(file));
                 }
 
-                @Override public Job<Void, IOException> bindTo(final Sink sink) {
+                @Override public Job<Void, IOException> bindTo(final ZipSink sink) {
                     return new Job<Void, IOException>() {
                         @Override public Void call() throws IOException {
                             output(sink);
@@ -96,28 +95,28 @@ public abstract class ZipDiff {
 
                 @Override
                 public void output(File file) throws IOException {
-                    output(new FileStore(file));
+                    output(new ZipFileStore(file));
                 }
 
                 @Override
-                public void output(Sink sink) throws IOException {
+                public void output(final ZipSink sink) throws IOException {
                     output(sink.output());
                 }
 
                 @Override
-                public void output(final @WillClose OutputStream out) throws IOException {
+                public void output(final @WillClose ZipOutput output) throws IOException {
                     class Input1Task implements ZipInputTask<Void, IOException> {
-                        public Void execute(final ZipFile input1) throws IOException {
+                        public Void execute(final ZipInput input1) throws IOException {
                             class Input2Task implements ZipInputTask<Void, IOException> {
-                                public Void execute(final ZipFile input2) throws IOException {
+                                public Void execute(final ZipInput input2) throws IOException {
                                     new RawZipDiff() {
                                         final MessageDigest digest = MessageDigests.create(
                                                 null != digestName ? digestName : "SHA-1");
 
-                                        protected ZipFile input1() { return input1; }
-                                        protected ZipFile input2() { return input2; }
+                                        protected ZipInput input1() { return input1; }
+                                        protected ZipInput input2() { return input2; }
                                         protected MessageDigest digest() { return digest; }
-                                    }.output(out);
+                                    }.output(output);
                                     return null;
                                 }
                             } // Input2Task

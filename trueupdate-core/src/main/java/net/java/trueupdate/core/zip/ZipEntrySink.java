@@ -4,14 +4,13 @@
  */
 package net.java.trueupdate.core.zip;
 
-import net.java.trueupdate.core.io.Sink;
-
 import java.io.*;
 import java.util.zip.*;
+import net.java.trueupdate.core.io.Sink;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * Writes a ZIP entry to a ZIP output stream.
+ * Writes a ZIP entry to a ZIP output.
  *
  * @see ZipEntrySource
  * @author Christian Schlichtherle
@@ -19,11 +18,11 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
 public final class ZipEntrySink implements Sink {
 
     private final ZipEntry entry;
-    private final ZipOutputStream out;
+    private final ZipOutput output;
 
-    public ZipEntrySink(final ZipEntry entry, final ZipOutputStream out) {
+    public ZipEntrySink(final ZipEntry entry, final ZipOutput output) {
         this.entry = requireNonNull(entry);
-        this.out = requireNonNull(out);
+        this.output = requireNonNull(output);
     }
 
     /** Returns the entry name. */
@@ -39,11 +38,6 @@ public final class ZipEntrySink implements Sink {
             entry.setCompressedSize(0);
             entry.setCrc(0);
         }
-        out.putNextEntry(entry);
-        return new FilterOutputStream(out) {
-            @Override public void close() throws IOException {
-                ((ZipOutputStream) out).closeEntry();
-            }
-        };
+        return output.output(entry);
     }
 }

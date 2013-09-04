@@ -4,9 +4,8 @@
  */
 package net.java.trueupdate.core.zip;
 
-import net.java.trueupdate.core.io.Task;
-
 import java.util.zip.ZipFile;
+import net.java.trueupdate.core.io.Task;
 
 /**
  * Executes a task on a {@link ZipFile}.
@@ -16,4 +15,4 @@ import java.util.zip.ZipFile;
  * @author Christian Schlichtherle
  */
 public interface ZipInputTask<V, X extends Exception>
-extends Task<V, ZipFile, X> { }
+extends Task<V, ZipInput, X> { }

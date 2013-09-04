@@ -4,12 +4,10 @@
  */
 package net.java.trueupdate.core.zip;
 
-import net.java.trueupdate.core.io.Job;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipOutputStream;
 import javax.annotation.WillClose;
+import net.java.trueupdate.core.io.Job;
 
 /**
  * Provides functions for {@link ZipSink}s.
@@ -37,7 +35,7 @@ public class ZipSinks {
     public interface ExecuteStatement<V, X extends Exception> {
         V on(File file) throws X, IOException;
         V on(ZipSink sink) throws X, IOException;
-        V on(@WillClose ZipOutputStream out) throws X, IOException;
+        V on(@WillClose ZipOutput output) throws X, IOException;
     }
 
     private ZipSinks() { }

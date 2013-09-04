@@ -8,13 +8,11 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
-import java.io.{FileOutputStream, File}
-import java.util.jar.JarFile
-import java.util.zip.ZipFile
+import java.io._
 import scala.collection.JavaConverters._
 import net.java.trueupdate.core.io._
+import net.java.trueupdate.core.zip._
 import net.java.trueupdate.core.zip.diff.RawZipDiff
-import net.java.trueupdate.core.zip.{ZipSources, ZipInputTask}
 
 /**
  * @author Christian Schlichtherle
@@ -24,23 +22,23 @@ class ZipPatchIT extends WordSpec with ZipITContext {
 
   def tempFile() = File.createTempFile("tmp", null)
 
-  def fileEntryNames(zipFile: ZipFile) = (List.empty[String] ++
-    zipFile.entries.asScala.map(_.getName)).filter(!_.endsWith("/"))
+  def fileEntryNames(zip: ZipInput) = List.empty[String] ++
+    zip.iterator.asScala.filter(!_.isDirectory).map(_.getName)
 
   "A ZIP patch" when {
     "generating and applying the ZIP patch file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
 
         class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-          override def execute(diffFile: ZipFile) {
+          override def execute(diffFile: ZipInput) {
             val patchedFile = tempFile()
 
             class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-              override def execute(archive1: ZipFile) {
+              override def execute(archive1: ZipInput) {
                 val unchangedReference = fileEntryNames(archive1)
 
                 class DiffTask extends ZipInputTask[Unit, Exception] {
-                  override def execute(archive2: ZipFile) {
+                  override def execute(archive2: ZipInput) {
                     val model = new RawZipDiff {
                       val _digest = MessageDigests.sha1
 
@@ -56,12 +54,12 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                   }
                 }
 
-                ZipSources execute new DiffTask on new JarFile(patchedFile)
+                ZipSources execute new DiffTask on new JarFileStore(patchedFile)
               }
             }
 
             try {
-              loanZipPatch(diffFile)(_ output new FileOutputStream(patchedFile))
+              loanRawZipPatch(diffFile)(_ output new JarFileStore(patchedFile).output)
               ZipSources execute new ComputeReferenceAndDiffTask on testJar2()
             } finally {
               patchedFile delete ()
@@ -71,7 +69,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
 
         val diff = tempFile()
         try {
-          loanRawZipDiff(_ output new FileOutputStream(diff))
+          loanRawZipDiff(_ output new ZipFileStore(diff).output())
           ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on diff
         } finally {
           diff delete ()

@@ -4,14 +4,13 @@
  */
 package net.java.trueupdate.core.zip;
 
-import net.java.trueupdate.core.io.Source;
-
 import java.io.*;
 import java.util.zip.*;
+import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * Reads a ZIP entry from a ZIP file.
+ * Reads a ZIP entry from a ZIP input.
  *
  * @see ZipEntrySink
  * @author Christian Schlichtherle
@@ -19,11 +18,11 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
 public final class ZipEntrySource implements Source {
 
     private final ZipEntry entry;
-    private final ZipFile in;
+    private final ZipInput input;
 
-    public ZipEntrySource(final ZipEntry entry, final ZipFile in) {
+    public ZipEntrySource(final ZipEntry entry, final ZipInput input) {
         this.entry = requireNonNull(entry);
-        this.in = requireNonNull(in);
+        this.input = requireNonNull(input);
     }
 
     /** Returns the entry name. */
@@ -34,6 +33,6 @@ public final class ZipEntrySource implements Source {
 
     /** Returns an input stream for reading the ZIP entry contents. */
     @Override public InputStream input() throws IOException {
-        return in.getInputStream(entry);
+        return input.input(entry);
     }
 }

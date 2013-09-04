@@ -43,7 +43,6 @@ class PathTaskTransactionIT extends WordSpec {
                   .builder
                   .input(input)
                   .diff(diff)
-                  .createJar(false)
                   .build
                   .bindTo(output)
                 fun(input, diff, output,

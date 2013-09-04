@@ -4,30 +4,30 @@
  */
 package net.java.trueupdate.core.zip;
 
-import net.java.trueupdate.shed.Objects;
-
 import java.io.*;
 import java.util.zip.*;
+import net.java.trueupdate.shed.Objects;
 
 /**
  * A file based ZIP store.
  *
  * @author Christian Schlichtherle
  */
-public class FileZipStore implements ZipStore {
+public class ZipFileStore implements ZipStore {
 
-    private final File file;
+    final File file;
 
-    public FileZipStore(final File file) {
+    public ZipFileStore(final File file) {
         this.file = Objects.requireNonNull(file);
     }
 
-    @Override public ZipFile input() throws IOException {
-        return new ZipFile(file);
+    @Override public ZipInput input() throws IOException {
+        return new ZipFileAdapter(new ZipFile(file));
     }
 
-    @Override public ZipOutputStream output() throws IOException {
-        return new ZipOutputStream(new FileOutputStream(file));
+    @Override public ZipOutput output() throws IOException {
+        return new ZipOutputStreamAdapter(new ZipOutputStream(
+                new FileOutputStream(file)));
     }
 
     @Override public void delete() throws IOException {

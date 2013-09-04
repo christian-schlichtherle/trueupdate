@@ -16,7 +16,5 @@ public final class WrongInputZipFile extends IOException {
 
     private static final long serialVersionUID = 0L;
 
-    WrongInputZipFile(String message, Throwable cause) {
-        super(message, cause);
-    }
+    WrongInputZipFile(Throwable cause) { super(cause); }
 }

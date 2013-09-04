@@ -36,7 +36,7 @@ public final class Files {
         class WithZipFileTask implements ZipOutputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipOutputStream out) throws IOException {
+            public Void execute(final ZipOutput output) throws IOException {
 
                 class Zipper {
                     void zipDirectory(final File directory,
@@ -91,7 +91,7 @@ public final class Files {
                     Source source(File file) { return new FileStore(file); }
 
                     Sink sink(ZipEntry entry) {
-                        return new ZipEntrySink(entry, out);
+                        return new ZipEntrySink(entry, output);
                     }
 
                     ZipEntry entry(String name) { return new ZipEntry(name); }
@@ -105,8 +105,7 @@ public final class Files {
             }
         } // WithZipArchive
 
-        ZipSinks.execute(new WithZipFileTask())
-                .on(new ZipOutputStream(new FileOutputStream(zipFile)));
+        ZipSinks.execute(new WithZipFileTask()).on(zipFile);
     }
 
     public static void unzip(final File zipFile, final File directory)
@@ -115,22 +114,19 @@ public final class Files {
         class OnArchiveTask implements ZipInputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipFile archive) throws IOException {
-                for (final Enumeration<? extends ZipEntry>
-                             en = archive.entries();
-                        en.hasMoreElements(); ) {
-                    final ZipEntry entry = en.nextElement();
+            public Void execute(final ZipInput input) throws IOException {
+                for (final ZipEntry entry : input) {
                     if (entry.isDirectory()) continue;
                     final File file = new File(directory, entry.getName());
                     file.getParentFile().mkdirs();
-                    Copy.copy(new ZipEntrySource(entry, archive),
+                    Copy.copy(new ZipEntrySource(entry, input),
                               new FileStore(file));
                 }
                 return null;
             }
         } // OnArchiveTask
 
-        ZipSources.execute(new OnArchiveTask()).on(new ZipFile(zipFile));
+        ZipSources.execute(new OnArchiveTask()).on(zipFile);
     }
 
     /**

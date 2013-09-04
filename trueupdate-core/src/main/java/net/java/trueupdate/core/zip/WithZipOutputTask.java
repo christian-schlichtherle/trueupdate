@@ -5,11 +5,8 @@
 package net.java.trueupdate.core.zip;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.zip.ZipOutputStream;
 import javax.annotation.WillClose;
-
 import net.java.trueupdate.core.io.Closeables;
 import net.java.trueupdate.core.io.Job;
 import net.java.trueupdate.shed.Objects;
@@ -47,7 +44,7 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
     }
 
     @Override public V on(File file) throws X, IOException {
-        return on(new ZipOutputStream(new FileOutputStream(file)));
+        return on(new ZipFileStore(file));
     }
 
     @Override public V on(ZipSink sink) throws X, IOException {
@@ -55,7 +52,7 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
     }
 
     @Override
-    public V on(@WillClose ZipOutputStream out) throws X, IOException {
-        return Closeables.execute(task, out);
+    public V on(@WillClose ZipOutput output) throws X, IOException {
+        return Closeables.execute(task, output);
     }
 }

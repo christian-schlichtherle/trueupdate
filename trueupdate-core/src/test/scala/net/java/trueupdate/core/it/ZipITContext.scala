@@ -7,7 +7,6 @@ package net.java.trueupdate.core.it
 import edu.umd.cs.findbugs.annotations.CreatesObligation
 import java.io.File
 import java.util.jar.JarFile
-import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
@@ -30,10 +29,10 @@ trait ZipITContext extends TestContext {
       })
     }
 
-  def loanZipPatch[A](@WillNotClose _diff: ZipFile)(fun: RawZipPatch => A) = {
+  def loanRawZipPatch[A](@WillNotClose _diff: ZipInput)(fun: RawZipPatch => A) = {
     class FunTask extends ZipInputTask[A, Exception] {
-      override def execute(_input: ZipFile) = {
-        fun(new RawJarPatch {
+      override def execute(_input: ZipInput) = {
+        fun(new RawZipPatch {
           override def input = _input
           override def diff = _diff
         })
@@ -43,11 +42,11 @@ trait ZipITContext extends TestContext {
     ZipSources execute new FunTask on testJar1
   }
 
-  def loanTestJars[A](fun: (ZipFile, ZipFile) => A) = {
+  def loanTestJars[A](fun: (ZipInput, ZipInput) => A) = {
     class Fun1Task extends ZipInputTask[A, Exception]() {
-      override def execute(jar1: ZipFile) = {
+      override def execute(jar1: ZipInput) = {
         class Fun2Task extends ZipInputTask[A, Exception] {
-          override def execute(jar2: ZipFile) = {
+          override def execute(jar2: ZipInput) = {
             fun(jar1, jar2)
           }
         }
@@ -67,8 +66,11 @@ trait ZipITContext extends TestContext {
     override def input() = testJar2()
   }
 
-  @CreatesObligation final def testJar1() = new JarFile(file("test1.jar"), false)
-  @CreatesObligation final def testJar2() = new JarFile(file("test2.jar"), false)
+  @CreatesObligation final def testJar1() =
+    new ZipFileAdapter(new JarFile(file("test1.jar"), false))
+
+  @CreatesObligation final def testJar2() =
+    new ZipFileAdapter(new JarFile(file("test2.jar"), false))
 
   private def file(resourceName: String) =
     new File((classOf[ZipITContext] getResource resourceName).toURI)

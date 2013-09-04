@@ -31,42 +31,41 @@ public abstract class RawZipDiff {
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
 
     /** Returns the first archive. */
-    protected abstract @WillNotClose ZipFile input1();
+    protected abstract @WillNotClose ZipInput input1();
 
     /** Returns the second archive. */
-    protected abstract @WillNotClose ZipFile input2();
+    protected abstract @WillNotClose ZipInput input2();
 
     /** Returns the message digest. */
     protected abstract MessageDigest digest();
 
     /**
-     * Writes a diff archive to the given output stream.
+     * Writes a diff archive to the given ZIP output.
      *
-     * @param out the output stream for writing the diff archive.
+     * @param output the ZIP output for writing the diff archive.
      */
-    public void output(@WillClose OutputStream out) throws IOException {
-        ZipSinks.execute(new DiffTask()).on(new ZipOutputStream(out));
+    public void output(@WillClose ZipOutput output) throws IOException {
+        ZipSinks.execute(new DiffTask()).on(output);
     }
 
     private class DiffTask implements ZipOutputTask<Void, IOException> {
-        @Override
-        public Void execute(final ZipOutputStream out) throws IOException {
-            output(out, model());
+        @Override public Void execute(final @WillNotClose ZipOutput output)
+        throws IOException {
+            output(output, model());
             return null;
         }
     }
 
     private void output(
-            final @WillNotClose ZipOutputStream out,
+            final @WillNotClose ZipOutput output,
             final DiffModel model)
     throws IOException {
-        out.setLevel(Deflater.BEST_COMPRESSION);
 
         final class DiffStreamer {
 
             DiffStreamer() throws IOException {
                 try {
-                    model.encodeToXml(sink(entry(DiffModel.ENTRY_NAME)));
+                    model.encodeToXml(sink(output.entry(DiffModel.ENTRY_NAME)));
                 } catch (RuntimeException ex) {
                     throw ex;
                 } catch (IOException ex) {
@@ -77,13 +76,10 @@ public abstract class RawZipDiff {
             }
 
             DiffStreamer stream() throws IOException {
-                final Enumeration<? extends ZipEntry>
-                        entries = input2().entries();
-                while (entries.hasMoreElements()) {
-                    final ZipEntry in = entries.nextElement();
+                for (final ZipEntry in : input2()) {
                     final String name = in.getName();
                     if (changedOrAdded(name)) {
-                        final ZipEntry out = entry(name);
+                        final ZipEntry out = output.entry(name);
                         if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
                             final long size = in.getSize();
                             out.setMethod(ZipOutputStream.STORED);
@@ -101,9 +97,7 @@ public abstract class RawZipDiff {
                 return new ZipEntrySource(entry, input2());
             }
 
-            Sink sink(ZipEntry entry) { return new ZipEntrySink(entry, out); }
-
-            ZipEntry entry(String name) { return new ZipEntry(name); }
+            Sink sink(ZipEntry entry) { return new ZipEntrySink(entry, output); }
 
             boolean changedOrAdded(String name) {
                 return null != model.changed(name) || null != model.added(name);
@@ -128,13 +122,9 @@ public abstract class RawZipDiff {
          */
         <V extends Visitor> V walkAndReturn(final V visitor)
         throws IOException {
-            for (final Enumeration<? extends ZipEntry>
-                         entries = input1().entries();
-                 entries.hasMoreElements(); ) {
-                final ZipEntry entry1 = entries.nextElement();
-                final String name = entry1.getName();
-                if (name.endsWith("/")) continue;
-                final ZipEntry entry2 = input2().getEntry(name);
+            for (final ZipEntry entry1 : input1()) {
+                if (entry1.isDirectory()) continue;
+                final ZipEntry entry2 = input2().entry(entry1.getName());
                 final ZipEntrySource source1 =
                         new ZipEntrySource(entry1, input1());
                 if (null == entry2)
@@ -144,13 +134,9 @@ public abstract class RawZipDiff {
                             new ZipEntrySource(entry2, input2()));
             }
 
-            for (final Enumeration<? extends ZipEntry>
-                         entries = input2().entries();
-                 entries.hasMoreElements(); ) {
-                final ZipEntry entry2 = entries.nextElement();
-                final String name = entry2.getName();
-                if (name.endsWith("/")) continue;
-                final ZipEntry entry1 = input1().getEntry(name);
+            for (final ZipEntry entry2 : input2()) {
+                if (entry2.isDirectory()) continue;
+                final ZipEntry entry1 = input1().entry(entry2.getName());
                 if (null == entry1)
                     visitor.visitEntryInSecondFile(
                             new ZipEntrySource(entry2, input2()));

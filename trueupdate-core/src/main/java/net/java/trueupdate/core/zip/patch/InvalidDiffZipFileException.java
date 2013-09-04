@@ -11,11 +11,11 @@ import java.io.IOException;
  *
  * @author Christian Schlichtherle
  */
-public final class InvalidZipPatchFileException extends IOException {
+public final class InvalidDiffZipFileException extends IOException {
 
     private static final long serialVersionUID = 0L;
 
-    InvalidZipPatchFileException(String message, Throwable cause) {
-        super(message, cause);
+    InvalidDiffZipFileException(Throwable cause) {
+        super(cause);
     }
 }

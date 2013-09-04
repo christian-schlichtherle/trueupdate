@@ -11,7 +11,6 @@ import java.util.zip.*;
 import javax.annotation.CheckForNull;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.*;
-import net.java.trueupdate.core.zip.patch.RawZipPatch;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 
 /**
@@ -48,7 +47,7 @@ class Files {
 
         class WithZipArchive implements ZipOutputTask<Void, IOException> {
 
-            @Override public Void execute(final ZipOutputStream zipArchive)
+            @Override public Void execute(final ZipOutput output)
             throws IOException {
 
                 class Zipper {
@@ -105,7 +104,7 @@ class Files {
                     }
 
                     Sink zipEntrySink(ZipEntry entry) {
-                        return new ZipEntrySink(entry, zipArchive);
+                        return new ZipEntrySink(entry, output);
                     }
 
                     ZipEntry entry(String name) { return new ZipEntry(name); }
@@ -119,8 +118,7 @@ class Files {
             }
         } // WithZipArchive
 
-        ZipSinks.execute(new WithZipArchive())
-                .on(new ZipOutputStream(new FileOutputStream(zipFile)));
+        ZipSinks.execute(new WithZipArchive()).on(zipFile);
     }
 
     public static void unzipTo(final File zipFile, final File directory)
@@ -129,22 +127,19 @@ class Files {
         class OnArchiveTask implements ZipInputTask<Void, IOException> {
 
             @Override
-            public Void execute(final ZipFile archive) throws IOException {
-                for (final Enumeration<? extends ZipEntry>
-                             en = archive.entries();
-                        en.hasMoreElements(); ) {
-                    final ZipEntry entry = en.nextElement();
+            public Void execute(final ZipInput input) throws IOException {
+                for (final ZipEntry entry : input) {
                     if (entry.isDirectory()) continue;
                     final File file = new File(directory, entry.getName());
                     file.getParentFile().mkdirs();
-                    Copy.copy(new ZipEntrySource(entry, archive),
+                    Copy.copy(new ZipEntrySource(entry, input),
                               new FileStore(file));
                 }
                 return null;
             }
         } // OnArchiveTask
 
-        ZipSources.execute(new OnArchiveTask()).on(new ZipFile(zipFile));
+        ZipSources.execute(new OnArchiveTask()).on(zipFile);
     }
 
     public static void applyPatchTo(
@@ -155,7 +150,6 @@ class Files {
         ZipPatch.builder()
                 .input(inputFile)
                 .diff(patchFile)
-                .createJar(true)
                 .build()
                 .output(patchedFile);
     }

@@ -4,9 +4,9 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import edu.umd.cs.findbugs.annotations.CreatesObligation;
 import java.io.*;
 import java.security.*;
+import java.util.jar.JarEntry;
 import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.ThreadSafe;
@@ -27,41 +27,28 @@ public abstract class RawZipPatch {
     private volatile DiffModel model;
 
     /** Returns the input archive. */
-    protected abstract @WillNotClose ZipFile input();
+    protected abstract @WillNotClose ZipInput input();
 
     /** Returns the diff archive. */
-    protected abstract @WillNotClose ZipFile diff();
+    protected abstract @WillNotClose ZipInput diff();
 
     /**
      * Applies the configured diff archive.
      *
-     * @param out the output stream for writing the output archive.
+     * @param output the ZIP output for writing the output archive.
      */
-    public void output(final @WillClose OutputStream out) throws IOException {
-        final EntryNameFilter[] passFilters = passFilters();
-        if (null == passFilters || 0 >= passFilters.length)
-            throw new IllegalStateException("At least one pass filter is required to output anything.");
+    public void output(final ZipOutput output) throws IOException {
+        ZipSinks.execute(new PatchTask()).on(output);
+    }
 
-        class PatchTask implements ZipOutputTask<Void, IOException> {
-            @Override public Void execute(final ZipOutputStream zipOut)
-            throws IOException {
-                for (EntryNameFilter filter : passFilters)
-                    output(zipOut, new NoDirectoryEntryNameFilter(filter));
-                return null;
-            }
+    private class PatchTask implements ZipOutputTask<Void, IOException> {
+        @Override public Void execute(final @WillNotClose ZipOutput output)
+        throws IOException {
+            for (EntryNameFilter filter : passFilters(output))
+                output(output, new NoDirectoryEntryNameFilter(filter));
+            return null;
         }
-
-        ZipSinks.execute(new PatchTask()).on(newZipOutputStream(out));
     }
-
-    /** Returns a new ZIP output stream which writes to the given sink. */
-    @CreatesObligation
-    ZipOutputStream newZipOutputStream(OutputStream out) throws IOException {
-        return new ZipOutputStream(out);
-    }
-
-    /** Returns a new ZIP entry with the given name. */
-    ZipEntry newZipEntry(String name) { return new ZipEntry(name); }
 
     /**
      * Returns a list of filters for the different passes required to process
@@ -70,12 +57,30 @@ public abstract class RawZipPatch {
      * The filters should properly partition the set of entry sources,
      * i.e. each entry source should be accepted by exactly one filter.
      */
-    EntryNameFilter[] passFilters() {
-        return new EntryNameFilter[] { new AcceptAllEntryNameFilter() };
+    private EntryNameFilter[] passFilters(final ZipOutput output) {
+        if (output.entry("") instanceof JarEntry) {
+            // The JarInputStream class assumes that the file entry
+            // "META-INF/MANIFEST.MF" should either be the first or the second
+            // entry (if preceded by the directory entry "META-INF/"), so we
+            // need to process the ZIP patch file in two passes with a
+            // corresponding filter to ensure this order.
+            // Note that the directory entry "META-INF/" is always part of the
+            // unchanged patch set because it's content is always empty.
+            // Thus, by copying the unchanged entries before the changed
+            // entries, the directory entry "META-INF/" will always appear
+            // before the file entry "META-INF/MANIFEST.MF".
+            final EntryNameFilter manifestFilter = new ManifestEntryNameFilter();
+            return new EntryNameFilter[] {
+                    manifestFilter,
+                    new InverseEntryNameFilter(manifestFilter)
+            };
+        } else {
+            return new EntryNameFilter[] { new AcceptAllEntryNameFilter() };
+        }
     }
 
     private void output(
-            final @WillNotClose ZipOutputStream out,
+            final @WillNotClose ZipOutput output,
             final EntryNameFilter filter)
     throws IOException {
 
@@ -91,19 +96,18 @@ public abstract class RawZipPatch {
             }
 
             @Override public OutputStream output() throws IOException {
-                final ZipEntry entry = newZipEntry(entryNameAndDigest.name());
+                final ZipEntry entry = output.entry(entryNameAndDigest.name());
                 if (entry.isDirectory()) {
                     entry.setMethod(ZipOutputStream.STORED);
                     entry.setSize(0);
                     entry.setCompressedSize(0);
                     entry.setCrc(0);
                 }
-                out.putNextEntry(entry);
                 digest.reset();
-                return new DigestOutputStream(out, digest) {
+                return new DigestOutputStream(output.output(entry), digest) {
 
                     @Override public void close() throws IOException {
-                        ((ZipOutputStream) out).closeEntry();
+                        super.close();
                         if (!valueOfDigest().equals(
                                 entryNameAndDigest.digest()))
                             throw new WrongMessageDigestException(
@@ -119,7 +123,7 @@ public abstract class RawZipPatch {
 
         abstract class PatchSet {
 
-            abstract ZipFile archive();
+            abstract ZipInput archive();
 
             abstract IOException ioException(Throwable cause);
 
@@ -132,7 +136,7 @@ public abstract class RawZipPatch {
                             entryNameAndDigest = transformation.apply(item);
                     final String name = entryNameAndDigest.name();
                     if (!filter.accept(name)) continue;
-                    final ZipEntry entry = archive().getEntry(name);
+                    final ZipEntry entry = archive().entry(name);
                     if (null == entry)
                         throw ioException(new MissingZipEntryException(name));
                     try {
@@ -149,19 +153,19 @@ public abstract class RawZipPatch {
 
         class InputArchivePatchSet extends PatchSet {
 
-            @Override ZipFile archive() { return input(); }
+            @Override ZipInput archive() { return input(); }
 
             @Override IOException ioException(Throwable cause) {
-                return new WrongInputZipFile(archive().getName(), cause);
+                return new WrongInputZipFile(cause);
             }
         } // InputArchivePatchSet
 
         class PatchArchivePatchSet extends PatchSet {
 
-            @Override ZipFile archive() { return diff(); }
+            @Override ZipInput archive() { return diff(); }
 
             @Override IOException ioException(Throwable cause) {
-                return new InvalidZipPatchFileException(archive().getName(), cause);
+                return new InvalidDiffZipFileException(cause);
             }
         } // PatchArchivePatchSet
 
@@ -195,15 +199,15 @@ public abstract class RawZipPatch {
         } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new InvalidZipPatchFileException(diff().getName(), ex);
+            throw new InvalidDiffZipFileException(ex);
         }
     }
 
     private ZipEntry modelZipEntry() throws IOException {
         final String name = DiffModel.ENTRY_NAME;
-        final ZipEntry entry = diff().getEntry(name);
+        final ZipEntry entry = diff().entry(name);
         if (null == entry)
-            throw new InvalidZipPatchFileException(diff().getName(),
+            throw new InvalidDiffZipFileException(
                     new MissingZipEntryException(name));
         return entry;
     }

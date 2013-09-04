@@ -5,8 +5,7 @@
 package net.java.trueupdate.core.zip;
 
 import edu.umd.cs.findbugs.annotations.CreatesObligation;
-import java.io.*;
-import java.util.zip.ZipFile;
+import java.io.IOException;
 
 /**
  * An abstraction for reading ZIP files.
@@ -16,6 +15,6 @@ import java.util.zip.ZipFile;
  */
 public interface ZipSource {
 
-    /** Returns a new ZIP file for reading its entries. */
-    @CreatesObligation ZipFile input() throws IOException;
+    /** Returns a new ZIP input for reading its entries. */
+    @CreatesObligation ZipInput input() throws IOException;
 }

@@ -6,17 +6,17 @@ package net.java.trueupdate.core.zip.patch;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.zip.ZipFile;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
+import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.io.FileStore;
 import net.java.trueupdate.core.io.Job;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.zip.FileZipStore;
+import net.java.trueupdate.core.zip.ZipFileStore;
+import net.java.trueupdate.core.zip.ZipInput;
 import net.java.trueupdate.core.zip.ZipInputTask;
+import net.java.trueupdate.core.zip.ZipOutput;
+import net.java.trueupdate.core.zip.ZipSink;
 import net.java.trueupdate.core.zip.ZipSource;
 import net.java.trueupdate.core.zip.ZipSources;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
@@ -34,22 +34,21 @@ public abstract class ZipPatch {
     public static Builder builder() { return new Builder(); }
 
     public abstract Job<Void, IOException> bindTo(File file);
-    public abstract Job<Void, IOException> bindTo(Sink sink);
+    public abstract Job<Void, IOException> bindTo(ZipSink sink);
 
     public abstract void output(File file) throws IOException;
-    public abstract void output(Sink sink) throws IOException;
-    public abstract void output(@WillClose OutputStream out) throws IOException;
+    public abstract void output(ZipSink sink) throws IOException;
+    public abstract void output(@WillClose ZipOutput output) throws IOException;
 
     /** A builder for a ZIP patch. */
     public static class Builder {
 
         private @CheckForNull ZipSource input, diff;
-        private boolean createJar;
 
         Builder() { }
 
         public Builder input(final @Nullable File file) {
-            return input(null == file ? null : new FileZipStore(file));
+            return input(null == file ? null : new ZipFileStore(file));
         }
 
         public Builder input(final @Nullable ZipSource input) {
@@ -58,7 +57,7 @@ public abstract class ZipPatch {
         }
 
         public Builder diff(final @Nullable File file) {
-            return diff(null == file ? null : new FileZipStore(file));
+            return diff(null == file ? null : new ZipFileStore(file));
         }
 
         public Builder diff(final @Nullable ZipSource diff) {
@@ -66,29 +65,21 @@ public abstract class ZipPatch {
             return this;
         }
 
-        public Builder createJar(final boolean createJar) {
-            this.createJar = createJar;
-            return this;
-        }
-
-        public ZipPatch build() {
-            return create(input, diff, createJar);
-        }
+        public ZipPatch build() { return create(input, diff); }
 
         private static ZipPatch create(
                 final ZipSource input,
-                final ZipSource diff,
-                final boolean createJar) {
+                final ZipSource diff) {
             requireNonNull(input);
             requireNonNull(diff);
 
             return new ZipPatch() {
 
                 @Override public Job<Void, IOException> bindTo(File file) {
-                    return bindTo(new FileStore(file));
+                    return bindTo(new ZipFileStore(file));
                 }
 
-                @Override public Job<Void, IOException> bindTo(final Sink sink) {
+                @Override public Job<Void, IOException> bindTo(final ZipSink sink) {
                     return new Job<Void, IOException>() {
                         @Override public Void call() throws IOException {
                             output(sink);
@@ -99,33 +90,24 @@ public abstract class ZipPatch {
 
                 @Override
                 public void output(File file) throws IOException {
-                    output(new FileStore(file));
+                    output(new ZipFileStore(file));
                 }
 
                 @Override
-                public void output(Sink sink) throws IOException {
+                public void output(final ZipSink sink) throws IOException {
                     output(sink.output());
                 }
 
                 @Override
-                public void output(final @WillClose OutputStream out) throws IOException {
+                public void output(final @WillClose ZipOutput output) throws IOException {
                     class InputTask implements ZipInputTask<Void, IOException> {
-                        public Void execute(final ZipFile input) throws IOException {
+                        public Void execute(final @WillNotClose ZipInput input) throws IOException {
                             class DiffTask implements ZipInputTask<Void, IOException> {
-                                public Void execute(final ZipFile diff) throws IOException {
-                                    final RawZipPatch rzp;
-                                    if (createJar) {
-                                        rzp = new RawJarPatch() {
-                                            protected ZipFile input() { return input; }
-                                            protected ZipFile diff() { return diff; }
-                                        };
-                                    } else {
-                                        rzp = new RawZipPatch() {
-                                            protected ZipFile input() { return input; }
-                                            protected ZipFile diff() { return diff; }
-                                        };
-                                    }
-                                    rzp.output(out);
+                                public Void execute(final @WillNotClose ZipInput diff) throws IOException {
+                                    new RawZipPatch() {
+                                        protected ZipInput input() { return input; }
+                                        protected ZipInput diff() { return diff; }
+                                    }.output(output);
                                     return null;
                                 }
                             } // DiffTask
