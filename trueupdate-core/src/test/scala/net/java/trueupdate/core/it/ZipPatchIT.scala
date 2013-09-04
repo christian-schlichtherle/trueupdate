@@ -12,7 +12,8 @@ import java.io._
 import scala.collection.JavaConverters._
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip._
-import net.java.trueupdate.core.zip.diff.RawZipDiff
+import net.java.trueupdate.core.zip.diff._
+import net.java.trueupdate.core.zip.patch._
 
 /**
  * @author Christian Schlichtherle
@@ -29,9 +30,12 @@ class ZipPatchIT extends WordSpec with ZipITContext {
     "generating and applying the ZIP patch file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
 
-        class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-          override def execute(diffFile: ZipInput) {
-            val patchedFile = tempFile()
+        val diff = tempFile()
+        try {
+          val patched = tempFile()
+          try {
+            ZipDiff.builder.input1(testJar1).input2(testJar2).build.output(diff)
+            ZipPatch.builder.input(testJar1).diff(diff).build.output(patched)
 
             class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
               override def execute(archive1: ZipInput) {
@@ -54,23 +58,14 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                   }
                 }
 
-                ZipSources execute new DiffTask on new JarFileStore(patchedFile)
+                ZipSources execute new DiffTask on patched
               }
             }
 
-            try {
-              loanRawZipPatch(diffFile)(_ output new JarFileStore(patchedFile).output)
-              ZipSources execute new ComputeReferenceAndDiffTask on testJar2()
-            } finally {
-              patchedFile delete ()
-            }
+            ZipSources execute new ComputeReferenceAndDiffTask on testJar2
+          } finally {
+            patched delete ()
           }
-        }
-
-        val diff = tempFile()
-        try {
-          loanRawZipDiff(_ output new ZipFileStore(diff).output())
-          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on diff
         } finally {
           diff delete ()
         }

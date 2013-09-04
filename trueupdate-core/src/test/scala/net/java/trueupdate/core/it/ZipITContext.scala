@@ -29,19 +29,6 @@ trait ZipITContext extends TestContext {
       })
     }
 
-  def loanRawZipPatch[A](@WillNotClose _diff: ZipInput)(fun: RawZipPatch => A) = {
-    class FunTask extends ZipInputTask[A, Exception] {
-      override def execute(_input: ZipInput) = {
-        fun(new RawZipPatch {
-          override def input = _input
-          override def diff = _diff
-        })
-      }
-    }
-
-    ZipSources execute new FunTask on testJar1
-  }
-
   def loanTestJars[A](fun: (ZipInput, ZipInput) => A) = {
     class Fun1Task extends ZipInputTask[A, Exception]() {
       override def execute(jar1: ZipInput) = {
@@ -58,19 +45,8 @@ trait ZipITContext extends TestContext {
     ZipSources execute new Fun1Task on testJar1()
   }
 
-  final def testJarSource1: ZipSource = new ZipSource {
-    override def input() = testJar1()
-  }
-
-  final def testJarSource2: ZipSource = new ZipSource {
-    override def input() = testJar2()
-  }
-
-  @CreatesObligation final def testJar1() =
-    new ZipFileAdapter(new JarFile(file("test1.jar"), false))
-
-  @CreatesObligation final def testJar2() =
-    new ZipFileAdapter(new JarFile(file("test2.jar"), false))
+  @CreatesObligation final def testJar1() = file("test1.jar")
+  @CreatesObligation final def testJar2() = file("test2.jar")
 
   private def file(resourceName: String) =
     new File((classOf[ZipITContext] getResource resourceName).toURI)
