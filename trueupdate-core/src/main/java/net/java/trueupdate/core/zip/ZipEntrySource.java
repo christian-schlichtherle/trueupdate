@@ -19,11 +19,11 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
 public final class ZipEntrySource implements Source {
 
     private final ZipEntry entry;
-    private final ZipFile file;
+    private final ZipFile in;
 
-    public ZipEntrySource(final ZipEntry entry, final ZipFile file) {
+    public ZipEntrySource(final ZipEntry entry, final ZipFile in) {
         this.entry = requireNonNull(entry);
-        this.file = requireNonNull(file);
+        this.in = requireNonNull(in);
     }
 
     /** Returns the entry name. */
@@ -34,6 +34,6 @@ public final class ZipEntrySource implements Source {
 
     /** Returns an input stream for reading the ZIP entry contents. */
     @Override public InputStream input() throws IOException {
-        return file.getInputStream(entry);
+        return in.getInputStream(entry);
     }
 }
