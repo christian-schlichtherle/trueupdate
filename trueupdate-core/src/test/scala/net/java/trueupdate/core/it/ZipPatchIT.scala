@@ -61,7 +61,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
             }
 
             try {
-              loanZipPatch(diffFile)(_ output patchedFile)
+              loanZipPatch(diffFile)(_ output new FileOutputStream(patchedFile))
               ZipSources execute new ComputeReferenceAndDiffTask on testJar2()
             } finally {
               patchedFile delete ()

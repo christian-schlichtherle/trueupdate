@@ -11,11 +11,10 @@ import java.util.zip.ZipFile
 import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.zip.model.DiffModel
+import net.java.trueupdate.core.zip._
 import net.java.trueupdate.core.zip.diff.RawZipDiff
-import net.java.trueupdate.core.zip.patch.ZipPatch
-import net.java.trueupdate.core.zip.{ZipSource, ZipSources, ZipInputTask}
-import java.security.MessageDigest
+import net.java.trueupdate.core.zip.model.DiffModel
+import net.java.trueupdate.core.zip.patch._
 
 /**
  * @author Christian Schlichtherle
@@ -31,14 +30,13 @@ trait ZipITContext extends TestContext {
       })
     }
 
-  def loanZipPatch[A](@WillNotClose diff: ZipFile)(fun: ZipPatch => A) = {
+  def loanZipPatch[A](@WillNotClose _diff: ZipFile)(fun: RawZipPatch => A) = {
     class FunTask extends ZipInputTask[A, Exception] {
-      override def execute(input: ZipFile) = {
-        fun(ZipPatch.builder
-          .input(input)
-          .diff(diff)
-          .createJar(true)
-          .build)
+      override def execute(_input: ZipFile) = {
+        fun(new RawJarPatch {
+          override def input = _input
+          override def diff = _diff
+        })
       }
     }
 

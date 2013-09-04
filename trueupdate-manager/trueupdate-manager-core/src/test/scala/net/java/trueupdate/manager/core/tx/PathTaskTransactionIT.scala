@@ -15,7 +15,7 @@ import net.java.trueupdate.manager.core.io.{FileTask, Files}
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar.mock
 import org.scalatest.WordSpec
-import net.java.trueupdate.core.zip.patch.ZipPatchStatement
+import net.java.trueupdate.core.zip.patch.ZipPatch
 
 /**
  * @author Christian Schlichtherle
@@ -39,7 +39,7 @@ class PathTaskTransactionIT extends WordSpec {
                 diff.length should be > (1L)
                 output delete ()
                 output.exists should be (false)
-                val task = ZipPatchStatement
+                val task = ZipPatch
                   .builder
                   .input(input)
                   .diff(diff)

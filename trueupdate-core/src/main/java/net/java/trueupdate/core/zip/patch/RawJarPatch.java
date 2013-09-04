@@ -16,7 +16,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @author Christian Schlichtherle
  */
-abstract class JarPatch extends ZipPatch {
+public abstract class RawJarPatch extends RawZipPatch {
 
     @Override
     ZipOutputStream newZipOutputStream(OutputStream out) throws IOException {

@@ -11,6 +11,7 @@ import java.util.zip.*;
 import javax.annotation.CheckForNull;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.*;
+import net.java.trueupdate.core.zip.patch.RawZipPatch;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 
 /**
@@ -147,37 +148,16 @@ class Files {
     }
 
     public static void applyPatchTo(
-            final File inputFile,
-            final File patchFile,
-            final File patchedFile)
+            File inputFile,
+            File patchFile,
+            File patchedFile)
     throws IOException {
-
-        class OnInputArchiveTask implements ZipInputTask<Void, IOException> {
-
-            @Override
-            public Void execute(final ZipFile inputArchive) throws IOException {
-
-                class OnPatchArchiveTask implements ZipInputTask<Void, IOException> {
-
-                    @Override
-                    public Void execute(final ZipFile patchArchive) throws IOException {
-                        ZipPatch.builder()
-                                .input(inputArchive)
-                                .diff(patchArchive)
-                                .createJar(true)
-                                .build()
-                                .output(new FileStore(patchedFile));
-                        return null;
-                    }
-                } // OnPatchArchiveTask
-
-                ZipSources.execute(new OnPatchArchiveTask())
-                        .on(new ZipFile(patchFile));
-                return null;
-            }
-        } // OnInputArchiveTask
-
-        ZipSources.execute(new OnInputArchiveTask()).on(new ZipFile(inputFile));
+        ZipPatch.builder()
+                .input(inputFile)
+                .diff(patchFile)
+                .createJar(true)
+                .build()
+                .output(patchedFile);
     }
 
     /**

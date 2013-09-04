@@ -14,10 +14,11 @@ import javax.annotation.concurrent.*;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.*;
 import net.java.trueupdate.core.zip.model.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * A raw ZIP diff requires you to implement its {@link ZipFile} and
+ * Compares two archives entry by entry.
+ * Archives may be ZIP, JAR, EAR or WAR files.
+ * This class requires you to implement its {@link ZipFile} and
  * {@link MessageDigest} properties, but enables you to obtain the ZIP diff
  * {@linkplain #model} besides {@linkplain #output}ting the diff archive.
  *
