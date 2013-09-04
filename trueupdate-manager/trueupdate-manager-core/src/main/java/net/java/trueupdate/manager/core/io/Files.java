@@ -71,21 +71,19 @@ public final class Files {
 
                     long crc32(final File input) throws IOException {
 
-                        class ReadTask implements InputTask<Void, IOException> {
-                            @Override
-                            public Void execute(InputStream in) throws IOException {
+                        class ReadTask implements InputTask<Long, IOException> {
+                            @Override public Long execute(final InputStream in)
+                            throws IOException {
+                                final Checksum checksum = new CRC32();
+                                final InputStream cin =
+                                        new CheckedInputStream(in, checksum);
                                 final byte[] buf = new byte[Store.BUFSIZE];
-                                while (-1 != in.read(buf)) { }
-                                return null;
+                                while (-1 != cin.read(buf)) { }
+                                return checksum.getValue();
                             }
                         } // ReadTask
 
-                        final Checksum checksum = new CRC32();
-                        Sources .execute(new ReadTask())
-                                .on(new CheckedInputStream(
-                                        new FileInputStream(input),
-                                    checksum));
-                        return checksum.getValue();
+                        return Sources.execute(new ReadTask()).on(input);
                     }
 
                     Source source(File file) { return new FileStore(file); }
