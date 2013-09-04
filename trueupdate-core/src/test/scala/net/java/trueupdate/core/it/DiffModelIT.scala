@@ -23,7 +23,7 @@ class DiffModelIT extends WordSpec with ZipITContext {
 
     "computed from a ZIP diff" should {
       "be round-trip XML-serializable" in {
-        assertRoundTripXmlSerializable(loanZipDiff(_ diffModel ()))
+        assertRoundTripXmlSerializable(loanZipDiff(_ model ()))
       }
     }
   }

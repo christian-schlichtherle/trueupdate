@@ -4,8 +4,8 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import javax.annotation.WillClose;
 import net.java.trueupdate.shed.Objects;
 
 /**
@@ -22,6 +22,10 @@ implements Sources.BindStatement<V, X>, Sources.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
+    @Override public Job<V, X> to(File file) {
+        return to(new FileStore(file));
+    }
+
     @Override public Job<V, X> to(final Source source) {
         class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
@@ -31,12 +35,15 @@ implements Sources.BindStatement<V, X>, Sources.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override @SuppressWarnings("unchecked")
-    public V on(Source source) throws X, IOException {
+    @Override public V on(File file) throws X, IOException {
+        return on(new FileInputStream(file));
+    }
+
+    @Override public V on(Source source) throws X, IOException {
         return on(source.input());
     }
 
-    @Override public V on(InputStream in) throws X, IOException {
+    @Override public V on(@WillClose InputStream in) throws X, IOException {
         return Closeables.execute(task, in);
     }
 }

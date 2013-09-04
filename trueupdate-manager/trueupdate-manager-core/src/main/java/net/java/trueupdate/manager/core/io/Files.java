@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.patch.ZipPatch;
 
 /**
  * Provides functions for {@link File}s.
@@ -33,20 +32,20 @@ public final class Files {
                            final String entryName)
     throws IOException {
 
-        class WithZipArchive implements ZipOutputTask<Void, IOException> {
+        class WithZipFileTask implements ZipOutputTask<Void, IOException> {
 
-            @Override public Void execute(final ZipOutputStream zipArchive)
-            throws IOException {
+            @Override
+            public Void execute(final ZipOutputStream out) throws IOException {
 
                 class Zipper {
                     void zipDirectory(final File directory,
-                                      final String entryName)
+                                      final String name)
                     throws IOException {
                         final File[] memberFiles = directory.listFiles();
                         Arrays.sort(memberFiles); // courtesy
                         for (final File memberFile : memberFiles) {
                             final String memberName =
-                                    (entryName.isEmpty() ? entryName : entryName + '/')
+                                    (name.isEmpty() ? name : name + '/')
                                     + memberFile.getName();
                             if (memberFile.isDirectory()) {
                                 zipDirectory(memberFile, memberName);
@@ -56,50 +55,45 @@ public final class Files {
                         }
                     }
 
-                    void zipFile(final File file, final String entryName)
+                    void zipFile(final File file, final String name)
                     throws IOException {
-                        final ZipEntry entry = entry(entryName);
-                        if (COMPRESSED_FILE_EXTENSIONS.matcher(entryName).matches()) {
-                            final long length = file.length();
+                        final ZipEntry entry = entry(name);
+                        if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
+                            final long size = file.length();
                             entry.setMethod(ZipOutputStream.STORED);
-                            entry.setSize(length);
-                            entry.setCompressedSize(length);
+                            entry.setSize(size);
+                            entry.setCompressedSize(size);
                             entry.setCrc(crc32(file));
                         }
-                        Copy.copy(fileSource(file), zipEntrySink(entry));
+                        Copy.copy(source(file), sink(entry));
                     }
 
                     long crc32(final File input) throws IOException {
-                        final Checksum checksum = new CRC32();
 
                         class ReadTask implements InputTask<Void, IOException> {
                             @Override
                             public Void execute(InputStream in) throws IOException {
-                                while (-1 != in.read()) {
-                                }
+                                final byte[] buf = new byte[Store.BUFSIZE];
+                                while (-1 != in.read(buf)) { }
                                 return null;
                             }
                         } // ReadTask
 
-                        Sources.execute(new ReadTask())
+                        final Checksum checksum = new CRC32();
+                        Sources .execute(new ReadTask())
                                 .on(new CheckedInputStream(
-                                    new BufferedInputStream(
-                                        new FileInputStream(input)),
+                                        new FileInputStream(input),
                                     checksum));
                         return checksum.getValue();
                     }
 
-                    Source fileSource(File file) {
-                        return new FileStore(file);
+                    Source source(File file) { return new FileStore(file); }
+
+                    Sink sink(ZipEntry entry) {
+                        return new ZipEntrySink(entry, out);
                     }
 
-                    Sink zipEntrySink(ZipEntry entry) {
-                        return new ZipEntrySink(entry, zipArchive);
-                    }
-
-                    ZipEntry entry(String entryName) {
-                        return new ZipEntry(entryName);
-                    }
+                    ZipEntry entry(String name) { return new ZipEntry(name); }
                 } // Zipper
 
                 if (fileOrDirectory.isDirectory())
@@ -110,7 +104,7 @@ public final class Files {
             }
         } // WithZipArchive
 
-        ZipSinks.execute(new WithZipArchive())
+        ZipSinks.execute(new WithZipFileTask())
                 .on(new ZipOutputStream(new FileOutputStream(zipFile)));
     }
 
@@ -136,42 +130,6 @@ public final class Files {
         } // OnArchiveTask
 
         ZipSources.execute(new OnArchiveTask()).on(new ZipFile(zipFile));
-    }
-
-    public static void patchZip(
-            final File input,
-            final File diff,
-            final File output,
-            final boolean createJar)
-    throws IOException {
-
-        class OnInputArchiveTask implements ZipInputTask<Void, IOException> {
-
-            @Override
-            public Void execute(final ZipFile input) throws IOException {
-
-                class OnPatchArchiveTask implements ZipInputTask<Void, IOException> {
-
-                    @Override
-                    public Void execute(final ZipFile diff) throws IOException {
-                        ZipPatch.builder()
-                                .input(input)
-                                .diff(diff)
-                                .createJar(createJar)
-                                .build()
-                                .outputTo(new FileStore(output));
-                        return null;
-                    }
-                } // OnPatchArchiveTask
-
-                ZipSources.execute(new OnPatchArchiveTask())
-                          .on(new ZipFile(diff));
-                return null;
-            }
-        } // OnInputArchiveTask
-
-        ZipSources.execute(new OnInputArchiveTask())
-                  .on(new ZipFile(input));
     }
 
     /**

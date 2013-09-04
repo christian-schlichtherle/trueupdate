@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.core.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.WillClose;
@@ -16,22 +17,24 @@ import javax.annotation.WillClose;
 public class ZipSinks {
 
     public static <V, X extends Exception>
-            ExecuteStatement<V, X> execute(ZipOutputTask<V, X> task) {
-        return new WithZipOutputTask<V, X>(task);
-    }
-
-    public interface ExecuteStatement<V, X extends Exception> {
-        V on(@WillClose ZipOutputStream out) throws X, IOException;
-        V on(ZipSink sink) throws X, IOException;
-    }
-
-    public static <V, X extends Exception>
             BindStatement<V, X> bind(ZipOutputTask<V, X> task) {
         return new WithZipOutputTask<V, X>(task);
     }
 
     public interface BindStatement<V, X extends Exception> {
+        Job<V, X> to(File file);
         Job<V, X> to(ZipSink sink);
+    }
+
+    public static <V, X extends Exception>
+            ExecuteStatement<V, X> execute(ZipOutputTask<V, X> task) {
+        return new WithZipOutputTask<V, X>(task);
+    }
+
+    public interface ExecuteStatement<V, X extends Exception> {
+        V on(File file) throws X, IOException;
+        V on(ZipSink sink) throws X, IOException;
+        V on(@WillClose ZipOutputStream out) throws X, IOException;
     }
 
     private ZipSinks() { }

@@ -105,22 +105,24 @@ public class Sources {
     }
 
     public static <V, X extends Exception>
-            ExecuteStatement<V, X> execute(InputTask<V, X> task) {
-        return new WithInputTask<V, X>(task);
-    }
-
-    public interface ExecuteStatement<V, X extends Exception> {
-        V on(@WillClose InputStream in) throws X, IOException;
-        V on(Source source) throws X, IOException;
-    }
-
-    public static <V, X extends Exception>
             BindStatement<V, X> bind(InputTask<V, X> task) {
         return new WithInputTask<V, X>(task);
     }
 
     public interface BindStatement<V, X extends Exception> {
+        Job<V, X> to(File file);
         Job<V, X> to(Source source);
+    }
+
+    public static <V, X extends Exception>
+            ExecuteStatement<V, X> execute(InputTask<V, X> task) {
+        return new WithInputTask<V, X>(task);
+    }
+
+    public interface ExecuteStatement<V, X extends Exception> {
+        V on(File file) throws X, IOException;
+        V on(Source source) throws X, IOException;
+        V on(@WillClose InputStream in) throws X, IOException;
     }
 
     private Sources() { }

@@ -2,8 +2,9 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.io
+package net.java.trueupdate.core.it
 
+import net.java.trueupdate.core.io._
 import org.scalatest.WordSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

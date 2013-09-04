@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.core.io;
 
+import javax.annotation.WillNotClose;
+
 /**
  * When executed, a task operates on a resource and returns a result or throws
  * an exception.
@@ -15,5 +17,5 @@ package net.java.trueupdate.core.io;
  */
 public interface Task<V, R, X extends Exception> {
 
-    V execute(R resource) throws X;
+    V execute(@WillNotClose R resource) throws X;
 }

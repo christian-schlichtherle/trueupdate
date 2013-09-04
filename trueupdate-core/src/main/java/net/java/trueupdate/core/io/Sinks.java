@@ -5,6 +5,7 @@
  */
 package net.java.trueupdate.core.io;
 
+import java.io.File;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -49,22 +50,24 @@ public class Sinks {
     }
 
     public static <V, X extends Exception>
-            ExecuteStatement<V, X> execute(OutputTask<V, X> task) {
-        return new WithOutputTask<V, X>(task);
-    }
-
-    public interface ExecuteStatement<V, X extends Exception> {
-        V on(@WillClose OutputStream out) throws X, IOException;
-        V on(Sink sink) throws X, IOException;
-    }
-
-    public static <V, X extends Exception>
             BindStatement<V, X> bind(OutputTask<V, X> task) {
         return new WithOutputTask<V, X>(task);
     }
 
     public interface BindStatement<V, X extends Exception> {
+        Job<V, X> to(File file);
         Job<V, X> to(Sink sink);
+    }
+
+    public static <V, X extends Exception>
+            ExecuteStatement<V, X> execute(OutputTask<V, X> task) {
+        return new WithOutputTask<V, X>(task);
+    }
+
+    public interface ExecuteStatement<V, X extends Exception> {
+        V on(File file) throws X, IOException;
+        V on(Sink sink) throws X, IOException;
+        V on(@WillClose OutputStream out) throws X, IOException;
     }
 
     private Sinks() { }

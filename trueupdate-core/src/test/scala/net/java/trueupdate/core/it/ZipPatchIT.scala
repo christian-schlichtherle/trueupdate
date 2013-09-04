@@ -29,53 +29,49 @@ class ZipPatchIT extends WordSpec with ZipITContext {
   "A ZIP patch" when {
     "generating and applying the ZIP patch file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
-        val patchFile = tempFile ()
 
-        try {
-          loanZipDiff(_ diffTo new FileStore(patchFile))
+        class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
+          override def execute(diffFile: ZipFile) {
+            val patchedFile = tempFile()
 
-          class ApplyPatchAndComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-            override def execute(patchFile: ZipFile) {
-              val patchedFile = tempFile ()
+            class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
+              override def execute(input1: ZipFile) {
+                val unchangedReference = fileEntryNames(input1)
 
-              try {
-                loanZipPatch(patchFile) {
-                  _ outputTo new FileStore(patchedFile)
-                }
-
-                class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
-                  override def execute(archive1: ZipFile) {
-                    val unchangedReference = fileEntryNames(archive1)
-
-                    class DiffTask extends ZipInputTask[Unit, Exception] {
-                      override def execute(archive2: ZipFile) {
-                        val diffModel = ZipDiff.builder
-                          .input1(archive1)
-                          .input2(archive2)
-                          .build
-                          .diffModel ()
-                        diffModel.addedEntries.isEmpty should be (true)
-                        diffModel.removedEntries.isEmpty should be (true)
-                        diffModel.unchangedEntries.asScala map (_.name) should
-                          equal (unchangedReference)
-                        diffModel.changedEntries.isEmpty should be (true)
-                      }
-                    }
-
-                    ZipSources execute new DiffTask on new JarFile(patchedFile)
+                class DiffTask extends ZipInputTask[Unit, Exception] {
+                  override def execute(input2: ZipFile) {
+                    val diffModel = ZipDiff.builder
+                      .input1(input1)
+                      .input2(input2)
+                      .build
+                      .model ()
+                    diffModel.addedEntries.isEmpty should be (true)
+                    diffModel.removedEntries.isEmpty should be (true)
+                    diffModel.unchangedEntries.asScala map (_.name) should
+                      equal (unchangedReference)
+                    diffModel.changedEntries.isEmpty should be (true)
                   }
                 }
 
-                ZipSources execute new ComputeReferenceAndDiffTask on new TestJar2Source
-              } finally {
-                patchedFile delete ()
+                ZipSources execute new DiffTask on new JarFile(patchedFile)
               }
             }
-          }
 
-          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on new JarFile(patchFile)
+            try {
+              loanZipPatch(diffFile)(_ output patchedFile)
+              ZipSources execute new ComputeReferenceAndDiffTask on testJar2()
+            } finally {
+              patchedFile delete ()
+            }
+          }
+        }
+
+        val diffFile = tempFile()
+        try {
+          loanZipDiff(_ output diffFile)
+          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on diffFile
         } finally {
-          patchFile delete ()
+          diffFile delete ()
         }
       }
     }

@@ -17,24 +17,25 @@ import org.scalatest.mock.MockitoSugar._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar.mock
 import org.scalatest.WordSpec
+import net.java.trueupdate.core.zip.patch.ZipPatchStatement
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class PatchZipTransactionIT extends WordSpec {
+class PathTaskTransactionIT extends WordSpec {
 
   def setUpAndLoan[A](fun: (File, File, File, Transaction) => A) = {
     Files.loanTempFile(new FileTask[A, Exception] {
-      override def execute(inputArchive: File) = {
+      override def execute(input: File) = {
         Files.loanTempFile(new FileTask[A, Exception] {
-          override def execute(patchArchive: File) = {
+          override def execute(diff: File) = {
             Files.loanTempFile(new FileTask[A, Exception] {
-              override def execute(notExists: File) = {
+              override def execute(output: File) = {
                 Sinks execute new OutputTask[Unit, IOException] {
                   def execute(out: OutputStream) { out write 0 }
-                } on new FileStore(patchArchive)
-                zip(inputArchive, patchArchive)
+                } on new FileStore(diff)
+                zip(input, diff)
                 ZipSources execute new ZipInputTask[Unit, IOException] {
                   def execute(archive1: ZipFile) {
                     ZipSources execute new ZipInputTask[Unit, IOException] {
@@ -44,34 +45,40 @@ class PatchZipTransactionIT extends WordSpec {
                           .input1(archive1)
                           .input2(archive2)
                           .build
-                          .diffTo(new FileStore(patchArchive))
+                          .output(diff)
                       }
-                    } on new ZipFile(inputArchive)
+                    } on new ZipFile(input)
                   }
-                } on new ZipFile(inputArchive)
-                inputArchive.length should be > (1L)
-                patchArchive.length should be > (1L)
-                notExists delete ()
-                notExists.exists should be (false)
-                fun(inputArchive, patchArchive, notExists,
-                  new PatchZipTransaction(inputArchive, patchArchive, notExists,
-                                          false))
+                } on new ZipFile(input)
+                input.length should be > (1L)
+                diff.length should be > (1L)
+                output delete ()
+                output.exists should be (false)
+                val task = ZipPatchStatement
+                  .builder
+                  .input(input)
+                  .diff(diff)
+                  .createJar(false)
+                  .build
+                  .bindTo(output)
+                fun(input, diff, output,
+                  new PathTaskTransaction(output, task))
               }
             }, "output")
           }
-        }, "patch")
+        }, "diff")
       }
     }, "input")
   }
 
-  "A patch zip transaction" when {
+  "A zip patch transaction" when {
 
     "executing successfully" should {
       "have patched the input archive to the output archive using the patch archive" in {
-        setUpAndLoan { (inputArchive, patchArchive, notExists, tx) =>
+        setUpAndLoan { (inputArchive, diffArchive, notExists, tx) =>
           Transactions execute tx
           inputArchive.length should be > (1L)
-          patchArchive.length should be > (1L)
+          diffArchive.length should be > (1L)
           notExists.length should be (inputArchive.length)
         }
       }
@@ -79,11 +86,11 @@ class PatchZipTransactionIT extends WordSpec {
 
     "failing" should {
       "leave the source and destination files unmodified" in {
-        setUpAndLoan { (inputArchive, patchArchive, notExists, tx) =>
+        setUpAndLoan { (inputArchive, diffArchive, notExists, tx) =>
           inputArchive delete ()
           intercept[IOException] { Transactions execute tx }
           inputArchive.exists should be (false)
-          patchArchive.length should be > (1L)
+          diffArchive.length should be > (1L)
           notExists.exists should be (false)
         }
       }
@@ -92,13 +99,13 @@ class PatchZipTransactionIT extends WordSpec {
     "participating in a composite transaction" which {
       "subsequently fails" should {
         "leave the source and destination files unmodified" in {
-          setUpAndLoan { (inputArchive, patchArchive, notExists, tx1) =>
+          setUpAndLoan { (inputArchive, diffArchive, notExists, tx1) =>
             val tx2 = mock[Transaction]
             val ctx = new CompositeTransaction(tx1, tx2)
             doThrow(new Exception) when(tx2) perform ()
             intercept[Exception] { Transactions execute ctx }
             inputArchive.length should be > (1L)
-            patchArchive.length should be > (1L)
+            diffArchive.length should be > (1L)
             notExists.exists should be (false)
           }
         }

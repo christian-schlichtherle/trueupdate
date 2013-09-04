@@ -4,8 +4,11 @@
  */
 package net.java.trueupdate.core.io;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
+import javax.annotation.WillClose;
 import net.java.trueupdate.shed.Objects;
 
 /**
@@ -22,6 +25,15 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
+    @Override public Job<V, X> to(final File file) {
+        class WithTaskAndFileJob implements Job<V, X> {
+            @Override public V call() throws X, IOException {
+                return on(file);
+            }
+        }
+        return new WithTaskAndFileJob();
+    }
+
     @Override public Job<V, X> to(final ZipSink sink) {
         class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
@@ -31,12 +43,16 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override @SuppressWarnings("unchecked")
-    public V on(ZipSink sink) throws X, IOException {
+    @Override public V on(File file) throws X, IOException {
+        return on(new ZipOutputStream(new FileOutputStream(file)));
+    }
+
+    @Override public V on(ZipSink sink) throws X, IOException {
         return on(sink.output());
     }
 
-    @Override public V on(ZipOutputStream out) throws X, IOException {
+    @Override
+    public V on(@WillClose ZipOutputStream out) throws X, IOException {
         return Closeables.execute(task, out);
     }
 }

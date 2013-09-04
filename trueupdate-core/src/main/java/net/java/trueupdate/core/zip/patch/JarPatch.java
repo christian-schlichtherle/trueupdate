@@ -5,11 +5,11 @@
 package net.java.trueupdate.core.zip.patch;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import net.java.trueupdate.core.io.Sink;
 
 /**
  * Applies a ZIP patch file to an input ZIP file and writes an output JAR file.
@@ -19,8 +19,8 @@ import net.java.trueupdate.core.io.Sink;
 abstract class JarPatch extends ZipPatch {
 
     @Override
-    ZipOutputStream newZipOutputStream(Sink outputArchive) throws IOException {
-        return new JarOutputStream(outputArchive.output());
+    ZipOutputStream newZipOutputStream(OutputStream out) throws IOException {
+        return new JarOutputStream(out);
     }
 
     @Override ZipEntry newZipEntry(String name) { return new JarEntry(name); }

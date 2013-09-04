@@ -165,7 +165,7 @@ class Files {
                                 .diff(patchArchive)
                                 .createJar(true)
                                 .build()
-                                .outputTo(new FileStore(patchedFile));
+                                .output(new FileStore(patchedFile));
                         return null;
                     }
                 } // OnPatchArchiveTask

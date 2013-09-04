@@ -21,50 +21,42 @@ import net.java.trueupdate.core.zip.patch.ZipPatch
 trait ZipITContext extends TestContext {
 
   def loanZipDiff[A](fun: ZipDiff => A) =
-    loanArchives { (archive1, archive2) =>
+    loanTestJars { (input1, input2) =>
       fun(ZipDiff.builder
-        .input1(archive1)
-        .input2(archive2)
+        .input1(input1)
+        .input2(input2)
         .digest(digest)
         .build)
     }
 
-  def loanZipPatch[A](@WillNotClose patchArchive: ZipFile)(fun: ZipPatch => A) = {
+  def loanZipPatch[A](@WillNotClose diff: ZipFile)(fun: ZipPatch => A) = {
     class FunTask extends ZipInputTask[A, Exception] {
-      override def execute(inputArchive: ZipFile) = {
+      override def execute(input: ZipFile) = {
         fun(ZipPatch.builder
-          .input(inputArchive)
-          .diff(patchArchive)
+          .input(input)
+          .diff(diff)
           .createJar(true)
           .build)
       }
     }
 
-    ZipSources execute new FunTask on new TestJar1Source
+    ZipSources execute new FunTask on testJar1
   }
 
-  def loanArchives[A](fun: (ZipFile, ZipFile) => A) = {
+  def loanTestJars[A](fun: (ZipFile, ZipFile) => A) = {
     class Fun1Task extends ZipInputTask[A, Exception]() {
-      override def execute(archive1: ZipFile) = {
+      override def execute(jar1: ZipFile) = {
         class Fun2Task extends ZipInputTask[A, Exception] {
-          override def execute(archive2: ZipFile) = {
-            fun(archive1, archive2)
+          override def execute(jar2: ZipFile) = {
+            fun(jar1, jar2)
           }
         }
 
-        ZipSources execute new Fun2Task on new TestJar2Source
+        ZipSources execute new Fun2Task on testJar2()
       }
     }
 
-    ZipSources execute new Fun1Task on new TestJar1Source
-  }
-
-  final class TestJar1Source extends ZipSource {
-    override def input() = testJar1()
-  }
-
-  final class TestJar2Source extends ZipSource {
-    override def input() = testJar2()
+    ZipSources execute new Fun1Task on testJar1()
   }
 
   @CreatesObligation def testJar1() = new JarFile(file("test1.jar"), false)

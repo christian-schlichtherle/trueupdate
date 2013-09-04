@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.core.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 import javax.annotation.WillClose;
@@ -16,22 +17,24 @@ import javax.annotation.WillClose;
 public class ZipSources {
 
     public static <V, X extends Exception>
-            ExecuteStatement<V, X> execute(ZipInputTask<V, X> task) {
-        return new WithZipInputTask<V, X>(task);
-    }
-
-    public interface ExecuteStatement<V, X extends Exception> {
-        V on(@WillClose ZipFile zipFile) throws X, IOException;
-        V on(ZipSource source) throws X, IOException;
-    }
-
-    public static <V, X extends Exception>
             BindStatement<V, X> bind(ZipInputTask<V, X> task) {
         return new WithZipInputTask<V, X>(task);
     }
 
     public interface BindStatement<V, X extends Exception> {
+        Job<V, X> to(File file);
         Job<V, X> to(ZipSource source);
+    }
+
+    public static <V, X extends Exception>
+            ExecuteStatement<V, X> execute(ZipInputTask<V, X> task) {
+        return new WithZipInputTask<V, X>(task);
+    }
+
+    public interface ExecuteStatement<V, X extends Exception> {
+        V on(File file) throws X, IOException;
+        V on(ZipSource source) throws X, IOException;
+        V on(@WillClose ZipFile archive) throws X, IOException;
     }
 
     private ZipSources() { }

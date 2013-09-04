@@ -37,31 +37,45 @@ public abstract class ZipPatch {
     /**
      * Applies the configured diff archive.
      *
-     * @param output the sink for writing the output archive.
+     * @param file the file for writing the output archive.
      */
-    public void outputTo(final Sink output)
-    throws IOException {
+    public void output(File file) throws IOException {
+        output(new FileOutputStream(file));
+    }
+
+    /**
+     * Applies the configured diff archive.
+     *
+     * @param sink the sink for writing the output archive.
+     */
+    public void output(Sink sink) throws IOException { output(sink.output()); }
+
+    /**
+     * Applies the configured diff archive.
+     *
+     * @param output the output stream for writing the output archive.
+     */
+    public void output(final @WillClose OutputStream out) throws IOException {
         final EntryNameFilter[] passFilters = passFilters();
         if (null == passFilters || 0 >= passFilters.length)
             throw new IllegalStateException("At least one pass filter is required to output anything.");
 
-        class ApplyPatchZipTask implements ZipOutputTask<Void, IOException> {
+        class PatchTask implements ZipOutputTask<Void, IOException> {
             @Override public Void execute(final ZipOutputStream zipOut)
             throws IOException {
                 for (EntryNameFilter filter : passFilters)
-                    outputTo(new NoDirectoryEntryNameFilter(filter), zipOut);
+                    output(zipOut, new NoDirectoryEntryNameFilter(filter));
                 return null;
             }
         }
 
-        ZipSinks.execute(new ApplyPatchZipTask())
-                .on(newZipOutputStream(output));
+        ZipSinks.execute(new PatchTask()).on(newZipOutputStream(out));
     }
 
     /** Returns a new ZIP output stream which writes to the given sink. */
-    @CreatesObligation ZipOutputStream newZipOutputStream(Sink outputArchive)
-    throws IOException {
-        return new ZipOutputStream(outputArchive.output());
+    @CreatesObligation
+    ZipOutputStream newZipOutputStream(OutputStream out) throws IOException {
+        return new ZipOutputStream(out);
     }
 
     /** Returns a new ZIP entry with the given name. */
@@ -78,9 +92,9 @@ public abstract class ZipPatch {
         return new EntryNameFilter[] { new AcceptAllEntryNameFilter() };
     }
 
-    private void outputTo(
-            final EntryNameFilter filter,
-            final @WillNotClose ZipOutputStream out)
+    private void output(
+            final @WillNotClose ZipOutputStream out,
+            final EntryNameFilter filter)
     throws IOException {
 
         final MessageDigest digest = digest();

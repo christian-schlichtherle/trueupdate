@@ -4,8 +4,8 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import javax.annotation.WillClose;
 import net.java.trueupdate.shed.Objects;
 
 /**
@@ -22,6 +22,10 @@ implements Sinks.BindStatement<V, X>, Sinks.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
+    @Override public Job<V, X> to(File file) {
+        return to(new FileStore(file));
+    }
+
     @Override public Job<V, X> to(final Sink sink) {
         class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
@@ -31,12 +35,15 @@ implements Sinks.BindStatement<V, X>, Sinks.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
-    @Override @SuppressWarnings("unchecked")
-    public V on(Sink sink) throws X, IOException {
+    @Override public V on(File file) throws X, IOException {
+        return on(new FileOutputStream(file));
+    }
+
+    @Override public V on(Sink sink) throws X, IOException {
         return on(sink.output());
     }
 
-    @Override public V on(OutputStream out) throws X, IOException {
+    @Override public V on(@WillClose OutputStream out) throws X, IOException {
         return Closeables.execute(task, out);
     }
 }

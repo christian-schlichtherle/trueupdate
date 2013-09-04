@@ -4,8 +4,10 @@
  */
 package net.java.trueupdate.core.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
+import javax.annotation.WillClose;
 import net.java.trueupdate.shed.Objects;
 
 /**
@@ -22,6 +24,15 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
+    @Override public Job<V, X> to(final File file) {
+        class WithTaskAndFileJob implements Job<V, X> {
+            @Override public V call() throws X, IOException {
+                return on(file);
+            }
+        }
+        return new WithTaskAndFileJob();
+    }
+
     @Override public Job<V, X> to(final ZipSource source) {
         class WithTaskAndSourceJob implements Job<V, X> {
             @Override public V call() throws X, IOException {
@@ -31,12 +42,16 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
         return new WithTaskAndSourceJob();
     }
 
+    @Override public V on(File file) throws X, IOException {
+        return on(new ZipFile(file));
+    }
+
     @Override public V on(ZipSource source) throws X, IOException {
         return on(source.input());
     }
 
     @Override @SuppressWarnings("unchecked")
-    public V on(final ZipFile archive) throws X, IOException {
+    public V on(final @WillClose ZipFile archive) throws X, IOException {
         // Unfortunately, in Java SE 6, ZipFile is not a Closeable.
         // In Java SE 7, the entire DSL is replaceable with the
         // try-with-resources statement.

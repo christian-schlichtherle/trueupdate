@@ -6,7 +6,7 @@ package net.java.trueupdate.jax.rs.server;
 
 import java.io.*;
 import java.util.concurrent.Callable;
-import java.util.zip.ZipFile;
+import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.*;
 import static javax.ws.rs.core.MediaType.*;
@@ -16,7 +16,7 @@ import javax.xml.namespace.QName;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.diff.ZipDiff;
+import net.java.trueupdate.core.zip.diff.ZipDiffStatement;
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
@@ -93,8 +93,7 @@ public final class ConfiguredUpdateServer {
         return currentDescriptor.version(updateVersion);
     }
 
-    File resolveArtifactFile(ArtifactDescriptor descriptor)
-    throws Exception {
+    File resolveArtifactFile(ArtifactDescriptor descriptor) throws Exception {
         return resolver.resolveArtifactFile(descriptor);
     }
 
@@ -103,39 +102,14 @@ public final class ConfiguredUpdateServer {
             final File input2) {
         return new StreamingOutput() {
 
-            @Override
-            public void write(OutputStream out) throws IOException {
-                write(Sinks.uncloseable(out));
-            }
-
-            void write(final Sink diff) throws IOException {
-
-                class OnArchive1Task implements ZipInputTask<Void, IOException> {
-
-                    @Override
-                    public Void execute(final ZipFile input1) throws IOException {
-
-                        class OnArchive2Task implements ZipInputTask<Void, IOException> {
-
-                            @Override
-                            public Void execute(final ZipFile input2) throws IOException {
-                                ZipDiff .builder()
-                                        .input1(input1)
-                                        .input2(input2)
-                                        .build()
-                                        .diffTo(diff);
-                                return null;
-                            }
-                        } // OnArchive2Task
-
-                        ZipSources.execute(new OnArchive2Task())
-                                  .on(new ZipFile(input2));
-
-                        return null;
-                    }
-                } // OnArchive1Task
-
-                ZipSources.execute(new OnArchive1Task()).on(new ZipFile(input1));
+            @Override public void write(@WillNotClose OutputStream out)
+            throws IOException {
+                ZipDiffStatement
+                        .builder()
+                        .input1(input1)
+                        .input2(input2)
+                        .build()
+                        .output(Sinks.uncloseable(out));
             }
         };
     }
