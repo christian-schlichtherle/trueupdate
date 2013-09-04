@@ -9,7 +9,7 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.manager.core.io.Files._
-import net.java.trueupdate.core.zip.diff.ZipDiff
+import net.java.trueupdate.core.zip.diff.{ZipDiffStatement, RawZipDiff}
 import net.java.trueupdate.core.io._
 import java.util.zip.ZipFile
 import net.java.trueupdate.manager.core.io.{FileTask, Files}
@@ -36,20 +36,7 @@ class PathTaskTransactionIT extends WordSpec {
                   def execute(out: OutputStream) { out write 0 }
                 } on new FileStore(diff)
                 zip(input, diff)
-                ZipSources execute new ZipInputTask[Unit, IOException] {
-                  def execute(archive1: ZipFile) {
-                    ZipSources execute new ZipInputTask[Unit, IOException] {
-                      def execute(archive2: ZipFile) {
-                        ZipDiff
-                          .builder
-                          .input1(archive1)
-                          .input2(archive2)
-                          .build
-                          .output(diff)
-                      }
-                    } on new ZipFile(input)
-                  }
-                } on new ZipFile(input)
+                ZipDiffStatement.builder.input1(input).input2(input).build.output(diff)
                 input.length should be > (1L)
                 diff.length should be > (1L)
                 output delete ()

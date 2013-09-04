@@ -114,7 +114,7 @@ public abstract class ZipDiffStatement {
 
                                 @Override
                                 public Void execute(final ZipFile input2) throws IOException {
-                                    ZipDiff .builder()
+                                    RawZipDiff.builder()
                                             .input1(input1)
                                             .input2(input2)
                                             .digest(nonNullOrSha1(digest))

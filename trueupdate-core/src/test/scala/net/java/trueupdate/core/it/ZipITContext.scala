@@ -12,7 +12,7 @@ import javax.annotation.WillNotClose
 import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.model.DiffModel
-import net.java.trueupdate.core.zip.diff.ZipDiff
+import net.java.trueupdate.core.zip.diff.RawZipDiff
 import net.java.trueupdate.core.zip.patch.ZipPatch
 
 /**
@@ -20,9 +20,9 @@ import net.java.trueupdate.core.zip.patch.ZipPatch
  */
 trait ZipITContext extends TestContext {
 
-  def loanZipDiff[A](fun: ZipDiff => A) =
+  def loanRawZipDiff[A](fun: RawZipDiff => A) =
     loanTestJars { (input1, input2) =>
-      fun(ZipDiff.builder
+      fun(RawZipDiff.builder
         .input1(input1)
         .input2(input2)
         .digest(digest)

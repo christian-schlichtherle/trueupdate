@@ -22,7 +22,7 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class ZipDiff {
+public abstract class RawZipDiff {
 
     private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
@@ -302,7 +302,7 @@ public abstract class ZipDiff {
             return this;
         }
 
-        public ZipDiff build() {
+        public RawZipDiff build() {
             return create(input1, input2, nonNullOrSha1(digest));
         }
 
@@ -311,7 +311,7 @@ public abstract class ZipDiff {
             return null != digest ? digest : MessageDigests.sha1();
         }
 
-        private static ZipDiff create(
+        private static RawZipDiff create(
                 final ZipFile input1,
                 final ZipFile input2,
                 final MessageDigest digest) {
@@ -319,7 +319,7 @@ public abstract class ZipDiff {
             requireNonNull(input2);
             assert null != digest;
 
-            return new ZipDiff() {
+            return new RawZipDiff() {
                 @Override ZipFile input1() { return input1; }
                 @Override ZipFile input2() { return input2; }
                 @Override MessageDigest digest() { return digest; }

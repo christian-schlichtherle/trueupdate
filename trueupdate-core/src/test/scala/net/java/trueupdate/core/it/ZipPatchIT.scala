@@ -13,7 +13,7 @@ import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
 import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.zip.diff.ZipDiff
+import net.java.trueupdate.core.zip.diff.RawZipDiff
 
 /**
  * @author Christian Schlichtherle
@@ -40,16 +40,17 @@ class ZipPatchIT extends WordSpec with ZipITContext {
 
                 class DiffTask extends ZipInputTask[Unit, Exception] {
                   override def execute(input2: ZipFile) {
-                    val diffModel = ZipDiff.builder
+                    val model = RawZipDiff
+                      .builder
                       .input1(input1)
                       .input2(input2)
                       .build
                       .model ()
-                    diffModel.addedEntries.isEmpty should be (true)
-                    diffModel.removedEntries.isEmpty should be (true)
-                    diffModel.unchangedEntries.asScala map (_.name) should
+                    model.addedEntries.isEmpty should be (true)
+                    model.removedEntries.isEmpty should be (true)
+                    model.unchangedEntries.asScala map (_.name) should
                       equal (unchangedReference)
-                    diffModel.changedEntries.isEmpty should be (true)
+                    model.changedEntries.isEmpty should be (true)
                   }
                 }
 
@@ -66,12 +67,12 @@ class ZipPatchIT extends WordSpec with ZipITContext {
           }
         }
 
-        val diffFile = tempFile()
+        val diff = tempFile()
         try {
-          loanZipDiff(_ output diffFile)
-          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on diffFile
+          loanRawZipDiff(_ output diff)
+          ZipSources execute new ApplyPatchAndComputeReferenceAndDiffTask on diff
         } finally {
-          diffFile delete ()
+          diff delete ()
         }
       }
     }
