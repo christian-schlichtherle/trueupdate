@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
 import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.zip.*;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 
 /**

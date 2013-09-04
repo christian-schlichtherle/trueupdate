@@ -2,7 +2,9 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.io;
+package net.java.trueupdate.core.zip;
+
+import net.java.trueupdate.core.io.Job;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import javax.annotation.WillClose;
 /**
  * Provides functions for {@link ZipSource}s.
  *
+ * @see ZipSinks
  * @author Christian Schlichtherle
  */
 public class ZipSources {

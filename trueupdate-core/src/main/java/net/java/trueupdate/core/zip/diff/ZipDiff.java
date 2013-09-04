@@ -5,32 +5,25 @@
 package net.java.trueupdate.core.zip.diff;
 
 import edu.umd.cs.findbugs.annotations.CreatesObligation;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.MessageDigest;
 import java.util.zip.ZipFile;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.annotation.WillClose;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.io.FileStore;
-import net.java.trueupdate.core.io.Job;
-import net.java.trueupdate.core.io.MessageDigests;
-import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.ZipInputTask;
-import net.java.trueupdate.core.io.ZipSources;
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.zip.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * Encapsulates a ZIP diff.
+ * Compares two archives entry by entry.
+ * Archives may be ZIP, JAR, EAR or WAR files.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class ZipDiffStatement {
+public abstract class ZipDiff {
 
-    /** Returns a new builder for a ZIP diff statement. */
+    /** Returns a new builder for a ZIP diff. */
     public static Builder builder() { return new Builder(); }
 
     public abstract Job<Void, IOException> bindTo(File file);
@@ -41,22 +34,30 @@ public abstract class ZipDiffStatement {
     public abstract void output(@WillClose OutputStream out) throws IOException;
 
     /**
-     * A builder for a ZIP diff statement.
+     * A builder for a ZIP diff.
      * The default message digest is SHA-1.
      */
     public static class Builder {
 
-        private @CheckForNull File input1, input2;
+        private @CheckForNull ZipSource input1, input2;
         private @CheckForNull String digest;
 
         Builder() { }
 
         public Builder input1(final @Nullable File input1) {
+            return input1(new FileZipStore(input1));
+        }
+
+        public Builder input1(final @Nullable ZipSource input1) {
             this.input1 = input1;
             return this;
         }
 
         public Builder input2(final @Nullable File input2) {
+            return input2(new FileZipStore(input2));
+        }
+
+        public Builder input2(final @Nullable ZipSource input2) {
             this.input2 = input2;
             return this;
         }
@@ -66,18 +67,19 @@ public abstract class ZipDiffStatement {
             return this;
         }
 
-        public ZipDiffStatement build() {
+        public ZipDiff build() {
             return create(input1, input2, digest);
         }
 
-        private static @CreatesObligation ZipDiffStatement create(
-                final File input1,
-                final File input2,
-                final @CheckForNull String digest) {
+        private static @CreatesObligation
+        ZipDiff create(
+                final ZipSource input1,
+                final ZipSource input2,
+                final @CheckForNull String digestName) {
             requireNonNull(input1);
             requireNonNull(input2);
 
-            return new ZipDiffStatement() {
+            return new ZipDiff() {
 
                 @Override public Job<Void, IOException> bindTo(File file) {
                     return bindTo(new FileStore(file));
@@ -105,39 +107,40 @@ public abstract class ZipDiffStatement {
                 @Override
                 public void output(final @WillClose OutputStream out) throws IOException {
 
-                    class OnInput1Task implements ZipInputTask<Void, IOException> {
+                    class Input1Task implements ZipInputTask<Void, IOException> {
 
                         @Override
                         public Void execute(final ZipFile input1) throws IOException {
 
-                            class OnInput2Task implements ZipInputTask<Void, IOException> {
+                            class Input2Task implements ZipInputTask<Void, IOException> {
 
                                 @Override
                                 public Void execute(final ZipFile input2) throws IOException {
-                                    RawZipDiff.builder()
-                                            .input1(input1)
-                                            .input2(input2)
-                                            .digest(nonNullOrSha1(digest))
-                                            .build()
-                                            .output(out);
+                                    new RawZipDiff() {
+
+                                        final MessageDigest digest = MessageDigests.create(
+                                                null != digestName ? digestName : "SHA-1");
+
+                                        @Override
+                                        protected ZipFile input1() { return input1; }
+
+                                        @Override
+                                        protected ZipFile input2() { return input2; }
+
+                                        @Override
+                                        protected MessageDigest digest() { return digest; }
+                                    }.output(out);
                                     return null;
                                 }
+                            } // Input2Task
 
-                                MessageDigest nonNullOrSha1(@CheckForNull String digest) {
-                                    return MessageDigests.create(
-                                            null != digest ? digest : "SHA-1");
-                                }
-                            } // OnInput2Task
-
-                            return ZipSources.execute(new OnInput2Task())
-                                             .on(new ZipFile(input2));
+                            return ZipSources.execute(new Input2Task()).on(input2);
                         }
-                    } // OnInput1Task
+                    } // Input1Task
 
-                    ZipSources.execute(new OnInput1Task())
-                              .on(new ZipFile(input1));
+                    ZipSources.execute(new Input1Task()).on(input1);
                 }
-            }; // ZipDiffStatement
+            }; // ZipDiff
         }
     } // Builder
 }

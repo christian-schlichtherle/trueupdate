@@ -9,11 +9,9 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.manager.core.io.Files._
-import net.java.trueupdate.core.zip.diff.{ZipDiffStatement, RawZipDiff}
+import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.io._
-import java.util.zip.ZipFile
 import net.java.trueupdate.manager.core.io.{FileTask, Files}
-import org.scalatest.mock.MockitoSugar._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar.mock
 import org.scalatest.WordSpec
@@ -36,7 +34,7 @@ class PathTaskTransactionIT extends WordSpec {
                   def execute(out: OutputStream) { out write 0 }
                 } on new FileStore(diff)
                 zip(input, diff)
-                ZipDiffStatement.builder.input1(input).input2(input).build.output(diff)
+                ZipDiff.builder.input1(input).input2(input).build.output(diff)
                 input.length should be > (1L)
                 diff.length should be > (1L)
                 output delete ()

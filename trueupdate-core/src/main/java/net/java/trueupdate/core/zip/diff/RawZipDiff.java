@@ -12,53 +12,36 @@ import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.*;
 import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.zip.*;
 import net.java.trueupdate.core.zip.model.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * Compares two archives entry by entry.
- * Archives may be ZIP, JAR, EAR or WAR files.
+ * A raw ZIP diff requires you to implement its {@link ZipFile} and
+ * {@link MessageDigest} properties, but enables you to obtain the ZIP diff
+ * {@linkplain #model} besides {@linkplain #output}ting the diff archive.
  *
  * @author Christian Schlichtherle
  */
-@NotThreadSafe
+@Immutable
 public abstract class RawZipDiff {
 
     private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
 
     /** Returns the first archive. */
-    abstract @WillNotClose ZipFile input1();
+    protected abstract @WillNotClose ZipFile input1();
 
     /** Returns the second archive. */
-    abstract @WillNotClose ZipFile input2();
+    protected abstract @WillNotClose ZipFile input2();
 
     /** Returns the message digest. */
-    abstract MessageDigest digest();
-
-    /** Returns a new builder for a ZIP diff. */
-    public static Builder builder() { return new Builder(); }
-
-    /**
-     * Writes a diff archive to the given sink.
-     *
-     * @param sink the sink for writing the diff archive.
-     */
-    public void output(File file) throws IOException {
-        output(new FileOutputStream(file));
-    }
-
-    /**
-     * Writes a diff archive to the given sink.
-     *
-     * @param sink the sink for writing the diff archive.
-     */
-    public void output(Sink sink) throws IOException { output(sink.output()); }
+    protected abstract MessageDigest digest();
 
     /**
      * Writes a diff archive to the given output stream.
      *
-     * @param diff the sink for writing the diff archive.
+     * @param out the output stream for writing the diff archive.
      */
     public void output(@WillClose OutputStream out) throws IOException {
         ZipSinks.execute(new DiffTask()).on(new ZipOutputStream(out));
@@ -275,55 +258,4 @@ public abstract class RawZipDiff {
                                      ZipEntrySource source2)
         throws IOException;
     } // Visitor
-
-    /**
-     * A builder for a ZIP diff.
-     * The default message digest is SHA-1.
-     */
-    public static class Builder {
-
-        private @CheckForNull ZipFile input1, input2;
-        private @CheckForNull MessageDigest digest;
-
-        Builder() { }
-
-        public Builder input1(final @Nullable ZipFile input1) {
-            this.input1 = input1;
-            return this;
-        }
-
-        public Builder input2(final @Nullable ZipFile input2) {
-            this.input2 = input2;
-            return this;
-        }
-
-        public Builder digest(final @Nullable MessageDigest digest) {
-            this.digest = digest;
-            return this;
-        }
-
-        public RawZipDiff build() {
-            return create(input1, input2, nonNullOrSha1(digest));
-        }
-
-        private static MessageDigest nonNullOrSha1(
-                @CheckForNull MessageDigest digest) {
-            return null != digest ? digest : MessageDigests.sha1();
-        }
-
-        private static RawZipDiff create(
-                final ZipFile input1,
-                final ZipFile input2,
-                final MessageDigest digest) {
-            requireNonNull(input1);
-            requireNonNull(input2);
-            assert null != digest;
-
-            return new RawZipDiff() {
-                @Override ZipFile input1() { return input1; }
-                @Override ZipFile input2() { return input2; }
-                @Override MessageDigest digest() { return digest; }
-            };
-        }
-    } // Builder
 }

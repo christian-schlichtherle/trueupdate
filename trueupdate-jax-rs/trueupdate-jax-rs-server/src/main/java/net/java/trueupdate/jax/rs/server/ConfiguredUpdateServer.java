@@ -16,7 +16,8 @@ import javax.xml.namespace.QName;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.diff.ZipDiffStatement;
+import net.java.trueupdate.core.zip.diff.ZipDiff;
+
 import static net.java.trueupdate.jax.rs.server.UpdateServers.wrap;
 import net.java.trueupdate.jax.rs.util.UpdateServiceException;
 
@@ -104,8 +105,7 @@ public final class ConfiguredUpdateServer {
 
             @Override public void write(@WillNotClose OutputStream out)
             throws IOException {
-                ZipDiffStatement
-                        .builder()
+                ZipDiff .builder()
                         .input1(input1)
                         .input2(input2)
                         .build()

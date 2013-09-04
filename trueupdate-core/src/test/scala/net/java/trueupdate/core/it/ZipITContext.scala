@@ -14,6 +14,8 @@ import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.zip.diff.RawZipDiff
 import net.java.trueupdate.core.zip.patch.ZipPatch
+import net.java.trueupdate.core.zip.{ZipSource, ZipSources, ZipInputTask}
+import java.security.MessageDigest
 
 /**
  * @author Christian Schlichtherle
@@ -21,12 +23,12 @@ import net.java.trueupdate.core.zip.patch.ZipPatch
 trait ZipITContext extends TestContext {
 
   def loanRawZipDiff[A](fun: RawZipDiff => A) =
-    loanTestJars { (input1, input2) =>
-      fun(RawZipDiff.builder
-        .input1(input1)
-        .input2(input2)
-        .digest(digest)
-        .build)
+    loanTestJars { (archive1, archive2) =>
+      fun(new RawZipDiff {
+        override def input1 = archive1
+        override def input2 = archive2
+        override def digest = ZipITContext.this.digest
+      })
     }
 
   def loanZipPatch[A](@WillNotClose diff: ZipFile)(fun: ZipPatch => A) = {
@@ -59,8 +61,16 @@ trait ZipITContext extends TestContext {
     ZipSources execute new Fun1Task on testJar1()
   }
 
-  @CreatesObligation def testJar1() = new JarFile(file("test1.jar"), false)
-  @CreatesObligation def testJar2() = new JarFile(file("test2.jar"), false)
+  final def testJarSource1: ZipSource = new ZipSource {
+    override def input() = testJar1()
+  }
+
+  final def testJarSource2: ZipSource = new ZipSource {
+    override def input() = testJar2()
+  }
+
+  @CreatesObligation final def testJar1() = new JarFile(file("test1.jar"), false)
+  @CreatesObligation final def testJar2() = new JarFile(file("test2.jar"), false)
 
   private def file(resourceName: String) =
     new File((classOf[ZipITContext] getResource resourceName).toURI)

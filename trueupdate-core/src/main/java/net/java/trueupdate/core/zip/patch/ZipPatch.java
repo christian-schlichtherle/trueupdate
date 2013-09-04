@@ -11,6 +11,9 @@ import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.zip.ZipEntrySource;
+import net.java.trueupdate.core.zip.ZipOutputTask;
+import net.java.trueupdate.core.zip.ZipSinks;
 import net.java.trueupdate.core.zip.model.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 

@@ -9,10 +9,15 @@ import javax.annotation.WillClose;
  *
  * @author Christian Schlichtherle
  */
-final class Closeables {
+public final class Closeables {
 
+    /**
+     * Executes the given task on the given resource and finally closes it.
+     * If both {@link Task#execute} and {@link Closeable#close} throw an
+     * exception, then only the exception thrown by the task prevails.
+     */
     @SuppressWarnings("unchecked")
-    static <V, R extends Closeable, X extends Exception>
+    public static <V, R extends Closeable, X extends Exception>
             V execute(final Task<V, R, X> task, final @WillClose R resource)
     throws X, IOException {
         X ex = null;

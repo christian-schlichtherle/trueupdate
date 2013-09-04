@@ -16,8 +16,8 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.io.FileStore;
 import net.java.trueupdate.core.io.Job;
 import net.java.trueupdate.core.io.Sink;
-import net.java.trueupdate.core.io.ZipInputTask;
-import net.java.trueupdate.core.io.ZipSources;
+import net.java.trueupdate.core.zip.ZipInputTask;
+import net.java.trueupdate.core.zip.ZipSources;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**

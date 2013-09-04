@@ -2,18 +2,21 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.io;
+package net.java.trueupdate.core.zip;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.WillClose;
+
+import net.java.trueupdate.core.io.Closeables;
+import net.java.trueupdate.core.io.Job;
 import net.java.trueupdate.shed.Objects;
 
 /**
- * @see Sinks#execute
- * @see Sinks#bind
+ * @see ZipSinks#bind
+ * @see ZipSinks#execute
  * @author Christian Schlichtherle
  */
 final class WithZipOutputTask<V, X extends Exception>
