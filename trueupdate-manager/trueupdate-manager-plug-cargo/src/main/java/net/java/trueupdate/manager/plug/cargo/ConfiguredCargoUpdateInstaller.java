@@ -58,28 +58,6 @@ class ConfiguredCargoUpdateInstaller {
                 final File updateDir = createTempPath("update");
                 final File backupDir = createTempPath("backup");
 
-                class DeployTransaction extends Transaction {
-
-                    @Override public void perform() throws Exception {
-                        cargoContext.deploy();
-                    }
-
-                    @Override public void rollback() throws Exception {
-                        cargoContext.undeploy();
-                    }
-                } // DeployCommand
-
-                class UndeployTransaction extends Transaction {
-
-                    @Override public void perform() throws Exception {
-                        cargoContext.undeploy();
-                    }
-
-                    @Override public void rollback() throws Exception {
-                        cargoContext.deploy();
-                    }
-                } // UndeployCommand
-
                 Transactions.execute(new CompositeTransaction(
                         new UnzipTransaction(new JarFileStore(patchedJarFile), updateDir),
                         new UndeployTransaction(),
@@ -158,4 +136,54 @@ class ConfiguredCargoUpdateInstaller {
     private URI currentLocation() {
         return message.currentLocation();
     }
+
+    private class DeployTransaction extends Transaction {
+
+        private boolean performed;
+
+        @Override protected void prepare() throws Exception {
+            if (performed) throw new IllegalStateException();
+        }
+
+        @Override public void perform() throws Exception {
+            cargoContext.deploy();
+            performed = true;
+        }
+
+        @Override public void rollback() throws Exception {
+            if (performed) {
+                cargoContext.undeploy();
+                performed = false;
+            }
+        }
+
+        @Override protected void commit() throws Exception {
+            performed = false;
+        }
+    } // DeployTransaction
+
+    private class UndeployTransaction extends Transaction {
+
+        private boolean performed;
+
+        @Override protected void prepare() throws Exception {
+            if (performed) throw new IllegalStateException();
+        }
+
+        @Override public void perform() throws Exception {
+            cargoContext.undeploy();
+            performed = true;
+        }
+
+        @Override public void rollback() throws Exception {
+            if (performed) {
+                cargoContext.deploy();
+                performed = false;
+            }
+        }
+
+        @Override protected void commit() throws Exception {
+            performed = false;
+        }
+    } // UndeployTransaction
 }

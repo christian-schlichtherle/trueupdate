@@ -64,23 +64,51 @@ class ConfiguredOpenEjbUpdateInstaller {
 
                 class DeployTransaction extends Transaction {
 
+                    private boolean performed;
+
+                    @Override protected void prepare() throws Exception {
+                        if (performed) throw new IllegalStateException();
+                    }
+
                     @Override public void perform() throws Exception {
                         deployer.deploy(deploymentDir.getPath());
+                        performed = true;
                     }
 
                     @Override public void rollback() throws Exception {
-                        deployer.undeploy(deploymentDir.getPath());
+                        if (performed) {
+                            deployer.undeploy(deploymentDir.getPath());
+                            performed = false;
+                        }
+                    }
+
+                    @Override protected void commit() throws Exception {
+                        performed = false;
                     }
                 } // DeployTransaction
 
                 class UndeployTransaction extends Transaction {
 
+                    private boolean performed;
+
+                    @Override protected void prepare() throws Exception {
+                        if (performed) throw new IllegalStateException();
+                    }
+
                     @Override public void perform() throws Exception {
                         deployer.undeploy(deploymentDir.getPath());
+                        performed = true;
                     }
 
                     @Override public void rollback() throws Exception {
-                        deployer.deploy(deploymentDir.getPath());
+                        if (performed) {
+                            deployer.deploy(deploymentDir.getPath());
+                            performed = false;
+                        }
+                    }
+
+                    @Override protected void commit() throws Exception {
+                        performed = false;
                     }
                 } // UndeployTransaction
 
