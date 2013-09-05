@@ -5,6 +5,7 @@
 package net.java.trueupdate.core.zip;
 
 import java.util.zip.ZipFile;
+import javax.annotation.WillNotClose;
 import net.java.trueupdate.core.io.Task;
 
 /**
@@ -15,4 +16,7 @@ import net.java.trueupdate.core.io.Task;
  * @author Christian Schlichtherle
  */
 public interface ZipInputTask<V, X extends Exception>
-extends Task<V, ZipInput, X> { }
+extends Task<V, ZipInput, X> {
+
+    @Override V execute(@WillNotClose ZipInput resource) throws X;
+}

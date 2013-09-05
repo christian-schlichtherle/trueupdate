@@ -5,6 +5,7 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
+import javax.annotation.WillNotClose;
 
 /**
  * Executes a task on an {@link InputStream}.
@@ -14,4 +15,7 @@ import java.io.*;
  * @author Christian Schlichtherle
  */
 public interface InputTask<V, X extends Exception>
-extends Task<V, InputStream, X> { }
+extends Task<V, InputStream, X> {
+
+    @Override V execute(@WillNotClose InputStream resource) throws X;
+}

@@ -5,6 +5,7 @@
 package net.java.trueupdate.core.zip;
 
 import java.util.zip.ZipOutputStream;
+import javax.annotation.WillNotClose;
 import net.java.trueupdate.core.io.Task;
 
 /**
@@ -15,4 +16,7 @@ import net.java.trueupdate.core.io.Task;
  * @author Christian Schlichtherle
  */
 public interface ZipOutputTask<V, X extends Exception>
-extends Task<V, ZipOutput, X> { }
+extends Task<V, ZipOutput, X> {
+
+    @Override V execute(@WillNotClose ZipOutput resource) throws X;
+}
