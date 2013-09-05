@@ -16,7 +16,9 @@ import javax.annotation.Nullable;
  */
 public interface ZipInput extends Iterable<ZipEntry>, Closeable {
 
+    /** Looks up the ZIP entry with the given name. */
     @Nullable ZipEntry entry(String name);
 
+    /** Returns an input stream for reading the ZIP entry contents. */
     InputStream stream(ZipEntry entry) throws IOException;
 }

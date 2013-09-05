@@ -12,12 +12,21 @@ import net.java.trueupdate.shed.Objects;
 /**
  * Adapts a {@link ZipOutputStream} to a {@link ZipOutput}.
  *
+ * @see ZipFileAdapter
  * @author Christian Schlichtherle
  */
 public class ZipOutputStreamAdapter implements ZipOutput {
 
-    private final ZipOutputStream zip;
+    /** The adapted ZIP output stream. */
+    protected ZipOutputStream zip;
 
+    /** Use of this constructor requires setting the {@code zip} field. */
+    protected ZipOutputStreamAdapter() { }
+
+    /**
+     * Constructs a new ZIP output stream adapter for the given ZIP output
+     * stream.
+     */
     public ZipOutputStreamAdapter(final @WillCloseWhenClosed ZipOutputStream zip) {
         this.zip = Objects.requireNonNull(zip);
     }
