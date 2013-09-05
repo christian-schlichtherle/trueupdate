@@ -22,7 +22,14 @@ public final class Files {
     private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
 
-    public static void zip(final File zipFile,
+    public static void zip(File zipFile,
+                           File fileOrDirectory,
+                           String entryName)
+    throws IOException {
+        zip(new ZipFileStore(zipFile), fileOrDirectory, entryName);
+    }
+
+    public static void zip(final ZipSink sink,
                            final File fileOrDirectory,
                            final String entryName)
     throws IOException {
@@ -93,10 +100,15 @@ public final class Files {
             }
         } // ZipTask
 
-        ZipSinks.execute(new ZipTask()).on(zipFile);
+        ZipSinks.execute(new ZipTask()).on(sink);
     }
 
-    public static void unzip(final File zipFile, final File directory)
+    public static void unzip(File zipFile, File directory)
+    throws IOException {
+        unzip(new ZipFileStore(zipFile), directory);
+    }
+
+    public static void unzip(final ZipSource source, final File directory)
     throws IOException {
 
         class UnzipTask implements ZipInputTask<Void, IOException> {
@@ -112,7 +124,7 @@ public final class Files {
             }
         } // UnzipTask
 
-        ZipSources.execute(new UnzipTask()).on(zipFile);
+        ZipSources.execute(new UnzipTask()).on(source);
     }
 
     /**

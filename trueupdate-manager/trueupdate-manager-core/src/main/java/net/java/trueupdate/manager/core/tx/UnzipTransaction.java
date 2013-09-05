@@ -4,9 +4,9 @@
  */
 package net.java.trueupdate.manager.core.tx;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import static net.java.trueupdate.manager.core.io.Files.*;
+import net.java.trueupdate.core.zip.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
@@ -17,10 +17,15 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
  */
 public final class UnzipTransaction extends Transaction {
 
-    private final File zipFile, directory;
+    private final ZipSource source;
+    private final File directory;
 
-    public UnzipTransaction(final File zipFile, final File directory) {
-        this.zipFile = requireNonNull(zipFile);
+    public UnzipTransaction(File zipFile, File directory) {
+        this(new ZipFileStore(zipFile), directory);
+    }
+
+    public UnzipTransaction(final ZipSource source, final File directory) {
+        this.source = requireNonNull(source);
         this.directory = requireNonNull(directory);
     }
 
@@ -32,7 +37,7 @@ public final class UnzipTransaction extends Transaction {
     }
 
     @Override protected void perform() throws Exception {
-        unzip(zipFile, directory);
+        unzip(source, directory);
     }
 
     @Override protected void rollback() throws IOException {

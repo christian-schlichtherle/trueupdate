@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
+import net.java.trueupdate.core.zip.*;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import net.java.trueupdate.manager.core.UpdateResolver;
 import net.java.trueupdate.manager.core.io.*;
@@ -80,7 +81,7 @@ class ConfiguredCargoUpdateInstaller {
                 } // UndeployCommand
 
                 Transactions.execute(new CompositeTransaction(
-                        new UnzipTransaction(patchedJarFile, updateDir),
+                        new UnzipTransaction(new JarFileStore(patchedJarFile), updateDir),
                         new UndeployTransaction(),
                         new RenamePathTransaction(deploymentDir, backupDir),
                         new RenamePathTransaction(updateDir, deploymentDir),

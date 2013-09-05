@@ -4,9 +4,9 @@
  */
 package net.java.trueupdate.manager.core.tx;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import static net.java.trueupdate.manager.core.io.Files.*;
+import net.java.trueupdate.core.zip.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
@@ -17,29 +17,36 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
  */
 public final class ZipTransaction extends Transaction {
 
-    private final File zipFile, fileOrDirectory;
+    private final ZipStore store;
+    private final File fileOrDirectory;
     private final String entryName;
 
-    public ZipTransaction(final File zipFile,
+    public ZipTransaction(File zipFile,
+                          File fileOrDirectory,
+                          String entryName) {
+        this(new ZipFileStore(zipFile), fileOrDirectory, entryName);
+    }
+
+    public ZipTransaction(final ZipStore store,
                           final File fileOrDirectory,
                           final String entryName) {
-        this.zipFile = requireNonNull(zipFile);
+        this.store = requireNonNull(store);
         this.fileOrDirectory = requireNonNull(fileOrDirectory);
         this.entryName = requireNonNull(entryName);
     }
 
     @Override protected void prepare() throws Exception {
-        if (zipFile.exists())
+        if (store.exists())
             throw new IOException(String.format(
-                    "Will not overwrite existing file or directory %s .",
-                    zipFile));
+                    "Will not overwrite existing ZIP file or directory %s .",
+                    store));
     }
 
     @Override protected void perform() throws Exception {
-        zip(zipFile, fileOrDirectory, entryName);
+        zip(store, fileOrDirectory, entryName);
     }
 
     @Override protected void rollback() throws IOException {
-        deletePath(zipFile);
+        store.delete();
     }
 }
