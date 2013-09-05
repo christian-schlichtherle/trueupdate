@@ -33,14 +33,11 @@ public final class Files {
                            final String entryName)
     throws IOException {
 
-        class WithZipFileTask implements ZipOutputTask<Void, IOException> {
-
-            @Override
-            public Void execute(final ZipOutput output) throws IOException {
+        class ZipTask implements ZipOutputTask<Void, IOException> {
+            @Override public Void execute(final ZipOutput output) throws IOException {
 
                 class Zipper {
-                    void zipDirectory(final File directory,
-                                      final String name)
+                    void zipDirectory(final File directory, final String name)
                     throws IOException {
                         final File[] memberFiles = directory.listFiles();
                         Arrays.sort(memberFiles); // courtesy
@@ -101,18 +98,16 @@ public final class Files {
                     new Zipper().zipFile(fileOrDirectory, entryName);
                 return null;
             }
-        } // WithZipArchive
+        } // ZipTask
 
-        ZipSinks.execute(new WithZipFileTask()).on(zipFile);
+        ZipSinks.execute(new ZipTask()).on(zipFile);
     }
 
     public static void unzip(final File zipFile, final File directory)
     throws IOException {
 
-        class OnArchiveTask implements ZipInputTask<Void, IOException> {
-
-            @Override
-            public Void execute(final ZipInput input) throws IOException {
+        class UnzipTask implements ZipInputTask<Void, IOException> {
+            @Override public Void execute(final ZipInput input) throws IOException {
                 for (final ZipEntry entry : input) {
                     if (entry.isDirectory()) continue;
                     final File file = new File(directory, entry.getName());
@@ -122,9 +117,9 @@ public final class Files {
                 }
                 return null;
             }
-        } // OnArchiveTask
+        } // UnzipTask
 
-        ZipSources.execute(new OnArchiveTask()).on(zipFile);
+        ZipSources.execute(new UnzipTask()).on(zipFile);
     }
 
     /**
