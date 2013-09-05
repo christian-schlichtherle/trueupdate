@@ -6,7 +6,6 @@ package net.java.trueupdate.installer.core.io;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
 import net.java.trueupdate.core.io.*;
@@ -18,9 +17,6 @@ import net.java.trueupdate.core.zip.*;
  * @author Christian Schlichtherle
  */
 public final class Files {
-
-    private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
-            ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
 
     public static void zip(File zipFile,
                            File fileOrDirectory,
@@ -56,31 +52,7 @@ public final class Files {
 
                     void zipFile(final File file, final String name)
                     throws IOException {
-                        final ZipEntry entry = entry(name);
-                        if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
-                            final long size = file.length();
-                            entry.setMethod(ZipOutputStream.STORED);
-                            entry.setSize(size);
-                            entry.setCompressedSize(size);
-                            entry.setCrc(crc32(file));
-                        }
-                        Copy.copy(source(file), sink(entry));
-                    }
-
-                    long crc32(final File file) throws IOException {
-
-                        class ReadTask implements InputTask<Long, IOException> {
-                            @Override public Long execute(final InputStream in)
-                            throws IOException {
-                                final Checksum crc32 = new CRC32();
-                                final InputStream cin =
-                                        new CheckedInputStream(in, crc32);
-                                cin.skip(Long.MAX_VALUE);
-                                return crc32.getValue();
-                            }
-                        } // ReadTask
-
-                        return Sources.execute(new ReadTask()).on(source(file));
+                        Copy.copy(source(file), sink(entry(name)));
                     }
 
                     Source source(File file) { return new FileStore(file); }
