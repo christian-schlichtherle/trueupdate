@@ -5,7 +5,7 @@
 package net.java.trueupdate.manager.core.io;
 
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
@@ -60,7 +60,7 @@ public final class Files {
                         Copy.copy(source(file), sink(entry));
                     }
 
-                    long crc32(final File input) throws IOException {
+                    long crc32(final File file) throws IOException {
 
                         class ReadTask implements InputTask<Long, IOException> {
                             @Override public Long execute(final InputStream in)
@@ -68,13 +68,12 @@ public final class Files {
                                 final Checksum checksum = new CRC32();
                                 final InputStream cin =
                                         new CheckedInputStream(in, checksum);
-                                final byte[] buf = new byte[Store.BUFSIZE];
-                                while (-1 != cin.read(buf)) { }
+                                cin.skip(file.length());
                                 return checksum.getValue();
                             }
                         } // ReadTask
 
-                        return Sources.execute(new ReadTask()).on(input);
+                        return Sources.execute(new ReadTask()).on(source(file));
                     }
 
                     Source source(File file) { return new FileStore(file); }
