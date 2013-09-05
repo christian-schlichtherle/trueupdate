@@ -168,14 +168,14 @@ public final class Files {
     }
 
     public static <V, X extends Exception> V loanTempFile(
-            final FileTask<V, X> task,
+            final PathTask<V, X> task,
             final String prefix)
     throws X, IOException {
         return loanTempFile(task, prefix, null);
     }
 
     public static <V, X extends Exception> V loanTempFile(
-            final FileTask<V, X> task,
+            final PathTask<V, X> task,
             final String prefix,
             final @CheckForNull String suffix)
     throws X, IOException {
@@ -184,7 +184,7 @@ public final class Files {
 
     @SuppressWarnings("unchecked")
     public static <V, X extends Exception> V loanTempFile(
-            final FileTask<V, X> task,
+            final PathTask<V, X> task,
             final String prefix,
             final @CheckForNull String suffix,
             final @CheckForNull File directory)

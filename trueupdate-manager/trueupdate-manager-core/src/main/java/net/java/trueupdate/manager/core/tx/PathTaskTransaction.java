@@ -4,28 +4,29 @@
  */
 package net.java.trueupdate.manager.core.tx;
 
+import net.java.trueupdate.manager.core.io.PathTask;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
-
 import static net.java.trueupdate.manager.core.io.Files.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
- * A transaction which monitors the side effect of a {@link Callable} (task) on
- * a single output file or directory (path).
- * Before the transaction starts, the output file or directory must not exist.
+ * A transaction which monitors the side effect of a {@link PathTask} on a file
+ * or directory.
+ * Before the task is called, the file or directory must not exist.
+ * After the task has successfully terminated, the file or directory must exist.
  *
  * @author Christian Schlichtherle
  */
 public final class PathTaskTransaction extends Transaction {
 
     private final File path;
-    private final Callable<?> task;
+    private final PathTask<?, ?> task;
 
     public PathTaskTransaction(
             final File path,
-            final Callable<?> task) {
+            final PathTask<?, ?> task) {
         this.path = requireNonNull(path);
         this.task = requireNonNull(task);
     }
@@ -37,7 +38,13 @@ public final class PathTaskTransaction extends Transaction {
                     path));
     }
 
-    @Override protected void perform() throws Exception { task.call(); }
+    @Override protected void perform() throws Exception {
+        task.execute(path);
+        if (!path.exists())
+            throw new IOException(String.format(
+                    "Path task did not create file or directory %s .",
+                    path));
+    }
 
     @Override
     protected void rollback() throws IOException { deletePath(path); }

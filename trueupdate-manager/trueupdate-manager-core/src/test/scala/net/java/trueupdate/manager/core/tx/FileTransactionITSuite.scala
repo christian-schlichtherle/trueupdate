@@ -20,13 +20,13 @@ abstract class FileTransactionITSuite extends WordSpec {
   def tx(oneByte: File, notExists: File): Transaction
 
   def setUpAndLoan[A](fun: (File, File, Transaction) => A) = {
-    Files.loanTempFile(new FileTask[A, Exception] {
+    Files.loanTempFile(new PathTask[A, Exception] {
       override def execute(oneByte: File) = {
         Sinks execute new OutputTask[Unit, IOException] {
           def execute(out: OutputStream) { out write 0 }
         } on new FileStore(oneByte)
         oneByte.length should be (1)
-        Files.loanTempFile(new FileTask[A, Exception] {
+        Files.loanTempFile(new PathTask[A, Exception] {
           override def execute(notExists: File) = {
             notExists delete ()
             notExists.exists should be (false)

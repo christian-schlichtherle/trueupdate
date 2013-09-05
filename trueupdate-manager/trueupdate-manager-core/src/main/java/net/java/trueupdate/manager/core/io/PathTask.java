@@ -8,9 +8,9 @@ import java.io.File;
 import net.java.trueupdate.core.io.Task;
 
 /**
- * A task which is executed on a given file.
+ * A task which is executed on a file system {@linkplain File path}.
  *
  * @author Christian Schlichtherle
  */
-public interface FileTask<V, X extends Exception>
+public interface PathTask<V, X extends Exception>
 extends Task<V, File, X> { }

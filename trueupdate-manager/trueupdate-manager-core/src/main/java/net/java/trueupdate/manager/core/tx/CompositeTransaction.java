@@ -15,6 +15,7 @@ public final class CompositeTransaction extends Transaction {
     private int index;
 
     public CompositeTransaction(final Transaction... txs) {
+        if (0 >= txs.length) throw new IllegalArgumentException();
         this.txs = txs.clone();
     }
 
