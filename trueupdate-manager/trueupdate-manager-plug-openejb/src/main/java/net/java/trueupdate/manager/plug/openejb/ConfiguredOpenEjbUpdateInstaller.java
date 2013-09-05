@@ -9,9 +9,11 @@ import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
+import net.java.trueupdate.core.zip.patch.ZipPatch;
 import net.java.trueupdate.manager.core.UpdateResolver;
-import static net.java.trueupdate.manager.plug.openejb.Files.*;
-import net.java.trueupdate.manager.plug.openejb.Files.FileTask;
+import net.java.trueupdate.manager.core.io.*;
+import static net.java.trueupdate.manager.core.io.Files.*;
+import net.java.trueupdate.manager.core.tx.*;
 import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.shed.Objects.*;
 import org.apache.openejb.assembler.Deployer;
@@ -52,68 +54,56 @@ class ConfiguredOpenEjbUpdateInstaller {
                 new Object[] { patchFile, artifactDescriptor(),
                                updateVersion() });
 
-        class RedeployTask implements FileTask {
+        class RedeployTask implements PathTask<Void, Exception> {
 
             @Override
-            public void execute(final File patchedJarFile) throws Exception {
-                final File updateDir = createEmptySlot("update", ".dir");
-                final File backupDir = createEmptySlot("backup", ".dir");
+            public Void execute(final File patchedJarFile) throws Exception {
+                final File updateDir = createTempPath("update", ".dir");
+                final File backupDir = createTempPath("backup", ".dir");
 
-                class UnjarUpdateCommand implements Command {
+                class DeployTransaction extends Transaction {
 
-                    @Override public void execute() throws Exception {
-                        unzipTo(patchedJarFile, updateDir);
-                    }
-
-                    @Override public void revert() throws Exception {
-                        if (!deleteAll(updateDir))
-                            throw new IOException(String.format(
-                                    "Cannot delete update directory %s .",
-                                    updateDir));
-                    }
-                } // UnjarUpdateCommand
-
-                class DeployCommand implements Command {
-
-                    @Override public void execute() throws Exception {
+                    @Override public void perform() throws Exception {
                         deployer.deploy(deploymentDir.getPath());
                     }
 
-                    @Override public void revert() throws Exception {
+                    @Override public void rollback() throws Exception {
                         deployer.undeploy(deploymentDir.getPath());
                     }
-                } // DeployCommand
+                } // DeployTransaction
 
-                class DeleteBackupCommand implements Command {
+                class UndeployTransaction extends Transaction {
 
-                    @Override public void execute() throws Exception {
-                        if (!deleteAll(backupDir))
-                            throw new IOException(String.format(
-                                    "Cannot delete backup directory %s .",
-                                    backupDir));
+                    @Override public void perform() throws Exception {
+                        deployer.undeploy(deploymentDir.getPath());
                     }
 
-                    @Override public void revert() throws Exception {
-                        throw new AssertionError(
-                                "This must be the last command and hence there is no need to ever revert it.");
+                    @Override public void rollback() throws Exception {
+                        deployer.deploy(deploymentDir.getPath());
                     }
-                } // DeleteBackupCommand
+                } // UndeployTransaction
 
-                new Transaction(
-                        new UnjarUpdateCommand(),
-                        new InverseCommand(new DeployCommand()),
-                        new RenameFileCommand(deploymentDir, backupDir),
-                        new RenameFileCommand(updateDir, deploymentDir),
-                        new DeployCommand(),
-                        new DeleteBackupCommand()
-                        ).execute();
+                Transactions.execute(new CompositeTransaction(
+                        new UnzipTransaction(patchedJarFile, updateDir),
+                        new UndeployTransaction(),
+                        new RenamePathTransaction(deploymentDir, backupDir),
+                        new RenamePathTransaction(updateDir, deploymentDir),
+                        new DeployTransaction()));
+                try {
+                    deletePath(backupDir);
+                } catch (final IOException ex) {
+                    if (logger.isLoggable(Level.WARNING))
+                        logger.log(Level.WARNING, String.format("Cannot delete backup directory %s :", backupDir), ex);
+                }
+                return null;
             }
         } // RedeployTask
 
-        class PatchTask implements FileTask {
+        class PatchTask implements PathTask<Void, Exception> {
             @Override
-            public void execute(final File inputFile) throws Exception {
+            public Void execute(final File inputFile) throws Exception {
                 loanPatchedFile(new RedeployTask(), inputFile, patchFile);
+                return null;
             }
         } // PatchTask
 
@@ -131,18 +121,18 @@ class ConfiguredOpenEjbUpdateInstaller {
     }
 
     private static void loanInputFile(
-            final FileTask task,
+            final PathTask<Void, Exception> task,
             final File deploymentDir)
             throws Exception {
 
-        class MakeInputFile implements FileTask {
+        class MakeInputFile implements PathTask<Void, Exception> {
 
-            @Override public void execute(final File inputFile) throws Exception {
-                zipTo(deploymentDir, inputFile);
+            @Override public Void execute(final File inputFile) throws Exception {
+                zip(inputFile, deploymentDir);
                 logger.log(Level.FINER,
                         "Rebuilt input ZIP file {0} from deployment directory {1} .",
                         new Object[] { inputFile, deploymentDir });
-                task.execute(inputFile);
+                return task.execute(inputFile);
             }
         } // MakeInputFile
 
@@ -150,20 +140,20 @@ class ConfiguredOpenEjbUpdateInstaller {
     }
 
     private static void loanPatchedFile(
-            final FileTask task,
+            final PathTask<Void, Exception> task,
             final File inputFile,
             final File patchFile)
     throws Exception {
 
-        class MakePatchedFile implements FileTask {
+        class MakePatchedFile implements PathTask<Void, Exception> {
 
             @Override
-            public void execute(final File patchedFile) throws Exception {
-                applyPatchTo(inputFile, patchFile, patchedFile);
+            public Void execute(final File patchedFile) throws Exception {
+                ZipPatch.builder().input(inputFile).diff(patchFile).build().output(patchedFile);
                 logger.log(Level.FINER,
                         "Patched input ZIP file {0} with patch ZIP file {1} to patched JAR file {2} .",
                         new Object[] { inputFile, patchFile, patchedFile });
-                task.execute(patchedFile);
+                return task.execute(patchedFile);
             }
         } // MakePatchedFile
 
