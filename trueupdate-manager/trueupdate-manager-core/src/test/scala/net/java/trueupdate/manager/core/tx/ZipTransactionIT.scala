@@ -17,7 +17,7 @@ class ZipTransactionIT extends FileTransactionITSuite {
 
   // Mind the parameter swap!
   def tx(oneByte: File, notExists: File) =
-    new ZipTransaction(notExists, oneByte)
+    new ZipTransaction(notExists, oneByte, oneByte.getName)
 
   "A zip transaction" when {
     "executing successfully" should {

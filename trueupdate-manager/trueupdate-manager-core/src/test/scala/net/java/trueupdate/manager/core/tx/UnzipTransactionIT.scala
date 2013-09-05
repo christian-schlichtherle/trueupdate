@@ -23,7 +23,7 @@ class UnzipTransactionIT extends FileTransactionITSuite {
     "executing successfully" should {
       "have unzipped the ZIP file" in {
         setUpAndLoan { (oneByte, notExists, tx) =>
-          zip(notExists, oneByte)
+          zip(notExists, oneByte, oneByte.getName)
           copyFile(notExists, oneByte)
           deletePath(notExists)
           Transactions execute tx

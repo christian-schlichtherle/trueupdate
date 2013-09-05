@@ -30,7 +30,7 @@ class ZipDiffPatchTransactionIT extends WordSpec {
             Sinks execute new OutputTask[Unit, IOException] {
               def execute(out: OutputStream) { out write 0 }
             } on new FileStore(input1)
-            zip(diff, input1)
+            zip(diff, input1, input1.getName)
             deletePath(input1)
             renamePath(diff, input1)
 
@@ -40,7 +40,7 @@ class ZipDiffPatchTransactionIT extends WordSpec {
                 Sinks execute new OutputTask[Unit, IOException] {
                   def execute(out: OutputStream) { out write 0; out write 0 }
                 } on new FileStore(input2)
-                zip(diff, input2)
+                zip(diff, input2, input2.getName)
                 deletePath(input2)
                 renamePath(diff, input2)
 

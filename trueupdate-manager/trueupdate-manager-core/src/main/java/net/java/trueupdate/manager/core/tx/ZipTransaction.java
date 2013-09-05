@@ -18,10 +18,14 @@ import static net.java.trueupdate.shed.Objects.requireNonNull;
 public final class ZipTransaction extends Transaction {
 
     private final File zipFile, fileOrDirectory;
+    private final String entryName;
 
-    public ZipTransaction(final File zipFile, final File fileOrDirectory) {
+    public ZipTransaction(final File zipFile,
+                          final File fileOrDirectory,
+                          final String entryName) {
         this.zipFile = requireNonNull(zipFile);
         this.fileOrDirectory = requireNonNull(fileOrDirectory);
+        this.entryName = requireNonNull(entryName);
     }
 
     @Override protected void prepare() throws Exception {
@@ -32,7 +36,7 @@ public final class ZipTransaction extends Transaction {
     }
 
     @Override protected void perform() throws Exception {
-        zip(zipFile, fileOrDirectory);
+        zip(zipFile, fileOrDirectory, entryName);
     }
 
     @Override protected void rollback() throws IOException {

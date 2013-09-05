@@ -20,7 +20,7 @@ public class Zip {
         final File zipFile = new File(args[0]);
         final File fileOrDirectory = new File(args[1]);
         final long started = System.currentTimeMillis();
-        Files.zip(zipFile, fileOrDirectory);
+        Files.zip(zipFile, fileOrDirectory, fileOrDirectory.getName());
         final long duration = System.currentTimeMillis() - started;
         System.out.printf(Locale.ENGLISH, "Written ZIP file in %.3f seconds.\n", duration / 1000.0);
     }

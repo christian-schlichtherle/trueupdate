@@ -128,7 +128,7 @@ class ConfiguredOpenEjbUpdateInstaller {
         class MakeInputFile implements PathTask<Void, Exception> {
 
             @Override public Void execute(final File inputFile) throws Exception {
-                zip(inputFile, deploymentDir);
+                zip(inputFile, deploymentDir, "");
                 logger.log(Level.FINER,
                         "Rebuilt input ZIP file {0} from deployment directory {1} .",
                         new Object[] { inputFile, deploymentDir });

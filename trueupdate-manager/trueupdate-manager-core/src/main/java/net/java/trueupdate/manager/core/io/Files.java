@@ -22,12 +22,6 @@ public final class Files {
     private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
 
-    public static void zip(File zipFile, File fileOrDirectory)
-    throws IOException {
-        zip(zipFile, fileOrDirectory,
-            fileOrDirectory.isDirectory() ? "" : fileOrDirectory.getName());
-    }
-
     public static void zip(final File zipFile,
                            final File fileOrDirectory,
                            final String entryName)
