@@ -31,6 +31,7 @@ public final class ZipEntrySink implements Sink {
     /** Returns {@code true} if the entry is a directory entry. */
     public boolean directory() { return entry.isDirectory(); }
 
+    /** Returns an output stream for writing the ZIP entry contents. */
     @Override public OutputStream output() throws IOException {
         if (directory()) {
             entry.setMethod(ZipOutputStream.STORED);
