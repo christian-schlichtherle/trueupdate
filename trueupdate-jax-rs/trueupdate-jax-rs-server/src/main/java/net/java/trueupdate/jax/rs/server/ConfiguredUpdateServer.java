@@ -85,7 +85,7 @@ public final class ConfiguredUpdateServer {
     throws UpdateServiceException {
         return wrap(new Callable<StreamingOutput>() {
             @Override public StreamingOutput call() throws Exception {
-                return streamingOutputWithZipDiffFile(
+                return diff(
                         resolveArtifactFile(currentDescriptor),
                         resolveArtifactFile(updateDescriptor(updateVersion)));
             }
@@ -100,13 +100,12 @@ public final class ConfiguredUpdateServer {
         return resolver.resolveArtifactFile(descriptor);
     }
 
-    static StreamingOutput streamingOutputWithZipDiffFile(
-            final File input1,
-            final File input2) {
+    static StreamingOutput diff(final File input1, final File input2) {
         return new StreamingOutput() {
-            public void write(final @WillNotClose OutputStream out) throws IOException {
+            @Override public void write(final @WillNotClose OutputStream out)
+            throws IOException {
                 final ZipSink sink = new ZipSink() {
-                    public ZipOutput output() throws IOException {
+                    @Override public ZipOutput output() throws IOException {
                         return new ZipOutputStreamAdapter(new ZipOutputStream(out) {
                             @Override public void close() throws IOException {
                                 super.flush();
