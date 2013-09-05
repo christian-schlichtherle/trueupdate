@@ -61,18 +61,18 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         if (account.fileResolved()) return account.file();
         final ArtifactDescriptor ad = descriptor.artifactDescriptor();
         final String uv = descriptor.updateVersion();
-        final File patch = File.createTempFile("patch", ".zip");
+        final File diff = File.createTempFile("diff", ".zip");
         try {
-            Copy.copy(updateClient().diff(ad, uv), new FileStore(patch));
+            Copy.copy(updateClient().diff(ad, uv), new FileStore(diff));
         } catch (final IOException ex) {
-            patch.delete();
+            diff.delete();
             throw ex;
         }
         logger.log(Level.INFO,
-                "Downloaded ZIP patch file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { patch, ad, uv });
-        account.file(patch);
-        return patch;
+                "Downloaded ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
+                new Object[] { diff, ad, uv });
+        account.file(diff);
+        return diff;
     }
 
     final void shutdown() {
@@ -88,9 +88,9 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         assert 0 <= account.usages();
         final File file = account.file();
         if (file.delete()) {
-            logger.log(Level.INFO, "Deleted ZIP patch file {0}.", file);
+            logger.log(Level.INFO, "Deleted ZIP diff file {0}.", file);
         } else {
-            logger.log(Level.WARNING, "Could not delete ZIP patch file {0}.",
+            logger.log(Level.WARNING, "Could not delete ZIP diff file {0}.",
                     file);
         }
     }
@@ -101,7 +101,7 @@ final class FileAccount {
     private File file = new File("");
     private int usages;
 
-    boolean fileResolved() { return !file().getPath().isEmpty(); }
+    boolean fileResolved() { return file().isFile(); }
 
     File file() { return file; }
 
