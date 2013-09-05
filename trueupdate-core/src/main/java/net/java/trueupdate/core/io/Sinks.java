@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.annotation.WillClose;
 import javax.annotation.concurrent.Immutable;
 
 /**

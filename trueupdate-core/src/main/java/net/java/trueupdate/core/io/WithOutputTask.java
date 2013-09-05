@@ -5,7 +5,6 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
-
 import net.java.trueupdate.shed.Objects;
 
 /**

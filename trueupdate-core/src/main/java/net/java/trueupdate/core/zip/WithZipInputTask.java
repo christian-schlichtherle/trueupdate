@@ -4,11 +4,8 @@
  */
 package net.java.trueupdate.core.zip;
 
-import java.io.File;
-import java.io.IOException;
-import javax.annotation.WillClose;
-import net.java.trueupdate.core.io.Closeables;
-import net.java.trueupdate.core.io.Job;
+import java.io.*;
+import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.shed.Objects;
 
 /**

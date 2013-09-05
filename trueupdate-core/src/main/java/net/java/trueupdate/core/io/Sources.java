@@ -8,7 +8,6 @@ package net.java.trueupdate.core.io;
 import java.io.*;
 import java.net.URL;
 import javax.annotation.CheckForNull;
-import javax.annotation.WillClose;
 import javax.annotation.concurrent.Immutable;
 
 /**

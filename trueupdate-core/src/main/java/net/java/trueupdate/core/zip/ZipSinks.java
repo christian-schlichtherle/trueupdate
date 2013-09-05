@@ -4,9 +4,7 @@
  */
 package net.java.trueupdate.core.zip;
 
-import java.io.File;
-import java.io.IOException;
-import javax.annotation.WillClose;
+import java.io.*;
 import net.java.trueupdate.core.io.Job;
 
 /**
