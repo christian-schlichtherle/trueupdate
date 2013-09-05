@@ -22,29 +22,29 @@ import org.scalatest.matchers.ShouldMatchers._
 class ZipDiffPatchTransactionIT extends WordSpec {
 
   def setUpAndLoan[A](fun: (File, File, File, File, Transaction) => A) = {
-    Files.loanTempFile(new PathTask[A, Exception] {
+    loanTempFile(new PathTask[A, Exception] {
       override def execute(diff: File) = {
-        Files.loanTempFile(new PathTask[A, Exception] {
+        loanTempFile(new PathTask[A, Exception] {
           override def execute(input1: File) = {
 
             Sinks execute new OutputTask[Unit, IOException] {
               def execute(out: OutputStream) { out write 0 }
-            } on new FileStore(input1)
+            } on input1
             zip(diff, input1, input1.getName)
             deletePath(input1)
             renamePath(diff, input1)
 
-            Files.loanTempFile(new PathTask[A, Exception] {
+            loanTempFile(new PathTask[A, Exception] {
               override def execute(input2: File) = {
 
                 Sinks execute new OutputTask[Unit, IOException] {
                   def execute(out: OutputStream) { out write 0; out write 0 }
-                } on new FileStore(input2)
+                } on input2
                 zip(diff, input2, input2.getName)
                 deletePath(input2)
                 renamePath(diff, input2)
 
-                Files.loanTempFile(new PathTask[A, Exception] {
+                loanTempFile(new PathTask[A, Exception] {
                   override def execute(output: File) = {
 
                     deletePath(output)
