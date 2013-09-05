@@ -122,7 +122,6 @@ public class Sources {
     public interface ExecuteStatement<V, X extends Exception> {
         V on(File file) throws X, IOException;
         V on(Source source) throws X, IOException;
-        V on(@WillClose InputStream in) throws X, IOException;
     }
 
     private Sources() { }

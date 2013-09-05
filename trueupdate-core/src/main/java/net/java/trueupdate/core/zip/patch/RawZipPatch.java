@@ -34,20 +34,11 @@ public abstract class RawZipPatch {
 
     /**
      * Applies the configured diff archive.
-     *
-     * @param output the ZIP output for writing the output archive.
      */
-    public void output(final ZipOutput output) throws IOException {
-        ZipSinks.execute(new PatchTask()).on(output);
-    }
-
-    private class PatchTask implements ZipOutputTask<Void, IOException> {
-        @Override public Void execute(final @WillNotClose ZipOutput output)
-        throws IOException {
-            for (EntryNameFilter filter : passFilters(output))
-                output(output, new NoDirectoryEntryNameFilter(filter));
-            return null;
-        }
+    public void output(final @WillNotClose ZipOutput output)
+    throws IOException {
+        for (EntryNameFilter filter : passFilters(output))
+            output(output, new NoDirectoryEntryNameFilter(filter));
     }
 
     /**
@@ -57,7 +48,8 @@ public abstract class RawZipPatch {
      * The filters should properly partition the set of entry sources,
      * i.e. each entry source should be accepted by exactly one filter.
      */
-    private EntryNameFilter[] passFilters(final ZipOutput output) {
+    private EntryNameFilter[] passFilters(
+            final @WillNotClose ZipOutput output) {
         if (output.entry("") instanceof JarEntry) {
             // The JarInputStream class assumes that the file entry
             // "META-INF/MANIFEST.MF" should either be the first or the second
@@ -84,8 +76,6 @@ public abstract class RawZipPatch {
             final EntryNameFilter filter)
     throws IOException {
 
-        final MessageDigest digest = digest();
-
         class ZipEntrySink implements Sink {
 
             final EntryNameAndDigest entryNameAndDigest;
@@ -103,6 +93,7 @@ public abstract class RawZipPatch {
                     entry.setCompressedSize(0);
                     entry.setCrc(0);
                 }
+                final MessageDigest digest = digest();
                 digest.reset();
                 return new DigestOutputStream(output.output(entry), digest) {
 

@@ -46,7 +46,7 @@ class UpdateServiceITSuite extends JerseyTest {
 
     class DiffTask extends InputTask[Unit, IOException] {
       override def execute(in: InputStream) {
-        val zipIn = in.asInstanceOf[ZipInputStream]
+        val zipIn = new ZipInputStream(in)
         val entry = zipIn getNextEntry ()
         entry.getName should be (DiffModel.ENTRY_NAME)
         val source = new Source {
@@ -56,11 +56,12 @@ class UpdateServiceITSuite extends JerseyTest {
         }
         val store = memoryStore
         Copy copy (source, store)
+        store.data.length should be > (0)
         logger log (Level.FINE, "\n{0}", utf8String(store))
       }
     }
 
-    Sources execute new DiffTask on new ZipInputStream(source input ())
+    Sources execute new DiffTask on source
   }
 
   private def updateClient = new UpdateClient(resource.getURI, client)

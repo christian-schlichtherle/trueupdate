@@ -20,7 +20,8 @@ import net.java.trueupdate.core.zip.model.*;
  * Archives may be ZIP, JAR, EAR or WAR files.
  * This class requires you to implement its {@link ZipFile} and
  * {@link MessageDigest} properties, but enables you to obtain the ZIP diff
- * {@linkplain #model} besides {@linkplain #output}ting the diff archive.
+ * {@linkplain #model model} besides {@linkplain #output diffing} the input
+ * archives.
  *
  * @author Christian Schlichtherle
  */
@@ -30,42 +31,25 @@ public abstract class RawZipDiff {
     private static final Pattern COMPRESSED_FILE_EXTENSIONS = Pattern.compile(
             ".*\\.(ear|jar|war|zip|gz|xz)", Pattern.CASE_INSENSITIVE);
 
-    /** Returns the first archive. */
-    protected abstract @WillNotClose ZipInput input1();
-
-    /** Returns the second archive. */
-    protected abstract @WillNotClose ZipInput input2();
-
     /** Returns the message digest. */
     protected abstract MessageDigest digest();
 
-    /**
-     * Writes a diff archive to the given ZIP output.
-     *
-     * @param output the ZIP output for writing the diff archive.
-     */
-    public void output(@WillClose ZipOutput output) throws IOException {
-        ZipSinks.execute(new DiffTask()).on(output);
-    }
+    /** Returns the first input archive. */
+    protected abstract @WillNotClose ZipInput input1();
 
-    private class DiffTask implements ZipOutputTask<Void, IOException> {
-        @Override public Void execute(final @WillNotClose ZipOutput output)
-        throws IOException {
-            output(output, model());
-            return null;
-        }
-    }
+    /** Returns the second input archive. */
+    protected abstract @WillNotClose ZipInput input2();
 
-    private void output(
-            final @WillNotClose ZipOutput output,
-            final DiffModel model)
-    throws IOException {
+    /** Writes the diff archive. */
+    public void output(final @WillNotClose ZipOutput diff) throws IOException {
 
-        final class DiffStreamer {
+        final class Streamer {
 
-            DiffStreamer() throws IOException {
+            final DiffModel model = model();
+
+            Streamer() throws IOException {
                 try {
-                    model.encodeToXml(sink(output.entry(DiffModel.ENTRY_NAME)));
+                    model.encodeToXml(sink(diff.entry(DiffModel.ENTRY_NAME)));
                 } catch (RuntimeException ex) {
                     throw ex;
                 } catch (IOException ex) {
@@ -75,11 +59,11 @@ public abstract class RawZipDiff {
                 }
             }
 
-            DiffStreamer stream() throws IOException {
+            Streamer stream() throws IOException {
                 for (final ZipEntry in : input2()) {
                     final String name = in.getName();
                     if (changedOrAdded(name)) {
-                        final ZipEntry out = output.entry(name);
+                        final ZipEntry out = diff.entry(name);
                         if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
                             final long size = in.getSize();
                             out.setMethod(ZipOutputStream.STORED);
@@ -97,17 +81,19 @@ public abstract class RawZipDiff {
                 return new ZipEntrySource(entry, input2());
             }
 
-            Sink sink(ZipEntry entry) { return new ZipEntrySink(entry, output); }
+            Sink sink(ZipEntry entry) {
+                return new ZipEntrySink(entry, diff);
+            }
 
             boolean changedOrAdded(String name) {
                 return null != model.changed(name) || null != model.added(name);
             }
-        } // DiffStreamer
+        } // Streamer
 
-        new DiffStreamer().stream();
+        new Streamer().stream();
     }
 
-    /** Computes a diff model from the two configured archives. */
+    /** Computes a diff model from the two input archives. */
     public DiffModel model() throws IOException {
         return new Assembler().walkAndReturn(new Assembly()).buildZipDiffModel();
     }

@@ -8,6 +8,9 @@ import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
+import net.java.trueupdate.core.zip.diff.RawZipDiff
+import net.java.trueupdate.core.zip.JarFileStore
+import net.java.trueupdate.core.io.MessageDigests
 
 /**
  * @author Christian Schlichtherle
@@ -18,9 +21,9 @@ class ZipDiffIT extends WordSpec with ZipITContext {
   "A JAR diff" when {
     "computing  the test JAR files" should {
       "partition the entry names and digests correctly" in {
-        val diff = loanRawZipDiff(_ model ())
+        val model = loanRawZipDiff(_ model ())
         import collection.JavaConverters._
-        import diff._
+        import model._
         removedEntries.asScala map (_.name) should
           equal (List("entryOnlyInFile1"))
         addedEntries.asScala map (_.name) should

@@ -36,14 +36,10 @@ implements Sources.BindStatement<V, X>, Sources.ExecuteStatement<V, X> {
     }
 
     @Override public V on(File file) throws X, IOException {
-        return on(new FileInputStream(file));
+        return on(new FileStore(file));
     }
 
     @Override public V on(Source source) throws X, IOException {
-        return on(source.input());
-    }
-
-    @Override public V on(@WillClose InputStream in) throws X, IOException {
-        return Closeables.execute(task, in);
+        return Closeables.execute(task, source.input());
     }
 }

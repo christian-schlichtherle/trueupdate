@@ -67,7 +67,6 @@ public class Sinks {
     public interface ExecuteStatement<V, X extends Exception> {
         V on(File file) throws X, IOException;
         V on(Sink sink) throws X, IOException;
-        V on(@WillClose OutputStream out) throws X, IOException;
     }
 
     private Sinks() { }

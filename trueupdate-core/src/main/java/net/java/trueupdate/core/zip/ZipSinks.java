@@ -35,7 +35,6 @@ public class ZipSinks {
     public interface ExecuteStatement<V, X extends Exception> {
         V on(File file) throws X, IOException;
         V on(ZipSink sink) throws X, IOException;
-        V on(@WillClose ZipOutput output) throws X, IOException;
     }
 
     private ZipSinks() { }

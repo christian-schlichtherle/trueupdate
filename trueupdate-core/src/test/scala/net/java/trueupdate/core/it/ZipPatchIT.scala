@@ -46,9 +46,9 @@ class ZipPatchIT extends WordSpec with ZipITContext {
                     val model = new RawZipDiff {
                       val _digest = MessageDigests.sha1
 
+                      override def digest = _digest
                       override def input1 = archive1
                       override def input2 = archive2
-                      override def digest = _digest
                     } model ()
                     model.addedEntries.isEmpty should be (true)
                     model.removedEntries.isEmpty should be (true)

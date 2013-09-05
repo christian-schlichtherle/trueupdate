@@ -25,13 +25,8 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
-    @Override public Job<V, X> to(final File file) {
-        class WithTaskAndFileJob implements Job<V, X> {
-            @Override public V call() throws X, IOException {
-                return on(file);
-            }
-        }
-        return new WithTaskAndFileJob();
+    @Override public Job<V, X> to(File file) {
+        return to(new ZipFileStore(file));
     }
 
     @Override public Job<V, X> to(final ZipSink sink) {
@@ -48,11 +43,6 @@ implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
     }
 
     @Override public V on(ZipSink sink) throws X, IOException {
-        return on(sink.output());
-    }
-
-    @Override
-    public V on(@WillClose ZipOutput output) throws X, IOException {
-        return Closeables.execute(task, output);
+        return Closeables.execute(task, sink.output());
     }
 }

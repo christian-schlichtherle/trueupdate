@@ -8,17 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.io.Job;
-import net.java.trueupdate.core.zip.ZipFileStore;
-import net.java.trueupdate.core.zip.ZipInput;
-import net.java.trueupdate.core.zip.ZipInputTask;
-import net.java.trueupdate.core.zip.ZipOutput;
-import net.java.trueupdate.core.zip.ZipSink;
-import net.java.trueupdate.core.zip.ZipSource;
-import net.java.trueupdate.core.zip.ZipSources;
+import net.java.trueupdate.core.zip.*;
 import static net.java.trueupdate.shed.Objects.requireNonNull;
 
 /**
@@ -38,7 +31,6 @@ public abstract class ZipPatch {
 
     public abstract void output(File file) throws IOException;
     public abstract void output(ZipSink sink) throws IOException;
-    public abstract void output(@WillClose ZipOutput output) throws IOException;
 
     /** A builder for a ZIP patch. */
     public static class Builder {
@@ -95,20 +87,20 @@ public abstract class ZipPatch {
 
                 @Override
                 public void output(final ZipSink sink) throws IOException {
-                    output(sink.output());
-                }
-
-                @Override
-                public void output(final @WillClose ZipOutput output) throws IOException {
                     class InputTask implements ZipInputTask<Void, IOException> {
                         public Void execute(final @WillNotClose ZipInput input) throws IOException {
                             class DiffTask implements ZipInputTask<Void, IOException> {
                                 public Void execute(final @WillNotClose ZipInput diff) throws IOException {
-                                    new RawZipPatch() {
-                                        protected ZipInput input() { return input; }
-                                        protected ZipInput diff() { return diff; }
-                                    }.output(output);
-                                    return null;
+                                    class OutputTask implements ZipOutputTask<Void, IOException> {
+                                        public Void execute(final @WillNotClose ZipOutput output) throws IOException {
+                                            new RawZipPatch() {
+                                                protected ZipInput input() { return input; }
+                                                protected ZipInput diff() { return diff; }
+                                            }.output(output);
+                                            return null;
+                                        }
+                                    } // OutputTask
+                                    return ZipSinks.execute(new OutputTask()).on(sink);
                                 }
                             } // DiffTask
                             return ZipSources.execute(new DiffTask()).on(diff);

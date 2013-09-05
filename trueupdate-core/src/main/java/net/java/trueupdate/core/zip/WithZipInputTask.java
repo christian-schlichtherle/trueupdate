@@ -25,13 +25,8 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
         this.task = Objects.requireNonNull(task);
     }
 
-    @Override public Job<V, X> to(final File file) {
-        class WithTaskAndFileJob implements Job<V, X> {
-            @Override public V call() throws X, IOException {
-                return on(file);
-            }
-        }
-        return new WithTaskAndFileJob();
+    @Override public Job<V, X> to(File file) {
+        return to(new ZipFileStore(file));
     }
 
     @Override public Job<V, X> to(final ZipSource source) {
@@ -48,10 +43,6 @@ implements ZipSources.BindStatement<V, X>, ZipSources.ExecuteStatement<V, X> {
     }
 
     @Override public V on(ZipSource source) throws X, IOException {
-        return on(source.input());
-    }
-
-    @Override public V on(@WillClose ZipInput input) throws X, IOException {
-        return Closeables.execute(task, input);
+        return Closeables.execute(task, source.input());
     }
 }

@@ -35,7 +35,6 @@ public class ZipSources {
     public interface ExecuteStatement<V, X extends Exception> {
         V on(File file) throws X, IOException;
         V on(ZipSource source) throws X, IOException;
-        V on(@WillClose ZipInput input) throws X, IOException;
     }
 
     private ZipSources() { }

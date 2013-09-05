@@ -30,7 +30,6 @@ public abstract class ZipDiff {
 
     public abstract void output(File file) throws IOException;
     public abstract void output(ZipSink sink) throws IOException;
-    public abstract void output(@WillClose ZipOutput output) throws IOException;
 
     /**
      * A builder for a ZIP diff.
@@ -100,28 +99,28 @@ public abstract class ZipDiff {
 
                 @Override
                 public void output(final ZipSink sink) throws IOException {
-                    output(sink.output());
-                }
-
-                @Override
-                public void output(final @WillClose ZipOutput output) throws IOException {
                     class Input1Task implements ZipInputTask<Void, IOException> {
                         public Void execute(final ZipInput input1) throws IOException {
                             class Input2Task implements ZipInputTask<Void, IOException> {
                                 public Void execute(final ZipInput input2) throws IOException {
-                                    new RawZipDiff() {
-                                        final MessageDigest digest = MessageDigests.create(
-                                                null != digestName ? digestName : "SHA-1");
+                                    class DiffTask implements ZipOutputTask<Void, IOException> {
+                                        public Void execute(final ZipOutput diff) throws IOException {
+                                            new RawZipDiff() {
+                                                final MessageDigest digest = MessageDigests.create(
+                                                        null != digestName ? digestName : "SHA-1");
 
-                                        protected ZipInput input1() { return input1; }
-                                        protected ZipInput input2() { return input2; }
-                                        protected MessageDigest digest() { return digest; }
-                                    }.output(output);
-                                    return null;
+                                                protected MessageDigest digest() { return digest; }
+                                                protected ZipInput input1() { return input1; }
+                                                protected ZipInput input2() { return input2; }
+                                            }.output(diff);
+                                            return null;
+                                        }
+                                    } // DiffTask
+                                    return ZipSinks.execute(new DiffTask()).on(sink);
                                 }
                             } // Input2Task
                             return ZipSources.execute(new Input2Task()).on(input2);
-                        }
+                            }
                     } // Input1Task
                     ZipSources.execute(new Input1Task()).on(input1);
                 }
