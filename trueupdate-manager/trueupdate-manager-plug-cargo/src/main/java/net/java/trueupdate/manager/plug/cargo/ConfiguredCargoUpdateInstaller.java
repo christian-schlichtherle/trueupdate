@@ -46,7 +46,7 @@ class ConfiguredCargoUpdateInstaller {
         logger.log(Level.FINE,
                 "Resolved current location {0} to deployment directory {1} .",
                 new Object[] { currentLocation(), deploymentDir });
-        final File patchFile = resolver.resolveZipPatchFile(updateDescriptor());
+        final File patchFile = resolver.resolveZipDiffFile(updateDescriptor());
         logger.log(Level.FINER,
                 "Resolved patch ZIP file {0} for artifact descriptor {1} and update version {2} .",
                 new Object[] { patchFile, artifactDescriptor(),

@@ -55,7 +55,7 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         }
     }
 
-    @Override public final File resolveZipPatchFile(UpdateDescriptor descriptor)
+    @Override public final File resolveZipDiffFile(UpdateDescriptor descriptor)
     throws Exception {
         final FileAccount account = account(descriptor);
         if (account.fileResolved()) return account.file();
