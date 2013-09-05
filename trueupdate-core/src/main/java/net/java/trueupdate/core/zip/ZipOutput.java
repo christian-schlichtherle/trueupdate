@@ -10,11 +10,12 @@ import java.util.zip.*;
 /**
  * The {@link ZipOutputStream} interface as it should have been.
  *
+ * @see ZipInput
  * @author Christian Schlichtherle
  */
 public interface ZipOutput extends Closeable {
 
     ZipEntry entry(String name);
 
-    OutputStream output(ZipEntry entry) throws IOException;
+    OutputStream stream(ZipEntry entry) throws IOException;
 }

@@ -86,7 +86,7 @@ public abstract class RawZipPatch {
             }
 
             @Override public OutputStream output() throws IOException {
-                final ZipEntry entry = output.entry(entryNameAndDigest.name());
+                final ZipEntry entry = entry(entryNameAndDigest.name());
                 if (entry.isDirectory()) {
                     entry.setMethod(ZipOutputStream.STORED);
                     entry.setSize(0);
@@ -95,7 +95,7 @@ public abstract class RawZipPatch {
                 }
                 final MessageDigest digest = digest();
                 digest.reset();
-                return new DigestOutputStream(output.output(entry), digest) {
+                return new DigestOutputStream(stream(entry), digest) {
 
                     @Override public void close() throws IOException {
                         super.close();
@@ -110,6 +110,12 @@ public abstract class RawZipPatch {
                     }
                 };
             }
+
+            OutputStream stream(ZipEntry entry) throws IOException {
+                return output.stream(entry);
+            }
+
+            ZipEntry entry(String name) { return output.entry(name); }
         } // ZipEntrySink
 
         abstract class PatchSet {

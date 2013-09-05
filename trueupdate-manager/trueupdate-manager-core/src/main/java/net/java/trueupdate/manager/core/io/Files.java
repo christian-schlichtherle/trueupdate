@@ -65,11 +65,11 @@ public final class Files {
                         class ReadTask implements InputTask<Long, IOException> {
                             @Override public Long execute(final InputStream in)
                             throws IOException {
-                                final Checksum checksum = new CRC32();
+                                final Checksum crc32 = new CRC32();
                                 final InputStream cin =
-                                        new CheckedInputStream(in, checksum);
-                                cin.skip(file.length());
-                                return checksum.getValue();
+                                        new CheckedInputStream(in, crc32);
+                                cin.skip(Long.MAX_VALUE);
+                                return crc32.getValue();
                             }
                         } // ReadTask
 
@@ -82,7 +82,7 @@ public final class Files {
                         return new ZipEntrySink(entry, output);
                     }
 
-                    ZipEntry entry(String name) { return new ZipEntry(name); }
+                    ZipEntry entry(String name) { return output.entry(name); }
                 } // Zipper
 
                 if (fileOrDirectory.isDirectory())

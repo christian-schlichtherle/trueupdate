@@ -38,6 +38,6 @@ public final class ZipEntrySink implements Sink {
             entry.setCompressedSize(0);
             entry.setCrc(0);
         }
-        return output.output(entry);
+        return output.stream(entry);
     }
 }

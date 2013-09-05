@@ -49,7 +49,7 @@ public abstract class RawZipDiff {
 
             Streamer() throws IOException {
                 try {
-                    model.encodeToXml(sink(diff.entry(DiffModel.ENTRY_NAME)));
+                    model.encodeToXml(sink(entry(DiffModel.ENTRY_NAME)));
                 } catch (RuntimeException ex) {
                     throw ex;
                 } catch (IOException ex) {
@@ -63,7 +63,7 @@ public abstract class RawZipDiff {
                 for (final ZipEntry in : input2()) {
                     final String name = in.getName();
                     if (changedOrAdded(name)) {
-                        final ZipEntry out = diff.entry(name);
+                        final ZipEntry out = entry(name);
                         if (COMPRESSED_FILE_EXTENSIONS.matcher(name).matches()) {
                             final long size = in.getSize();
                             out.setMethod(ZipOutputStream.STORED);
@@ -84,6 +84,8 @@ public abstract class RawZipDiff {
             Sink sink(ZipEntry entry) {
                 return new ZipEntrySink(entry, diff);
             }
+
+            ZipEntry entry(String name) { return diff.entry(name); }
 
             boolean changedOrAdded(String name) {
                 return null != model.changed(name) || null != model.added(name);

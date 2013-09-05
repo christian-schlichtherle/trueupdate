@@ -41,7 +41,7 @@ public class ZipFileAdapter implements ZipInput {
         return zip.getEntry(name);
     }
 
-    @Override public InputStream input(ZipEntry entry) throws IOException {
+    @Override public InputStream stream(ZipEntry entry) throws IOException {
         return zip.getInputStream(entry);
     }
 

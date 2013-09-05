@@ -33,6 +33,6 @@ public final class ZipEntrySource implements Source {
 
     /** Returns an input stream for reading the ZIP entry contents. */
     @Override public InputStream input() throws IOException {
-        return input.input(entry);
+        return input.stream(entry);
     }
 }

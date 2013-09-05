@@ -25,7 +25,7 @@ public class ZipOutputStreamAdapter implements ZipOutput {
     @Override public ZipEntry entry(String name) { return new ZipEntry(name); }
 
     @Override
-    public OutputStream output(final ZipEntry entry) throws IOException {
+    public OutputStream stream(final ZipEntry entry) throws IOException {
         zip.putNextEntry(entry);
         return new FilterOutputStream(zip) {
             @Override public void close() throws IOException {

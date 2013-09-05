@@ -11,11 +11,12 @@ import javax.annotation.Nullable;
 /**
  * The {@link ZipFile} interface as it should have been.
  *
+ * @see ZipOutput
  * @author Christian Schlichtherle
  */
 public interface ZipInput extends Iterable<ZipEntry>, Closeable {
 
     @Nullable ZipEntry entry(String name);
 
-    InputStream input(ZipEntry entry) throws IOException;
+    InputStream stream(ZipEntry entry) throws IOException;
 }
