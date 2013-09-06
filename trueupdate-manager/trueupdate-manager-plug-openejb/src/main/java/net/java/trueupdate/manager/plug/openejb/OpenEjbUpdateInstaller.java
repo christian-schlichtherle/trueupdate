@@ -43,7 +43,7 @@ public final class OpenEjbUpdateInstaller implements UpdateInstaller {
 
                     @Override public Transaction deploymentTx() {
 
-                        class DeploymentTx extends DeployerTx {
+                        class DeploymentTx extends TrackingTx {
 
                             @Override public void perform() throws Exception {
                                 deployer.deploy(path.getPath());
@@ -63,7 +63,7 @@ public final class OpenEjbUpdateInstaller implements UpdateInstaller {
 
                     @Override public Transaction undeploymentTx() {
 
-                        class UndeploymentTx extends DeployerTx {
+                        class UndeploymentTx extends TrackingTx {
 
                             @Override public void perform() throws Exception {
                                 deployer.undeploy(path.getPath());
@@ -114,7 +114,7 @@ public final class OpenEjbUpdateInstaller implements UpdateInstaller {
         abstract boolean matches(URI location, AppInfo info);
     }
 
-    private static abstract class DeployerTx extends Transaction {
+    private static abstract class TrackingTx extends Transaction {
 
         boolean performed;
 
@@ -125,5 +125,5 @@ public final class OpenEjbUpdateInstaller implements UpdateInstaller {
         @Override protected void commit() throws Exception {
             performed = false;
         }
-    } // DeployerTx
+    } // TrackingTx
 }

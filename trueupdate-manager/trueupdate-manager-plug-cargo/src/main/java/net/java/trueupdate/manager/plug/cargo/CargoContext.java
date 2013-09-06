@@ -200,7 +200,7 @@ final class CargoContext {
         return string.isEmpty() ? null : string;
     }
 
-    private abstract class DeployerTx extends Transaction {
+    private abstract class TrackingTx extends Transaction {
 
         boolean performed;
 
@@ -211,9 +211,9 @@ final class CargoContext {
         @Override protected void commit() throws Exception {
             performed = false;
         }
-    } // DeployerTx
+    } // TrackingTx
 
-    private class DeploymentTx extends DeployerTx  {
+    private class DeploymentTx extends TrackingTx  {
 
         @Override public void perform() throws Exception {
             deploy();
@@ -228,7 +228,7 @@ final class CargoContext {
         }
     } // DeploymentTx
 
-    private class UndeploymentTx extends DeployerTx  {
+    private class UndeploymentTx extends TrackingTx  {
 
         @Override public void perform() throws Exception {
             undeploy();
