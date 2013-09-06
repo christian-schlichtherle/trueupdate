@@ -46,8 +46,8 @@ class LocalUpdateInstallerIT extends WordSpec {
 
   def updateInstaller = new LocalUpdateInstaller {
     protected def resolvePath(location: URI) = new File(location)
-    protected def deploymentTx(path: File) = mock[Transaction]
-    protected def undeploymentTx(path: File) = mock[Transaction]
+    protected def deploymentTx(location: URI) = mock[Transaction]
+    protected def undeploymentTx(location: URI) = mock[Transaction]
   }
 
   "A basic update installer" should {

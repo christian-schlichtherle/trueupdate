@@ -4,10 +4,12 @@
  */
 package net.java.trueupdate.manager.plug.cargo;
 
-import java.net.URI;
-import java.net.URL;
+import java.io.File;
+import java.net.*;
 import java.util.*;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.manager.core.tx.Transaction;
 import static net.java.trueupdate.shed.Objects.nonNullOr;
 import org.codehaus.cargo.container.*;
 import org.codehaus.cargo.container.configuration.*;
@@ -24,6 +26,7 @@ import org.codehaus.cargo.generic.deployer.DefaultDeployerFactory;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 final class CargoContext {
 
     private final URI configuration;
@@ -34,7 +37,9 @@ final class CargoContext {
         this.configuration = configuration;
     }
 
-    public void deploy() throws CargoException {
+    public Transaction deploymentTx() { return new DeploymentTx(); }
+
+    void deploy() throws CargoException {
         final Deployable deployable = deployable();
         final String monitorUrl = monitorUrl();
         try {
@@ -46,7 +51,9 @@ final class CargoContext {
         }
     }
 
-    public void undeploy() throws CargoException {
+    public Transaction undeploymentTx() { return new UndeploymentTx(); }
+
+    void undeploy() throws CargoException {
         final Deployable deployable = deployable();
         final String monitorUrl = monitorUrl();
         try {
@@ -91,6 +98,10 @@ final class CargoContext {
         } catch (RuntimeException ex) {
             throw newException("configuration", ex);
         }
+    }
+
+    public File resolvePath() throws Exception {
+        return new File(deployable().getFile());
     }
 
     public Deployable deployable() throws CargoContextException {
@@ -188,4 +199,47 @@ final class CargoContext {
     private static @Nullable String nonEmptyOrNull(String string) {
         return string.isEmpty() ? null : string;
     }
+
+    private abstract class DeployerTx extends Transaction {
+
+        boolean performed;
+
+        @Override protected void prepare() throws Exception {
+            if (performed) throw new IllegalStateException();
+        }
+
+        @Override protected void commit() throws Exception {
+            performed = false;
+        }
+    } // DeployerTx
+
+    private class DeploymentTx extends DeployerTx  {
+
+        @Override public void perform() throws Exception {
+            deploy();
+            performed = true;
+        }
+
+        @Override public void rollback() throws Exception {
+            if (performed) {
+                undeploy();
+                performed = false;
+            }
+        }
+    } // DeploymentTx
+
+    private class UndeploymentTx extends DeployerTx  {
+
+        @Override public void perform() throws Exception {
+            undeploy();
+            performed = true;
+        }
+
+        @Override public void rollback() throws Exception {
+            if (performed) {
+                deploy();
+                performed = false;
+            }
+        }
+    } // UndeploymentTx
 }

@@ -4,8 +4,12 @@
  */
 package net.java.trueupdate.manager.plug.cargo;
 
+import java.io.File;
+import java.net.URI;
+import java.util.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.core.*;
+import net.java.trueupdate.manager.core.tx.Transaction;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
@@ -15,11 +19,44 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class CargoUpdateInstaller implements UpdateInstaller {
+public final class CargoUpdateInstaller implements UpdateInstaller {
 
-    @Override
-    public void install(UpdateResolver resolver, UpdateMessage message)
+    @Override public void install(final UpdateResolver resolver,
+                                  final UpdateMessage message)
     throws Exception {
-        new ConfiguredCargoUpdateInstaller(message).install(resolver);
+
+        class ConfiguredUpdateInstaller extends LocalUpdateInstaller {
+
+            final Map<URI, CargoContext> contexts = contexts(message);
+
+            @Override protected File resolvePath(URI location) throws Exception {
+                return context(location).resolvePath();
+            }
+
+            @Override protected Transaction deploymentTx(URI location) {
+                return context(location).deploymentTx();
+            }
+
+            @Override protected Transaction undeploymentTx(URI location) {
+                return context(location).undeploymentTx();
+            }
+
+            CargoContext context(URI location) {
+                return contexts.get(location);
+            }
+        } // ConfiguredUpdateInstaller
+
+        new ConfiguredUpdateInstaller().install(resolver, message);
+    }
+
+    static Map<URI, CargoContext> contexts(UpdateMessage message) {
+        final URI currentLocation = message.currentLocation();
+        final CargoContext currentContext = new CargoContext(currentLocation);
+        final URI updateLocation = message.updateLocation();
+        final Map<URI, CargoContext> contexts = new HashMap<URI, CargoContext>();
+        contexts.put(currentLocation, currentContext);
+        contexts.put(updateLocation, currentLocation.equals(updateLocation)
+                ? currentContext : new CargoContext(updateLocation));
+        return contexts;
     }
 }

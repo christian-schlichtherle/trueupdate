@@ -8,6 +8,8 @@ import java.io.*;
 import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.*;
+import javax.annotation.concurrent.Immutable;
+
 import net.java.trueupdate.core.zip.JarFileStore;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.manager.core.io.Files.*;
@@ -27,6 +29,7 @@ import net.java.trueupdate.manager.spec.*;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 public abstract class LocalUpdateInstaller implements UpdateInstaller {
 
     private static final Logger logger =
@@ -38,16 +41,36 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
      * returns {@code null} to indicate that the default temporary directory
      * should be used.
      */
-    protected @CheckForNull File tempDir() { return null; }
+    protected @Nullable File tempDir() { return null; }
 
-    /** Returns the path of the deployed application. */
+    /**
+     * Returns the local path of the application.
+     *
+     * @param location either the current location or the update location as
+     *                 defined by the update message parameter for the method
+     *                 {@link #install}.
+     */
     protected abstract File resolvePath(URI location) throws Exception;
 
-    /** Returns the transaction for deploying the application. */
-    protected abstract Transaction deploymentTx(File path);
+    /**
+     * Returns the transaction for deploying the application at the given
+     * location.
+     *
+     * @param location either the current location or the update location as
+     *                 defined by the update message parameter for the method
+     *                 {@link #install}.
+     */
+    protected abstract Transaction deploymentTx(URI location);
 
-    /** Returns the transaction for undeploying the application. */
-    protected abstract Transaction undeploymentTx(File path);
+    /**
+     * Returns the transaction for undeploying the application at the given
+     * location.
+     *
+     * @param location either the current location or the update location as
+     *                 defined by the update message parameter for the method
+     *                 {@link #install}.
+     */
+    protected abstract Transaction undeploymentTx(URI location);
 
     @Override public final void install(final UpdateResolver resolver,
                                         final UpdateMessage message)
@@ -81,10 +104,10 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                         if (currentPath.isFile()) {
                             Transactions.execute(new CompositeTransaction(
                                     new PathTaskTransaction(updateJar, new PatchTask(currentPath)),
-                                    undeploymentTx(updatePath),
+                                    checkedUndeploymentTx(updatePath, updateLocation),
                                     new RenamePathTransaction(updatePath, backupPath),
                                     new RenamePathTransaction(updateJar, updatePath),
-                                    deploymentTx(updatePath)));
+                                    deploymentTx(updateLocation)));
                         } else {
                             return loanTempPath(new TransactionTask() {
                                 @Override public Void execute(final File updateDir) throws Exception {
@@ -94,10 +117,10 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                                                     new ZipTransaction(currentZip, currentPath, ""),
                                                     new PathTaskTransaction(updateJar, new PatchTask(currentZip)),
                                                     new UnzipTransaction(updateJar, updateDir),
-                                                    undeploymentTx(updatePath),
+                                                    checkedUndeploymentTx(updatePath, updateLocation),
                                                     new RenamePathTransaction(updatePath, backupPath),
                                                     new RenamePathTransaction(updateDir, updatePath),
-                                                    deploymentTx(updatePath)));
+                                                    deploymentTx(updateLocation)));
                                             return null;
                                         }
                                     }, "current", ".zip");
@@ -109,6 +132,13 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 }, "update", ".jar");
             }
         }, "backup", ".path");
+    }
+
+    private Transaction checkedUndeploymentTx(File path, URI location) {
+        return path.exists() ? undeploymentTx(location) : new Transaction() {
+            @Override protected void perform() throws Exception { }
+            @Override protected void rollback() throws Exception { }
+        };
     }
 
     private static File resolveZipDiff(final UpdateResolver resolver,
