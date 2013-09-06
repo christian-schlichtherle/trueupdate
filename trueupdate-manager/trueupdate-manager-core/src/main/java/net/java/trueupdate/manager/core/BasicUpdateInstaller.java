@@ -48,63 +48,59 @@ public abstract class BasicUpdateInstaller implements UpdateInstaller {
     protected abstract Transaction undeploymentTx();
 
     @Override public void install(final UpdateResolver resolver, final UpdateMessage message) throws Exception {
+
         final File deployedPath = resolveDeployedPath(message);
         final File diffZip = resolveZipDiff(resolver, message);
 
+        class PatchTask implements TransactionTask {
+
+            final ZipPatch patch;
+
+            PatchTask(final File deployedZip) {
+                this.patch = ZipPatch.builder().input(deployedZip).diff(diffZip).build();
+            }
+
+            @Override public Void execute(final @WillNotClose File updatedJar) throws Exception {
+                patch.output(new JarFileStore(updatedJar));
+                return null;
+            }
+        } // PatchTask
+
         loanTempPath(new TransactionTask() {
-            @Override public Void execute(final File deployedZip) throws Exception {
+            @Override public Void execute(final File backupPath) throws Exception {
                 return loanTempPath(new TransactionTask() {
                     @Override public Void execute(final File updatedJar) throws Exception {
-                        return loanTempPath(new TransactionTask() {
-                            @Override public Void execute(final File updatedDir) throws Exception {
-                                return loanTempPath(new TransactionTask() {
-                                    @Override public Void execute(final File backupPath) throws Exception {
-
-                                        class PatchTask implements PathTask<Void, IOException > {
-
-                                            final ZipPatch patch;
-
-                                            PatchTask(final File deployedZip) {
-                                                this.patch = ZipPatch.builder().input(deployedZip).diff(diffZip).build();
-                                            }
-
-                                            @Override public Void execute(final @WillNotClose File updatedJar) throws IOException {
-                                                patch.output(new JarFileStore(updatedJar));
-                                                return null;
-                                            }
-                                        } // PatchTask
-
-                                        final Transaction[] txs;
-                                        if (deployedPath.isDirectory()) {
-                                            txs = new Transaction[] {
+                        if (deployedPath.isFile()) {
+                            Transactions.execute(new CompositeTransaction(
+                                    new PathTaskTransaction(updatedJar, new PatchTask(deployedPath)),
+                                    undeploymentTx(),
+                                    new RenamePathTransaction(deployedPath, backupPath),
+                                    new RenamePathTransaction(updatedJar, deployedPath),
+                                    deploymentTx()));
+                        } else {
+                            return loanTempPath(new TransactionTask() {
+                                @Override public Void execute(final File updatedDir) throws Exception {
+                                    return loanTempPath(new TransactionTask() {
+                                        @Override public Void execute(final File deployedZip) throws Exception {
+                                            Transactions.execute(new CompositeTransaction(
                                                     new ZipTransaction(deployedZip, deployedPath, ""),
                                                     new PathTaskTransaction(updatedJar, new PatchTask(deployedZip)),
                                                     new UnzipTransaction(updatedJar, updatedDir),
                                                     undeploymentTx(),
                                                     new RenamePathTransaction(deployedPath, backupPath),
                                                     new RenamePathTransaction(updatedDir, deployedPath),
-                                                    deploymentTx(),
-                                            };
-                                        } else {
-                                            txs = new Transaction[] {
-                                                    new PathTaskTransaction(updatedJar, new PatchTask(deployedPath)),
-                                                    undeploymentTx(),
-                                                    new RenamePathTransaction(deployedPath, backupPath),
-                                                    new RenamePathTransaction(updatedJar, deployedPath),
-                                                    deploymentTx(),
-                                            };
+                                                    deploymentTx()));
+                                            return null;
                                         }
-
-                                        Transactions.execute(new CompositeTransaction(txs));
-                                        return null;
-                                    }
-                                }, "backup", ".path");
-                            }
-                        }, "updated", ".dir");
+                                    }, "deployed", ".zip");
+                                }
+                            }, "updated", ".dir");
+                        }
+                        return null;
                     }
                 }, "updated", ".jar");
             }
-        }, "deployed", ".zip");
+        }, "backup", ".path");
     }
 
     private static File resolveZipDiff(final UpdateResolver resolver, final UpdateMessage message) throws Exception {
