@@ -9,7 +9,8 @@ import net.java.trueupdate.manager.core.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
- * Installs updates for applications running in OpenEJB.
+ * Installs updates for applications running in a container which is supported
+ * by Cargo.
  *
  * @author Christian Schlichtherle
  */

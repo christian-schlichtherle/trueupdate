@@ -3,7 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update installer for applications running in OpenEJB.
+ * Provides an update installer for applications running in a container which
+ * is supported by Cargo.
  *
  * @author Christian Schlichtherle
  */
