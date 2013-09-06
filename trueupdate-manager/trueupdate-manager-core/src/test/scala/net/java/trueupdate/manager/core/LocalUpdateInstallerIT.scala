@@ -15,6 +15,7 @@ import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
 import net.java.trueupdate.manager.spec.UpdateMessage
 import net.java.trueupdate.manager.spec.UpdateMessage.Type
+import net.java.trueupdate.manager.core.LocalUpdateInstaller.Context
 import net.java.trueupdate.manager.core.io.Files._
 import net.java.trueupdate.manager.core.io.PathTask
 import net.java.trueupdate.core.io._
@@ -45,9 +46,11 @@ class LocalUpdateInstallerIT extends WordSpec {
     .build
 
   def updateInstaller = new LocalUpdateInstaller {
-    protected def resolvePath(location: URI) = new File(location)
-    protected def deploymentTx(location: URI) = mock[Transaction]
-    protected def undeploymentTx(location: URI) = mock[Transaction]
+    protected def resolveContext(location: URI) = new Context {
+      def path() = new File(location)
+      def deploymentTx() = mock[Transaction]
+      def undeploymentTx() = mock[Transaction]
+    }
   }
 
   "A basic update installer" should {

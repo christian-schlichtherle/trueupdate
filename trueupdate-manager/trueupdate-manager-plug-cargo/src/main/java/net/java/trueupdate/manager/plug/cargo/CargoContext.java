@@ -100,7 +100,7 @@ final class CargoContext {
         }
     }
 
-    public File resolvePath() throws Exception {
+    public File resolvePath() throws CargoContextException {
         return new File(deployable().getFile());
     }
 

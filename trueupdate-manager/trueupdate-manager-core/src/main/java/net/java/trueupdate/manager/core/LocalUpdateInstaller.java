@@ -9,7 +9,6 @@ import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-
 import net.java.trueupdate.core.zip.JarFileStore;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.manager.core.io.Files.*;
@@ -44,33 +43,13 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     protected @Nullable File tempDir() { return null; }
 
     /**
-     * Returns the local path of the application.
+     * Resolves the context for the given location.
      *
      * @param location either the current location or the update location as
      *                 defined by the update message parameter for the method
      *                 {@link #install}.
      */
-    protected abstract File resolvePath(URI location) throws Exception;
-
-    /**
-     * Returns the transaction for deploying the application at the given
-     * location.
-     *
-     * @param location either the current location or the update location as
-     *                 defined by the update message parameter for the method
-     *                 {@link #install}.
-     */
-    protected abstract Transaction deploymentTx(URI location);
-
-    /**
-     * Returns the transaction for undeploying the application at the given
-     * location.
-     *
-     * @param location either the current location or the update location as
-     *                 defined by the update message parameter for the method
-     *                 {@link #install}.
-     */
-    protected abstract Transaction undeploymentTx(URI location);
+    protected abstract Context resolveContext(URI location) throws Exception;
 
     @Override public final void install(final UpdateResolver resolver,
                                         final UpdateMessage message)
@@ -92,35 +71,33 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
-        final URI currentLocation = message.currentLocation();
-        final File currentPath = resolvePath(currentLocation);
-        final URI updateLocation = message.updateLocation();
-        final File updatePath = resolvePath(updateLocation);
+        final Context current = resolveContext(message.currentLocation());
+        final Context update = resolveContext(message.updateLocation());
 
         loanTempPath(new TransactionTask() {
             @Override public Void execute(final File backupPath) throws Exception {
                 return loanTempPath(new TransactionTask() {
                     @Override public Void execute(final File updateJar) throws Exception {
-                        if (currentPath.isFile()) {
+                        if (current.path().isFile()) {
                             Transactions.execute(new CompositeTransaction(
-                                    new PathTaskTransaction(updateJar, new PatchTask(currentPath)),
-                                    checkedUndeploymentTx(updatePath, updateLocation),
-                                    new RenamePathTransaction(updatePath, backupPath),
-                                    new RenamePathTransaction(updateJar, updatePath),
-                                    deploymentTx(updateLocation)));
+                                    new PathTaskTransaction(updateJar, new PatchTask(current.path())),
+                                    undeploymentTx(update),
+                                    new RenamePathTransaction(update.path(), backupPath),
+                                    new RenamePathTransaction(updateJar, update.path()),
+                                    deploymentTx(update)));
                         } else {
                             return loanTempPath(new TransactionTask() {
                                 @Override public Void execute(final File updateDir) throws Exception {
                                     return loanTempPath(new TransactionTask() {
                                         @Override public Void execute(final File currentZip) throws Exception {
                                             Transactions.execute(new CompositeTransaction(
-                                                    new ZipTransaction(currentZip, currentPath, ""),
+                                                    new ZipTransaction(currentZip, current.path(), ""),
                                                     new PathTaskTransaction(updateJar, new PatchTask(currentZip)),
                                                     new UnzipTransaction(updateJar, updateDir),
-                                                    checkedUndeploymentTx(updatePath, updateLocation),
-                                                    new RenamePathTransaction(updatePath, backupPath),
-                                                    new RenamePathTransaction(updateDir, updatePath),
-                                                    deploymentTx(updateLocation)));
+                                                    undeploymentTx(update),
+                                                    new RenamePathTransaction(update.path(), backupPath),
+                                                    new RenamePathTransaction(updateDir, update.path()),
+                                                    deploymentTx(update)));
                                             return null;
                                         }
                                     }, "current", ".zip");
@@ -134,11 +111,17 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
         }, "backup", ".path");
     }
 
-    private Transaction checkedUndeploymentTx(File path, URI location) {
-        return path.exists() ? undeploymentTx(location) : new Transaction() {
-            @Override protected void perform() throws Exception { }
-            @Override protected void rollback() throws Exception { }
-        };
+    private static Transaction undeploymentTx(Context context) {
+        return context.path().exists()
+                ? context.undeploymentTx()
+                : new Transaction() {
+                    @Override protected void perform() throws Exception { }
+                    @Override protected void rollback() throws Exception { }
+                };
+    }
+
+    private static Transaction deploymentTx(Context context) {
+        return context.deploymentTx();
     }
 
     private static File resolveZipDiff(final UpdateResolver resolver,
@@ -167,4 +150,17 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     }
 
     private interface TransactionTask extends PathTask<Void, Exception> { }
+
+    /** The context for a location provided to the update installer. */
+    public interface Context {
+
+        /** Returns the path of the application. */
+        File path();
+
+        /** Returns the transaction for deploying the application. */
+        Transaction deploymentTx();
+
+        /** Returns the transaction for undeploying the application. */
+        Transaction undeploymentTx();
+    }
 }
