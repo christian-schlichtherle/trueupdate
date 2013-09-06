@@ -9,29 +9,15 @@ import net.java.trueupdate.shed.Objects;
 
 /**
  * @see Sinks#execute
- * @see Sinks#bind
  * @author Christian Schlichtherle
  */
 final class WithOutputTask<V, X extends Exception>
-implements Sinks.BindStatement<V, X>, Sinks.ExecuteStatement<V, X> {
+implements Sinks.ExecuteStatement<V, X> {
 
     private final OutputTask<V, X> task;
 
     WithOutputTask(final OutputTask<V, X> task) {
         this.task = Objects.requireNonNull(task);
-    }
-
-    @Override public Job<V, X> to(File file) {
-        return to(new FileStore(file));
-    }
-
-    @Override public Job<V, X> to(final Sink sink) {
-        class WithTaskAndSinkJob implements Job<V, X> {
-            @Override public V call() throws X, IOException {
-                return on(sink);
-            }
-        }
-        return new WithTaskAndSinkJob();
     }
 
     @Override public V on(File file) throws X, IOException {

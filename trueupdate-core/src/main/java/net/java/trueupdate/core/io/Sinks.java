@@ -49,16 +49,6 @@ public class Sinks {
     }
 
     public static <V, X extends Exception>
-            BindStatement<V, X> bind(OutputTask<V, X> task) {
-        return new WithOutputTask<V, X>(task);
-    }
-
-    public interface BindStatement<V, X extends Exception> {
-        Job<V, X> to(File file);
-        Job<V, X> to(Sink sink);
-    }
-
-    public static <V, X extends Exception>
             ExecuteStatement<V, X> execute(OutputTask<V, X> task) {
         return new WithOutputTask<V, X>(task);
     }

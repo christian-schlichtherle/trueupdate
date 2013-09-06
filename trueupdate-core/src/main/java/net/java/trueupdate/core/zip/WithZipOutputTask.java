@@ -9,30 +9,16 @@ import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.shed.Objects;
 
 /**
- * @see ZipSinks#bind
  * @see ZipSinks#execute
  * @author Christian Schlichtherle
  */
 final class WithZipOutputTask<V, X extends Exception>
-implements ZipSinks.BindStatement<V, X>, ZipSinks.ExecuteStatement<V, X> {
+implements ZipSinks.ExecuteStatement<V, X> {
 
     private final ZipOutputTask<V, X> task;
 
     WithZipOutputTask(final ZipOutputTask<V, X> task) {
         this.task = Objects.requireNonNull(task);
-    }
-
-    @Override public Job<V, X> to(File file) {
-        return to(new ZipFileStore(file));
-    }
-
-    @Override public Job<V, X> to(final ZipSink sink) {
-        class WithTaskAndSourceJob implements Job<V, X> {
-            @Override public V call() throws X, IOException {
-                return on(sink);
-            }
-        }
-        return new WithTaskAndSourceJob();
     }
 
     @Override public V on(File file) throws X, IOException {
