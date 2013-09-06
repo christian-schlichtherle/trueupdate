@@ -26,7 +26,7 @@ import net.java.trueupdate.core.zip.JarFileStore
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class BasicUpdateInstallerIT extends WordSpec {
+class LocalUpdateInstallerIT extends WordSpec {
 
   def updateMessage(deployedPath: File) = UpdateMessage
     .builder
@@ -44,13 +44,10 @@ class BasicUpdateInstallerIT extends WordSpec {
     .updateLocation(deployedPath.toURI)
     .build
 
-  def updateInstaller = new BasicUpdateInstaller {
-    protected def resolveDeployedPath(message: UpdateMessage) =
-      new File(message.currentLocation)
-
-    protected def deploymentTx = mock[Transaction]
-
-    protected def undeploymentTx = mock[Transaction]
+  def updateInstaller = new LocalUpdateInstaller {
+    protected def resolvePath(location: URI) = new File(location)
+    protected def deploymentTx(path: File) = mock[Transaction]
+    protected def undeploymentTx(path: File) = mock[Transaction]
   }
 
   "A basic update installer" should {

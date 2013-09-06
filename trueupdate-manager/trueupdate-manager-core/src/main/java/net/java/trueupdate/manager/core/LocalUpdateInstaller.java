@@ -5,6 +5,7 @@
 package net.java.trueupdate.manager.core;
 
 import java.io.*;
+import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.*;
 import net.java.trueupdate.core.zip.JarFileStore;
@@ -15,42 +16,44 @@ import net.java.trueupdate.manager.core.tx.*;
 import net.java.trueupdate.manager.spec.*;
 
 /**
- * A basic update installer.
- * When updating, this class checks the deployed path.
- * If the deployed path is a directory, it assumes that it has been unzipped
+ * A local update installer.
+ * When updating, this class checks the file system path where the applicatin
+ * is currently installed.
+ * If the current path is a directory, it assumes that it has been unzipped
  * from the original artifact file (EAR, RAR, WAR etc) and updates the
  * directory accordingly.
- * Otherwise, it assumes that the deployed path is the original artifact file
+ * Otherwise, it assumes that the current path is the original artifact file
  * and updates the file accordingly.
  *
  * @author Christian Schlichtherle
  */
-public abstract class BasicUpdateInstaller implements UpdateInstaller {
+public abstract class LocalUpdateInstaller implements UpdateInstaller {
 
     private static final Logger logger =
-            Logger.getLogger(BasicUpdateInstaller.class.getName());
+            Logger.getLogger(LocalUpdateInstaller.class.getName());
 
     /**
      * Returns the nullable temporary directory.
-     * The implementation in the class {@link BasicUpdateInstaller} always
+     * The implementation in the class {@link LocalUpdateInstaller} always
      * returns {@code null} to indicate that the default temporary directory
      * should be used.
      */
     protected @CheckForNull File tempDir() { return null; }
 
     /** Returns the path of the deployed application. */
-    protected abstract File resolveDeployedPath(UpdateMessage message);
+    protected abstract File resolvePath(URI location) throws Exception;
 
     /** Returns the transaction for deploying the application. */
-    protected abstract Transaction deploymentTx();
+    protected abstract Transaction deploymentTx(File path);
 
     /** Returns the transaction for undeploying the application. */
-    protected abstract Transaction undeploymentTx();
+    protected abstract Transaction undeploymentTx(File path);
 
-    @Override public void install(final UpdateResolver resolver, final UpdateMessage message) throws Exception {
+    @Override public final void install(final UpdateResolver resolver,
+                                        final UpdateMessage message)
+    throws Exception {
 
-        final File deployedPath = resolveDeployedPath(message);
-        final File diffZip = resolveZipDiff(resolver, message);
+        final File diffZip = resolveZipDiff(resolver, message.updateDescriptor());
 
         class PatchTask implements TransactionTask {
 
@@ -66,50 +69,56 @@ public abstract class BasicUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
+        final URI currentLocation = message.currentLocation();
+        final File currentPath = resolvePath(currentLocation);
+        final URI updateLocation = message.updateLocation();
+        final File updatePath = resolvePath(updateLocation);
+
         loanTempPath(new TransactionTask() {
             @Override public Void execute(final File backupPath) throws Exception {
                 return loanTempPath(new TransactionTask() {
-                    @Override public Void execute(final File updatedJar) throws Exception {
-                        if (deployedPath.isFile()) {
+                    @Override public Void execute(final File updateJar) throws Exception {
+                        if (currentPath.isFile()) {
                             Transactions.execute(new CompositeTransaction(
-                                    new PathTaskTransaction(updatedJar, new PatchTask(deployedPath)),
-                                    undeploymentTx(),
-                                    new RenamePathTransaction(deployedPath, backupPath),
-                                    new RenamePathTransaction(updatedJar, deployedPath),
-                                    deploymentTx()));
+                                    new PathTaskTransaction(updateJar, new PatchTask(currentPath)),
+                                    undeploymentTx(updatePath),
+                                    new RenamePathTransaction(updatePath, backupPath),
+                                    new RenamePathTransaction(updateJar, updatePath),
+                                    deploymentTx(updatePath)));
                         } else {
                             return loanTempPath(new TransactionTask() {
-                                @Override public Void execute(final File updatedDir) throws Exception {
+                                @Override public Void execute(final File updateDir) throws Exception {
                                     return loanTempPath(new TransactionTask() {
-                                        @Override public Void execute(final File deployedZip) throws Exception {
+                                        @Override public Void execute(final File currentZip) throws Exception {
                                             Transactions.execute(new CompositeTransaction(
-                                                    new ZipTransaction(deployedZip, deployedPath, ""),
-                                                    new PathTaskTransaction(updatedJar, new PatchTask(deployedZip)),
-                                                    new UnzipTransaction(updatedJar, updatedDir),
-                                                    undeploymentTx(),
-                                                    new RenamePathTransaction(deployedPath, backupPath),
-                                                    new RenamePathTransaction(updatedDir, deployedPath),
-                                                    deploymentTx()));
+                                                    new ZipTransaction(currentZip, currentPath, ""),
+                                                    new PathTaskTransaction(updateJar, new PatchTask(currentZip)),
+                                                    new UnzipTransaction(updateJar, updateDir),
+                                                    undeploymentTx(updatePath),
+                                                    new RenamePathTransaction(updatePath, backupPath),
+                                                    new RenamePathTransaction(updateDir, updatePath),
+                                                    deploymentTx(updatePath)));
                                             return null;
                                         }
-                                    }, "deployed", ".zip");
+                                    }, "current", ".zip");
                                 }
-                            }, "updated", ".dir");
+                            }, "update", ".dir");
                         }
                         return null;
                     }
-                }, "updated", ".jar");
+                }, "update", ".jar");
             }
         }, "backup", ".path");
     }
 
-    private static File resolveZipDiff(final UpdateResolver resolver, final UpdateMessage message) throws Exception {
-        final UpdateDescriptor updateDescriptor = message.updateDescriptor();
-        final File diffZip = resolver.resolveZipDiffFile(updateDescriptor);
+    private static File resolveZipDiff(final UpdateResolver resolver,
+                                       final UpdateDescriptor descriptor)
+    throws Exception {
+        final File diffZip = resolver.resolveZipDiffFile(descriptor);
         logger.log(Level.FINER,
                 "Resolved ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { diffZip, updateDescriptor.artifactDescriptor(),
-                               updateDescriptor.updateVersion() });
+                new Object[] { diffZip, descriptor.artifactDescriptor(),
+                               descriptor.updateVersion() });
         return diffZip;
     }
 
