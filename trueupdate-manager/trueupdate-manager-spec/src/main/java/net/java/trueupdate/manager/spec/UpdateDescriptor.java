@@ -9,8 +9,8 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import static net.java.trueupdate.shed.Objects.*;
-import static net.java.trueupdate.shed.Strings.*;
+import static net.java.trueupdate.util.Objects.*;
+import static net.java.trueupdate.util.Strings.*;
 
 /**
  * An update descriptor comprises of an artifact descriptor plus an update

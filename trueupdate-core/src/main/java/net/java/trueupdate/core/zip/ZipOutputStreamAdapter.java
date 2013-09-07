@@ -7,7 +7,7 @@ package net.java.trueupdate.core.zip;
 import java.io.*;
 import java.util.zip.*;
 import javax.annotation.WillCloseWhenClosed;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.Objects;
 
 /**
  * Adapts a {@link ZipOutputStream} to a {@link ZipOutput}.

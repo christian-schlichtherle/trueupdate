@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-jax-rs-client</artifactId>
+            <artifactId>trueupdate-jaxrs-client</artifactId>
         </dependency>
     </dependencies>
 </project>

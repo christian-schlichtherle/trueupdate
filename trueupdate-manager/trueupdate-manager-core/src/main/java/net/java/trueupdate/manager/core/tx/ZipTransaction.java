@@ -7,7 +7,7 @@ package net.java.trueupdate.manager.core.tx;
 import java.io.*;
 import static net.java.trueupdate.manager.core.io.Files.*;
 import net.java.trueupdate.core.zip.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * A transaction which zips a file or directory to a ZIP file.

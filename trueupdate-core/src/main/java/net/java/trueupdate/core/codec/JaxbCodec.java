@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.Objects;
 
 /**
  * A codec which encodes/decodes objects to/from XML with a

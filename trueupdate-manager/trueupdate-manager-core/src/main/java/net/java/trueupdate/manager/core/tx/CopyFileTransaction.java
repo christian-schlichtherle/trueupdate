@@ -7,7 +7,7 @@ package net.java.trueupdate.manager.core.tx;
 import java.io.File;
 import java.io.IOException;
 import static net.java.trueupdate.manager.core.io.Files.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * A copy file transaction.

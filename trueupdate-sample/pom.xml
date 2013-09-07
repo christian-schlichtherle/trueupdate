@@ -21,7 +21,7 @@
     </description>
 
     <modules>
-        <module>trueupdate-sample-appl-javaee</module>
-        <module>trueupdate-sample-impl-javaee</module>
+        <module>trueupdate-sample-javaee-app</module>
+        <module>trueupdate-sample-javaee-client</module>
     </modules>
 </project>

@@ -6,7 +6,7 @@ package net.java.trueupdate.core.zip;
 
 import java.io.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.Objects;
 
 /**
  * @see ZipSources#execute

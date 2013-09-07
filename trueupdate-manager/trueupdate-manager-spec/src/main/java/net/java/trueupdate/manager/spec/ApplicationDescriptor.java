@@ -10,7 +10,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import static net.java.trueupdate.shed.Objects.*;
+import static net.java.trueupdate.util.Objects.*;
 
 /**
  * An application descriptor comprises of an artifact descriptor plus a current

@@ -12,7 +12,7 @@ import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.io.Job;
 import net.java.trueupdate.core.zip.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * Applies a diff archive to an input archive and writes an output archive.

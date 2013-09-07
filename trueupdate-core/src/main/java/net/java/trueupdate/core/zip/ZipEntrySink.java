@@ -7,7 +7,7 @@ package net.java.trueupdate.core.zip;
 import java.io.*;
 import java.util.zip.*;
 import net.java.trueupdate.core.io.Sink;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * Writes a ZIP entry to a ZIP output.

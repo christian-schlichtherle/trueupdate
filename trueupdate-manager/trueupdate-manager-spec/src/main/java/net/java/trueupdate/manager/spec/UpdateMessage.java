@@ -10,7 +10,7 @@ import java.util.Date;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
-import static net.java.trueupdate.shed.Objects.*;
+import static net.java.trueupdate.util.Objects.*;
 
 /**
  * An immutable Value Object which gets exchanged between update agents and

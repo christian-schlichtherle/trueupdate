@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.jax.rs.client.UpdateClient;
+import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage.Type;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_NOTICE;

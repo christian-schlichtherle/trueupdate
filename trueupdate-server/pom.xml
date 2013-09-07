@@ -21,8 +21,8 @@
     </description>
 
     <modules>
-        <module>trueupdate-server-appl-javaee</module>
-        <module>trueupdate-server-appl-tomcat</module>
-        <module>trueupdate-server-impl-maven</module>
+        <module>trueupdate-server-app-javaee</module>
+        <module>trueupdate-server-app-tomcat</module>
+        <module>trueupdate-server-maven</module>
     </modules>
 </project>

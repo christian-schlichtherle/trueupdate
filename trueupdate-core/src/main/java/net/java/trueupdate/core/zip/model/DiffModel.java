@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.shed.*;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.*;
+import net.java.trueupdate.util.Objects;
 
 /**
  * A Value Object which represents the meta data in a ZIP patch file.

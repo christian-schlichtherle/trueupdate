@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-shed</artifactId>
+            <artifactId>trueupdate-util</artifactId>
         </dependency>
     </dependencies>
 

@@ -6,7 +6,7 @@ package net.java.trueupdate.core.zip;
 
 import java.io.*;
 import java.util.zip.*;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.Objects;
 
 /**
  * A file based ZIP store.

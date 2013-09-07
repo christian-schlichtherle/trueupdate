@@ -5,7 +5,7 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.Objects;
 
 /**
  * @see Sources#execute

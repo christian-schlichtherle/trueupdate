@@ -11,7 +11,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.core.zip.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * Compares two archives entry by entry.

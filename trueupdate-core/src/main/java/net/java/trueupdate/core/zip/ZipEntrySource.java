@@ -7,7 +7,7 @@ package net.java.trueupdate.core.zip;
 import java.io.*;
 import java.util.zip.*;
 import net.java.trueupdate.core.io.Source;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * Reads a ZIP entry from a ZIP input.

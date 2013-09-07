@@ -21,7 +21,7 @@
     </description>
 
     <modules>
-        <module>trueupdate-artifact-impl-maven</module>
+        <module>trueupdate-artifact-maven</module>
         <module>trueupdate-artifact-spec</module>
     </modules>
 </project>

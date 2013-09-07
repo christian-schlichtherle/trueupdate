@@ -7,8 +7,8 @@ package net.java.trueupdate.artifact.spec;
 import java.io.Serializable;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import static net.java.trueupdate.shed.Objects.*;
-import static net.java.trueupdate.shed.Strings.*;
+import static net.java.trueupdate.util.Objects.*;
+import static net.java.trueupdate.util.Strings.*;
 
 /**
  * An artifact descriptor comprises of a group ID, an artifact ID, a version,

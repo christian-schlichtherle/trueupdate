@@ -9,7 +9,7 @@ import net.java.trueupdate.manager.core.io.PathTask;
 import java.io.File;
 import java.io.IOException;
 import static net.java.trueupdate.manager.core.io.Files.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * A transaction which monitors the side effect of a {@link PathTask} on a file

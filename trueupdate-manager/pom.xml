@@ -23,11 +23,9 @@
     </description>
 
     <modules>
-        <module>trueupdate-manager-appl-openejb</module>
+        <module>trueupdate-manager-app-openejb</module>
         <module>trueupdate-manager-core</module>
-        <module>trueupdate-manager-impl-javaee</module>
-        <module>trueupdate-manager-plug-cargo</module>
-        <module>trueupdate-manager-plug-openejb</module>
+        <module>trueupdate-manager-javaee</module>
         <module>trueupdate-manager-spec</module>
     </modules>
 </project>

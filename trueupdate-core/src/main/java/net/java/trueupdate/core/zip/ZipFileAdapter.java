@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 import javax.annotation.*;
-import net.java.trueupdate.shed.Objects;
+import net.java.trueupdate.util.Objects;
 
 /**
  * Adapts a {@link ZipFile} to a {@link ZipInput}.

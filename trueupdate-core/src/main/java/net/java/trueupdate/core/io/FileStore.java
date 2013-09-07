@@ -6,7 +6,7 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * A file store.

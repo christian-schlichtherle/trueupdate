@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.logging.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.jax.rs.client.UpdateClient;
+import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.UpdateDescriptor;
 
 /**
