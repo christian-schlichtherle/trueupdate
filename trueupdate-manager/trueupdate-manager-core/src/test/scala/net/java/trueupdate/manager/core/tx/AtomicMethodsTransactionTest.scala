@@ -39,6 +39,10 @@ class AtomicMethodsTransactionTest extends WordSpec {
       "never rollback" in {
         verify(delegate, never) rollback ()
       }
+
+      "not be retryable" in {
+        intercept[Exception] { Transactions execute tx }
+      }
     }
 
     "failing to perform" should {
@@ -57,6 +61,40 @@ class AtomicMethodsTransactionTest extends WordSpec {
       "never rollback or commit" in {
         verify(delegate, never) rollback ()
         verify(delegate, never) commit ()
+      }
+
+      "be retryable" in {
+        doNothing when delegate perform ()
+        Transactions execute tx
+      }
+    }
+
+    "participating in a composite transaction" which {
+      val tx1 = new TestTransaction
+      import tx1._
+      val tx2 = mock[Transaction]
+      val ctx = new CompositeTransaction(tx1, tx2)
+
+      "subsequently fails" should {
+        doThrow(new Exception) when tx2 perform ()
+        failWithNonTransactionException(ctx)
+
+        "call the atomic variants of prepare, perform and rollback in order" in {
+          val io = inOrder(delegate)
+          import io._
+          verify(delegate) prepare ()
+          verify(delegate) perform ()
+          verify(delegate) rollback ()
+        }
+
+        "never commit" in {
+          verify(delegate, never) commit ()
+        }
+
+        "be retryable" in {
+          doNothing when tx2 perform ()
+          Transactions execute ctx
+        }
       }
     }
   }

@@ -39,7 +39,7 @@ public abstract class AtomicMethodsTransaction extends Transaction {
 
     @Override protected final void commit() throws Exception {
         commitAtomic();
-        performed = false;
+        // performed = false; // don't be idempotent!
     }
 
     /**
