@@ -20,21 +20,17 @@ abstract class FileTransactionITSuite extends WordSpec {
   def tx(oneByte: File, notExists: File): Transaction
 
   def setUpAndLoan[A](fun: (File, File, Transaction) => A) = {
-    Files.loanTempFile(new PathTask[A, Exception] {
-      override def execute(oneByte: File) = {
+    Files.loanTempDir(new PathTask[A, Exception] {
+      override def execute(tempDir: File) = {
+        val oneByte = new File(tempDir, "oneByte")
         Sinks execute new OutputTask[Unit, IOException] {
           def execute(out: OutputStream) { out write 0 }
         } on new FileStore(oneByte)
         oneByte.length should be (1)
-        Files.loanTempFile(new PathTask[A, Exception] {
-          override def execute(notExists: File) = {
-            notExists delete ()
-            notExists.exists should be (false)
-            fun(oneByte, notExists, tx(oneByte, notExists))
-          }
-        }, "notExists")
+        val notExists = new File(tempDir, "notExists")
+        fun(oneByte, notExists, tx(oneByte, notExists))
       }
-    }, "oneByte")
+    }, "dir", null, null)
   }
 
   "A file transaction" when {

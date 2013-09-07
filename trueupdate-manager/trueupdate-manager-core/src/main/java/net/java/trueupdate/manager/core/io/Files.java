@@ -185,21 +185,6 @@ public final class Files {
         return loanTempFile(new DeleteAndForwardTask(), prefix, suffix, directory);
     }
 
-    public static <V, X extends Exception> V loanTempFile(
-            final PathTask<V, X> task,
-            final String prefix)
-    throws X, IOException {
-        return loanTempFile(task, prefix, null);
-    }
-
-    public static <V, X extends Exception> V loanTempFile(
-            final PathTask<V, X> task,
-            final String prefix,
-            final @CheckForNull String suffix)
-    throws X, IOException {
-        return loanTempFile(task, prefix, suffix, null);
-    }
-
     @SuppressWarnings("unchecked")
     public static <V, X extends Exception> V loanTempFile(
             final PathTask<V, X> task,
