@@ -29,11 +29,7 @@ public abstract class BasicUpdateManager extends UpdateMessageListener {
             subscriptions = new HashMap<ApplicationDescriptor, UpdateMessage>();
 
     private final BasicUpdateResolver
-            updateResolver = new BasicUpdateResolver() {
-        @Override protected UpdateClient updateClient() {
-            return BasicUpdateManager.this.updateClient();
-        }
-    };
+            updateResolver = new ConfiguredUpdateResolver();
 
     /** Returns the update client. */
     protected abstract UpdateClient updateClient();
@@ -42,11 +38,8 @@ public abstract class BasicUpdateManager extends UpdateMessageListener {
     protected abstract UpdateInstaller updateInstaller();
 
     protected void shutdown() throws Exception {
-        try {
-            updateResolver.shutdown();
-        } finally {
-            persistSubscriptions();
-        }
+        try { updateResolver.shutdown(); }
+        finally { persistSubscriptions(); }
     }
 
     private void persistSubscriptions() throws Exception {
@@ -178,4 +171,10 @@ public abstract class BasicUpdateManager extends UpdateMessageListener {
         logger.log(Level.FINER, "Sent update message to update agent:\n{0}", message);
         return message;
     }
+
+    private class ConfiguredUpdateResolver extends BasicUpdateResolver {
+        @Override protected UpdateClient updateClient() {
+            return BasicUpdateManager.this.updateClient();
+        }
+    } // ConfiguredUpdateResolver
 }
