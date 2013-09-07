@@ -9,7 +9,7 @@ import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import javax.ejb.EJB;
 import net.java.trueupdate.manager.core.*;
-import net.java.trueupdate.manager.core.tx.Transaction;
+import net.java.trueupdate.manager.core.tx.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
@@ -20,82 +20,66 @@ import org.apache.openejb.assembler.classic.AppInfo;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class OpenEjbUpdateInstaller implements UpdateInstaller {
+public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
 
     private @EJB Deployer deployer;
 
-    @Override public void install(final UpdateResolver resolver,
-                                  final UpdateMessage message)
+    @Override
+    protected Context resolveContext(final URI location,
+                                     final UpdateMessage message)
     throws Exception {
 
-        class ConfiguredUpdateInstaller extends LocalUpdateInstaller {
+        final File path = location.equals(message.currentLocation())
+                ? resolveDeployedPath(location)
+                : new File(location);
 
-            @Override protected Context resolveContext(final URI location)
-            throws Exception {
+        class ResolvedContext implements Context {
 
-                final File path = location.equals(message.currentLocation())
-                        ? resolveDeployedPath(location)
-                        : new File(location);
+            @Override public File path() { return path; }
 
-                class ResolvedContext implements Context {
+            @Override public Transaction deploymentTransaction() {
 
-                    @Override public File path() { return path; }
+                class DeploymentTransaction extends AtomicMethodsTransaction {
 
-                    @Override public Transaction deploymentTx() {
-
-                        class DeploymentTx extends TrackingTx {
-
-                            @Override public void perform() throws Exception {
-                                deployer.deploy(path.getPath());
-                                performed = true;
-                            }
-
-                            @Override public void rollback() throws Exception {
-                                if (performed) {
-                                    deployer.undeploy(path.getPath());
-                                    performed = false;
-                                }
-                            }
-                        } // DeploymentTx
-
-                        return new DeploymentTx();
+                    @Override public void performAtomic() throws Exception {
+                        deployer.deploy(path.getPath());
                     }
 
-                    @Override public Transaction undeploymentTx() {
-
-                        class UndeploymentTx extends TrackingTx {
-
-                            @Override public void perform() throws Exception {
-                                deployer.undeploy(path.getPath());
-                                performed = true;
-                            }
-
-                            @Override public void rollback() throws Exception {
-                                if (performed) {
-                                    deployer.deploy(path.getPath());
-                                    performed = false;
-                                }
-                            }
-                        } // UndeploymentTx
-
-                        return new UndeploymentTx();
+                    @Override public void rollbackAtomic() throws Exception {
+                        deployer.undeploy(path.getPath());
                     }
-                } // ResolvedContext
+                } // DeploymentTransaction
 
-                return new ResolvedContext();
+                return new DeploymentTransaction();
             }
 
-            private File resolveDeployedPath(final URI location) throws Exception {
-                final Scheme scheme = Scheme.valueOf(location.getScheme());
-                for (final AppInfo info : deployer.getDeployedApps())
-                    if (scheme.matches(location, info))
-                        return new File(info.path);
-                throw new FileNotFoundException(String.format(
-                        "Cannot locate application at %s .", location));
-            }
-        } // ConfiguredUpdateInstaller
+            @Override public Transaction undeploymentTransaction() {
 
-        new ConfiguredUpdateInstaller().install(resolver, message);
+                class UndeploymentTransaction extends AtomicMethodsTransaction {
+
+                    @Override public void performAtomic() throws Exception {
+                        deployer.undeploy(path.getPath());
+                    }
+
+                    @Override public void rollbackAtomic() throws Exception {
+                        deployer.deploy(path.getPath());
+                    }
+                } // UndeploymentTransaction
+
+                return new UndeploymentTransaction();
+            }
+        } // ResolvedContext
+
+        return new ResolvedContext();
+    }
+
+    private File resolveDeployedPath(final URI location) throws Exception {
+        final Scheme scheme = Scheme.valueOf(location.getScheme());
+        for (final AppInfo info : deployer.getDeployedApps())
+            if (scheme.matches(location, info))
+                return new File(info.path);
+        throw new FileNotFoundException(String.format(
+                "Cannot locate application at %s .", location));
     }
 
     private enum Scheme {
@@ -113,17 +97,4 @@ public final class OpenEjbUpdateInstaller implements UpdateInstaller {
 
         abstract boolean matches(URI location, AppInfo info);
     }
-
-    private static abstract class TrackingTx extends Transaction {
-
-        boolean performed;
-
-        @Override protected void prepare() throws Exception {
-            if (performed) throw new IllegalStateException();
-        }
-
-        @Override protected void commit() throws Exception {
-            performed = false;
-        }
-    } // TrackingTx
 }

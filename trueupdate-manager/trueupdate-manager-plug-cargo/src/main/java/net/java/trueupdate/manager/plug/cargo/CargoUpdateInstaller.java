@@ -18,36 +18,29 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class CargoUpdateInstaller implements UpdateInstaller {
+public final class CargoUpdateInstaller extends LocalUpdateInstaller {
 
-    @Override public void install(final UpdateResolver resolver,
-                                  final UpdateMessage message)
+    @Override
+    protected Context resolveContext(final URI location,
+                                     final UpdateMessage message)
     throws Exception {
 
-        class ConfiguredUpdateInstaller extends LocalUpdateInstaller {
+        final CargoContext context = new CargoContext(location);
+        final File path = context.deployablePath();
 
-            @Override protected Context resolveContext(final URI location) throws Exception {
+        class ResolvedContext implements Context {
 
-                final CargoContext context = new CargoContext(location);
-                final File path = context.resolvePath();
+            @Override public File path() { return path; }
 
-                class ResolvedContext implements Context {
-
-                    @Override public File path() { return path; }
-
-                    @Override public Transaction deploymentTx() {
-                        return context.deploymentTx();
-                    }
-
-                    @Override public Transaction undeploymentTx() {
-                        return context.undeploymentTx();
-                    }
-                } // ResolvedContext
-
-                return new ResolvedContext();
+            @Override public Transaction deploymentTransaction() {
+                return context.deploymentTransaction();
             }
-        } // ConfiguredUpdateInstaller
 
-        new ConfiguredUpdateInstaller().install(resolver, message);
+            @Override public Transaction undeploymentTransaction() {
+                return context.undeploymentTransaction();
+            }
+        } // ResolvedContext
+
+        return new ResolvedContext();
     }
 }

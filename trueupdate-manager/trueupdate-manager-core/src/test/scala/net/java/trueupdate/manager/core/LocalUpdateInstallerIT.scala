@@ -46,10 +46,10 @@ class LocalUpdateInstallerIT extends WordSpec {
     .build
 
   def updateInstaller = new LocalUpdateInstaller {
-    protected def resolveContext(location: URI) = new Context {
+    protected def resolveContext(location: URI, message: UpdateMessage) = new Context {
       def path() = new File(location)
-      def deploymentTx() = mock[Transaction]
-      def undeploymentTx() = mock[Transaction]
+      def deploymentTransaction() = mock[Transaction]
+      def undeploymentTransaction() = mock[Transaction]
     }
   }
 

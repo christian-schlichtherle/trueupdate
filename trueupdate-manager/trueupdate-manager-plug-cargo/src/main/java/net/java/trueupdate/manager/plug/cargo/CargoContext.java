@@ -9,6 +9,8 @@ import java.net.*;
 import java.util.*;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import net.java.trueupdate.manager.core.tx.AtomicMethodsTransaction;
 import net.java.trueupdate.manager.core.tx.Transaction;
 import static net.java.trueupdate.shed.Objects.nonNullOr;
 import org.codehaus.cargo.container.*;
@@ -37,7 +39,9 @@ final class CargoContext {
         this.configuration = configuration;
     }
 
-    public Transaction deploymentTx() { return new DeploymentTx(); }
+    public Transaction deploymentTransaction() {
+        return new DeploymentTransaction();
+    }
 
     void deploy() throws CargoException {
         final Deployable deployable = deployable();
@@ -51,7 +55,9 @@ final class CargoContext {
         }
     }
 
-    public Transaction undeploymentTx() { return new UndeploymentTx(); }
+    public Transaction undeploymentTransaction() {
+        return new UndeploymentTransaction();
+    }
 
     void undeploy() throws CargoException {
         final Deployable deployable = deployable();
@@ -100,7 +106,7 @@ final class CargoContext {
         }
     }
 
-    public File resolvePath() throws CargoContextException {
+    public File deployablePath() throws CargoContextException {
         return new File(deployable().getFile());
     }
 
@@ -200,46 +206,13 @@ final class CargoContext {
         return string.isEmpty() ? null : string;
     }
 
-    private abstract class TrackingTx extends Transaction {
+    private class DeploymentTransaction extends AtomicMethodsTransaction {
+        @Override public void performAtomic() throws Exception { deploy(); }
+        @Override public void rollbackAtomic() throws Exception { undeploy(); }
+    } // DeploymentTransaction
 
-        boolean performed;
-
-        @Override protected void prepare() throws Exception {
-            if (performed) throw new IllegalStateException();
-        }
-
-        @Override protected void commit() throws Exception {
-            performed = false;
-        }
-    } // TrackingTx
-
-    private class DeploymentTx extends TrackingTx  {
-
-        @Override public void perform() throws Exception {
-            deploy();
-            performed = true;
-        }
-
-        @Override public void rollback() throws Exception {
-            if (performed) {
-                undeploy();
-                performed = false;
-            }
-        }
-    } // DeploymentTx
-
-    private class UndeploymentTx extends TrackingTx  {
-
-        @Override public void perform() throws Exception {
-            undeploy();
-            performed = true;
-        }
-
-        @Override public void rollback() throws Exception {
-            if (performed) {
-                deploy();
-                performed = false;
-            }
-        }
-    } // UndeploymentTx
+    private class UndeploymentTransaction extends AtomicMethodsTransaction {
+        @Override public void performAtomic() throws Exception { undeploy(); }
+        @Override public void rollbackAtomic() throws Exception { deploy(); }
+    } // UndeploymentTransaction
 }
