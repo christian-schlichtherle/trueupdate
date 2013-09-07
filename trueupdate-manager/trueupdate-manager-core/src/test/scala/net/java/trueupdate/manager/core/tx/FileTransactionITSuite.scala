@@ -35,7 +35,7 @@ abstract class FileTransactionITSuite extends WordSpec {
 
   "A file transaction" when {
 
-    "failing" should {
+    "failing to perform" should {
       "leave the source and destination files unmodified" in {
         setUpAndLoan { (oneByte, notExists, tx) =>
           oneByte delete ()
