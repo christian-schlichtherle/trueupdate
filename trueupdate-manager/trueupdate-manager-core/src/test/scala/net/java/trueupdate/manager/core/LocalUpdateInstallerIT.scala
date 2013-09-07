@@ -13,15 +13,15 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
+import net.java.trueupdate.core.io._
+import net.java.trueupdate.core.zip.JarFileStore
+import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.manager.spec.UpdateMessage
 import net.java.trueupdate.manager.spec.UpdateMessage.Type
 import net.java.trueupdate.manager.core.LocalUpdateInstaller.Context
 import net.java.trueupdate.manager.core.io.Files._
-import net.java.trueupdate.manager.core.io.PathTask
-import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.manager.core.tx.Transaction
-import net.java.trueupdate.core.zip.JarFileStore
+import net.java.trueupdate.manager.core.io.PathTask
 
 /**
  * @author Christian Schlichtherle
@@ -46,7 +46,7 @@ class LocalUpdateInstallerIT extends WordSpec {
     .build
 
   def updateInstaller = new LocalUpdateInstaller {
-    protected def resolveContext(location: URI, message: UpdateMessage) = new Context {
+    def resolveContext(location: URI, message: UpdateMessage) = new Context {
       def path() = new File(location)
       def deploymentTransaction() = mock[Transaction]
       def undeploymentTransaction() = mock[Transaction]
@@ -55,70 +55,52 @@ class LocalUpdateInstallerIT extends WordSpec {
 
   "A basic update installer" should {
     "install the update" in {
-      loanTempFile(new PathTask[Unit, Exception] {
-        def execute(content: File) {
-          loanTempFile(new PathTask[Unit, Exception] {
-            def execute(input1Jar: File) {
+      loanTempDir(new PathTask[Unit, Exception] {
+        def execute(tempDir: File) {
+          val content = new File(tempDir, "content")
+          Sinks execute new OutputTask[Unit, IOException] {
+            def execute(out: OutputStream) { out write 0 }
+          } on content
 
-              Sinks execute new OutputTask[Unit, IOException] {
-                def execute(out: OutputStream) { out write 0 }
-              } on content
-              zip(new JarFileStore(input1Jar), content, content.getName)
+          val input1Jar = new File(tempDir, "input1.jar")
+          zip(new JarFileStore(input1Jar), content, content.getName)
 
-              loanTempFile(new PathTask[Unit, Exception] {
-                def execute(input2Jar: File) {
+          Sinks execute new OutputTask[Unit, IOException] {
+            def execute(out: OutputStream) { out write 0; out write 0 }
+          } on content
+          val input2Jar = new File(tempDir, "input2.jar")
 
-                  Sinks execute new OutputTask[Unit, IOException] {
-                    def execute(out: OutputStream) { out write 0; out write 0 }
-                  } on content
-                  zip(new JarFileStore(input2Jar), content, content.getName)
+          zip(new JarFileStore(input2Jar), content, content.getName)
+          input1Jar.length should not be (input2Jar.length)
 
-                  input1Jar.length should not be (input2Jar.length)
+          val diffZip = new File(tempDir, "diff.zip")
+          ZipDiff
+            .builder
+            .input1(input1Jar)
+            .input2(input2Jar)
+            .build
+            .output(diffZip)
 
-                  loanTempFile(new PathTask[Unit, Exception] {
-                    def execute(diffZip: File) {
+          val resolver = mock[UpdateResolver]
+          when(resolver resolveDiffZip any()) thenReturn diffZip
 
-                      ZipDiff
-                        .builder
-                        .input1(input1Jar)
-                        .input2(input2Jar)
-                        .build
-                        .output(diffZip)
+          val deployedZip = new File(tempDir, "deployed.zip")
+          copyFile(input1Jar, deployedZip)
+          deployedZip.length should be (input1Jar.length)
 
-                      val resolver = mock[UpdateResolver]
-                      when(resolver resolveZipDiffFile any()) thenReturn diffZip
+          updateInstaller install (resolver, updateMessage(deployedZip))
+          deployedZip.length should be (input2Jar.length)
 
-                      loanTempFile(new PathTask[Unit, Exception] {
-                        def execute(deployedZip: File) {
+          val deployedDir = new File(tempDir, "deployed.dir")
+          deletePath(deployedDir)
+          unzip(input1Jar, deployedDir)
 
-                          copyFile(input1Jar, deployedZip)
-
-                          deployedZip.length should be (input1Jar.length)
-                          updateInstaller install (resolver, updateMessage(deployedZip))
-                          deployedZip.length should be (input2Jar.length)
-                        }
-                      }, "deployed", ".zip")
-
-                      loanTempFile(new PathTask[Unit, Exception] {
-                        def execute(deployedDir: File) {
-
-                          deletePath(deployedDir)
-                          unzip(input1Jar, deployedDir)
-
-                          val deployedContent = new File(deployedDir, content.getName)
-                          deployedContent.length should be (1)
-                          updateInstaller install (resolver, updateMessage(deployedDir))
-                          deployedContent.length should be (2)
-                        }
-                      }, "deployed", ".dir")
-                    }
-                  }, "diff", ".zip")
-                }
-              }, "input2", ".jar")
-            }
-          }, "input1", ".jar")
+          val deployedContent = new File(deployedDir, content.getName)
+          deployedContent.length should be (1)
+          updateInstaller install (resolver, updateMessage(deployedDir))
+          deployedContent.length should be (2)
         }
-      }, "content")
+      }, "dir", null, null)
     }
   }
 }

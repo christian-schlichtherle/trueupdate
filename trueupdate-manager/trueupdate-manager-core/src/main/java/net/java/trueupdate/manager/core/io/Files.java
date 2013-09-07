@@ -167,6 +167,24 @@ public final class Files {
         return temp;
     }
 
+    public static <V> V loanTempDir(
+            final PathTask<V, Exception> task,
+            final String prefix,
+            final @CheckForNull String suffix,
+            final @CheckForNull File directory)
+    throws Exception {
+        class DeleteAndForwardTask implements PathTask<V, Exception> {
+            @Override public V execute(final File file) throws Exception {
+                deletePath(file);
+                if (!file.mkdir())
+                    throw new IOException(String.format(
+                            "Cannot create temporary directory %s .", file));
+                return task.execute(file);
+            }
+        }
+        return loanTempFile(new DeleteAndForwardTask(), prefix, suffix, directory);
+    }
+
     public static <V, X extends Exception> V loanTempFile(
             final PathTask<V, X> task,
             final String prefix)

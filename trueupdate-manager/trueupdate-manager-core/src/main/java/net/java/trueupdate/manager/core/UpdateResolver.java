@@ -18,11 +18,11 @@ import java.io.File;
 public interface UpdateResolver {
 
     /**
-     * Resolves the ZIP diff file for the given update descriptor.
+     * Resolves the diff ZIP file for the given update descriptor.
      * Clients must not modify or delete the returned file.
      *
      * @param descriptor the update descriptor.
      * @throws Exception at the discretion of the implementation.
      */
-    File resolveZipDiffFile(UpdateDescriptor descriptor) throws Exception;
+    File resolveDiffZip(UpdateDescriptor descriptor) throws Exception;
 }

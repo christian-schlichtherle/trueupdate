@@ -55,24 +55,25 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         }
     }
 
-    @Override public final File resolveZipDiffFile(UpdateDescriptor descriptor)
+    @Override
+    public final File resolveDiffZip(final UpdateDescriptor descriptor)
     throws Exception {
         final FileAccount account = account(descriptor);
         if (account.fileResolved()) return account.file();
         final ArtifactDescriptor ad = descriptor.artifactDescriptor();
         final String uv = descriptor.updateVersion();
-        final File diff = File.createTempFile("diff", ".zip");
+        final File diffZip = File.createTempFile("diff", ".zip");
         try {
-            Copy.copy(updateClient().diff(ad, uv), new FileStore(diff));
+            Copy.copy(updateClient().diff(ad, uv), new FileStore(diffZip));
         } catch (final IOException ex) {
-            diff.delete();
+            diffZip.delete();
             throw ex;
         }
         logger.log(Level.INFO,
-                "Downloaded ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { diff, ad, uv });
-        account.file(diff);
-        return diff;
+                "Downloaded file {0} for artifact descriptor {1} and update version {2} .",
+                new Object[] { diffZip, ad, uv });
+        account.file(diffZip);
+        return diffZip;
     }
 
     final void shutdown() {
@@ -88,9 +89,9 @@ abstract class BasicUpdateResolver implements UpdateResolver {
         assert 0 <= account.usages();
         final File file = account.file();
         if (file.delete()) {
-            logger.log(Level.INFO, "Deleted ZIP diff file {0}.", file);
+            logger.log(Level.INFO, "Deleted file {0} .", file);
         } else {
-            logger.log(Level.WARNING, "Could not delete ZIP diff file {0}.",
+            logger.log(Level.WARNING, "Could not delete file {0} .",
                     file);
         }
     }

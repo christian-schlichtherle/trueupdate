@@ -58,9 +58,9 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                                         final UpdateMessage message)
     throws Exception {
 
-        final File diffZip = resolveZipDiff(resolver, message.updateDescriptor());
+        final File diffZip = resolveDiffZip(resolver, message.updateDescriptor());
 
-        class PatchTask implements Task {
+        class PatchTask implements PathTask<Void, Exception> {
 
             final ZipPatch patch;
 
@@ -68,7 +68,8 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 this.patch = ZipPatch.builder().input(deployedZip).diff(diffZip).build();
             }
 
-            @Override public Void execute(final @WillNotClose File updatedJar) throws Exception {
+            @Override public Void execute(final @WillNotClose File updatedJar)
+            throws Exception {
                 patch.output(new JarFileStore(updatedJar));
                 return null;
             }
@@ -77,15 +78,15 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
         final Context current = resolveContext(message.currentLocation(), message);
         final Context update = resolveContext(message.updateLocation(), message);
 
-        loanTempDir(new Task() {
+        loanTempDir(new PathTask<Void, Exception>() {
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updateJar = new File(tempDir, "update.jar");
-                final File backupPath = new File(tempDir, "backup.path");
+                final File backup = new File(tempDir, "backup");
                 if (current.path().isFile()) {
                     Transactions.execute(new CompositeTransaction(
                             new PathTaskTransaction(updateJar, new PatchTask(current.path())),
                             undeploymentTransaction(update),
-                            new RenamePathTransaction(update.path(), backupPath),
+                            new RenamePathTransaction(update.path(), backup),
                             new RenamePathTransaction(updateJar, update.path()),
                             deploymentTransaction(update)));
                 } else {
@@ -96,13 +97,13 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                             new PathTaskTransaction(updateJar, new PatchTask(currentZip)),
                             new UnzipTransaction(updateJar, updateDir),
                             undeploymentTransaction(update),
-                            new RenamePathTransaction(update.path(), backupPath),
+                            new RenamePathTransaction(update.path(), backup),
                             new RenamePathTransaction(updateDir, update.path()),
                             deploymentTransaction(update)));
                 }
                 return null;
             }
-        }, "temp", ".dir");
+        }, "dir", null, tempDir());
     }
 
     private static Transaction undeploymentTransaction(Context context) {
@@ -118,35 +119,16 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
         return context.deploymentTransaction();
     }
 
-    private static File resolveZipDiff(final UpdateResolver resolver,
+    private static File resolveDiffZip(final UpdateResolver resolver,
                                        final UpdateDescriptor descriptor)
     throws Exception {
-        final File diffZip = resolver.resolveZipDiffFile(descriptor);
+        final File diffZip = resolver.resolveDiffZip(descriptor);
         logger.log(Level.FINER,
                 "Resolved ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
                 new Object[] { diffZip, descriptor.artifactDescriptor(),
                                descriptor.updateVersion() });
         return diffZip;
     }
-
-    private Void loanTempDir(
-            final Task task,
-            final String prefix,
-            final String suffix)
-    throws Exception {
-        class DeleteAndForwardTask implements Task {
-            @Override public Void execute(final File file) throws Exception {
-                deletePath(file);
-                if (!file.mkdir())
-                    throw new IOException(String.format(
-                            "Cannot create directory %s .", file));
-                return task.execute(file);
-            }
-        }
-        return loanTempFile(new DeleteAndForwardTask(), prefix, suffix, tempDir());
-    }
-
-    private interface Task extends PathTask<Void, Exception> { }
 
     /** The context for a location provided to the update installer. */
     public interface Context {
