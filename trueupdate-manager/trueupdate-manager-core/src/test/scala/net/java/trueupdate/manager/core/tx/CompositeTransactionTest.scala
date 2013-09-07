@@ -35,20 +35,22 @@ class CompositeTransactionTest extends WordSpec {
 
     "executing successfully" should {
       val f = fixture
-      Transactions execute f.ctx
+      import f._
+      Transactions execute ctx
 
       "prepare, perform and commit the transactions in order" in {
-        val io = inOrder(f.tx1, f.tx2)
-        io verify f.tx1 prepare ()
-        io verify f.tx1 perform ()
-        io verify f.tx2 prepare ()
-        io verify f.tx2 perform ()
-        io verify f.tx2 commit ()
-        io verify f.tx1 commit ()
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx1) prepare ()
+        verify(tx1) perform ()
+        verify(tx2) prepare ()
+        verify(tx2) perform ()
+        verify(tx2) commit ()
+        verify(tx1) commit ()
       }
 
       "never rollback any transaction" in {
-        for (tx <- f.txs) verify(tx, never) rollback ()
+        for (tx <- txs) verify(tx, never) rollback ()
       }
 
       "be reusable" in {
@@ -58,103 +60,111 @@ class CompositeTransactionTest extends WordSpec {
 
     "failing to prepare the last transaction" should {
       val f = fixture
-      doThrow (new Exception) when f.tx2 prepare ()
-      failWithNonTransactionException(f.ctx)
+      import f._
+      doThrow (new Exception) when tx2 prepare ()
+      failWithNonTransactionException(ctx)
 
       "prepare, perform and rollback the transactions in order" in {
-        val io = inOrder(f.tx1, f.tx2)
-        io verify f.tx1 prepare ()
-        io verify f.tx1 perform ()
-        io verify f.tx2 prepare ()
-        io verify (f.tx2, never) perform ()
-        io verify (f.tx2, never) rollback ()
-        io verify f.tx1 rollback ()
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx1) prepare ()
+        verify(tx1) perform ()
+        verify(tx2) prepare ()
+        verify(tx2, never) perform ()
+        verify(tx2, never) rollback ()
+        verify(tx1) rollback ()
       }
 
       "never commit any transaction" in {
-        for (tx <- f.txs) verify(tx, never) commit ()
+        for (tx <- txs) verify(tx, never) commit ()
       }
 
       "be retryable" in {
-        doNothing when f.tx2 prepare ()
-        Transactions execute f.ctx
+        doNothing when tx2 prepare ()
+        Transactions execute ctx
       }
     }
 
     "failing to perform the last transaction" should {
       val f = fixture
-      doThrow (new Exception) when f.tx2 perform ()
-      failWithNonTransactionException(f.ctx)
+      import f._
+      doThrow (new Exception) when tx2 perform ()
+      failWithNonTransactionException(ctx)
 
       "prepare, perform and rollback the transactions in order" in {
-        val io = inOrder(f.tx1, f.tx2)
-        io verify f.tx1 prepare ()
-        io verify f.tx1 perform ()
-        io verify f.tx2 prepare ()
-        io verify f.tx2 perform ()
-        io verify f.tx2 rollback ()
-        io verify f.tx1 rollback ()
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx1) prepare ()
+        verify(tx1) perform ()
+        verify(tx2) prepare ()
+        verify(tx2) perform ()
+        verify(tx2) rollback ()
+        verify(tx1) rollback ()
       }
 
       "never commit any transaction" in {
-        for (tx <- f.txs) verify(tx, never) commit ()
+        for (tx <- txs) verify(tx, never) commit ()
       }
 
       "be retryable" in {
-        doNothing when f.tx2 perform ()
-        Transactions execute f.ctx
+        doNothing when tx2 perform ()
+        Transactions execute ctx
       }
     }
 
     "failing to perform and rollback the last transaction" should {
       val f = fixture
-      doThrow (new Exception) when f.tx2 perform ()
-      doThrow (new Exception) when f.tx2 rollback ()
-      intercept[TransactionException] { Transactions execute f.ctx }
+      import f._
+      doThrow (new Exception) when tx2 perform ()
+      doThrow (new Exception) when tx2 rollback ()
+      intercept[TransactionException] { Transactions execute ctx }
 
       "prepare, perform and rollback the transactions in order" in {
-        val io = inOrder(f.tx1, f.tx2)
-        io verify f.tx1 prepare ()
-        io verify f.tx1 perform ()
-        io verify f.tx2 prepare ()
-        io verify f.tx2 perform ()
-        io verify f.tx2 rollback ()
-        io verify (f.tx1, never) rollback ()
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx1) prepare ()
+        verify(tx1) perform ()
+        verify(tx2) prepare ()
+        verify(tx2) perform ()
+        verify(tx2) rollback ()
+        verify(tx1, never) rollback ()
       }
 
       "never commit any transaction" in {
-        for (tx <- f.txs) verify(tx, never) commit ()
+        for (tx <- txs) verify(tx, never) commit ()
       }
 
       "not be retryable" in {
-        doNothing when f.tx2 perform ()
-        doNothing when f.tx2 rollback ()
-        intercept[IllegalStateException] { Transactions execute f.ctx }
+        doNothing when tx2 perform ()
+        doNothing when tx2 rollback ()
+        intercept[IllegalStateException] { Transactions execute ctx }
       }
     }
 
     "failing to commit the last transaction" should {
       val f = fixture
-      doThrow (new Exception) when f.tx2 commit ()
-      intercept[TransactionException] { Transactions execute f.ctx }
+      import f._
+      doThrow (new Exception) when tx2 commit ()
+      intercept[TransactionException] { Transactions execute ctx }
 
       "prepare, perform and commit the transactions in order" in {
-        val io = inOrder(f.tx1, f.tx2)
-        io verify f.tx1 prepare ()
-        io verify f.tx1 perform ()
-        io verify f.tx2 prepare ()
-        io verify f.tx2 perform ()
-        io verify f.tx2 commit ()
-        io verify (f.tx1, never) commit ()
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx1) prepare ()
+        verify(tx1) perform ()
+        verify(tx2) prepare ()
+        verify(tx2) perform ()
+        verify(tx2) commit ()
+        verify(tx1, never) commit ()
       }
 
       "never rollback any transaction" in {
-        for (tx <- f.txs) verify(tx, never) rollback ()
+        for (tx <- txs) verify(tx, never) rollback ()
       }
 
       "not be retryable" in {
-        doNothing when f.tx2 commit ()
-        intercept[IllegalStateException] { Transactions execute f.ctx }
+        doNothing when tx2 commit ()
+        intercept[IllegalStateException] { Transactions execute ctx }
       }
     }
   }
