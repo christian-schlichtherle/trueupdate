@@ -24,18 +24,18 @@ public final class CopyFileTransaction extends Transaction {
         this.to = requireNonNull(to);
     }
 
-    @Override protected void prepare() throws Exception {
+    @Override public void prepare() throws Exception {
         if (to.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     to));
     }
 
-    @Override protected void perform() throws IOException {
+    @Override public void perform() throws IOException {
         copyFile(from, to);
     }
 
-    @Override protected void rollback() throws IOException {
+    @Override public void rollback() throws IOException {
         deletePath(to);
     }
 }

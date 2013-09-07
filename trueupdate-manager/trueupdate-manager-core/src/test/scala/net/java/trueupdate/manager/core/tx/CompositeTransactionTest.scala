@@ -23,14 +23,6 @@ class CompositeTransactionTest extends WordSpec {
     val ctx = new CompositeTransaction(txs: _*)
   }
 
-  def failWithNonTransactionException(tx: Transaction) {
-    try { Transactions execute tx }
-    catch {
-      case error: TransactionException => throw error
-      case expected: Exception =>
-    }
-  }
-
   "A composite transaction" when {
 
     "executing successfully" should {
@@ -61,8 +53,8 @@ class CompositeTransactionTest extends WordSpec {
     "failing to prepare the last transaction" should {
       val f = fixture
       import f._
-      doThrow (new Exception) when tx2 prepare ()
-      failWithNonTransactionException(ctx)
+      doThrow (new UnsupportedOperationException) when tx2 prepare ()
+      intercept[UnsupportedOperationException] { Transactions execute ctx }
 
       "prepare, perform and rollback the transactions in order" in {
         val io = inOrder(tx1, tx2)
@@ -88,8 +80,8 @@ class CompositeTransactionTest extends WordSpec {
     "failing to perform the last transaction" should {
       val f = fixture
       import f._
-      doThrow (new Exception) when tx2 perform ()
-      failWithNonTransactionException(ctx)
+      doThrow (new UnsupportedOperationException) when tx2 perform ()
+      intercept[UnsupportedOperationException] { Transactions execute ctx }
 
       "prepare, perform and rollback the transactions in order" in {
         val io = inOrder(tx1, tx2)

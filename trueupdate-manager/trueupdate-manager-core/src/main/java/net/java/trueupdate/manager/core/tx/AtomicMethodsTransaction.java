@@ -20,24 +20,24 @@ public abstract class AtomicMethodsTransaction extends Transaction {
 
     private boolean performed;
 
-    @Override protected final void prepare() throws Exception {
+    @Override public final void prepare() throws Exception {
         if (performed) throw new IllegalStateException();
         prepareAtomic();
     }
 
-    @Override protected final void perform() throws Exception {
+    @Override public final void perform() throws Exception {
         performAtomic();
         performed = true;
     }
 
-    @Override protected final void rollback() throws Exception {
+    @Override public final void rollback() throws Exception {
         if (performed) {
             rollbackAtomic();
             performed = false;
         }
     }
 
-    @Override protected final void commit() throws Exception {
+    @Override public final void commit() throws Exception {
         commitAtomic();
         // performed = false; // don't be idempotent!
     }
@@ -46,23 +46,23 @@ public abstract class AtomicMethodsTransaction extends Transaction {
      * Semantically identical to {@link #prepare}, but has to be truly atomic,
      * that is it either completely succeeds or completely fails.
      */
-    protected void prepareAtomic() throws Exception { }
+    public void prepareAtomic() throws Exception { }
 
     /**
      * Semantically identical to {@link #perform}, but has to be truly atomic,
      * that is it either completely succeeds or completely fails.
      */
-    protected abstract void performAtomic() throws Exception;
+    public abstract void performAtomic() throws Exception;
 
     /**
      * Semantically identical to {@link #rollback}, but has to be truly atomic,
      * that is it either completely succeeds or completely fails.
      */
-    protected abstract void rollbackAtomic() throws Exception;
+    public abstract void rollbackAtomic() throws Exception;
 
     /**
      * Semantically identical to {@link #commit}, but has to be truly atomic,
      * that is it either completely succeeds or completely fails.
      */
-    protected void commitAtomic() throws Exception { }
+    public void commitAtomic() throws Exception { }
 }

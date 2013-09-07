@@ -13,14 +13,6 @@ import org.scalatest.mock.MockitoSugar.mock
 @RunWith(classOf[JUnitRunner])
 class AtomicMethodsTransactionTest extends WordSpec {
 
-  def failWithNonTransactionException(tx: Transaction) {
-    try { Transactions execute tx }
-    catch {
-      case error: TransactionException => throw error
-      case expected: Exception =>
-    }
-  }
-
   "An atomic methods transaction" when {
 
     "executing successfully" should {
@@ -48,8 +40,8 @@ class AtomicMethodsTransactionTest extends WordSpec {
     "failing to perform" should {
       val tx = new TestTransaction
       import tx._
-      doThrow (new Exception) when delegate perform ()
-      failWithNonTransactionException(tx)
+      doThrow (new UnsupportedOperationException) when delegate perform ()
+      intercept[UnsupportedOperationException] { Transactions execute tx }
 
       "call the atomic variants of prepare and perform in order" in {
         val io = inOrder(delegate)
@@ -76,8 +68,8 @@ class AtomicMethodsTransactionTest extends WordSpec {
       val ctx = new CompositeTransaction(tx1, tx2)
 
       "subsequently fails" should {
-        doThrow(new Exception) when tx2 perform ()
-        failWithNonTransactionException(ctx)
+        doThrow (new UnsupportedOperationException) when tx2 perform ()
+        intercept[UnsupportedOperationException] { Transactions execute ctx }
 
         "call the atomic variants of prepare, perform and rollback in order" in {
           val io = inOrder(delegate)

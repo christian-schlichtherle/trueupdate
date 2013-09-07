@@ -31,7 +31,7 @@ public abstract class Transaction {
      * If this method fails and this transaction is part of a composite
      * transaction, then the previous transactions get properly rolled back.
      */
-    protected void prepare() throws Exception { }
+    public void prepare() throws Exception { }
 
     /**
      * Executes the body of this transaction.
@@ -40,7 +40,7 @@ public abstract class Transaction {
      * If this method fails and this transaction is part of a composite
      * transaction, then the previous transactions get properly rolled back.
      */
-    protected abstract void perform() throws Exception;
+    public abstract void perform() throws Exception;
 
     /**
      * Reverts any visible side effects of the body of this transaction.
@@ -52,7 +52,7 @@ public abstract class Transaction {
      * transaction, then the previous transactions get neither committed nor
      * rolled back and their state is undefined and may be inconsistent.
      */
-    protected abstract void rollback() throws Exception;
+    public abstract void rollback() throws Exception;
 
     /**
      * Commits the visible side effects of the body of this transaction.
@@ -64,5 +64,5 @@ public abstract class Transaction {
      * transaction, then the previous transactions get neither committed nor
      * rolled back and their state is undefined and may be inconsistent.
      */
-    protected void commit() throws Exception { }
+    public void commit() throws Exception { }
 }

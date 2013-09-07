@@ -16,16 +16,17 @@ import net.java.trueupdate.manager.core.io.Files._
 @RunWith(classOf[JUnitRunner])
 class UnzipTransactionIT extends FileTransactionITSuite {
 
-  def tx(oneByte: File, notExists: File) =
+  def tx(oneByte: File, notExists: File) = {
+    zip(notExists, oneByte, oneByte.getName)
+    deletePath(oneByte)
+    renamePath(notExists, oneByte)
     new UnzipTransaction(oneByte, notExists)
+  }
 
   "An unzip transaction" when {
     "executing successfully" should {
       "have unzipped the ZIP file" in {
         setUpAndLoan { (oneByte, notExists, tx) =>
-          zip(notExists, oneByte, oneByte.getName)
-          copyFile(notExists, oneByte)
-          deletePath(notExists)
           Transactions execute tx
           oneByte.length should be > (1L)
           notExists.isDirectory should be (true)

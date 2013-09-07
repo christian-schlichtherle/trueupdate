@@ -29,18 +29,18 @@ public final class UnzipTransaction extends Transaction {
         this.directory = requireNonNull(directory);
     }
 
-    @Override protected void prepare() throws Exception {
+    @Override public void prepare() throws Exception {
         if (directory.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     directory));
     }
 
-    @Override protected void perform() throws Exception {
+    @Override public void perform() throws Exception {
         unzip(source, directory);
     }
 
-    @Override protected void rollback() throws IOException {
+    @Override public void rollback() throws IOException {
         deletePath(directory);
     }
 }

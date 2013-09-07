@@ -25,11 +25,11 @@ public final class RenamePathTransaction extends Transaction {
         this.to = requireNonNull(to);
     }
 
-    @Override protected void perform() throws Exception {
+    @Override public void perform() throws Exception {
         renamePath(from, to);
     }
 
-    @Override protected void rollback() throws Exception {
+    @Override public void rollback() throws Exception {
         if (to.exists()) renamePath(to, from);
     }
 }

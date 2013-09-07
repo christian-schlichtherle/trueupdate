@@ -37,10 +37,10 @@ abstract class FileTransactionITSuite extends WordSpec {
 
     "failing to perform" should {
       "leave the source and destination files unmodified" in {
-        setUpAndLoan { (oneByte, notExists, tx) =>
-          oneByte delete ()
+        setUpAndLoan { (file, notExists, tx) =>
+          file delete ()
           intercept[IOException] { Transactions execute tx }
-          oneByte.exists should be (false)
+          file.exists should be (false)
           notExists.exists should be (false)
         }
       }
@@ -49,12 +49,12 @@ abstract class FileTransactionITSuite extends WordSpec {
     "participating in a composite transaction" which {
       "subsequently fails" should {
         "leave the source and destination files unmodified" in {
-          setUpAndLoan { (oneByte, notExists, tx1) =>
+          setUpAndLoan { (file, notExists, tx1) =>
             val tx2 = mock[Transaction]
             val ctx = new CompositeTransaction(tx1, tx2)
-            doThrow(new Exception) when(tx2) perform ()
-            intercept[Exception] { Transactions execute ctx }
-            oneByte.length should be (1)
+            doThrow(new UnsupportedOperationException) when(tx2) perform ()
+            intercept[UnsupportedOperationException] { Transactions execute ctx }
+            file.isFile should be (true)
             notExists.exists should be (false)
           }
         }

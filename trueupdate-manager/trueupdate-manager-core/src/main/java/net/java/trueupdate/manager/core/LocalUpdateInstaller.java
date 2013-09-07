@@ -14,6 +14,7 @@ import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.manager.core.io.Files.*;
 import net.java.trueupdate.manager.core.io.PathTask;
 import net.java.trueupdate.manager.core.tx.*;
+import net.java.trueupdate.manager.core.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.manager.spec.*;
 
 /**
@@ -33,6 +34,10 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
 
     private static final Logger logger =
             Logger.getLogger(LocalUpdateInstaller.class.getName());
+
+    private static final LoggerConfig loggerConfig = new LoggerConfig() {
+        @Override public Logger logger() { return logger; }
+    };
 
     /**
      * Returns the nullable temporary directory.
@@ -80,54 +85,66 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
 
         loanTempDir(new PathTask<Void, Exception>() {
             @Override public Void execute(final File tempDir) throws Exception {
-                final File updateJar = new File(tempDir, "update.jar");
+                final File updateJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
                 if (current.path().isFile()) {
                     Transactions.execute(new CompositeTransaction(
-                            new PathTaskTransaction(updateJar, new PatchTask(current.path())),
-                            undeploymentTransaction(update),
-                            new RenamePathTransaction(update.path(), backup),
-                            new RenamePathTransaction(updateJar, update.path()),
-                            deploymentTransaction(update)));
+                            timed("to patch the current application file",
+                                    new PathTaskTransaction(updateJar, new PatchTask(current.path()))),
+                            timed("to undeploy the current application",
+                                    undeploymentTransaction(update)),
+                            timed("to backup the current application file",
+                                    new RenamePathTransaction(update.path(), backup)),
+                            timed("to swap-in the updated application file",
+                                    new RenamePathTransaction(updateJar, update.path())),
+                            timed("to deploy the updated application",
+                                    deploymentTransaction(update))));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
-                    final File updateDir = new File(tempDir, "update.dir");
+                    final File updateDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
-                            new ZipTransaction(currentZip, current.path(), ""),
-                            new PathTaskTransaction(updateJar, new PatchTask(currentZip)),
-                            new UnzipTransaction(updateJar, updateDir),
-                            undeploymentTransaction(update),
-                            new RenamePathTransaction(update.path(), backup),
-                            new RenamePathTransaction(updateDir, update.path()),
-                            deploymentTransaction(update)));
+                            timed("to zip the current application directory",
+                                    new ZipTransaction(currentZip, current.path(), "")),
+                            timed("to patch the current application file",
+                                    new PathTaskTransaction(updateJar, new PatchTask(currentZip))),
+                            timed("to unzip the updated application file",
+                                    new UnzipTransaction(updateJar, updateDir)),
+                            timed("to undeploy the current application",
+                                    undeploymentTransaction(update)),
+                            timed("to backup the current application directory",
+                                    new RenamePathTransaction(update.path(), backup)),
+                            timed("to swap-in the updated application directory",
+                                    new RenamePathTransaction(updateDir, update.path())),
+                            timed("to deploy the updated application", deploymentTransaction(update))));
                 }
                 return null;
             }
         }, "dir", null, tempDir());
     }
 
+    private static File resolveDiffZip(final UpdateResolver resolver,
+                                       final UpdateDescriptor descriptor)
+            throws Exception {
+        final File diffZip = resolver.resolveDiffZip(descriptor);
+        logger.log(Level.FINER,
+                "Resolved ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
+                new Object[] { diffZip, descriptor.artifactDescriptor(),
+                        descriptor.updateVersion() });
+        return diffZip;
+    }
+
     private static Transaction undeploymentTransaction(Context context) {
         return context.path().exists()
                 ? context.undeploymentTransaction()
-                : new Transaction() {
-                    @Override protected void perform() throws Exception { }
-                    @Override protected void rollback() throws Exception { }
-                };
+                : Transactions.noOp();
     }
 
     private static Transaction deploymentTransaction(Context context) {
         return context.deploymentTransaction();
     }
 
-    private static File resolveDiffZip(final UpdateResolver resolver,
-                                       final UpdateDescriptor descriptor)
-    throws Exception {
-        final File diffZip = resolver.resolveDiffZip(descriptor);
-        logger.log(Level.FINER,
-                "Resolved ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { diffZip, descriptor.artifactDescriptor(),
-                               descriptor.updateVersion() });
-        return diffZip;
+    private static Transaction timed(String name, Transaction tx) {
+        return Transactions.timed(name, tx, loggerConfig);
     }
 
     /** The context for a location provided to the update installer. */

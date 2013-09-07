@@ -35,18 +35,18 @@ public final class ZipTransaction extends Transaction {
         this.entryName = requireNonNull(entryName);
     }
 
-    @Override protected void prepare() throws Exception {
+    @Override public void prepare() throws Exception {
         if (store.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing ZIP file or directory %s .",
                     store));
     }
 
-    @Override protected void perform() throws Exception {
+    @Override public void perform() throws Exception {
         zip(store, fileOrDirectory, entryName);
     }
 
-    @Override protected void rollback() throws IOException {
+    @Override public void rollback() throws IOException {
         store.delete();
     }
 }

@@ -31,14 +31,14 @@ public final class PathTaskTransaction extends Transaction {
         this.task = requireNonNull(task);
     }
 
-    @Override protected void prepare() throws Exception {
+    @Override public void prepare() throws Exception {
         if (path.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     path));
     }
 
-    @Override protected void perform() throws Exception {
+    @Override public void perform() throws Exception {
         task.execute(path);
         if (!path.exists())
             throw new IOException(String.format(
@@ -47,5 +47,5 @@ public final class PathTaskTransaction extends Transaction {
     }
 
     @Override
-    protected void rollback() throws IOException { deletePath(path); }
+    public void rollback() throws IOException { deletePath(path); }
 }

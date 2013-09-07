@@ -19,11 +19,11 @@ public final class CompositeTransaction extends Transaction {
         this.txs = txs.clone();
     }
 
-    @Override protected void prepare() throws Exception {
+    @Override public void prepare() throws Exception {
         if (0 != index) throw new IllegalStateException();
     }
 
-    @Override protected void perform() throws Exception {
+    @Override public void perform() throws Exception {
         while (index < txs.length) {
             final Transaction tx = txs[index];
             tx.prepare();
@@ -32,11 +32,11 @@ public final class CompositeTransaction extends Transaction {
         }
     }
 
-    @Override protected void rollback() throws Exception {
+    @Override public void rollback() throws Exception {
         while (0 < index) txs[--index].rollback();
     }
 
-    @Override protected void commit() throws Exception {
+    @Override public void commit() throws Exception {
         while (0 < index) txs[--index].commit();
     }
 }
