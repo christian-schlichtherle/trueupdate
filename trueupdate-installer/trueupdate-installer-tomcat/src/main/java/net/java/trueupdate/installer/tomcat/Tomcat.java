@@ -4,18 +4,17 @@
  */
 package net.java.trueupdate.installer.tomcat;
 
+import javax.annotation.CheckForNull;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import org.apache.catalina.Container;
-import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Server;
 import org.apache.catalina.Service;
-import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.HostConfig;
 
 /**
@@ -32,26 +31,30 @@ final class Tomcat {
                 try {
                     final Server server = (Server) mbs.getAttribute(on, "managedResource");
                     for (final Service service : server.findServices()) {
-                        if (service.getContainer() instanceof Engine) {
-                            final Engine engine = (Engine) service.getContainer();
-                            for (final Container engineChild : engine.findChildren()) {
-                                if (engineChild instanceof StandardHost) {
-                                    final Host host = (Host) engineChild;
-                                    for (final LifecycleListener listener : host.findLifecycleListeners()) {
-                                        if (listener instanceof HostConfig)
-                                            return (HostConfig) listener;
-                                    }
-                                }
-                            }
-                        }
+                        final HostConfig config = findHostConfig(service.getContainer());
+                        if (null != config) return config;
                     }
-
                 } catch (InstanceNotFoundException ex) {
                 } catch (AttributeNotFoundException ex) {
                 }
             }
         }
         throw new InstanceNotFoundException(pattern.toString());
+    }
+
+    private static @CheckForNull HostConfig findHostConfig(Container container) {
+        if (container instanceof Host) {
+            final Host host = (Host) container;
+            for (final LifecycleListener listener : host.findLifecycleListeners())
+                if (listener instanceof HostConfig)
+                    return (HostConfig) listener;
+        } else {
+            for (Container child : container.findChildren()) {
+                final HostConfig config = findHostConfig(child);
+                if (null != config) return config;
+            }
+        }
+        return null;
     }
 
     private Tomcat() { }
