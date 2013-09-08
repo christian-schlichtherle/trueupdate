@@ -26,5 +26,6 @@
         <module>trueupdate-installer-cargo</module>
         <module>trueupdate-installer-core</module>
         <module>trueupdate-installer-openejb</module>
+        <module>trueupdate-installer-tomcat</module>
     </modules>
 </project>
