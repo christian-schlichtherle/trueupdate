@@ -25,8 +25,8 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
     private @EJB Deployer deployer;
 
     @Override
-    protected Context resolveContext(final URI location,
-                                     final UpdateMessage message)
+    protected Context resolveContext(final UpdateMessage message,
+                                     final URI location)
     throws Exception {
 
         final File path = location.equals(message.currentLocation())

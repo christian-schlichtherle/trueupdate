@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.core;
 
+import java.io.File;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
@@ -19,13 +20,15 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
 public interface UpdateInstaller {
 
     /**
-     * Cooperates with the given update resolver to install the artifact update
-     * as described in the given update message.
+     * Updates the application described in the given update message using the
+     * given artifact diff zip file.
      *
-     * @param resolver the update resolver.
-     * @param message the update message.
+     * @param message the update message of the
+     *        {@linkplain UpdateMessage#type() type}
+     *        {@link UpdateMessage.Type#INSTALLATION_REQUEST}.
+     * @param diffZip the diff zip file for the current artifact.
+     *        The implementation must not modify or delete this file.
      * @throws Exception at the discretion of the implementation.
      */
-    void install(UpdateResolver resolver, UpdateMessage message)
-    throws Exception;
+    void install(UpdateMessage message, File diffZip) throws Exception;
 }

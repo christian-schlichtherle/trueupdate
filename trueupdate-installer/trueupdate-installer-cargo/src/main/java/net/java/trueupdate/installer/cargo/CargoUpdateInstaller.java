@@ -21,8 +21,8 @@ import net.java.trueupdate.manager.spec.UpdateMessage;
 public final class CargoUpdateInstaller extends LocalUpdateInstaller {
 
     @Override
-    protected Context resolveContext(final URI location,
-                                     final UpdateMessage message)
+    protected Context resolveContext(final UpdateMessage message,
+                                     final URI location)
     throws Exception {
 
         final CargoContext context = new CargoContext(location);

@@ -46,14 +46,14 @@ class LocalUpdateInstallerIT extends WordSpec {
     .build
 
   def updateInstaller = new LocalUpdateInstaller {
-    def resolveContext(location: URI, message: UpdateMessage) = new Context {
+    def resolveContext(message: UpdateMessage, location: URI) = new Context {
       def path() = new File(location)
       def deploymentTransaction() = mock[Transaction]
       def undeploymentTransaction() = mock[Transaction]
     }
   }
 
-  "A basic update installer" should {
+  "A local update installer" should {
     "install the update" in {
       loanTempDir(new PathTask[Unit, Exception] {
         def execute(tempDir: File) {
@@ -81,14 +81,11 @@ class LocalUpdateInstallerIT extends WordSpec {
             .build
             .output(diffZip)
 
-          val resolver = mock[UpdateResolver]
-          when(resolver resolveDiffZip any()) thenReturn diffZip
-
           val deployedZip = new File(tempDir, "deployed.zip")
           copyFile(input1Jar, deployedZip)
           deployedZip.length should be (input1Jar.length)
 
-          updateInstaller install (resolver, updateMessage(deployedZip))
+          updateInstaller install (updateMessage(deployedZip), diffZip)
           deployedZip.length should be (input2Jar.length)
 
           val deployedDir = new File(tempDir, "deployed.dir")
@@ -97,7 +94,7 @@ class LocalUpdateInstallerIT extends WordSpec {
 
           val deployedContent = new File(deployedDir, content.getName)
           deployedContent.length should be (1)
-          updateInstaller install (resolver, updateMessage(deployedDir))
+          updateInstaller install (updateMessage(deployedDir), diffZip)
           deployedContent.length should be (2)
         }
       }, "dir", null, null)

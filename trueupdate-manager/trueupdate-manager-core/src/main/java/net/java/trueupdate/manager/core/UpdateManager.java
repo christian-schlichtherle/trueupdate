@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.manager.core;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -20,15 +20,15 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
  * @author Christian Schlichtherle
  */
 @NotThreadSafe
-public abstract class BasicUpdateManager extends UpdateMessageListener {
+public abstract class UpdateManager extends UpdateMessageListener {
 
     private static final Logger
-            logger = Logger.getLogger(BasicUpdateManager.class.getName());
+            logger = Logger.getLogger(UpdateManager.class.getName());
 
     private final Map<ApplicationDescriptor, UpdateMessage>
             subscriptions = new HashMap<ApplicationDescriptor, UpdateMessage>();
 
-    private final BasicUpdateResolver
+    private final UpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
 
     /** Returns the update client. */
@@ -109,9 +109,11 @@ public abstract class BasicUpdateManager extends UpdateMessageListener {
     }
 
     private UpdateMessage install(final UpdateMessage message) {
+        final UpdateDescriptor descriptor = message.updateDescriptor();
         try {
-            updateInstaller().install(updateResolver, message);
-            updateResolver.release(message.updateDescriptor());
+            final File diffZip = updateResolver.resolveDiffZip(descriptor);
+            updateInstaller().install(message, diffZip);
+            updateResolver.release(descriptor);
             return installationSuccessResponse(message);
         } catch (RuntimeException ex) {
             throw ex;
@@ -172,9 +174,9 @@ public abstract class BasicUpdateManager extends UpdateMessageListener {
         return message;
     }
 
-    private class ConfiguredUpdateResolver extends BasicUpdateResolver {
+    private class ConfiguredUpdateResolver extends UpdateResolver {
         @Override protected UpdateClient updateClient() {
-            return BasicUpdateManager.this.updateClient();
+            return UpdateManager.this.updateClient();
         }
     } // ConfiguredUpdateResolver
 }

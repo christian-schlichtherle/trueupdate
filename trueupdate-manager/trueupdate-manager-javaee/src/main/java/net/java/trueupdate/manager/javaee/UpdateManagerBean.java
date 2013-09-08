@@ -23,7 +23,7 @@ import net.java.trueupdate.util.SystemProperties;
  * @author Christian Schlichtherle
  */
 @Singleton
-public class UpdateManagerBean extends BasicUpdateManager {
+public class UpdateManagerBean extends UpdateManager {
 
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
@@ -58,7 +58,7 @@ public class UpdateManagerBean extends BasicUpdateManager {
 
     @Override protected UpdateInstaller updateInstaller() { return installer; }
 
-    @PostConstruct private void init() {
+    @PostConstruct private void postConstruct() {
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 initConnection();

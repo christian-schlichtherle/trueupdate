@@ -48,22 +48,20 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     protected @Nullable File tempDir() { return null; }
 
     /**
-     * Resolves the context for the given location.
+     * Resolves the context for the given update message and location.
      *
      * @param location either {@code message.}{@link UpdateMessage#currentLocation currentLocation}
      *                 or {@code message.}{@link UpdateMessage#updateLocation updateLocation}.
      * @param message the update message as provided to the {@link #install}
      *                method.
      */
-    protected abstract Context resolveContext(URI location,
-                                              UpdateMessage message)
+    protected abstract Context resolveContext(UpdateMessage message,
+                                              URI location)
     throws Exception;
 
-    @Override public final void install(final UpdateResolver resolver,
-                                        final UpdateMessage message)
+    @Override public final void install(final UpdateMessage message,
+                                        final File diffZip)
     throws Exception {
-
-        final File diffZip = resolveDiffZip(resolver, message.updateDescriptor());
 
         class PatchTask implements PathTask<Void, Exception> {
 
@@ -80,8 +78,8 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
-        final Context current = resolveContext(message.currentLocation(), message);
-        final Context update = resolveContext(message.updateLocation(), message);
+        final Context current = resolveContext(message, message.currentLocation());
+        final Context update = resolveContext(message, message.updateLocation());
 
         loanTempDir(new PathTask<Void, Exception>() {
             @Override public Void execute(final File tempDir) throws Exception {
@@ -120,17 +118,6 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 return null;
             }
         }, "dir", null, tempDir());
-    }
-
-    private static File resolveDiffZip(final UpdateResolver resolver,
-                                       final UpdateDescriptor descriptor)
-            throws Exception {
-        final File diffZip = resolver.resolveDiffZip(descriptor);
-        logger.log(Level.FINER,
-                "Resolved ZIP diff file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { diffZip, descriptor.artifactDescriptor(),
-                        descriptor.updateVersion() });
-        return diffZip;
     }
 
     private static Transaction undeploymentTransaction(Context context) {
