@@ -216,11 +216,15 @@ public final class UpdateMessage implements Serializable {
      * message.
      */
     public ApplicationDescriptor applicationDescriptor() {
-        return ApplicationDescriptor
-                .builder()
-                .artifactDescriptor(artifactDescriptor())
-                .currentLocation(currentLocation())
-                .build();
+        try {
+            return ApplicationDescriptor
+                    .builder()
+                    .artifactDescriptor(artifactDescriptor())
+                    .currentLocation(currentLocation())
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**
@@ -228,11 +232,15 @@ public final class UpdateMessage implements Serializable {
      * message.
      */
     public UpdateDescriptor updateDescriptor() {
-        return UpdateDescriptor
-                .builder()
-                .artifactDescriptor(artifactDescriptor())
-                .updateVersion(updateVersion())
-                .build();
+        try {
+            return UpdateDescriptor
+                    .builder()
+                    .artifactDescriptor(artifactDescriptor())
+                    .updateVersion(updateVersion())
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**
