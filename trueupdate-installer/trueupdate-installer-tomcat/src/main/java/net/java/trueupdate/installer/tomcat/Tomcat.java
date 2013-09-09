@@ -4,13 +4,12 @@
  */
 package net.java.trueupdate.installer.tomcat;
 
-import javax.annotation.CheckForNull;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import org.apache.catalina.Container;
+import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Server;
@@ -31,8 +30,11 @@ final class Tomcat {
                 try {
                     final Server server = (Server) mbs.getAttribute(on, "managedResource");
                     for (final Service service : server.findServices()) {
-                        final HostConfig config = findHostConfig(service.getContainer());
-                        if (null != config) return config;
+                        final Engine engine = (Engine) service.getContainer();
+                        final Host host = (Host) engine.findChild(engine.getDefaultHost());
+                        for (final LifecycleListener listener : host.findLifecycleListeners())
+                            if (listener instanceof HostConfig)
+                                return (HostConfig) listener;
                     }
                 } catch (InstanceNotFoundException ex) {
                 } catch (AttributeNotFoundException ex) {
@@ -40,21 +42,6 @@ final class Tomcat {
             }
         }
         throw new InstanceNotFoundException(pattern.toString());
-    }
-
-    private static @CheckForNull HostConfig findHostConfig(Container container) {
-        if (container instanceof Host) {
-            final Host host = (Host) container;
-            for (final LifecycleListener listener : host.findLifecycleListeners())
-                if (listener instanceof HostConfig)
-                    return (HostConfig) listener;
-        } else {
-            for (Container child : container.findChildren()) {
-                final HostConfig config = findHostConfig(child);
-                if (null != config) return config;
-            }
-        }
-        return null;
     }
 
     private Tomcat() { }
