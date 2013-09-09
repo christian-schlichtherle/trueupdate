@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-core</artifactId>
+            <artifactId>trueupdate-installer-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.openejb</groupId>
