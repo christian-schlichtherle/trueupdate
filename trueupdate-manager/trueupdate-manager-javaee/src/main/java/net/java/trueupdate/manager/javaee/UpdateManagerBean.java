@@ -12,7 +12,7 @@ import javax.ejb.*;
 import javax.inject.Inject;
 import javax.jms.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.manager.core.*;
+import net.java.trueupdate.installer.core.*;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.SystemProperties;
 

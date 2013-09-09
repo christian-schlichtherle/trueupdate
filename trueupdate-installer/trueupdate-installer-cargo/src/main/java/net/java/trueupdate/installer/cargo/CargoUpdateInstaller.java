@@ -7,8 +7,8 @@ package net.java.trueupdate.installer.cargo;
 import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.manager.core.*;
-import net.java.trueupdate.manager.core.tx.Transaction;
+import net.java.trueupdate.installer.core.LocalUpdateInstaller;
+import net.java.trueupdate.installer.core.tx.Transaction;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
