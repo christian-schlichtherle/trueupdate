@@ -2,10 +2,9 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.core;
+package net.java.trueupdate.manager.spec;
 
 import java.io.File;
-import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
  * Cooperates with an update resolver to install artifact updates.

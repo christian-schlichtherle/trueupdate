@@ -6,7 +6,7 @@ package net.java.trueupdate.installer.openejb;
 
 import java.util.logging.Logger;
 import javax.inject.Inject;
-import net.java.trueupdate.manager.core.UpdateInstaller;
+import net.java.trueupdate.manager.spec.UpdateInstaller;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
