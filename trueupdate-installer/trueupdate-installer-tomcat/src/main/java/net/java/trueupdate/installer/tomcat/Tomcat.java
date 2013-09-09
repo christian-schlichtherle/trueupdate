@@ -22,9 +22,10 @@ final class Tomcat {
                 try {
                     final Engine engine = (Engine) mbs.getAttribute(on, "managedResource");
                     final Host host = (Host) engine.findChild(engine.getDefaultHost());
-                    for (final LifecycleListener listener : host.findLifecycleListeners())
-                        if (listener instanceof HostConfig)
-                            return (HostConfig) listener;
+                    if (null != host)
+                        for (final LifecycleListener listener : host.findLifecycleListeners())
+                            if (listener instanceof HostConfig)
+                                return (HostConfig) listener;
                 } catch (InstanceNotFoundException ex) {
                 } catch (AttributeNotFoundException ex) {
                 }
