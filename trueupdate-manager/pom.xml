@@ -23,7 +23,6 @@
     </description>
 
     <modules>
-        <module>trueupdate-manager-app-openejb</module>
         <module>trueupdate-manager-core</module>
         <module>trueupdate-manager-javaee</module>
         <module>trueupdate-manager-spec</module>

@@ -10,17 +10,17 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-server</artifactId>
+        <artifactId>trueupdate-server-app</artifactId>
         <version>0.1.10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-server-app-javaee</artifactId>
+    <artifactId>trueupdate-server-app-tomcat</artifactId>
     <packaging>war</packaging>
 
-    <name>TrueUpdate Server Application Java EE</name>
+    <name>TrueUpdate Server Application Tomcat</name>
     <description>
-        Bundles the TrueUpdate Server components for deployment to a generic
-        Java EE container.
+        Bundles the TrueUpdate Server components for deployment to a Tomcat
+        container.
     </description>
 
     <properties>
@@ -32,6 +32,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-server-maven</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
         </dependency>
         <!--dependency>
             <groupId>ch.qos.logback</groupId>

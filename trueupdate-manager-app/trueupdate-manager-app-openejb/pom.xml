@@ -8,7 +8,7 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-manager</artifactId>
+        <artifactId>trueupdate-manager-app</artifactId>
         <version>0.1.10-SNAPSHOT</version>
     </parent>
 
@@ -17,8 +17,8 @@
 
     <name>TrueUpdate Manager Application OpenEJB</name>
     <description>
-        Bundles the TrueUpdate Manager components for deployment to an OpenEJB
-        container.
+        Bundles the TrueUpdate Manager and TrueUpdate Installer components for
+        deployment to an OpenEJB container.
     </description>
 
     <dependencies>

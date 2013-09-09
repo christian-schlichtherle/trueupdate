@@ -12,15 +12,16 @@
         <version>0.1.10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-server</artifactId>
+    <artifactId>trueupdate-server-app</artifactId>
     <packaging>pom</packaging>
 
-    <name>TrueUpdate Server</name>
+    <name>TrueUpdate Server Application</name>
     <description>
-        The parent POM for TrueUpdate Server modules.
+        The parent POM for TrueUpdate Server Application modules.
     </description>
 
     <modules>
-        <module>trueupdate-server-maven</module>
+        <module>trueupdate-server-app-javaee</module>
+        <module>trueupdate-server-app-tomcat</module>
     </modules>
 </project>
