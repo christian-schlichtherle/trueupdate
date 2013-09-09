@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.manager.javaee;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.*;
 import java.util.concurrent.Callable;
 import java.util.logging.*;
@@ -77,7 +76,7 @@ public class UpdateManagerBean extends UpdateManager {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new UndeclaredThrowableException(ex);
+            throw new EJBException(ex);
         }
     }
 
