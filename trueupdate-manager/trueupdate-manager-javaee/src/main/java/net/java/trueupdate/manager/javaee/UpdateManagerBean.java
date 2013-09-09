@@ -48,24 +48,42 @@ public class UpdateManagerBean extends UpdateManager {
     @Inject
     private UpdateInstaller installer;
 
-    @Override protected UpdateClient updateClient() {
-        return new UpdateClient(updateServiceBaseUri());
-    }
-
-    private URI updateServiceBaseUri() {
-        return URI.create(SystemProperties.resolve(updateServiceBaseString));
-    }
-
-    @Override protected UpdateInstaller updateInstaller() { return installer; }
+    private UpdateClient client;
 
     @PostConstruct private void postConstruct() {
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
+                initClient();
                 initConnection();
                 initTimer();
                 return null;
             }
         });
+    }
+
+    @PreDestroy private void preDestroy() {
+        wrap(new Callable<Void>() {
+            @Override public Void call() throws Exception {
+                try { shutdown(); }
+                finally { closeConnection(); }
+                return null;
+            }
+        });
+    }
+
+    private static @Nullable <V> V wrap(final Callable<V> task) {
+        try {
+            return task.call();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
+
+    private void initClient() throws URISyntaxException {
+        client = new UpdateClient(new URI(SystemProperties.resolve(
+                updateServiceBaseString)));
     }
 
     private void initConnection() throws JMSException {
@@ -80,30 +98,11 @@ public class UpdateManagerBean extends UpdateManager {
         timerService.createTimer(intervalMillis, intervalMillis, null);
     }
 
-    @PreDestroy private void preDestroy() {
-        wrap(new Callable<Void>() {
-            @Override public Void call() throws Exception {
-                try {
-                    shutdown();
-                } finally {
-                    closeConnection();
-                }
-                return null;
-            }
-        });
-    }
-
     private void closeConnection() throws JMSException { connection.close(); }
 
-    private static @Nullable <V> V wrap(final Callable<V> task) {
-        try {
-            return task.call();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new UndeclaredThrowableException(ex);
-        }
-    }
+    @Override protected UpdateClient updateClient() { return client; }
+
+    @Override protected UpdateInstaller updateInstaller() { return installer; }
 
     @Timeout @Override protected void checkUpdates() throws Exception {
         super.checkUpdates();
