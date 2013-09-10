@@ -37,8 +37,8 @@ public abstract class UpdateManager extends UpdateMessageListener {
     /** Returns the update installer. */
     protected abstract UpdateInstaller updateInstaller();
 
-    protected void shutdown() throws Exception {
-        try { updateResolver.shutdown(); }
+    public void close() throws Exception {
+        try { updateResolver.close(); }
         finally { persistSubscriptions(); }
     }
 

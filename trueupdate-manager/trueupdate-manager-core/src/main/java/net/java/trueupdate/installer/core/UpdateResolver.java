@@ -82,7 +82,7 @@ abstract class UpdateResolver {
         return diffZip;
     }
 
-    final void shutdown() {
+    final void close() {
         for (final Iterator<FileAccount> it = accounts.values().iterator();
                 it.hasNext(); ) {
             deleteResolvedFile(it.next());

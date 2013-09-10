@@ -11,8 +11,8 @@ import javax.annotation.*;
 import javax.ejb.*;
 import javax.inject.Inject;
 import javax.jms.*;
-import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.installer.core.*;
+import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.SystemProperties;
 
@@ -52,9 +52,7 @@ public class UpdateManagerBean extends UpdateManager {
     @PostConstruct private void postConstruct() {
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                initClient();
-                initConnection();
-                initTimer();
+                open();
                 return null;
             }
         });
@@ -63,8 +61,7 @@ public class UpdateManagerBean extends UpdateManager {
     @PreDestroy private void preDestroy() {
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                try { shutdown(); }
-                finally { closeConnection(); }
+                close();
                 return null;
             }
         });
@@ -80,6 +77,12 @@ public class UpdateManagerBean extends UpdateManager {
         }
     }
 
+    private void open() throws Exception {
+        initClient();
+        initConnection();
+        initTimer();
+    }
+
     private void initClient() throws URISyntaxException {
         client = new UpdateClient(new URI(SystemProperties.resolve(
                 updateServiceBaseString)));
@@ -91,10 +94,15 @@ public class UpdateManagerBean extends UpdateManager {
 
     private void initTimer() {
         logger.log(Level.CONFIG,
-                "The configured update interval is {0} minutes.",
+                "The configured interval for update checks is {0} minutes.",
                 checkUpdatesIntervalMinutes);
         final long intervalMillis = checkUpdatesIntervalMinutes * 60L * 1000;
         timerService.createTimer(intervalMillis, intervalMillis, null);
+    }
+
+    @Override public void close() throws Exception {
+        try { super.close(); }
+        finally { closeConnection(); }
     }
 
     private void closeConnection() throws JMSException { connection.close(); }
