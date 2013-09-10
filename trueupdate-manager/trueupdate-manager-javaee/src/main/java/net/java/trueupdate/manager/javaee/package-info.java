@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update manager for updating Java EE applications.
+ * Provides an update manager which depends on the Java EE API.
  *
  * @author Christian Schlichtherle
  */

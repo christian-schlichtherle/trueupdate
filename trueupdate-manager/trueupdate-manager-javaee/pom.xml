@@ -17,7 +17,7 @@
 
     <name>TrueUpdate Manager Java EE</name>
     <description>
-        Provides an update manager for updating Java EE applications.
+        Provides an update manager which depends on the Java EE API.
     </description>
 
     <dependencies>

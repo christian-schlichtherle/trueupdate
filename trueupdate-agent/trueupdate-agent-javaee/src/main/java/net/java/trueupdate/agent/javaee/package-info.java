@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update agent for updating a Java EE application.
+ * Provides an update agent which depends on the Java EE API.
  *
  * @author Christian Schlichtherle
  */

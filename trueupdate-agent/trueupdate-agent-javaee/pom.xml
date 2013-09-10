@@ -17,7 +17,7 @@
 
     <name>TrueUpdate Agent Java EE</name>
     <description>
-        Provides an update agent for updating a Java EE application.
+        Provides an update agent which depends on the Java EE API.
     </description>
 
     <dependencies>
