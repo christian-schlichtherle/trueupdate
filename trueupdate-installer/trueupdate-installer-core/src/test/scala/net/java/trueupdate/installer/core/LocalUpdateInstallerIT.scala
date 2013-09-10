@@ -18,7 +18,7 @@ import net.java.trueupdate.installer.core.LocalUpdateInstaller.Context
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.installer.core.io.PathTask
-import net.java.trueupdate.manager.spec.UpdateMessage
+import net.java.trueupdate.manager.spec._
 import net.java.trueupdate.manager.spec.UpdateMessage.Type
 
 /**
@@ -43,7 +43,7 @@ class LocalUpdateInstallerIT extends WordSpec {
     .updateLocation(deployedPath.toURI)
     .build
 
-  def updateInstaller = new LocalUpdateInstaller {
+  def updateInstaller: UpdateInstaller = new LocalUpdateInstaller {
     def resolveContext(message: UpdateMessage, location: URI) = new Context {
       def path() = new File(location)
       def deploymentTransaction() = mock[Transaction]

@@ -55,13 +55,13 @@ public class Transactions {
 
     /** Returns a transaction which does nothing. */
     public static Transaction noOp() {
-        return new NoOpTransaction();
+        return new NullTransaction();
     }
 
-    private static class NoOpTransaction extends Transaction {
+    private static class NullTransaction extends Transaction {
         @Override public void perform() throws Exception { }
         @Override public void rollback() throws Exception { }
-    } // NoOpTransaction
+    } // NullTransaction
 
     /**
      * Wraps the named transaction in another transaction which logs the
