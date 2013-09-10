@@ -231,12 +231,14 @@ public final class Files {
      *         cannot get deleted, e.g. because of insufficient access
      *         permissions.
      */
-    public static void deletePath(final @CheckForNull File file)
-    throws IOException {
-        if (null == file || file.delete()) return;
-        if (file.isDirectory())
-            for (File member : file.listFiles())
-                deletePath(member);
+    public static void deletePath(final File file) throws IOException {
+        if (file.delete()) return;
+        if (file.isDirectory()) {
+            final File[] members = file.listFiles();
+            if (null != members)
+                for (File member : members)
+                    deletePath(member);
+        }
         if (!file.delete() && file.exists())
             throw new IOException(String.format("Cannot delete %s .", file));
     }
