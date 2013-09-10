@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.java.trueupdate</groupId>
+        <artifactId>trueupdate-manager-app</artifactId>
+        <version>0.1.10-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>trueupdate-manager-app-tomcat</artifactId>
+    <packaging>war</packaging>
+
+    <name>TrueUpdate Manager Application Tomcat</name>
+    <description>
+        Bundles the TrueUpdate Manager and TrueUpdate Installer components for
+        deployment to a Tomcat container.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-manager-mini</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-installer-tomcat</artifactId>
+        </dependency>
+    </dependencies>
+</project>

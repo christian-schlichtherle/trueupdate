@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <context-param>
+        <description>
+            The base URI of the TrueUpdate Server application, ending
+            with a slash forward character.
+
+            If the string contains references of the form
+            ${key}, then they get replaced with the value of
+            the system property with the specified key.
+            E.g. "http://localhost/\${user.name}/trueupdate-server/".
+        </description>
+        <param-name>updateServiceBaseUri</param-name>
+        <param-value>http://localhost:8080/trueupdate-server/</param-value>
+    </context-param>
+    <context-param>
+        <description>
+            The interval for checking for artifact updates in minutes.
+        </description>
+        <param-name>checkUpdatesIntervalMinutes</param-name>
+        <param-value>720</param-value>
+    </context-param>
+    <context-param>
+        <description>
+            Maps the parameter name to a JNDI name for lookup.
+        </description>
+        <param-name>jms/ConnectionFactory</param-name>
+        <param-value>java:comp/DefaultJMSConnectionFactory</param-value>
+    </context-param>
+    <context-param>
+        <description>
+            Maps the parameter name to a JNDI name for lookup.
+        </description>
+        <param-name>jms/TrueUpdate Agent</param-name>
+        <param-value>jms/TrueUpdate Agent</param-value>
+    </context-param>
+    <context-param>
+        <description>
+            Maps the parameter name to a JNDI name for lookup.
+        </description>
+        <param-name>jms/TrueUpdate Manager</param-name>
+        <param-value>jms/TrueUpdate Manager</param-value>
+    </context-param>
+</web-app>

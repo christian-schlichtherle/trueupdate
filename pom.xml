@@ -170,6 +170,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-installer-tomcat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-jaxrs-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -204,6 +209,11 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-javaee</artifactId>
                 <type>ejb</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-mini</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -285,6 +295,12 @@
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms-api</artifactId>
+                <version>1.1-rev-1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
