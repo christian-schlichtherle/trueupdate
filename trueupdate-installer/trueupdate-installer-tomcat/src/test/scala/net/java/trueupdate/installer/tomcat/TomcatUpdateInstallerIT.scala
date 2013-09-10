@@ -57,7 +57,7 @@ object TomcatUpdateInstallerIT {
 
   def testArchive = ShrinkWrap
     .create(classOf[WebArchive])
-    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml") // can't be empty
+    .addClass(classOf[GoodbyeWorld])
 
   def updateArchive = ShrinkWrap
     .create(classOf[WebArchive])
