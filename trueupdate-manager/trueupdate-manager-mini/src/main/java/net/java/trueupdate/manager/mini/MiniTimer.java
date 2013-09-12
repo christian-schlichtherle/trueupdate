@@ -5,23 +5,24 @@
 package net.java.trueupdate.manager.mini;
 
 import java.util.logging.*;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.ThreadSafe;
 import net.java.trueupdate.installer.core.UpdateManager;
 
 /**
  * @author Christian Schlichtherle
  */
-@Immutable
-final class UpdateManagerPollingDaemon implements Runnable {
+@ThreadSafe
+final class MiniTimer implements Runnable {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateManagerPollingDaemon.class.getName());
+            logger = Logger.getLogger(MiniTimer.class.getName());
 
     private final UpdateManager updateManager;
     private final int checkUpdatesIntervalMinutes;
+    private boolean closed;
 
-    UpdateManagerPollingDaemon(
-            final MiniUpdateManager updateManager,
+    MiniTimer(
+            final UpdateManager updateManager,
             final int checkUpdatesIntervalMinutes) {
         assert null != updateManager;
         this.updateManager = updateManager;
@@ -42,11 +43,23 @@ final class UpdateManagerPollingDaemon implements Runnable {
                 final long sleepMillis = intervalMillis - durationMillis;
                 if (0 < sleepMillis) Thread.sleep(sleepMillis);
                 startedMillis = System.currentTimeMillis();
-                updateManager.checkUpdates();
+                synchronized (this) {
+                    if (closed) break;
+                    updateManager.checkUpdates();
+                }
             } catch (InterruptedException ex) {
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, "Checking for updates failed.", ex);
             }
         }
+    }
+
+    /**
+     * Asynchronously closes this timer.
+     * After the call to this method, the client may safely assume that this
+     * timer will not call {@link UpdateManager#checkUpdates} anymore.
+     */
+    public synchronized void close() {
+        closed = true;
     }
 }
