@@ -94,18 +94,11 @@ public class UpdateManagerBean extends UpdateManager {
 
     private void initTimer() {
         logger.log(Level.CONFIG,
-                "The configured interval for update checks is {0} minutes.",
+                "Interval for checking for updates is {0} minutes.",
                 checkUpdatesIntervalMinutes);
         final long intervalMillis = checkUpdatesIntervalMinutes * 60L * 1000;
         timerService.createTimer(intervalMillis, intervalMillis, null);
     }
-
-    @Override public void close() throws Exception {
-        try { super.close(); }
-        finally { closeConnection(); }
-    }
-
-    private void closeConnection() throws JMSException { connection.close(); }
 
     @Override protected UpdateClient updateClient() { return client; }
 
@@ -127,4 +120,12 @@ public class UpdateManagerBean extends UpdateManager {
         }
         return message;
     }
+
+    @Override public void close() throws Exception {
+        // HC SUNT DRACONIS!
+        super.close();
+        closeConnection();
+    }
+
+    private void closeConnection() throws JMSException { connection.close(); }
 }

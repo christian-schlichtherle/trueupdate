@@ -35,16 +35,7 @@ public abstract class UpdateManager extends UpdateMessageListener {
     /** Returns the update installer. */
     protected abstract UpdateInstaller updateInstaller();
 
-    public void close() throws Exception {
-        try { updateResolver.close(); }
-        finally { persistSubscriptions(); }
-    }
-
-    private void persistSubscriptions() throws Exception {
-        for (UpdateMessage subscription : subscriptions.values())
-            send(subscription.type(SUBSCRIPTION_NOTICE));
-    }
-
+    /** Checks for updates and notifies the subscribed agents. */
     public void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
@@ -170,6 +161,26 @@ public abstract class UpdateManager extends UpdateMessageListener {
     private static UpdateMessage logSent(final UpdateMessage message) {
         logger.log(Level.FINER, "Sent update message to update agent:\n{0}", message);
         return message;
+    }
+
+    /**
+     * Closes this update manager.
+     * This method is idempotent.
+     * However, it's the caller's responsibility to make sure that this update
+     * manager isn't used anymore after the call to this method, even if it
+     * fails.
+     */
+    public void close() throws Exception {
+        updateResolver.close();
+        persistSubscriptions();
+    }
+
+    private void persistSubscriptions() throws Exception {
+        for (final Iterator<UpdateMessage> it = subscriptions.values().iterator();
+                it.hasNext(); ) {
+            send(it.next().type(SUBSCRIPTION_NOTICE));
+            it.remove();
+        }
     }
 
     private class ConfiguredUpdateResolver extends UpdateResolver {

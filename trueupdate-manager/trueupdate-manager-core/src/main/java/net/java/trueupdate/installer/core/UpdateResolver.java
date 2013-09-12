@@ -82,6 +82,10 @@ abstract class UpdateResolver {
         return diffZip;
     }
 
+    /**
+     * Closes this update resolver.
+     * This method is idempotent.
+     */
     final void close() {
         for (final Iterator<FileAccount> it = accounts.values().iterator();
                 it.hasNext(); ) {
