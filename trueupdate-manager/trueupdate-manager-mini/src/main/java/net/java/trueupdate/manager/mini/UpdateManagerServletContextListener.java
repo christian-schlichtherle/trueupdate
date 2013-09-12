@@ -26,6 +26,7 @@ implements ServletContextListener {
     private static final Logger logger = Logger.getLogger(
             UpdateManagerServletContextListener.class.getName());
 
+    private MiniUpdateManager updateManager;
     private UpdateManagerPollingDaemon pollingDaemon;
     private UpdateManagerMessageListener messageListener;
 
@@ -42,22 +43,22 @@ implements ServletContextListener {
                 } catch (NamingException ex) {
                     throw new IllegalStateException(ex);
                 }
-            }
-
-            UpdateManagerPollingDaemon pollingDaemon() {
-                return new UpdateManagerPollingDaemon(
+                updateManager = new MiniUpdateManager(
                         connection(),
                         (Destination) lookup("jms/TrueUpdate Agent"),
                         updateClient(),
-                        updateInstaller(),
+                        updateInstaller());
+            }
+
+            UpdateManagerPollingDaemon pollingDaemon() {
+                return new UpdateManagerPollingDaemon(updateManager,
                         checkUpdatesIntervalMinutes());
             }
 
             UpdateManagerMessageListener messageListener() {
                 return new UpdateManagerMessageListener(
-                        connection(),
-                        (Destination) lookup("jms/TrueUpdate Manager"),
-                        pollingDaemon);
+                        updateManager, connection(),
+                        (Destination) lookup("jms/TrueUpdate Manager"));
             }
 
             Connection connection() {
@@ -121,7 +122,7 @@ implements ServletContextListener {
     @Override public void contextDestroyed(ServletContextEvent sce) {
         try {
             try { messageListener.close(); }
-            finally { pollingDaemon.close(); }
+            finally { updateManager.close(); }
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {

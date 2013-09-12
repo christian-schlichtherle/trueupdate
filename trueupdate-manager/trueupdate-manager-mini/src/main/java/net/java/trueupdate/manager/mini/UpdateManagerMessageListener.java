@@ -29,15 +29,15 @@ final class UpdateManagerMessageListener implements Runnable, MessageListener {
     private volatile MessageConsumer messageConsumer;
 
     UpdateManagerMessageListener(
+            final UpdateManager um,
             final Connection c,
-            final Destination d,
-            final UpdateManager um) {
+            final Destination d) {
+        assert null != um;
         assert null != c;
         assert null != d;
-        assert null != um;
+        this.updateManager = um;
         this.connection = c;
         this.destination = d;
-        this.updateManager = um;
     }
 
     public void close() throws Exception {
