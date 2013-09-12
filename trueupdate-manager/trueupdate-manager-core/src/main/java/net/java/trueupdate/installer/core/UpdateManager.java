@@ -7,7 +7,6 @@ package net.java.trueupdate.installer.core;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import javax.annotation.concurrent.NotThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
@@ -19,7 +18,6 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
  *
  * @author Christian Schlichtherle
  */
-@NotThreadSafe
 public abstract class UpdateManager extends UpdateMessageListener {
 
     private static final Logger
@@ -47,7 +45,7 @@ public abstract class UpdateManager extends UpdateMessageListener {
             send(subscription.type(SUBSCRIPTION_NOTICE));
     }
 
-    protected void checkUpdates() throws Exception {
+    public void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",

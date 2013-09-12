@@ -111,7 +111,7 @@ public class UpdateManagerBean extends UpdateManager {
 
     @Override protected UpdateInstaller updateInstaller() { return installer; }
 
-    @Timeout @Override protected void checkUpdates() throws Exception {
+    @Timeout @Override public void checkUpdates() throws Exception {
         super.checkUpdates();
     }
 
