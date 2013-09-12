@@ -32,7 +32,7 @@
             Maps the parameter name to a JNDI name for lookup.
         </description>
         <param-name>jms/ConnectionFactory</param-name>
-        <param-value>java:comp/DefaultJMSConnectionFactory</param-value>
+        <param-value>jms/ConnectionFactory</param-value>
     </context-param>
     <context-param>
         <description>
