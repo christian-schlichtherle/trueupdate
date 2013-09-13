@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
-import static net.java.trueupdate.shed.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * Provides a high-performance copy function.
