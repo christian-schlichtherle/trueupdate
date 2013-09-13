@@ -74,7 +74,6 @@
 
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 
-        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.jdkPlatform>JDK_1.${javase.version}</netbeans.hint.jdkPlatform>
         <netbeans.hint.j2eeVersion>1.${javaee.version}</netbeans.hint.j2eeVersion>
 
