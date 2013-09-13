@@ -38,13 +38,6 @@
         <description>
             Maps the parameter name to a JNDI name for lookup.
         </description>
-        <param-name>jms/TrueUpdate Agent</param-name>
-        <param-value>jms/TrueUpdate Agent</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Maps the parameter name to a JNDI name for lookup.
-        </description>
         <param-name>jms/TrueUpdate Manager</param-name>
         <param-value>jms/TrueUpdate Manager</param-value>
     </context-param>

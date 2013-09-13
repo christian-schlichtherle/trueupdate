@@ -7,6 +7,7 @@ package net.java.trueupdate.manager.mini;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
+import javax.naming.Context;
 import net.java.trueupdate.installer.core.UpdateManager;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
@@ -22,21 +23,21 @@ import net.java.trueupdate.manager.spec.*;
 final class MiniUpdateManager extends UpdateManager {
 
     private final @WillCloseWhenClosed Connection connection;
-    private final Destination destination;
+    private final Context context;
     private final UpdateClient updateClient;
     private final UpdateInstaller updateInstaller;
 
     MiniUpdateManager(
             final ConnectionFactory factory,
-            final Destination destination,
+            final Context context,
             final UpdateClient updateClient,
             final UpdateInstaller updateInstaller)
     throws JMSException {
-        assert null != destination;
+        assert null != context;
         assert null != updateClient;
         assert null != updateInstaller;
         this.connection = factory.createConnection();
-        this.destination = destination;
+        this.context = context;
         this.updateClient = updateClient;
         this.updateInstaller = updateInstaller;
     }
@@ -49,6 +50,8 @@ final class MiniUpdateManager extends UpdateManager {
 
     @Override
     protected UpdateMessage send(final UpdateMessage message) throws Exception {
+        final Destination destination = (Destination)
+                context.lookup(message.to().toString());
         final Session s = connection.createSession(false,
                                                    Session.AUTO_ACKNOWLEDGE);
         try {

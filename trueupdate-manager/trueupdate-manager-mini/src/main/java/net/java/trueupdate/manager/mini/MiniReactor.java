@@ -26,7 +26,7 @@ final class MiniReactor {
             logger = Logger.getLogger(MiniReactor.class.getName());
 
     private final ServletContext servletContext;
-    private final InitialContext initialContext;
+    private final Context namingContext;
     private final MiniUpdateManager manager;
     private final MiniTimer timer;
     private final MiniListener listener;
@@ -34,18 +34,19 @@ final class MiniReactor {
     MiniReactor(final ServletContext servletContext)
     throws NamingException, JMSException {
         this.servletContext = servletContext;
-        this.initialContext = new InitialContext();
-        final ConnectionFactory connectionFactory = connectionFactory();
+        this.namingContext = new InitialContext();
+        final ConnectionFactory connectionFactory = (ConnectionFactory)
+                lookup("jms/ConnectionFactory");
         this.manager = new MiniUpdateManager(
                 connectionFactory,
-                destination("jms/TrueUpdate Agent"),
+                namingContext,
                 updateClient(),
                 updateInstaller());
         this.timer = new MiniTimer(manager,
                 checkUpdatesIntervalMinutes());
         this.listener = new MiniListener(manager,
                 connectionFactory,
-                destination("jms/TrueUpdate Manager"));
+                (Destination) lookup("jms/TrueUpdate Manager"));
     }
 
     Thread timer() {
@@ -58,14 +59,6 @@ final class MiniReactor {
         return new Thread(listener, "TrueUpdate Manager Mini Listener Daemon") {
             { super.setDaemon(true); }
         };
-    }
-
-    private ConnectionFactory connectionFactory() throws NamingException {
-            return (ConnectionFactory) lookup("jms/ConnectionFactory");
-    }
-
-    private Destination destination(String name) throws NamingException {
-        return (Destination) lookup(name);
     }
 
     private UpdateClient updateClient() {
@@ -93,8 +86,8 @@ final class MiniReactor {
         return ui;
     }
 
-    private Object lookup(final String name) throws NamingException {
-        return initialContext.lookup(initParameter(name));
+    private Object lookup(String name) throws NamingException {
+        return namingContext.lookup(initParameter(name));
     }
 
     private String initParameter(String name) {
