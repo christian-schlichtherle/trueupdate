@@ -26,7 +26,12 @@ public class UpdateAgentMessageDispatcher extends UpdateMessageListener {
     private final Map<ApplicationDescriptor, ApplicationAccount>
             accounts = new HashMap<ApplicationDescriptor, ApplicationAccount>();
 
-    /** Returns the capacity of the queue to use for update messages. */
+    /**
+     * Returns the capacity of the queue to use for update messages.
+     * If the capacity is fully utilized when enqueing a message, the oldest
+     * message gets discarded.
+     * The default value is {@code 100}.
+     */
     protected int capacity() { return 100; }
 
     /**
@@ -134,8 +139,7 @@ final class ApplicationAccount {
     private final Queue<UpdateMessage> queue;
     private @CheckForNull ApplicationListener listener;
 
-    public ApplicationAccount(
-            final int capacity) {
+    public ApplicationAccount(final int capacity) {
         if (0 >= capacity) throw new IllegalArgumentException();
         this.queue = new LinkedBlockingQueue<UpdateMessage>(capacity);
     }
