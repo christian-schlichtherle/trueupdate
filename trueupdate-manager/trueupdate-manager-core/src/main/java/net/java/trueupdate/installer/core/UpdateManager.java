@@ -83,13 +83,13 @@ public abstract class UpdateManager extends UpdateMessageListener {
 
     @Override protected void onSubscriptionRequest(final UpdateMessage message)
     throws Exception {
-        sendAndLog(subscribe(logReceived(message)));
+        subscribe(logReceived(message));
+        sendAndLog(message.successResponse());
         checkUpdates();
     }
 
-    private UpdateMessage subscribe(final UpdateMessage message) {
+    private void subscribe(final UpdateMessage message) {
         subscriptions.put(message.applicationDescriptor(), message);
-        return message.successResponse();
     }
 
     @Override protected void onInstallationRequest(UpdateMessage message)
@@ -137,12 +137,12 @@ public abstract class UpdateManager extends UpdateMessageListener {
 
     @Override protected void onUnsubscriptionRequest(UpdateMessage message)
     throws Exception {
-        sendAndLog(unsubscribe(logReceived(message)));
+        unsubscribe(logReceived(message));
+        sendAndLog(message.successResponse());
     }
 
-    private UpdateMessage unsubscribe(final UpdateMessage message) {
+    private void unsubscribe(final UpdateMessage message) {
         subscriptions.remove(message.applicationDescriptor());
-        return message.successResponse();
     }
 
     private UpdateMessage sendAndLog(UpdateMessage message) throws Exception {

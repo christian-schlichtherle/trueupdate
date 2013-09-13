@@ -346,14 +346,6 @@ public final class UpdateMessage implements Serializable {
 
             @Override public boolean forManager() { return true; }
 
-            @Override public Type successResponse() {
-                return SUBSCRIPTION_SUCCESS_RESPONSE;
-            }
-
-            @Override public Type failureResponse() {
-                return SUBSCRIPTION_FAILURE_RESPONSE;
-            }
-
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -457,14 +449,6 @@ public final class UpdateMessage implements Serializable {
         UNSUBSCRIPTION_NOTICE {
 
             @Override public boolean forManager() { return true; }
-
-            @Override public Type successResponse() {
-                return UNSUBSCRIPTION_SUCCESS_RESPONSE;
-            }
-
-            @Override public Type failureResponse() {
-                return UNSUBSCRIPTION_FAILURE_RESPONSE;
-            }
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
