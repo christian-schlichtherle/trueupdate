@@ -37,8 +37,8 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
         send(INSTALLATION_REQUEST, version);
     }
 
-    private UpdateMessage send(final UpdateMessage.Type type,
-                               final @Nullable String updateVersion)
+    private void send(final UpdateMessage.Type type,
+                      final @Nullable String updateVersion)
     throws UpdateAgentException {
         final ApplicationParameters ap = applicationParameters();
         final ApplicationDescriptor ad = ap.applicationDescriptor();
@@ -52,11 +52,11 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
                     .updateLocation(ap.updateLocation())
                     .updateVersion(updateVersion)
                     .build();
-        try { return send(message); }
+        try { send(message); }
         catch (RuntimeException ex) { throw ex; }
         catch (Exception ex) { throw new UpdateAgentException(ex); }
     }
 
-    protected abstract UpdateMessage send(UpdateMessage message)
+    protected abstract void send(UpdateMessage message)
     throws Exception;
 }

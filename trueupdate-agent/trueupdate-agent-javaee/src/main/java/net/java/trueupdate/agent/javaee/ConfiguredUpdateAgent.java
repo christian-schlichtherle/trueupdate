@@ -54,7 +54,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     }
 
     @Override
-    protected UpdateMessage send(final UpdateMessage message) throws Exception {
+    protected void send(final UpdateMessage message) throws Exception {
         final Connection c = connectionFactory.createConnection();
         try {
             final Session s = c.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -64,6 +64,5 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         } finally {
             c.close();
         }
-        return message;
     }
 }
