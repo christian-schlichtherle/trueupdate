@@ -5,9 +5,7 @@
 package net.java.trueupdate.agent.core;
 
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.*;
-import javax.annotation.*;
 import javax.annotation.concurrent.*;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
@@ -132,30 +130,4 @@ public class UpdateAgentMessageDispatcher extends UpdateMessageListener {
     private ApplicationListener applicationListener(UpdateMessage message) {
         return account(message.applicationDescriptor()).listener();
     }
-}
-
-final class ApplicationAccount {
-
-    private final Queue<UpdateMessage> queue;
-    private @CheckForNull ApplicationListener listener;
-
-    public ApplicationAccount(final int capacity) {
-        if (0 >= capacity) throw new IllegalArgumentException();
-        this.queue = new LinkedBlockingQueue<UpdateMessage>(capacity);
-    }
-
-    @Nullable ApplicationListener listener() { return listener; }
-
-    void listener(final ApplicationListener listener) {
-        assert null != listener;
-        this.listener = listener;
-    }
-
-    int size() { return queue.size(); }
-
-    void enqueue(final UpdateMessage message) {
-        while (!queue.offer(message)) queue.remove();
-    }
-
-    @CheckForNull UpdateMessage poll() { return queue.poll(); }
 }
