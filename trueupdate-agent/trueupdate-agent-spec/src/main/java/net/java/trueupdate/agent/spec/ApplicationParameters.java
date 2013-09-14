@@ -8,7 +8,7 @@ import java.net.URI;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.spec.ApplicationDescriptor;
-import static net.java.trueupdate.util.Objects.*;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * Application Parameters.
@@ -36,7 +36,7 @@ public final class ApplicationParameters {
     }
 
     /**
-     * Returns a new builder for update agent parameters.
+     * Returns a new builder for application parameters.
      * The default value for the property {@code updateLocation} is the
      * current location as found in the application descriptor.
      */
