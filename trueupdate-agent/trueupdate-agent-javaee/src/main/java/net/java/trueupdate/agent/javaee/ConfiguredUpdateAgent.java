@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.agent.javaee;
 
+import java.net.URI;
 import javax.jms.*;
 import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.agent.spec.*;
@@ -17,10 +18,14 @@ import static net.java.trueupdate.util.Objects.*;
  */
 final class ConfiguredUpdateAgent extends BasicUpdateAgent {
 
+    private static final URI
+            AGENT_URI = URI.create("agent"),
+            MANAGER_URI = URI.create("manager");
+
     private final ApplicationParameters applicationParameters;
     private final ConnectionFactory connectionFactory;
     private final Destination destination;
-    private final UpdateAgentMessageDispatcher updateAgentMessageDispatcher;
+    private final UpdateAgentMessageDispatcherBean updateAgentMessageDispatcher;
 
     ConfiguredUpdateAgent(final ApplicationParameters applicationParameters,
                           final UpdateAgentBuilderBean b) {
@@ -31,13 +36,24 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     }
 
     @Override
-    protected UpdateAgentMessageDispatcher updateAgentMessageDispatcher() {
-        return updateAgentMessageDispatcher;
+    protected ApplicationParameters applicationParameters() {
+        return applicationParameters;
+    }
+
+    @Override protected URI from() { return AGENT_URI; }
+
+    @Override protected URI to() { return MANAGER_URI; }
+
+    @Override
+    public void subscribe() throws UpdateAgentException {
+        updateAgentMessageDispatcher.subscribe(applicationParameters);
+        super.subscribe();
     }
 
     @Override
-    protected ApplicationParameters applicationParameters() {
-        return applicationParameters;
+    public void unsubscribe() throws UpdateAgentException {
+        super.unsubscribe();
+        updateAgentMessageDispatcher.unsubscribe(applicationParameters);
     }
 
     @Override

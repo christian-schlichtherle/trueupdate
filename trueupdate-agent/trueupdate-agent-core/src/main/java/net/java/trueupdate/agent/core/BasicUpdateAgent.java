@@ -20,26 +20,18 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
  */
 public abstract class BasicUpdateAgent implements UpdateAgent {
 
-    private static final URI
-            AGENT_URI = URI.create("agent"),
-            MANAGER_URI = URI.create("manager");
-
-    protected abstract UpdateAgentMessageDispatcher updateAgentMessageDispatcher();
-
     protected abstract ApplicationParameters applicationParameters();
 
-    protected URI from() { return AGENT_URI; }
+    protected abstract URI from();
 
-    protected URI to() { return MANAGER_URI; }
+    protected abstract URI to();
 
     @Override public void subscribe() throws UpdateAgentException {
-        updateAgentMessageDispatcher().subscribe(applicationParameters());
         send(SUBSCRIPTION_REQUEST, null);
     }
 
     @Override public void unsubscribe() throws UpdateAgentException {
         send(UNSUBSCRIPTION_NOTICE, null);
-        updateAgentMessageDispatcher().unsubscribe(applicationParameters());
     }
 
     @Override public void install(String version) throws UpdateAgentException {
