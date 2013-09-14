@@ -4,33 +4,37 @@
  */
 package net.java.trueupdate.agent.core;
 
-import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.agent.spec.ApplicationParameters;
 import javax.annotation.CheckForNull;
-import net.java.trueupdate.agent.spec.UpdateAgent.Builder;
+import javax.annotation.Nullable;
+import net.java.trueupdate.agent.spec.*;
 
 /**
  * A basic update agent builder.
  *
+ * @param <T> The type of this basic update agent builder.
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("ProtectedField")
-public abstract class BasicUpdateAgentBuilder implements UpdateAgent.Builder {
+public abstract class BasicUpdateAgentBuilder<
+        T extends BasicUpdateAgentBuilder<T>>
+implements UpdateAgent.Builder<T> {
 
     @CheckForNull
     protected ApplicationParameters applicationParameters;
 
     @Override
-    public ApplicationParameters.Builder<Builder> applicationParameters() {
-        return new ApplicationParameters.Builder<Builder>() {
+    public ApplicationParameters.Builder<T> applicationParameters() {
+        return new ApplicationParameters.Builder<T>() {
             @Override
-            public Builder inject() { return applicationParameters(build()); }
+            public T inject() { return applicationParameters(build()); }
         };
     }
 
-    @Override public Builder applicationParameters(
-            final ApplicationParameters applicationParameters) {
+    @Override
+    @SuppressWarnings("unchecked")
+    public T applicationParameters(
+            final @Nullable ApplicationParameters applicationParameters) {
         this.applicationParameters = applicationParameters;
-        return this;
+        return (T) this;
     }
 }

@@ -55,12 +55,14 @@ public interface UpdateAgent {
      * <p>
      * Applications have no need to implement this class and should not do so
      * because it may be subject to future expansion.
+     *
+     * @param <T> The type of this update agent builder.
      */
-    interface Builder {
+    interface Builder<T extends Builder<T>> {
 
-        ApplicationParameters.Builder<Builder> applicationParameters();
+        ApplicationParameters.Builder<T> applicationParameters();
 
-        Builder applicationParameters(ApplicationParameters applicationParameters);
+        T applicationParameters(ApplicationParameters applicationParameters);
 
         UpdateAgent build();
     }

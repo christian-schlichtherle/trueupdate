@@ -19,8 +19,8 @@ import net.java.trueupdate.agent.spec.UpdateAgent;
 @DependsOn("UpdateAgentMessageDispatcherBean")
 @SuppressWarnings("PackageVisibleField")
 public class UpdateAgentBuilderBean
-extends BasicUpdateAgentBuilder
-implements UpdateAgent.Builder {
+extends BasicUpdateAgentBuilder<UpdateAgentBuilderBean>
+implements UpdateAgent.Builder<UpdateAgentBuilderBean> {
 
     @Resource(name = "connectionFactory")
     ConnectionFactory connectionFactory;
