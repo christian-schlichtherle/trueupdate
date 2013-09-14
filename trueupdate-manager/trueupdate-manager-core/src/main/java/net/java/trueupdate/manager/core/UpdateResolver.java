@@ -62,7 +62,7 @@ abstract class UpdateResolver {
      * @param descriptor the update descriptor.
      */
     final File resolveDiffZip(final UpdateDescriptor descriptor)
-    throws Exception {
+    throws IOException {
         final FileAccount account = account(descriptor);
         if (account.fileResolved()) return account.file();
         final ArtifactDescriptor ad = descriptor.artifactDescriptor();
