@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.manager.javaee;
 
-import net.java.trueupdate.manager.core.UpdateManager;
 import java.net.*;
 import java.util.concurrent.Callable;
 import java.util.logging.*;
@@ -13,6 +12,7 @@ import javax.ejb.*;
 import javax.inject.Inject;
 import javax.jms.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
+import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.SystemProperties;
 
@@ -109,7 +109,7 @@ public class UpdateManagerBean extends UpdateManager {
     }
 
     @Override
-    protected UpdateMessage send(final UpdateMessage message) throws Exception {
+    protected void send(final UpdateMessage message) throws Exception {
         final Session s = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         try {
             final Message m = s.createObjectMessage(message);
@@ -118,7 +118,6 @@ public class UpdateManagerBean extends UpdateManager {
         } finally {
             s.close();
         }
-        return message;
     }
 
     @Override public void close() throws Exception {

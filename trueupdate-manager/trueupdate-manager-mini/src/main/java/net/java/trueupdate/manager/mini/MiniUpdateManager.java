@@ -8,8 +8,8 @@ import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
 import javax.naming.Context;
-import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
+import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.manager.spec.*;
 
 /**
@@ -49,7 +49,7 @@ final class MiniUpdateManager extends UpdateManager {
     }
 
     @Override
-    protected UpdateMessage send(final UpdateMessage message) throws Exception {
+    protected void send(final UpdateMessage message) throws Exception {
         final Destination destination = (Destination)
                 context.lookup(message.to().toString());
         final Session s = connection.createSession(false,
@@ -61,7 +61,6 @@ final class MiniUpdateManager extends UpdateManager {
         } finally {
             s.close();
         }
-        return message;
     }
 
     @Override public synchronized void onUpdateMessage(UpdateMessage message)

@@ -75,16 +75,18 @@ public abstract class UpdateManager extends UpdateMessageListener {
                 .build();
     }
 
-    @Override protected void onSubscriptionNotice(final UpdateMessage message)
+    @Override protected void onSubscriptionRequest(final UpdateMessage message)
     throws Exception {
-        subscribe(logReceived(message));
+        logReceived(message);
+        subscribe(message);
+        sendAndLog(message.successResponse());
         checkUpdates();
     }
 
-    @Override protected void onSubscriptionRequest(final UpdateMessage message)
+    @Override protected void onSubscriptionNotice(final UpdateMessage message)
     throws Exception {
-        subscribe(logReceived(message));
-        sendAndLog(message.successResponse());
+        logReceived(message);
+        subscribe(message);
         checkUpdates();
     }
 
@@ -92,23 +94,26 @@ public abstract class UpdateManager extends UpdateMessageListener {
         subscriptions.put(message.applicationDescriptor(), message);
     }
 
-    @Override protected void onInstallationRequest(UpdateMessage message)
+    @Override protected void onInstallationRequest(final UpdateMessage message)
     throws Exception {
-        sendAndLog(install(logReceived(message)));
-    }
-
-    private UpdateMessage install(final UpdateMessage message) {
-        final UpdateDescriptor descriptor = message.updateDescriptor();
+        logReceived(message);
+        UpdateMessage response;
         try {
-            final File diffZip = updateResolver.resolveDiffZip(descriptor);
-            updateInstaller().install(message, diffZip);
-            updateResolver.release(descriptor);
-            return installationSuccessResponse(message);
+            install(message);
+            response = installationSuccessResponse(message);
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            return message.failureResponse(ex);
+            response = message.failureResponse(ex);
         }
+        sendAndLog(response);
+    }
+
+    private void install(final UpdateMessage message) throws Exception {
+        final UpdateDescriptor descriptor = message.updateDescriptor();
+        final File diffZip = updateResolver.resolveDiffZip(descriptor);
+        updateInstaller().install(message, diffZip);
+        updateResolver.release(descriptor);
     }
 
     private static UpdateMessage installationSuccessResponse(
@@ -130,37 +135,38 @@ public abstract class UpdateManager extends UpdateMessageListener {
                 .build();
     }
 
-    @Override protected void onUnsubscriptionNotice(UpdateMessage message)
+    @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
     throws Exception {
-        unsubscribe(logReceived(message));
+        onUnsubscriptionNotice(message);
+        sendAndLog(message.successResponse());
     }
 
-    @Override protected void onUnsubscriptionRequest(UpdateMessage message)
+    @Override protected void onUnsubscriptionNotice(final UpdateMessage message)
     throws Exception {
-        unsubscribe(logReceived(message));
-        sendAndLog(message.successResponse());
+        logReceived(message);
+        unsubscribe(message);
     }
 
     private void unsubscribe(final UpdateMessage message) {
         subscriptions.remove(message.applicationDescriptor());
     }
 
-    private UpdateMessage sendAndLog(UpdateMessage message) throws Exception {
-        return logSent(send(message));
+    private void sendAndLog(final UpdateMessage message) throws Exception {
+        send(message);
+        logSent(message);
     }
 
     /** Sends the given update message. */
-    protected abstract UpdateMessage send(UpdateMessage message)
-    throws Exception;
+    protected abstract void send(UpdateMessage message) throws Exception;
 
-    private static UpdateMessage logReceived(final UpdateMessage message) {
-        logger.log(Level.FINE, "Received update message from update agent:\n{0}", message);
-        return message;
+    private static void logReceived(UpdateMessage message) {
+        logger.log(Level.FINE,
+                "Received update message from update agent:\n{0}", message);
     }
 
-    private static UpdateMessage logSent(final UpdateMessage message) {
-        logger.log(Level.FINER, "Sent update message to update agent:\n{0}", message);
-        return message;
+    private static void logSent(UpdateMessage message) {
+        logger.log(Level.FINER,
+                "Sent update message to update agent:\n{0}", message);
     }
 
     /**
