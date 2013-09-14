@@ -9,7 +9,7 @@ import java.util.logging.*;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
-import net.java.trueupdate.installer.core.UpdateManager;
+import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**

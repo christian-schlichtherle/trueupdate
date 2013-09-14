@@ -6,7 +6,7 @@ package net.java.trueupdate.manager.mini;
 
 import java.util.logging.*;
 import javax.annotation.concurrent.ThreadSafe;
-import net.java.trueupdate.installer.core.UpdateManager;
+import net.java.trueupdate.manager.core.UpdateManager;
 
 /**
  * @author Christian Schlichtherle

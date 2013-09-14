@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.javaee;
 
+import net.java.trueupdate.manager.core.UpdateManager;
 import java.net.*;
 import java.util.concurrent.Callable;
 import java.util.logging.*;
@@ -11,7 +12,6 @@ import javax.annotation.*;
 import javax.ejb.*;
 import javax.inject.Inject;
 import javax.jms.*;
-import net.java.trueupdate.installer.core.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.SystemProperties;

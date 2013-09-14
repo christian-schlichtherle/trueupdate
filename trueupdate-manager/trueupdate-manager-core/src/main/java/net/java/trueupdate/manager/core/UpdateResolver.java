@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core;
+package net.java.trueupdate.manager.core;
 
 import java.io.*;
 import java.util.*;
@@ -11,7 +11,6 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.UpdateDescriptor;
-
 
 /**
  * Resolves diff zip files for artifact updates and manages their life cycle.
@@ -106,6 +105,7 @@ abstract class UpdateResolver {
         }
     }
 }
+
 final class FileAccount {
 
     private File file = new File("");

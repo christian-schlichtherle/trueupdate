@@ -8,4 +8,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.installer.core;
+package net.java.trueupdate.manager.core;
