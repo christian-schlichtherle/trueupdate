@@ -13,7 +13,7 @@ import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.UpdateDescriptor;
 
 /**
- * Resolves diff zip files for artifact updates and manages their life cycle.
+ * Resolves diff ZIP files for artifact updates and manages their life cycle.
  *
  * @author Christian Schlichtherle
  */
@@ -25,7 +25,7 @@ abstract class UpdateResolver {
     private final Map<UpdateDescriptor, FileAccount>
             accounts = new HashMap<UpdateDescriptor, FileAccount>();
 
-    /** Returns the artifact update client. */
+    /** Returns the update client. */
     abstract UpdateClient updateClient();
 
     final void restart() {
@@ -56,12 +56,12 @@ abstract class UpdateResolver {
     }
 
     /**
-     * Resolves the diff zip file for the given update descriptor.
+     * Resolves the diff ZIP file for the given update descriptor.
      * Clients must not modify or delete the returned file.
      *
      * @param descriptor the update descriptor.
      */
-    public final File resolveDiffZip(final UpdateDescriptor descriptor)
+    final File resolveDiffZip(final UpdateDescriptor descriptor)
     throws Exception {
         final FileAccount account = account(descriptor);
         if (account.fileResolved()) return account.file();
