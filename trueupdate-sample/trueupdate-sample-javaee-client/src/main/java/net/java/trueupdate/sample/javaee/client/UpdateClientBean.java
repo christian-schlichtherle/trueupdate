@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.sample.javaee.client;
 
-import java.net.URI;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -78,15 +77,11 @@ public class UpdateClientBean extends ApplicationListener {
                             .classifier(lookupString("classifier"))
                             .extension(lookupString("extension"))
                             .inject()
-                        .currentLocation(lookupUri("currentLocation"))
+                        .currentLocation(lookupString("currentLocation"))
                         .inject()
-                    .updateLocation(lookupUri("updateLocation"))
+                    .updateLocation(lookupString("updateLocation"))
                     .inject()
                 .build();
-    }
-
-    private static URI lookupUri(String key) {
-        return URI.create(lookupString(key));
     }
 
     private static @Nullable String lookupString(String key) {

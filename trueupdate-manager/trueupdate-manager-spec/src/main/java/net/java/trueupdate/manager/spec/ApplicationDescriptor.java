@@ -5,12 +5,12 @@
 package net.java.trueupdate.manager.spec;
 
 import java.io.Serializable;
-import java.net.URI;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import static net.java.trueupdate.util.Objects.*;
+import static net.java.trueupdate.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Strings.requireNonEmpty;
 
 /**
  * An application descriptor comprises of an artifact descriptor plus a current
@@ -26,17 +26,11 @@ public final class ApplicationDescriptor implements Serializable {
     private static final long serialVersionUID = 0L;
 
     private final ArtifactDescriptor artifactDescriptor;
-    private final URI currentLocation;
+    private final String currentLocation;
 
     ApplicationDescriptor(final Builder<?> b) {
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.currentLocation = requireNonEmpty(b.currentLocation);
-    }
-
-    private static URI requireNonEmpty(final URI value) {
-        if (value.equals(UpdateMessage.EMPTY_URI))
-            throw new IllegalArgumentException();
-        return value;
     }
 
     /** Returns a new builder for an application descriptor. */
@@ -48,7 +42,7 @@ public final class ApplicationDescriptor implements Serializable {
     }
 
     /** Returns the current location. */
-    public URI currentLocation() { return currentLocation; }
+    public String currentLocation() { return currentLocation; }
 
     @Override
     public boolean equals(final Object obj) {
@@ -71,7 +65,7 @@ public final class ApplicationDescriptor implements Serializable {
     public static class Builder<T> {
 
         @CheckForNull ArtifactDescriptor artifactDescriptor;
-        @CheckForNull URI currentLocation;
+        @CheckForNull String currentLocation;
 
         protected Builder() { }
 
@@ -89,7 +83,7 @@ public final class ApplicationDescriptor implements Serializable {
             return this;
         }
 
-        public Builder<T> currentLocation(final @Nullable URI currentLocation) {
+        public Builder<T> currentLocation(final @Nullable String currentLocation) {
             this.currentLocation = currentLocation;
             return this;
         }

@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.manager.spec
 
-import java.net.URI
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
@@ -23,9 +22,9 @@ class ApplicationDescriptorTest extends WordSpec {
       "reflect the specified properties" in {
         val table = Table(
           ("builder", "artifactDescriptor", "currentLocation"),
-          (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.currentLocation(URI create "here"),
+          (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.currentLocation("here"),
             ArtifactDescriptor.builder.groupId("groupId").artifactId("artifactId").version("version").build,
-            URI create "here")
+            "here")
         )
         forAll (table) { (builder, artifactDescriptor, currentLocation) =>
           val descriptor1 = builder.build

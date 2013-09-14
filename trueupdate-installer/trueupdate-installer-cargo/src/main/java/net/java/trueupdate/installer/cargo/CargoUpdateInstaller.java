@@ -22,10 +22,10 @@ public final class CargoUpdateInstaller extends LocalUpdateInstaller {
 
     @Override
     protected Context resolveContext(final UpdateMessage message,
-                                     final URI location)
+                                     final String location)
     throws Exception {
 
-        final CargoContext context = new CargoContext(location);
+        final CargoContext context = new CargoContext(new URI(location));
         final File path = context.deployablePath();
 
         class ResolvedContext implements Context {

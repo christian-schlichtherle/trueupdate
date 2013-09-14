@@ -26,11 +26,11 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
 
     @Override
     protected Context resolveContext(final UpdateMessage message,
-                                     final URI location)
+                                     final String location)
     throws Exception {
 
         final File path = location.equals(message.currentLocation())
-                ? resolveDeployedPath(location)
+                ? resolveDeployedPath(new URI(location))
                 : new File(location);
 
         class ResolvedContext implements Context {

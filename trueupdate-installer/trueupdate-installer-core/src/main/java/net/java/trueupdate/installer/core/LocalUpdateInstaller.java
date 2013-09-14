@@ -5,7 +5,6 @@
 package net.java.trueupdate.installer.core;
 
 import java.io.*;
-import java.net.URI;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
@@ -56,7 +55,7 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
      *                method.
      */
     protected abstract Context resolveContext(UpdateMessage message,
-                                              URI location)
+                                              String location)
     throws Exception;
 
     @Override public final void install(final UpdateMessage message,

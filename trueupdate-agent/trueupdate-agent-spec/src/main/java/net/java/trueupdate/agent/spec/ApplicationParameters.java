@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.agent.spec;
 
-import java.net.URI;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.spec.ApplicationDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Strings.nonEmptyOr;
 
 /**
  * Application Parameters.
@@ -20,19 +20,13 @@ public final class ApplicationParameters {
 
     private final ApplicationListener applicationListener;
     private final ApplicationDescriptor applicationDescriptor;
-    private final URI updateLocation;
+    private final String updateLocation;
 
     ApplicationParameters(final Builder<?> b) {
         this.applicationListener = requireNonNull(b.applicationListener);
         this.applicationDescriptor = requireNonNull(b.applicationDescriptor);
         this.updateLocation = nonEmptyOr(b.updateLocation,
                 applicationDescriptor.currentLocation());
-    }
-
-    private static URI nonEmptyOr(URI value, URI eagerDefault) {
-        return null != value && !value.toString().isEmpty()
-                ? value
-                : eagerDefault;
     }
 
     /**
@@ -50,14 +44,14 @@ public final class ApplicationParameters {
         return applicationDescriptor;
     }
 
-    public URI updateLocation() { return updateLocation; }
+    public String updateLocation() { return updateLocation; }
 
     @SuppressWarnings(value = "PackageVisibleField")
     public static class Builder<T> {
 
         @CheckForNull ApplicationListener applicationListener;
         @CheckForNull ApplicationDescriptor applicationDescriptor;
-        @CheckForNull URI updateLocation;
+        @CheckForNull String updateLocation;
 
         protected Builder() { }
 
@@ -82,7 +76,7 @@ public final class ApplicationParameters {
         }
 
         public Builder<T> updateLocation(
-                final @Nullable URI updateLocation) {
+                final @Nullable String updateLocation) {
             this.updateLocation = updateLocation;
             return this;
         }

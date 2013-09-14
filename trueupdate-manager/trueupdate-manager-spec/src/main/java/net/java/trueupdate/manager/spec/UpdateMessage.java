@@ -5,7 +5,6 @@
 package net.java.trueupdate.manager.spec;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Date;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
@@ -25,14 +24,12 @@ public final class UpdateMessage implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
-    static final URI EMPTY_URI = URI.create("");
-
     private final long timestamp;
     private final String from, to;
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion, status;
-    private final URI currentLocation, updateLocation;
+    private final String currentLocation, updateLocation;
 
     UpdateMessage(final Builder b) {
         this.timestamp = nonNullOrNow(b.timestamp);
@@ -41,7 +38,7 @@ public final class UpdateMessage implements Serializable {
         this.type = requireNonNull(b.type);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.updateVersion = nonNullOr(b.updateVersion, "");
-        this.currentLocation = nonNullOr(b.currentLocation, EMPTY_URI);
+        this.currentLocation = nonNullOr(b.currentLocation, "");
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
         this.status = nonNullOr(b.status, "");
     }
@@ -139,10 +136,10 @@ public final class UpdateMessage implements Serializable {
     }
 
     /** Returns the current location. */
-    public URI currentLocation() { return currentLocation; }
+    public String currentLocation() { return currentLocation; }
 
     /** Returns an update message with the given current location. */
-    public UpdateMessage currentLocation(URI currentLocation) {
+    public UpdateMessage currentLocation(String currentLocation) {
         return currentLocation().equals(currentLocation)
                 ? this
                 : update().currentLocation(currentLocation).build();
@@ -153,10 +150,10 @@ public final class UpdateMessage implements Serializable {
      * If this equals {@link #currentLocation()}, then the update should happen
      * in-place.
      */
-    public URI updateLocation() { return updateLocation; }
+    public String updateLocation() { return updateLocation; }
 
     /** Returns an update message with the given update location. */
-    public UpdateMessage updateLocation(URI newLocation) {
+    public UpdateMessage updateLocation(String newLocation) {
         return updateLocation().equals(newLocation)
                 ? this
                 : update().updateLocation(newLocation).build();
@@ -291,9 +288,9 @@ public final class UpdateMessage implements Serializable {
                 .append("Artifact-Descriptor: ").append(artifactDescriptor()).append('\n');
         if (!updateVersion().isEmpty())
             sb.append("Update-Version: ").append(updateVersion()).append('\n');
-        if (!currentLocation().equals(EMPTY_URI))
+        if (!currentLocation().isEmpty())
             sb.append("Current-Location: ").append(currentLocation()).append('\n');
-        if (!updateLocation().equals(EMPTY_URI))
+        if (!updateLocation().isEmpty())
             sb.append("Update-Location: ").append(updateLocation()).append('\n');
         if (!status().isEmpty())
             sb.append("Status: ").append(status()).append('\n');
@@ -536,7 +533,7 @@ public final class UpdateMessage implements Serializable {
         @CheckForNull Type type;
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String updateVersion, status;
-        @CheckForNull URI currentLocation, updateLocation;
+        @CheckForNull String currentLocation, updateLocation;
 
         Builder() { }
 
@@ -579,12 +576,12 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
-        public Builder currentLocation(final @Nullable URI currentLocation) {
+        public Builder currentLocation(final @Nullable String currentLocation) {
             this.currentLocation = currentLocation;
             return this;
         }
 
-        public Builder updateLocation(final @Nullable URI updateLocation) {
+        public Builder updateLocation(final @Nullable String updateLocation) {
             this.updateLocation = updateLocation;
             return this;
         }

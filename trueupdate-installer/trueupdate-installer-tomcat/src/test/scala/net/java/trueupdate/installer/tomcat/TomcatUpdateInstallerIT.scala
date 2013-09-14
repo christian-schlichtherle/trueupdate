@@ -6,6 +6,7 @@ package net.java.trueupdate.installer.tomcat
 
 import java.io.File
 import java.net.URI
+import org.apache.catalina.util.ContextName
 import org.jboss.arquillian.container.test.api.Deployment
 import org.jboss.arquillian.junit.Arquillian
 import org.jboss.shrinkwrap.api.ShrinkWrap
@@ -33,8 +34,8 @@ class TomcatUpdateInstallerIT {
 
     val installer = new TomcatUpdateInstaller
     val appBase = installer.appBase
-    val cn = TomcatUpdateInstaller contextName location
-    val testWar = new File(appBase, cn.getBaseName + ".war")
+    val testWar = new File(appBase,
+                           new ContextName(location).getBaseName + ".war")
 
     testArchive as classOf[ZipExporter] exportTo testWar
     val context = installer resolveContext (message, location)
@@ -75,7 +76,7 @@ object TomcatUpdateInstallerIT {
     .version("1")
     .inject
     .updateVersion("2")
-    .currentLocation(new URI("context:/test"))
-    .updateLocation(new URI("context:/test"))
+    .currentLocation("/test")
+    .updateLocation("/test")
     .build
 }

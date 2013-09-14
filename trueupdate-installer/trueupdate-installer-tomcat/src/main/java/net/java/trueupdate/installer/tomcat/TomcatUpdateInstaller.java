@@ -5,7 +5,6 @@
 package net.java.trueupdate.installer.tomcat;
 
 import java.io.*;
-import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
@@ -58,12 +57,12 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
     @Override
     protected Context resolveContext(final UpdateMessage message,
-                                     final URI location)
+                                     final String location)
     throws Exception {
 
         class ResolvedContext implements Context {
 
-            final ContextName cn = contextName(location);
+            final ContextName cn = new ContextName(location);
             final String name = cn.getName();
             final File dir = new File(appBase(), cn.getBaseName());
             final File war = new File(dir.getPath() + ".war");
@@ -134,12 +133,6 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
         if (null == host || null == config)
             throw new Exception("This application is not running in Tomcat.");
         return new ResolvedContext();
-    }
-
-    static ContextName contextName(URI location) {
-        return new ContextName(location.isAbsolute()
-                ? location.getSchemeSpecificPart()
-                : location.toString());
     }
 
     File appBase() {

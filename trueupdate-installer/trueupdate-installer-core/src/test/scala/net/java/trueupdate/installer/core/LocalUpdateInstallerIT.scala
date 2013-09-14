@@ -39,12 +39,12 @@ class LocalUpdateInstallerIT extends WordSpec {
     .version("1")
     .inject
     .updateVersion("2")
-    .currentLocation(deployedPath.toURI)
-    .updateLocation(deployedPath.toURI)
+    .currentLocation(deployedPath.getPath())
+    .updateLocation(deployedPath.getPath())
     .build
 
   def updateInstaller: UpdateInstaller = new LocalUpdateInstaller {
-    def resolveContext(message: UpdateMessage, location: URI) = new Context {
+    def resolveContext(message: UpdateMessage, location: String) = new Context {
       def path() = new File(location)
       def deploymentTransaction() = mock[Transaction]
       def undeploymentTransaction() = mock[Transaction]
