@@ -65,8 +65,8 @@ object TomcatUpdateInstallerIT {
 
   def updateMessage = UpdateMessage
     .builder
-    .from(new URI("agent"))
-    .to(new URI("manager"))
+    .from("agent")
+    .to("manager")
     .`type`(Type.INSTALLATION_REQUEST)
     .artifactDescriptor
     .groupId("groupId")

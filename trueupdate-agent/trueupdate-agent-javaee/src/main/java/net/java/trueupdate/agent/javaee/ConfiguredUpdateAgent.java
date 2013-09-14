@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.agent.javaee;
 
-import java.net.URI;
 import javax.jms.*;
 import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.agent.spec.*;
@@ -18,9 +17,7 @@ import static net.java.trueupdate.util.Objects.*;
  */
 final class ConfiguredUpdateAgent extends BasicUpdateAgent {
 
-    private static final URI
-            AGENT_URI = URI.create("agent"),
-            MANAGER_URI = URI.create("manager");
+    private static final String AGENT = "agent", MANAGER = "manager";
 
     private final ApplicationParameters applicationParameters;
     private final ConnectionFactory connectionFactory;
@@ -40,9 +37,9 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         return applicationParameters;
     }
 
-    @Override protected URI from() { return AGENT_URI; }
+    @Override protected String from() { return AGENT; }
 
-    @Override protected URI to() { return MANAGER_URI; }
+    @Override protected String to() { return MANAGER; }
 
     @Override
     public void subscribe() throws UpdateAgentException {

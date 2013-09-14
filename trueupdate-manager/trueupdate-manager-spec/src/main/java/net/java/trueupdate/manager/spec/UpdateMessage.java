@@ -28,7 +28,7 @@ public final class UpdateMessage implements Serializable {
     static final URI EMPTY_URI = URI.create("");
 
     private final long timestamp;
-    private final URI from, to;
+    private final String from, to;
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion, status;
@@ -87,20 +87,20 @@ public final class UpdateMessage implements Serializable {
     }
 
     /** Returns the update message sender. */
-    public URI from() { return from; }
+    public String from() { return from; }
 
     /** Returns an update message with the given update message sender. */
-    public UpdateMessage from(URI from) {
+    public UpdateMessage from(String from) {
         return from().equals(from)
                 ? this
                 : update().from(from).build();
     }
 
     /** Returns the update message recipient. */
-    public URI to() { return to; }
+    public String to() { return to; }
 
     /** Returns an update message with the given update message recipient. */
-    public UpdateMessage to(URI to) {
+    public UpdateMessage to(String to) {
         return to().equals(to)
                 ? this
                 : update().to(to).build();
@@ -532,7 +532,7 @@ public final class UpdateMessage implements Serializable {
     public static final class Builder {
 
         @CheckForNull Long timestamp;
-        @CheckForNull URI from, to;
+        @CheckForNull String from, to;
         @CheckForNull Type type;
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String updateVersion, status;
@@ -545,12 +545,12 @@ public final class UpdateMessage implements Serializable {
             return this;
         }
 
-        public Builder from(final @Nullable URI from) {
+        public Builder from(final @Nullable String from) {
             this.from = from;
             return this;
         }
 
-        public Builder to(final @Nullable URI to) {
+        public Builder to(final @Nullable String to) {
             this.to = to;
             return this;
         }

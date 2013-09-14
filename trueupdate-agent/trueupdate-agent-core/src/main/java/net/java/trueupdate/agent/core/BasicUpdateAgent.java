@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.agent.core;
 
-import java.net.URI;
 import javax.annotation.Nullable;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.agent.spec.UpdateAgent;
@@ -22,9 +21,9 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
 
     protected abstract ApplicationParameters applicationParameters();
 
-    protected abstract URI from();
+    protected abstract String from();
 
-    protected abstract URI to();
+    protected abstract String to();
 
     @Override public void subscribe() throws UpdateAgentException {
         send(SUBSCRIPTION_REQUEST, null);
