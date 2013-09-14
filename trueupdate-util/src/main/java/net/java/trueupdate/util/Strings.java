@@ -19,5 +19,9 @@ public class Strings {
         return string;
     }
 
+    public static String nonEmptyOr(String string, String def) {
+        return null != string && !string.isEmpty() ? string : def;
+    }
+
     private Strings() { }
 }

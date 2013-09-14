@@ -29,8 +29,8 @@ public class Objects {
         return obj;
     }
 
-    public static <T> T nonNullOr(@CheckForNull T string, T def) {
-        return null != string ? string : def;
+    public static <T> T nonNullOr(@CheckForNull T obj, T def) {
+        return null != obj ? obj : def;
     }
 
     private Objects() { }
