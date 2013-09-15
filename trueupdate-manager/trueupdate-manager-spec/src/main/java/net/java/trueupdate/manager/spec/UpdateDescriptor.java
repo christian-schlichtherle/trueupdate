@@ -80,30 +80,34 @@ public final class UpdateDescriptor implements Serializable {
         return hash;
     }
 
-    /** A builder for an update descriptor. */
-    @SuppressWarnings(value = "PackageVisibleField")
-    public static class Builder<T> {
+    /**
+     * A builder for an update descriptor.
+     *
+     * @param <P> The type of the parent builder.
+     */
+    @SuppressWarnings("PackageVisibleField")
+    public static class Builder<P> {
 
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String updateVersion;
 
         protected Builder() { }
 
-        public ArtifactDescriptor.Builder<Builder<T>> artifactDescriptor() {
-            return new ArtifactDescriptor.Builder<Builder<T>>() {
-                @Override public Builder<T> inject() {
+        public ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
+            return new ArtifactDescriptor.Builder<Builder<P>>() {
+                @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
                 }
             };
         }
 
-        public Builder<T> artifactDescriptor(
+        public Builder<P> artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
             return this;
         }
 
-        public Builder<T> updateVersion(final @Nullable String updateVersion) {
+        public Builder<P> updateVersion(final @Nullable String updateVersion) {
             this.updateVersion = updateVersion;
             return this;
         }
@@ -112,8 +116,14 @@ public final class UpdateDescriptor implements Serializable {
             return new UpdateDescriptor(this);
         }
 
-        public T inject() {
-            throw new IllegalStateException("No target for injection.");
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

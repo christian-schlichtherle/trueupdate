@@ -29,7 +29,7 @@ public class UpdateClientBean extends ApplicationListener {
             bundle = ResourceBundle.getBundle(UpdateClientBean.class.getName());
 
     @EJB
-    private UpdateAgent.Builder<?> updateAgentBuilder;
+    private UpdateAgent.Builder<?, ?> updateAgentBuilder;
 
     @Resource
     private SessionContext context;

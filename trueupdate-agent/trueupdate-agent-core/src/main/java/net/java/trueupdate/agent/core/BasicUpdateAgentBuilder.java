@@ -11,30 +11,35 @@ import net.java.trueupdate.agent.spec.*;
 /**
  * A basic update agent builder.
  *
- * @param <T> The type of this basic update agent builder.
+ * @param <B> The type of this builder.
+ * @param <P> The type of the parent builder, if defined.
  * @author Christian Schlichtherle
  */
-@SuppressWarnings("ProtectedField")
+@SuppressWarnings({ "ProtectedField", "unchecked", "rawtypes" })
 public abstract class BasicUpdateAgentBuilder<
-        T extends BasicUpdateAgentBuilder<T>>
-implements UpdateAgent.Builder<T> {
+        B extends BasicUpdateAgentBuilder<B, P>,
+        P>
+implements UpdateAgent.Builder<B, P> {
 
     @CheckForNull
     protected ApplicationParameters applicationParameters;
 
     @Override
-    public ApplicationParameters.Builder<T> applicationParameters() {
-        return new ApplicationParameters.Builder<T>() {
-            @Override
-            public T inject() { return applicationParameters(build()); }
+    public ApplicationParameters.Builder<B> applicationParameters() {
+        return new ApplicationParameters.Builder<B>() {
+            @Override public B inject() {
+                return applicationParameters(build());
+            }
         };
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public T applicationParameters(
+    @Override public B applicationParameters(
             final @Nullable ApplicationParameters applicationParameters) {
         this.applicationParameters = applicationParameters;
-        return (T) this;
+        return (B) this;
+    }
+
+    @Override public P inject() {
+        throw new IllegalStateException("No parent builder defined.");
     }
 }

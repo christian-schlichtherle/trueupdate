@@ -160,36 +160,40 @@ public final class ArtifactDescriptor implements Serializable {
         return sb.toString();
     }
 
-    /** A builder for an artifact descriptor. */
+    /**
+     * A builder for an artifact descriptor.
+     *
+     * @param <P> The type of the parent builder.
+     */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<T> {
+    public static class Builder<P> {
 
         @CheckForNull String groupId, artifactId, version, classifier,
                              extension;
 
         protected Builder() { }
 
-        public Builder<T> groupId(final @Nullable String groupId) {
+        public Builder<P> groupId(final @Nullable String groupId) {
             this.groupId = groupId;
             return this;
         }
 
-        public Builder<T> artifactId(final @Nullable String artifactId) {
+        public Builder<P> artifactId(final @Nullable String artifactId) {
             this.artifactId = artifactId;
             return this;
         }
 
-        public Builder<T> version(final @Nullable String version) {
+        public Builder<P> version(final @Nullable String version) {
             this.version = version;
             return this;
         }
 
-        public Builder<T> classifier(final @Nullable String classifier) {
+        public Builder<P> classifier(final @Nullable String classifier) {
             this.classifier = classifier;
             return this;
         }
 
-        public Builder<T> extension(final @Nullable String extension) {
+        public Builder<P> extension(final @Nullable String extension) {
             this.extension = extension;
             return this;
         }
@@ -198,8 +202,14 @@ public final class ArtifactDescriptor implements Serializable {
             return new ArtifactDescriptor(this);
         }
 
-        public T inject() {
-            throw new IllegalStateException("No target for injection.");
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

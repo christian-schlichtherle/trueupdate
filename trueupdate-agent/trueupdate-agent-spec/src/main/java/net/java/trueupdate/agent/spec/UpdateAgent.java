@@ -56,14 +56,23 @@ public interface UpdateAgent {
      * Applications have no need to implement this class and should not do so
      * because it may be subject to future expansion.
      *
-     * @param <T> The type of this update agent builder.
+     * @param <B> The type of this builder.
+     * @param <P> The type of the parent builder, if defined.
      */
-    interface Builder<T extends Builder<T>> {
+    interface Builder<B extends Builder<B, P>, P> {
 
-        ApplicationParameters.Builder<T> applicationParameters();
+        ApplicationParameters.Builder<B> applicationParameters();
 
-        T applicationParameters(ApplicationParameters applicationParameters);
+        B applicationParameters(ApplicationParameters applicationParameters);
 
         UpdateAgent build();
+
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        P inject();
     }
 }

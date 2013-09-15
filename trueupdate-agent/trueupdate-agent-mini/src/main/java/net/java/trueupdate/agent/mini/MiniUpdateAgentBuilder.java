@@ -13,7 +13,7 @@ import net.java.trueupdate.agent.spec.UpdateAgent;
  * @author Christian Schlichtherle
  */
 public class MiniUpdateAgentBuilder
-extends BasicUpdateAgentBuilder<MiniUpdateAgentBuilder> {
+extends BasicUpdateAgentBuilder<MiniUpdateAgentBuilder, Void> {
 
     @CheckForNull
     private TransportParameters transportParameters;

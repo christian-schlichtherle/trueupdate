@@ -31,7 +31,7 @@ public final class UpdateMessage implements Serializable {
     private final String updateVersion, status;
     private final String currentLocation, updateLocation;
 
-    UpdateMessage(final Builder b) {
+    UpdateMessage(final Builder<?> b) {
         this.timestamp = nonNullOrNow(b.timestamp);
         this.from = requireNonNull(b.from);
         this.to = requireNonNull(b.to);
@@ -48,7 +48,7 @@ public final class UpdateMessage implements Serializable {
     }
 
     /** Returns a new builder with all properties set from this instance. */
-    public Builder update() {
+    public Builder<Void> update() {
         return builder()
                 .timestamp(timestamp())
                 .from(from())
@@ -71,7 +71,7 @@ public final class UpdateMessage implements Serializable {
      * The default value for the property {@code updateLocation} is the
      * effective value of the property {@code location}.
      */
-    public static Builder builder() { return new Builder(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     /** Returns the update message timestamp. */
     public long timestamp() { return timestamp; }
@@ -524,9 +524,13 @@ public final class UpdateMessage implements Serializable {
         throws Exception;
     } // Type
 
-    /** A builder for an update message. */
+    /**
+     * A builder for an update message.
+     *
+     * @param <P> The type of the parent builder.
+     */
     @SuppressWarnings("PackageVisibleField")
-    public static final class Builder {
+    public static final class Builder<P> {
 
         @CheckForNull Long timestamp;
         @CheckForNull String from, to;
@@ -535,62 +539,72 @@ public final class UpdateMessage implements Serializable {
         @CheckForNull String updateVersion, status;
         @CheckForNull String currentLocation, updateLocation;
 
-        Builder() { }
+        protected Builder() { }
 
-        public Builder timestamp(final @Nullable Long timestamp) {
+        public Builder<P> timestamp(final @Nullable Long timestamp) {
             this.timestamp = timestamp;
             return this;
         }
 
-        public Builder from(final @Nullable String from) {
+        public Builder<P> from(final @Nullable String from) {
             this.from = from;
             return this;
         }
 
-        public Builder to(final @Nullable String to) {
+        public Builder<P> to(final @Nullable String to) {
             this.to = to;
             return this;
         }
 
-        public Builder type(final @Nullable Type type) {
+        public Builder<P> type(final @Nullable Type type) {
             this.type = type;
             return this;
         }
 
-        public ArtifactDescriptor.Builder<Builder> artifactDescriptor() {
-            return new ArtifactDescriptor.Builder<Builder>() {
-                @Override public Builder inject() {
+        public ArtifactDescriptor.Builder<Builder<P> > artifactDescriptor() {
+            return new ArtifactDescriptor.Builder<Builder<P> >() {
+                @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
                 }
             };
         }
 
-        public Builder artifactDescriptor(
+        public Builder<P> artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
             return this;
         }
 
-        public Builder updateVersion(final @Nullable String updateVersion) {
+        public Builder<P> updateVersion(final @Nullable String updateVersion) {
             this.updateVersion = updateVersion;
             return this;
         }
 
-        public Builder currentLocation(final @Nullable String currentLocation) {
+        public Builder<P> currentLocation(final @Nullable String currentLocation) {
             this.currentLocation = currentLocation;
             return this;
         }
 
-        public Builder updateLocation(final @Nullable String updateLocation) {
+        public Builder<P> updateLocation(final @Nullable String updateLocation) {
             this.updateLocation = updateLocation;
             return this;
         }
 
-        public Builder status(final @Nullable String status) {
+        public Builder<P> status(final @Nullable String status) {
             this.status = status;
             return this;
         }
 
         public UpdateMessage build() { return new UpdateMessage(this); }
+
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new IllegalStateException("No parent builder defined.");
+        }
     } // Builder
 }
