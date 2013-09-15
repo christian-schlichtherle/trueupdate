@@ -197,6 +197,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-jms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-spec</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -462,6 +467,7 @@
         <module>trueupdate-core</module>
         <module>trueupdate-installer</module>
         <module>trueupdate-jaxrs</module>
+        <module>trueupdate-jms</module>
         <module>trueupdate-manager</module>
         <module>trueupdate-manager-app</module>
         <module>trueupdate-sample</module>
