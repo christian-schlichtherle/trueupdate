@@ -16,23 +16,22 @@ import javax.servlet.annotation.WebListener;
 public final class MiniServletContextListener
 implements ServletContextListener {
 
-    private MiniReactor reactor;
+    private MiniContext context;
 
     @Override public void contextInitialized(final ServletContextEvent sce) {
         try {
-            reactor = new MiniReactor(sce.getServletContext());
+            context = new MiniContext(sce.getServletContext());
         } catch (NamingException ex) {
             throw new IllegalStateException(ex);
         } catch (JMSException ex) {
             throw new IllegalStateException(ex);
         }
-        reactor.timer().start();
-        reactor.listener().start();
+        context.start();
     }
 
     @Override public void contextDestroyed(ServletContextEvent sce) {
         try {
-            reactor.close();
+            context.stop();
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {

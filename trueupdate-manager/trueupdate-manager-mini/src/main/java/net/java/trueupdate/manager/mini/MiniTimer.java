@@ -55,11 +55,11 @@ final class MiniTimer implements Runnable {
     }
 
     /**
-     * Asynchronously closes this timer.
+     * Stops this timer.
      * After the call to this method, the client may safely assume that this
      * timer will not call {@link UpdateManager#checkUpdates} anymore.
      */
-    public synchronized void close() {
+    synchronized void stop() {
         closed = true;
     }
 }

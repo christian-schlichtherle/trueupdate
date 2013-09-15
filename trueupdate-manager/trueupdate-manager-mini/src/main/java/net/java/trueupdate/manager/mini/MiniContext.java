@@ -12,51 +12,63 @@ import javax.jms.*;
 import javax.naming.*;
 import javax.servlet.ServletContext;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
+import net.java.trueupdate.jms.JmsMessageListener;
+import net.java.trueupdate.jms.JmsMessageLoop;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 
 /**
- * Breeds the objects required for this package.
+ * Provides the objects required for this package.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-final class MiniReactor {
+final class MiniContext {
 
     private static final Logger
-            logger = Logger.getLogger(MiniReactor.class.getName());
+            logger = Logger.getLogger(MiniContext.class.getName());
 
     private final ServletContext servletContext;
     private final Context namingContext;
     private final MiniUpdateManager manager;
     private final MiniTimer timer;
-    private final MiniListener listener;
+    private final JmsMessageLoop loop;
 
-    MiniReactor(final ServletContext servletContext)
+    MiniContext(final ServletContext servletContext)
     throws NamingException, JMSException {
         this.servletContext = servletContext;
-        this.namingContext = new InitialContext();
+        namingContext = new InitialContext();
         final ConnectionFactory connectionFactory = (ConnectionFactory)
                 lookup("jms/ConnectionFactory");
-        this.manager = new MiniUpdateManager(
+        manager = new MiniUpdateManager(
                 connectionFactory,
                 namingContext,
                 updateClient(),
                 updateInstaller());
-        this.timer = new MiniTimer(manager,
+        timer = new MiniTimer(manager,
                 checkUpdatesIntervalMinutes());
-        this.listener = new MiniListener(manager,
-                connectionFactory,
-                (Destination) lookup("jms/TrueUpdate Manager"));
+        loop = JmsMessageLoop
+                .builder()
+                .connectionFactory(connectionFactory)
+                .destination((Destination) lookup("jms/TrueUpdate Manager"))
+                .subscriptionName("TrueUpdate Manager")
+                .messageSelector("manager = true")
+                .messageListener(new JmsMessageListener(manager))
+                .build();
     }
 
-    Thread timer() {
+    void start() {
+        timer().start();
+        listener().start();
+    }
+
+    private Thread timer() {
         return new Thread(timer, "TrueUpdate Manager Mini Timer Daemon") {
             { super.setDaemon(true); }
         };
     }
 
-    Thread listener() {
-        return new Thread(listener, "TrueUpdate Manager Mini Listener Daemon") {
+    private Thread listener() {
+        return new Thread(loop, "TrueUpdate Manager Mini Listener Daemon") {
             { super.setDaemon(true); }
         };
     }
@@ -94,10 +106,10 @@ final class MiniReactor {
         return servletContext.getInitParameter(name);
     }
 
-    void close() throws Exception {
+    void stop() throws Exception {
         // HC SUNT DRACONIS!
-        listener.close();
-        timer.close();
+        loop.stop();
+        timer.stop();
         manager.close();
     }
 }
