@@ -4,12 +4,11 @@
  */
 package net.java.trueupdate.manager.javaee;
 
-import java.io.Serializable;
-import java.util.logging.*;
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.jms.*;
-import net.java.trueupdate.manager.spec.*;
+import javax.jms.MessageListener;
+import net.java.trueupdate.jms.JmsMessageListener;
+import net.java.trueupdate.manager.spec.UpdateMessageListener;
 
 /**
  * Filters JMS messages and forwards update messages to the injected
@@ -23,10 +22,8 @@ import net.java.trueupdate.manager.spec.*;
                                       propertyValue = "manager = true"),
         })
 @DependsOn("UpdateManagerBean")
-public class UpdateManagerMessageListenerBean implements MessageListener {
-
-    private static final Logger
-            logger = Logger.getLogger(UpdateManagerMessageListenerBean.class.getName());
+public class UpdateManagerMessageListenerBean
+extends JmsMessageListener implements MessageListener {
 
     @EJB
     private UpdateManagerBean updateManager;
@@ -34,19 +31,11 @@ public class UpdateManagerMessageListenerBean implements MessageListener {
     @Resource
     private MessageDrivenContext context;
 
-    @Override public void onMessage(final Message message) {
-        logger.log(Level.FINEST, "Received JMS message for update manager: {0}", message);
-        try {
-            if (message instanceof ObjectMessage) {
-                final Serializable body = ((ObjectMessage) message).getObject();
-                if (body instanceof UpdateMessage)
-                    updateManager.onUpdateMessage((UpdateMessage) body);
-            }
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (final Exception ex) {
-            context.setRollbackOnly();
-            logger.log(Level.SEVERE, "Could not process JMS message.", ex);
-        }
+    @Override protected UpdateMessageListener updateMessageListener() {
+        return updateManager;
+    }
+
+    @Override protected void onException(Exception ex) {
+        context.setRollbackOnly();
     }
 }

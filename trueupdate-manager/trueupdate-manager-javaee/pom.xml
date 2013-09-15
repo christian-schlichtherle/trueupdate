@@ -23,6 +23,10 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-manager-core</artifactId>
         </dependency>
         <dependency>

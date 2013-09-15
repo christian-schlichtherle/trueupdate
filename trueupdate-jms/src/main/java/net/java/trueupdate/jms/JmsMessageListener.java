@@ -40,7 +40,7 @@ public abstract class JmsMessageListener implements MessageListener {
 
     protected abstract UpdateMessageListener updateMessageListener();
 
-    @Override public void onMessage(final Message message) {
+    @Override public final void onMessage(final Message message) {
         logger.log(Level.FINEST, "Received JMS message for update manager: {0}", message);
         try {
             if (message instanceof ObjectMessage) {
@@ -51,7 +51,10 @@ public abstract class JmsMessageListener implements MessageListener {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (final Exception ex) {
+            onException(ex);
             logger.log(Level.SEVERE, "Could not process JMS message:", ex);
         }
     }
+
+    protected void onException(Exception ex) { }
 }
