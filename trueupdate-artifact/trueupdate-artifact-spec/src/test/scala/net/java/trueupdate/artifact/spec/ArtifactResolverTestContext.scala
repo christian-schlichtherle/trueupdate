@@ -10,7 +10,8 @@ trait ArtifactResolverTestContext {
   def artifactResolver: ArtifactResolver
 
   final def artifactDescriptor =
-    new ArtifactDescriptor.Builder()
+    ArtifactDescriptor
+      .builder
       .groupId("net.java.truevfs")
       .artifactId("truevfs-kernel-spec")
       .version("0.9")
