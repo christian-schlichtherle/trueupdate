@@ -12,8 +12,7 @@ import javax.jms.*;
 import javax.naming.*;
 import javax.servlet.ServletContext;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.jms.JmsMessageListener;
-import net.java.trueupdate.jms.JmsMessageLoop;
+import net.java.trueupdate.jms.JmsMessageReceiver;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 
 /**
@@ -31,7 +30,7 @@ final class MiniContext {
     private final Context namingContext;
     private final MiniUpdateManager manager;
     private final MiniTimer timer;
-    private final JmsMessageLoop loop;
+    private final JmsMessageReceiver receiver;
 
     MiniContext(final ServletContext servletContext)
     throws NamingException, JMSException {
@@ -46,19 +45,19 @@ final class MiniContext {
                 updateInstaller());
         timer = new MiniTimer(manager,
                 checkUpdatesIntervalMinutes());
-        loop = JmsMessageLoop
+        receiver = JmsMessageReceiver
                 .builder()
                 .connectionFactory(connectionFactory)
                 .destination((Destination) lookup("jms/TrueUpdate Manager"))
                 .subscriptionName("TrueUpdate Manager")
                 .messageSelector("manager = true")
-                .messageListener(new JmsMessageListener(manager))
+                .messageListener(manager)
                 .build();
     }
 
     void start() {
         timer().start();
-        listener().start();
+        receiver().start();
     }
 
     private Thread timer() {
@@ -67,8 +66,8 @@ final class MiniContext {
         };
     }
 
-    private Thread listener() {
-        return new Thread(loop, "TrueUpdate Manager Mini Listener Daemon") {
+    private Thread receiver() {
+        return new Thread(receiver, "TrueUpdate Manager Mini Receiver Daemon") {
             { super.setDaemon(true); }
         };
     }
@@ -108,7 +107,7 @@ final class MiniContext {
 
     void stop() throws Exception {
         // HC SUNT DRACONIS!
-        loop.stop();
+        receiver.stop();
         timer.stop();
         manager.close();
     }

@@ -23,10 +23,10 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-public final class JmsMessageLoop implements Runnable {
+public final class JmsMessageReceiver implements Runnable {
 
     private static final Logger logger =
-            Logger.getLogger(JmsMessageLoop.class.getName());
+            Logger.getLogger(JmsMessageReceiver.class.getName());
 
     private static final boolean NO_LOCAL = true;
 
@@ -37,7 +37,7 @@ public final class JmsMessageLoop implements Runnable {
 
     private MessageConsumer messageConsumer;
 
-    private JmsMessageLoop(final Builder<?> b) throws JMSException {
+    private JmsMessageReceiver(final Builder<?> b) throws JMSException {
         this.subscriptionName = b.subscriptionName;
         this.messageSelector = b.messageSelector;
         this.messageListener = requireNonNull(b.messageListener);
@@ -130,8 +130,8 @@ public final class JmsMessageLoop implements Runnable {
             return this;
         }
 
-        public JmsMessageLoop build() throws JMSException {
-            return new JmsMessageLoop(this);
+        public JmsMessageReceiver build() throws JMSException {
+            return new JmsMessageReceiver(this);
         }
 
         public T inject() {
