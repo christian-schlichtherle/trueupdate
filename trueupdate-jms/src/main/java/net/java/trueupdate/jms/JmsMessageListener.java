@@ -12,25 +12,33 @@ import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.Objects;
 
 /**
- * Listens to JMS messages, filters those with an embedded {@link UpdateMessage}
- * and forwards them to the given {@link UpdateMessageListener}.
+ * Adapts the {@link UpdateMessageListener} class to the
+ * {@link MessageListener} interface.
+ * Instances of this class listen to JMS messages, filter those with an
+ * embedded {@link UpdateMessage} and forward them to the update message
+ * listener instance provided by the abstract method
+ * {@link #updateMessageListener()}.
  * All other JMS messages get silently ignored.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class JmsMessageListener implements MessageListener {
+public abstract class JmsMessageListener implements MessageListener {
 
     private static final Logger logger =
             Logger.getLogger(JmsMessageListener.class.getName());
 
-    private final UpdateMessageListener updateMessageListener;
-
-    public JmsMessageListener(
+    public static JmsMessageListener create(
             final UpdateMessageListener updateMessageListener) {
-        this.updateMessageListener =
-                Objects.requireNonNull(updateMessageListener);
+        Objects.requireNonNull(updateMessageListener);
+        return new JmsMessageListener() {
+            @Override protected UpdateMessageListener updateMessageListener() {
+                return updateMessageListener;
+            }
+        };
     }
+
+    protected abstract UpdateMessageListener updateMessageListener();
 
     @Override public void onMessage(final Message message) {
         logger.log(Level.FINEST, "Received JMS message for update manager: {0}", message);
@@ -38,7 +46,7 @@ public final class JmsMessageListener implements MessageListener {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
                 if (body instanceof UpdateMessage)
-                    updateMessageListener.onUpdateMessage((UpdateMessage) body);
+                    updateMessageListener().onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
             throw ex;

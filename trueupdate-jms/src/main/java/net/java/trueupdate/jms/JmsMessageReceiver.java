@@ -126,7 +126,7 @@ public final class JmsMessageReceiver implements Runnable {
         public Builder<T> messageListener(final @CheckForNull UpdateMessageListener updateMessageListener) {
             this.messageListener = null == updateMessageListener
                     ? null
-                    : new JmsMessageListener(updateMessageListener);
+                    : JmsMessageListener.create(updateMessageListener);
             return this;
         }
 
