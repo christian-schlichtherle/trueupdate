@@ -8,6 +8,7 @@ import java.util.logging.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
+import net.java.trueupdate.manager.spec.UpdateMessageListener;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -119,6 +120,13 @@ public final class JmsMessageLoop implements Runnable {
 
         public Builder<T> messageListener(final @Nullable MessageListener messageListener) {
             this.messageListener = messageListener;
+            return this;
+        }
+
+        public Builder<T> messageListener(final @CheckForNull UpdateMessageListener updateMessageListener) {
+            this.messageListener = null == updateMessageListener
+                    ? null
+                    : new JmsMessageListener(updateMessageListener);
             return this;
         }
 
