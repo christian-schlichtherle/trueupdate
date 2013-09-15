@@ -4,14 +4,12 @@
  */
 package net.java.trueupdate.sample.javaee.client;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
-import net.java.trueupdate.agent.spec.ApplicationListener;
-import net.java.trueupdate.agent.spec.UpdateAgent;
+import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
 /**
@@ -71,20 +69,20 @@ public class UpdateClientBean extends ApplicationListener {
                     .applicationListener(this)
                     .applicationDescriptor()
                         .artifactDescriptor()
-                            .groupId(lookupString("groupId"))
-                            .artifactId(lookupString("artifactId"))
-                            .version(lookupString("version"))
-                            .classifier(lookupString("classifier"))
-                            .extension(lookupString("extension"))
+                            .groupId(lookup("groupId"))
+                            .artifactId(lookup("artifactId"))
+                            .version(lookup("version"))
+                            .classifier(lookup("classifier"))
+                            .extension(lookup("extension"))
                             .inject()
-                        .currentLocation(lookupString("currentLocation"))
+                        .currentLocation(lookup("currentLocation"))
                         .inject()
-                    .updateLocation(lookupString("updateLocation"))
+                    .updateLocation(lookup("updateLocation"))
                     .inject()
                 .build();
     }
 
-    private static @Nullable String lookupString(String key) {
+    private static @Nullable String lookup(String key) {
         try { return bundle.getString(key); }
         catch (MissingResourceException ex) { return null; }
     }
@@ -99,9 +97,10 @@ public class UpdateClientBean extends ApplicationListener {
         logReceived(message);
     }
 
-    @Override public void onUpdateNotice(UpdateMessage message)
+    @Override public void onUpdateNotice(final UpdateMessage message)
     throws Exception {
-        updateAgent().install(logReceived(message).updateVersion());
+        logReceived(message);
+        updateAgent().install(message.updateVersion());
     }
 
     @Override public void onInstallationSuccessResponse(UpdateMessage message)
@@ -124,8 +123,8 @@ public class UpdateClientBean extends ApplicationListener {
         logReceived(message);
     }
 
-    private static UpdateMessage logReceived(final UpdateMessage message) {
-        logger.log(Level.FINE, "Received update message from update manager:\n{0}", message);
-        return message;
+    private static void logReceived(UpdateMessage message) {
+        logger.log(Level.FINE,
+                "Received update message from update manager:\n{0}", message);
     }
 }
