@@ -18,8 +18,8 @@ import net.java.trueupdate.manager.spec.*;
 @Singleton
 public class UpdateAgentMessageDispatcherBean extends UpdateMessageListener {
 
-    private static final Logger
-            logger = Logger.getLogger(UpdateAgentMessageDispatcherBean.class.getName());
+    private static final Logger logger =
+            Logger.getLogger(UpdateAgentMessageDispatcherBean.class.getName());
 
     private final Map<ApplicationDescriptor, ApplicationAccount>
             accounts = new HashMap<ApplicationDescriptor, ApplicationAccount>();
