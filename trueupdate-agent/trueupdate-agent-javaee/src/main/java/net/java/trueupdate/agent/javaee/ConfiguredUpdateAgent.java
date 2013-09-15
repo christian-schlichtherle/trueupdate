@@ -33,15 +33,6 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     }
 
     @Override
-    protected ApplicationParameters applicationParameters() {
-        return applicationParameters;
-    }
-
-    @Override protected String from() { return AGENT; }
-
-    @Override protected String to() { return MANAGER; }
-
-    @Override
     public void subscribe() throws UpdateAgentException {
         updateAgentMessageDispatcher.subscribe(applicationParameters);
         super.subscribe();
@@ -65,4 +56,13 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
             c.close();
         }
     }
+
+    @Override
+    protected ApplicationParameters applicationParameters() {
+        return applicationParameters;
+    }
+
+    @Override protected String from() { return AGENT; }
+
+    @Override protected String to() { return MANAGER; }
 }
