@@ -9,6 +9,7 @@ import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.util.Objects;
 
 /**
  * Listens to JMS messages, filters those with an embedded {@link UpdateMessage}
@@ -25,9 +26,10 @@ public final class JmsMessageListener implements MessageListener {
 
     private final UpdateMessageListener updateMessageListener;
 
-    public JmsMessageListener(final UpdateMessageListener updateMessageListener)
-    throws JMSException {
-        this.updateMessageListener = updateMessageListener;
+    public JmsMessageListener(
+            final UpdateMessageListener updateMessageListener) {
+        this.updateMessageListener =
+                Objects.requireNonNull(updateMessageListener);
     }
 
     @Override public void onMessage(final Message message) {
