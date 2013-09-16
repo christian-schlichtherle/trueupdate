@@ -4,12 +4,9 @@
  */
 package net.java.trueupdate.agent.mini;
 
-import net.java.trueupdate.agent.spec.ApplicationListener;
-import net.java.trueupdate.agent.spec.ApplicationParameters;
-import net.java.trueupdate.manager.spec.ApplicationDescriptor;
-import net.java.trueupdate.manager.spec.UpdateMessage;
-import net.java.trueupdate.manager.spec.UpdateMessageFilter;
-import net.java.trueupdate.manager.spec.UpdateMessageListener;
+import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.agent.spec.*;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * Listens to update messages and forwards them to the configured application
@@ -18,6 +15,7 @@ import net.java.trueupdate.manager.spec.UpdateMessageListener;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 final class ConfiguredUpdateMessageListener extends UpdateMessageListener {
 
     private final ApplicationListener listener;
