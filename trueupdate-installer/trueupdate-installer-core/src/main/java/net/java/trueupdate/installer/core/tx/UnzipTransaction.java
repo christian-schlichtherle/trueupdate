@@ -6,7 +6,10 @@ package net.java.trueupdate.installer.core.tx;
 
 import java.io.*;
 import static net.java.trueupdate.installer.core.io.Files.*;
-import net.java.trueupdate.core.zip.*;
+
+import net.java.trueupdate.core.zip.io.ZipFileStore;
+import net.java.trueupdate.core.zip.io.ZipSource;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**

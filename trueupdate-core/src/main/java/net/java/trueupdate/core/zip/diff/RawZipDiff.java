@@ -12,7 +12,10 @@ import java.util.zip.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.*;
+import net.java.trueupdate.core.zip.io.ZipEntrySink;
+import net.java.trueupdate.core.zip.io.ZipEntrySource;
+import net.java.trueupdate.core.zip.io.ZipInput;
+import net.java.trueupdate.core.zip.io.ZipOutput;
 import net.java.trueupdate.core.zip.model.*;
 
 /**
@@ -35,7 +38,8 @@ public abstract class RawZipDiff {
     protected abstract MessageDigest digest();
 
     /** Returns the first input archive. */
-    protected abstract @WillNotClose ZipInput input1();
+    protected abstract @WillNotClose
+    ZipInput input1();
 
     /** Returns the second input archive. */
     protected abstract @WillNotClose ZipInput input2();

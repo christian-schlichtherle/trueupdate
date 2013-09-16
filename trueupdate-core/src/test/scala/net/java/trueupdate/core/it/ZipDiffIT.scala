@@ -9,8 +9,8 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.core.zip.diff.RawZipDiff
-import net.java.trueupdate.core.zip.JarFileStore
 import net.java.trueupdate.core.io.MessageDigests
+import net.java.trueupdate.core.zip.io.JarFileStore
 
 /**
  * @author Christian Schlichtherle

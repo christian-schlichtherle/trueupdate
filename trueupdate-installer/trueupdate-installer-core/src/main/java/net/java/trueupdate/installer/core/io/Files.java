@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.zip.*;
 import javax.annotation.CheckForNull;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.*;
+import net.java.trueupdate.core.zip.io.*;
 
 /**
  * Provides functions for {@link File}s.
@@ -31,7 +31,8 @@ public final class Files {
     throws IOException {
 
         class ZipTask implements ZipOutputTask<Void, IOException> {
-            @Override public Void execute(final ZipOutput output) throws IOException {
+            @Override
+            public Void execute(final ZipOutput output) throws IOException {
 
                 class Zipper {
                     void zipDirectory(final File directory, final String name)

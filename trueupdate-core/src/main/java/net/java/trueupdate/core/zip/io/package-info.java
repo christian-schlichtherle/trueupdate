@@ -8,4 +8,4 @@
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.core.zip;
+package net.java.trueupdate.core.zip.io;

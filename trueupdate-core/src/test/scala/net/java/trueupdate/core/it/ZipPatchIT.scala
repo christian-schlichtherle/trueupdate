@@ -14,6 +14,7 @@ import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip._
 import net.java.trueupdate.core.zip.diff._
 import net.java.trueupdate.core.zip.patch._
+import net.java.trueupdate.core.zip.io.{ZipSources, ZipInputTask, ZipInput}
 
 /**
  * @author Christian Schlichtherle

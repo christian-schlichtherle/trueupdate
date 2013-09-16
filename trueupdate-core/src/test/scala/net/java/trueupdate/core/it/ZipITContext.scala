@@ -14,6 +14,7 @@ import net.java.trueupdate.core.zip._
 import net.java.trueupdate.core.zip.diff.RawZipDiff
 import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.core.zip.patch._
+import net.java.trueupdate.core.zip.io.{ZipSources, ZipInputTask, ZipInput}
 
 /**
  * @author Christian Schlichtherle

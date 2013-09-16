@@ -2,19 +2,19 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.zip;
+package net.java.trueupdate.core.zip.io;
 
 import edu.umd.cs.findbugs.annotations.CreatesObligation;
 import java.io.IOException;
 
 /**
- * An abstraction for reading ZIP files.
+ * An abstraction for writing ZIP files.
  *
- * @see    ZipSink
+ * @see    ZipSource
  * @author Christian Schlichtherle
  */
-public interface ZipSource {
+public interface ZipSink {
 
-    /** Returns a new ZIP input for reading its entries. */
-    @CreatesObligation ZipInput input() throws IOException;
+    /** Returns a new ZIP output for writing its entries. */
+    @CreatesObligation ZipOutput output() throws IOException;
 }

@@ -10,7 +10,8 @@ import java.security.MessageDigest;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.*;
+import net.java.trueupdate.core.zip.io.*;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**

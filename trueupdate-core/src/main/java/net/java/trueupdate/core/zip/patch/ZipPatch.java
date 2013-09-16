@@ -7,7 +7,9 @@ package net.java.trueupdate.core.zip.patch;
 import java.io.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.zip.*;
+
+import net.java.trueupdate.core.zip.io.*;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**

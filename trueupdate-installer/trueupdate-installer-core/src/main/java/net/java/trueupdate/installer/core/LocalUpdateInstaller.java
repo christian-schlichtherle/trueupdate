@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.zip.JarFileStore;
+import net.java.trueupdate.core.zip.io.JarFileStore;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.installer.core.io.Files.*;
 import net.java.trueupdate.installer.core.io.PathTask;

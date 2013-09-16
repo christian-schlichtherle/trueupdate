@@ -12,7 +12,6 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
 import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.zip.JarFileStore
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.installer.core.LocalUpdateInstaller.Context
 import net.java.trueupdate.installer.core.io.Files._
@@ -20,6 +19,7 @@ import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.manager.spec._
 import net.java.trueupdate.manager.spec.UpdateMessage.Type
+import net.java.trueupdate.core.zip.io.JarFileStore
 
 /**
  * @author Christian Schlichtherle

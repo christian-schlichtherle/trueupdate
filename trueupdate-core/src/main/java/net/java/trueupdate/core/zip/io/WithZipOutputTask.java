@@ -2,22 +2,22 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.core.zip;
+package net.java.trueupdate.core.zip.io;
 
 import java.io.*;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.util.Objects;
 
 /**
- * @see ZipSources#execute
+ * @see ZipSinks#execute
  * @author Christian Schlichtherle
  */
-final class WithZipInputTask<V, X extends Exception>
-implements ZipSources.ExecuteStatement<V, X> {
+final class WithZipOutputTask<V, X extends Exception>
+implements ZipSinks.ExecuteStatement<V, X> {
 
-    private final ZipInputTask<V, X> task;
+    private final ZipOutputTask<V, X> task;
 
-    WithZipInputTask(final ZipInputTask<V, X> task) {
+    WithZipOutputTask(final ZipOutputTask<V, X> task) {
         this.task = Objects.requireNonNull(task);
     }
 
@@ -25,7 +25,7 @@ implements ZipSources.ExecuteStatement<V, X> {
         return on(new ZipFileStore(file));
     }
 
-    @Override public V on(ZipSource source) throws X, IOException {
-        return Closeables.execute(task, source.input());
+    @Override public V on(ZipSink sink) throws X, IOException {
+        return Closeables.execute(task, sink.output());
     }
 }

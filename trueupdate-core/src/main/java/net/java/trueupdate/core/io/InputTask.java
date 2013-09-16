@@ -11,7 +11,6 @@ import javax.annotation.WillNotClose;
  * Executes a task on an {@link InputStream}.
  *
  * @see Sources#execute
- * @see Sources#bind
  * @author Christian Schlichtherle
  */
 public interface InputTask<V, X extends Exception>
