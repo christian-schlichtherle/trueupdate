@@ -39,14 +39,8 @@ public abstract class JmsMessageListener implements MessageListener {
         };
     }
 
-    /** Returns the update message listener. */
-    protected abstract UpdateMessageListener updateMessageListener();
-
-    /** Called on any non-{@link RuntimeException}. */
-    protected void onException(Exception ex) { }
-
     @Override public final void onMessage(final Message message) {
-        logger.log(Level.FINEST, "Received JMS message for update manager: {0}", message);
+        logger.log(Level.FINEST, "Received JMS message: {0}", message);
         try {
             if (message instanceof ObjectMessage) {
                 final Serializable body = ((ObjectMessage) message).getObject();
@@ -56,8 +50,14 @@ public abstract class JmsMessageListener implements MessageListener {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (final Exception ex) {
-            logger.log(Level.SEVERE, "Could not process JMS message:", ex);
+            logger.log(Level.WARNING, "Could not process JMS message:", ex);
             onException(ex);
         }
     }
+
+    /** Returns the update message listener. */
+    protected abstract UpdateMessageListener updateMessageListener();
+
+    /** Called on any non-{@link RuntimeException}. */
+    protected void onException(Exception ex) { }
 }
