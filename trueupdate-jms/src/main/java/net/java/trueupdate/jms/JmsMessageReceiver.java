@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.jms;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import javax.annotation.*;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
@@ -74,7 +73,7 @@ public final class JmsMessageReceiver implements Runnable {
                 if (null != c) c.close();
             }
         } catch (JMSException ex) {
-            throw new UndeclaredThrowableException(ex);
+            throw new java.lang.IllegalStateException(ex);
         }
     }
 
