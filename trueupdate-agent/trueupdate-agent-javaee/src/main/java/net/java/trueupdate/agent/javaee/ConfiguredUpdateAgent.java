@@ -17,7 +17,8 @@ import static net.java.trueupdate.util.Objects.*;
  */
 final class ConfiguredUpdateAgent extends BasicUpdateAgent {
 
-    private static final String AGENT = "agent", MANAGER = "manager";
+    private static final String FROM = "jms/TrueUpdate Agent",
+                                TO = "jms/TrueUpdate Manager";
 
     private final ApplicationParameters applicationParameters;
     private final ConnectionFactory connectionFactory;
@@ -62,7 +63,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         return applicationParameters;
     }
 
-    @Override protected String from() { return AGENT; }
+    @Override protected String from() { return FROM; }
 
-    @Override protected String to() { return MANAGER; }
+    @Override protected String to() { return TO; }
 }
