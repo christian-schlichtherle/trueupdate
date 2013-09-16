@@ -28,6 +28,7 @@ public abstract class JmsMessageListener implements MessageListener {
     private static final Logger logger =
             Logger.getLogger(JmsMessageListener.class.getName());
 
+    /** Returns a new JmsMessageListener with the given properties. */
     public static JmsMessageListener create(
             final UpdateMessageListener updateMessageListener) {
         Objects.requireNonNull(updateMessageListener);
@@ -38,7 +39,11 @@ public abstract class JmsMessageListener implements MessageListener {
         };
     }
 
+    /** Returns the update message listener. */
     protected abstract UpdateMessageListener updateMessageListener();
+
+    /** Called on any non-{@link RuntimeException}. */
+    protected void onException(Exception ex) { }
 
     @Override public final void onMessage(final Message message) {
         logger.log(Level.FINEST, "Received JMS message for update manager: {0}", message);
@@ -51,10 +56,8 @@ public abstract class JmsMessageListener implements MessageListener {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (final Exception ex) {
-            onException(ex);
             logger.log(Level.SEVERE, "Could not process JMS message:", ex);
+            onException(ex);
         }
     }
-
-    protected void onException(Exception ex) { }
 }
