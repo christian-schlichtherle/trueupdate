@@ -9,6 +9,7 @@ import net.java.trueupdate.agent.core.BasicUpdateAgentBuilder;
 import net.java.trueupdate.agent.spec.UpdateAgent;
 
 /**
+ * A context for building an update agent.
  *
  * @author Christian Schlichtherle
  */
