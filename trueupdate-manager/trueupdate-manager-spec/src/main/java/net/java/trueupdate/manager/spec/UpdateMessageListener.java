@@ -13,7 +13,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class UpdateMessageListener {
+public abstract class UpdateMessageListener {
 
     /** Returns the filter to use before dispatching an update message. */
     protected UpdateMessageFilter filter() {

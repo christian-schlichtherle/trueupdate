@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
-import net.java.trueupdate.agent.mini.MiniUpdateAgentBuilder;
+import net.java.trueupdate.agent.mini.UpdateAgentContext;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
@@ -28,7 +28,7 @@ public class UpdateClientBean extends ApplicationListener {
             bundle = ResourceBundle.getBundle(UpdateClientBean.class.getName());
 
     private final UpdateAgent updateAgent =
-            new MiniUpdateAgentBuilder()
+            new UpdateAgentContext()
                 .applicationParameters()
                     .applicationListener(this)
                     .applicationDescriptor()

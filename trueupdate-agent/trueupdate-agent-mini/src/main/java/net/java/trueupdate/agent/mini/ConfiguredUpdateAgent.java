@@ -22,13 +22,13 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  *
  * @author Christian Schlichtherle
  */
-final class MiniUpdateAgent extends BasicUpdateAgent {
+final class ConfiguredUpdateAgent extends BasicUpdateAgent {
 
     private final ApplicationParameters applicationParameters;
     private final MessagingParameters messagingParameters;
     private @CheckForNull JmsMessageReceiver receiver;
 
-    MiniUpdateAgent(final ApplicationParameters applicationParameters,
+    ConfiguredUpdateAgent(final ApplicationParameters applicationParameters,
                     final MessagingParameters messagingParameters) {
         this.applicationParameters = requireNonNull(applicationParameters);
         this.messagingParameters = requireNonNull(messagingParameters);
@@ -56,7 +56,7 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
                         .destination(fromDestination())
                         .subscriptionName("TrueUpdate Agent")
                         .messageSelector("manager = false")
-                        .messageListener(new MiniUpdateMessageListener(applicationParameters))
+                        .messageListener(new ConfiguredUpdateMessageListener(applicationParameters))
                         .build();
                 new Thread(receiver, "TrueUpdate Agent Mini Receiver Daemon") {
                     { super.setDaemon(true); }

@@ -18,12 +18,12 @@ import net.java.trueupdate.manager.spec.UpdateMessageListener;
  *
  * @author Christian Schlichtherle
  */
-final class MiniUpdateMessageListener extends UpdateMessageListener {
+final class ConfiguredUpdateMessageListener extends UpdateMessageListener {
 
     private final ApplicationListener listener;
     private final UpdateMessageFilter filter;
 
-    MiniUpdateMessageListener(final ApplicationParameters parameters) {
+    ConfiguredUpdateMessageListener(final ApplicationParameters parameters) {
         this.listener = parameters.applicationListener();
         this.filter = new UpdateMessageFilter() {
             final ApplicationDescriptor applicationDescriptor =

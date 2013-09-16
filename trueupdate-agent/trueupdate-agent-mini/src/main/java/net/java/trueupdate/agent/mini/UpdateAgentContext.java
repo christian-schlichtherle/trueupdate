@@ -12,27 +12,28 @@ import net.java.trueupdate.agent.spec.UpdateAgent;
  *
  * @author Christian Schlichtherle
  */
-public class MiniUpdateAgentBuilder
-extends BasicUpdateAgentBuilder<MiniUpdateAgentBuilder, Void> {
+public class UpdateAgentContext
+extends BasicUpdateAgentBuilder<UpdateAgentContext, Void> {
 
     @CheckForNull
     private MessagingParameters messagingParameters;
 
-    public MessagingParameters.Builder<MiniUpdateAgentBuilder> messagingParameters() {
-        return new MessagingParameters.Builder<MiniUpdateAgentBuilder>() {
-            @Override public MiniUpdateAgentBuilder inject() {
+    public MessagingParameters.Builder<UpdateAgentContext> messagingParameters() {
+        return new MessagingParameters.Builder<UpdateAgentContext>() {
+            @Override public UpdateAgentContext inject() {
                 return messagingParameters(build());
             }
         };
     }
 
-    public MiniUpdateAgentBuilder messagingParameters(
+    public UpdateAgentContext messagingParameters(
             final @Nullable MessagingParameters messagingParameters) {
         this.messagingParameters = messagingParameters;
         return this;
     }
 
     @Override public UpdateAgent build() {
-        return new MiniUpdateAgent(applicationParameters, messagingParameters);
+        return new ConfiguredUpdateAgent(applicationParameters,
+                                         messagingParameters);
     }
 }
