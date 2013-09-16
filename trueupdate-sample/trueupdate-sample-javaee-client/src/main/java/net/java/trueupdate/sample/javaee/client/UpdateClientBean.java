@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.*;
 import javax.ejb.*;
+import net.java.trueupdate.agent.mini.MiniUpdateAgentBuilder;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 
@@ -26,8 +27,33 @@ public class UpdateClientBean extends ApplicationListener {
     private static ResourceBundle
             bundle = ResourceBundle.getBundle(UpdateClientBean.class.getName());
 
-    @EJB
-    private UpdateAgent.Builder<?, ?> updateAgentBuilder;
+    private final UpdateAgent updateAgent =
+            new MiniUpdateAgentBuilder()
+                .applicationParameters()
+                    .applicationListener(this)
+                    .applicationDescriptor()
+                        .artifactDescriptor()
+                            .groupId(lookup("groupId"))
+                            .artifactId(lookup("artifactId"))
+                            .version(lookup("version"))
+                            .classifier(lookup("classifier"))
+                            .extension(lookup("extension"))
+                            .inject()
+                        .currentLocation(lookup("currentLocation"))
+                        .inject()
+                    .updateLocation(lookup("updateLocation"))
+                    .inject()
+                .transportParameters()
+                    .connectionFactory(lookup("connectionFactory"))
+                    .from(lookup("from"))
+                    .to(lookup("to"))
+                    .inject()
+                .build();
+
+    private static @Nullable String lookup(String key) {
+        try { return bundle.getString(key); }
+        catch (MissingResourceException ex) { return null; }
+    }
 
     @Resource
     private SessionContext context;
@@ -35,7 +61,7 @@ public class UpdateClientBean extends ApplicationListener {
     @PostConstruct private void subscribe() {
         log(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                updateAgent().subscribe();
+                updateAgent.subscribe();
                 return null;
             }
         });
@@ -44,7 +70,7 @@ public class UpdateClientBean extends ApplicationListener {
     @PreDestroy private void unsubscribe() {
         log(new Callable<Void>() {
             @Override public Void call() throws Exception {
-                updateAgent().unsubscribe();
+                updateAgent.unsubscribe();
                 return null;
             }
         });
@@ -62,31 +88,6 @@ public class UpdateClientBean extends ApplicationListener {
         }
     }
 
-    private UpdateAgent updateAgent() {
-        // The result may get cached, too.
-        return updateAgentBuilder
-                .applicationParameters()
-                    .applicationListener(this)
-                    .applicationDescriptor()
-                        .artifactDescriptor()
-                            .groupId(lookup("groupId"))
-                            .artifactId(lookup("artifactId"))
-                            .version(lookup("version"))
-                            .classifier(lookup("classifier"))
-                            .extension(lookup("extension"))
-                            .inject()
-                        .currentLocation(lookup("currentLocation"))
-                        .inject()
-                    .updateLocation(lookup("updateLocation"))
-                    .inject()
-                .build();
-    }
-
-    private static @Nullable String lookup(String key) {
-        try { return bundle.getString(key); }
-        catch (MissingResourceException ex) { return null; }
-    }
-
     @Override public void onSubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
         logReceived(message);
@@ -100,7 +101,7 @@ public class UpdateClientBean extends ApplicationListener {
     @Override public void onUpdateNotice(final UpdateMessage message)
     throws Exception {
         logReceived(message);
-        updateAgent().install(message.updateVersion());
+        updateAgent.install(message.updateVersion());
     }
 
     @Override public void onInstallationSuccessResponse(UpdateMessage message)

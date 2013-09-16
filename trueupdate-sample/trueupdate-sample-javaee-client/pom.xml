@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-agent-spec</artifactId>
+            <artifactId>trueupdate-agent-mini</artifactId>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
