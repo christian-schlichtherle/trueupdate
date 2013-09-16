@@ -11,7 +11,9 @@ import javax.annotation.*;
 import javax.ejb.*;
 import javax.inject.Inject;
 import javax.jms.*;
+import javax.naming.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
+import net.java.trueupdate.jms.JmsMessageTransmitter;
 import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.SystemProperties;
@@ -27,14 +29,6 @@ public class UpdateManagerBean extends UpdateManager {
     private static final Logger
             logger = Logger.getLogger(UpdateManagerBean.class.getName());
 
-    @Resource(name = "connectionFactory")
-    private ConnectionFactory connectionFactory;
-
-    @Resource(name = "destination", lookup = "jms/TrueUpdate Agent")
-    private Destination destination;
-
-    private Connection connection;
-
     @Resource(name = "updateServiceBaseUri")
     private String updateServiceBaseString;
 
@@ -44,10 +38,19 @@ public class UpdateManagerBean extends UpdateManager {
     @Resource(name = "timerService")
     private TimerService timerService;
 
-    @Inject
-    private UpdateInstaller installer;
+    @Resource(name = "connectionFactory")
+    private ConnectionFactory connectionFactory;
 
-    private UpdateClient client;
+    @Inject
+    private UpdateInstaller updateInstaller;
+
+    private Connection connection;
+
+    private Context context;
+
+    private UpdateClient updateClient;
+
+    private Timer timer;
 
     @PostConstruct private void postConstruct() {
         wrap(new Callable<Void>() {
@@ -78,53 +81,53 @@ public class UpdateManagerBean extends UpdateManager {
     }
 
     private void open() throws Exception {
-        initClient();
-        initConnection();
-        initTimer();
+        // HC SUNT DRACONIS!
+        context = newContext();
+        updateClient = newUpdateClient();
+        connection = newConnection();
+        timer = newTimer();
     }
 
-    private void initClient() throws URISyntaxException {
-        client = new UpdateClient(new URI(SystemProperties.resolve(
+    private Context newContext() throws NamingException {
+        return new InitialContext();
+    }
+
+    private UpdateClient newUpdateClient() throws URISyntaxException {
+        return new UpdateClient(new URI(SystemProperties.resolve(
                 updateServiceBaseString)));
     }
 
-    private void initConnection() throws JMSException {
-        connection = connectionFactory.createConnection();
-    }
-
-    private void initTimer() {
+    private Timer newTimer() {
         logger.log(Level.CONFIG,
                 "Interval for checking for updates is {0} minutes.",
                 checkUpdatesIntervalMinutes);
         final long intervalMillis = checkUpdatesIntervalMinutes * 60L * 1000;
-        timerService.createTimer(intervalMillis, intervalMillis, null);
+        return timerService.createTimer(intervalMillis, intervalMillis, null);
     }
 
-    @Override protected UpdateClient updateClient() { return client; }
-
-    @Override protected UpdateInstaller updateInstaller() { return installer; }
+    private Connection newConnection() throws JMSException {
+        return connectionFactory.createConnection();
+    }
 
     @Timeout @Override public void checkUpdates() throws Exception {
         super.checkUpdates();
     }
 
     @Override
-    protected void send(final UpdateMessage message) throws Exception {
-        final Session s = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        try {
-            final Message m = s.createObjectMessage(message);
-            m.setBooleanProperty("manager", message.type().forManager());
-            s.createProducer(destination).send(m);
-        } finally {
-            s.close();
-        }
+    protected void send(UpdateMessage message) throws Exception {
+        JmsMessageTransmitter.create(context, connection).send(message);
     }
 
     @Override public void close() throws Exception {
         // HC SUNT DRACONIS!
+        timer.cancel();
         super.close();
-        closeConnection();
+        connection.close();
     }
 
-    private void closeConnection() throws JMSException { connection.close(); }
+    @Override protected UpdateClient updateClient() { return updateClient; }
+
+    @Override protected UpdateInstaller updateInstaller() {
+        return updateInstaller;
+    }
 }

@@ -12,6 +12,7 @@ import net.java.trueupdate.agent.core.BasicUpdateAgent;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.agent.spec.UpdateAgentException;
 import net.java.trueupdate.jms.JmsMessageReceiver;
+import net.java.trueupdate.jms.JmsMessageTransmitter;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
@@ -39,6 +40,12 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
         super.subscribe();
     }
 
+    @Override
+    public void unsubscribe() throws UpdateAgentException {
+        super.unsubscribe();
+        stopUpdateMessageListener();
+    }
+
     private void startUpdateMessageListener() throws UpdateAgentException {
         if (null != receiver) return;
         wrap(new Callable<Void>() {
@@ -57,12 +64,6 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
                 return null;
             }
         });
-    }
-
-    @Override
-    public void unsubscribe() throws UpdateAgentException {
-        super.unsubscribe();
-        stopUpdateMessageListener();
     }
 
     private void stopUpdateMessageListener() throws UpdateAgentException {
@@ -87,16 +88,9 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
     }
 
     @Override
-    protected void send(final UpdateMessage message) throws Exception {
-        final Connection c = connectionFactory().createConnection();
-        try {
-            final Session s = c.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            final Message m = s.createObjectMessage(message);
-            m.setBooleanProperty("manager", message.type().forManager());
-            s.createProducer(toDestination()).send(m);
-        } finally {
-            c.close();
-        }
+    protected void send(UpdateMessage message) throws Exception {
+        JmsMessageTransmitter.create(context(), connectionFactory())
+                .send(message);
     }
 
     private ConnectionFactory connectionFactory() throws NamingException {
@@ -105,10 +99,6 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
 
     private Destination fromDestination() throws NamingException {
         return lookup(from());
-    }
-
-    private Destination toDestination() throws NamingException {
-        return lookup(to());
     }
 
     @SuppressWarnings("unchecked")
