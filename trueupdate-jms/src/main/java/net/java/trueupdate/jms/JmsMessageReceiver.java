@@ -29,7 +29,8 @@ public final class JmsMessageReceiver implements Runnable {
 
     private final @WillCloseWhenClosed Connection connection;
     private final Destination destination;
-    private final @CheckForNull String subscriptionName, messageSelector;
+    private final @Nullable String subscriptionName;
+    private final @CheckForNull String messageSelector;
     private final MessageListener messageListener;
 
     private MessageConsumer messageConsumer;
@@ -46,18 +47,23 @@ public final class JmsMessageReceiver implements Runnable {
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
     @Override public void run() {
-        /*if (null != messageConsumer)
-            throw new java.lang.IllegalStateException();*/
         try {
-            final Connection c = connection;
+            Connection c = null;
             try {
-                final Session s = c.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-                final Destination d = destination;
-                messageConsumer = d instanceof Topic
-                        ? s.createDurableSubscriber((Topic) d, subscriptionName, messageSelector, NO_LOCAL)
-                        : s.createConsumer(d, messageSelector);
+                MessageConsumer mc;
+                synchronized (this) {
+                    mc = messageConsumer;
+                    if (null != mc)
+                        throw new java.lang.IllegalStateException("Already running.");
+                    c = connection;
+                    final Session s = c.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+                    final Destination d = destination;
+                    messageConsumer = mc = d instanceof Topic
+                            ? s.createDurableSubscriber((Topic) d, subscriptionName, messageSelector, NO_LOCAL)
+                            : s.createConsumer(d, messageSelector);
+                }
                 c.start();
-                for (Message m; null != (m = messageConsumer.receive()); ) {
+                for (Message m; null != (m = mc.receive()); ) {
                     synchronized(this) {
                         if (null == messageConsumer) break;
                         m.acknowledge();
@@ -65,7 +71,7 @@ public final class JmsMessageReceiver implements Runnable {
                     }
                 }
             } finally {
-                c.close();
+                if (null != c) c.close();
             }
         } catch (JMSException ex) {
             throw new UndeclaredThrowableException(ex);
