@@ -16,7 +16,7 @@
 
     <name>TrueUpdate Agent Mini</name>
     <description>
-        Provides an update agent which depends on Servlets and JMS only.
+        Provides an update agent which only depends on Servlets, JNDI and JMS.
     </description>
 
     <dependencies>
