@@ -3,7 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides basic JMS services for the update agent and the update manager.
+ * Provides services to transmit and receive
+ * {@link net.java.trueupdate.manager.spec.UpdateMessage}s via JMS.
  *
  * @author Christian Schlichtherle
  */
