@@ -5,7 +5,6 @@
 package net.java.trueupdate.core.zip;
 
 import java.io.*;
-import net.java.trueupdate.core.io.Job;
 
 /**
  * Provides functions for {@link ZipSink}s.

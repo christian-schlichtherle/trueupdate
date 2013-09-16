@@ -4,13 +4,9 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import java.io.File;
-import java.io.IOException;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
+import java.io.*;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.io.Job;
 import net.java.trueupdate.core.zip.*;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
@@ -25,9 +21,6 @@ public abstract class ZipPatch {
 
     /** Returns a new builder for a ZIP patch. */
     public static Builder builder() { return new Builder(); }
-
-    public abstract Job<Void, IOException> bindTo(File file);
-    public abstract Job<Void, IOException> bindTo(ZipSink sink);
 
     public abstract void output(File file) throws IOException;
     public abstract void output(ZipSink sink) throws IOException;
@@ -66,19 +59,6 @@ public abstract class ZipPatch {
             requireNonNull(diff);
 
             return new ZipPatch() {
-
-                @Override public Job<Void, IOException> bindTo(File file) {
-                    return bindTo(new ZipFileStore(file));
-                }
-
-                @Override public Job<Void, IOException> bindTo(final ZipSink sink) {
-                    return new Job<Void, IOException>() {
-                        @Override public Void call() throws IOException {
-                            output(sink);
-                            return null;
-                        }
-                    };
-                }
 
                 @Override
                 public void output(File file) throws IOException {

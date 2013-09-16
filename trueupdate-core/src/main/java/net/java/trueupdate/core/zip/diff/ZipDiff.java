@@ -25,9 +25,6 @@ public abstract class ZipDiff {
     /** Returns a new builder for a ZIP diff. */
     public static Builder builder() { return new Builder(); }
 
-    public abstract Job<Void, IOException> bindTo(File file);
-    public abstract Job<Void, IOException> bindTo(ZipSink sink);
-
     public abstract void output(File file) throws IOException;
     public abstract void output(ZipSink sink) throws IOException;
 
@@ -78,19 +75,6 @@ public abstract class ZipDiff {
             requireNonNull(input2);
 
             return new ZipDiff() {
-
-                @Override public Job<Void, IOException> bindTo(File file) {
-                    return bindTo(new ZipFileStore(file));
-                }
-
-                @Override public Job<Void, IOException> bindTo(final ZipSink sink) {
-                    return new Job<Void, IOException>() {
-                        @Override public Void call() throws IOException {
-                            output(sink);
-                            return null;
-                        }
-                    };
-                }
 
                 @Override
                 public void output(File file) throws IOException {
