@@ -13,14 +13,14 @@ import javax.servlet.annotation.WebListener;
  * @author Christian Schlichtherle
  */
 @WebListener
-public final class MiniServletContextListener
+public final class ManagerServletContextListener
 implements ServletContextListener {
 
-    private MiniContext context;
+    private UpdateManagerContext context;
 
     @Override public void contextInitialized(final ServletContextEvent sce) {
         try {
-            context = new MiniContext(sce.getServletContext());
+            context = new UpdateManagerContext(sce.getServletContext());
         } catch (NamingException ex) {
             throw new IllegalStateException(ex);
         } catch (JMSException ex) {

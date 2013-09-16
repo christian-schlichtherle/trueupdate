@@ -21,29 +21,29 @@ import net.java.trueupdate.manager.spec.UpdateInstaller;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class MiniContext {
+final class UpdateManagerContext {
 
     private static final Logger
-            logger = Logger.getLogger(MiniContext.class.getName());
+            logger = Logger.getLogger(UpdateManagerContext.class.getName());
 
     private final ServletContext servletContext;
     private final Context namingContext;
-    private final MiniUpdateManager manager;
-    private final MiniTimer timer;
+    private final ConfiguredUpdateManager manager;
+    private final UpdateTimer timer;
     private final JmsMessageReceiver receiver;
 
-    MiniContext(final ServletContext servletContext)
+    UpdateManagerContext(final ServletContext servletContext)
     throws NamingException, JMSException {
         this.servletContext = servletContext;
         namingContext = new InitialContext();
         final ConnectionFactory connectionFactory = (ConnectionFactory)
                 lookup("jms/ConnectionFactory");
-        manager = new MiniUpdateManager(
+        manager = new ConfiguredUpdateManager(
                 connectionFactory,
                 namingContext,
                 updateClient(),
                 updateInstaller());
-        timer = new MiniTimer(manager,
+        timer = new UpdateTimer(manager,
                 checkUpdatesIntervalMinutes());
         receiver = JmsMessageReceiver
                 .builder()

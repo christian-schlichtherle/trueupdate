@@ -12,7 +12,7 @@ import net.java.trueupdate.agent.core.BasicUpdateAgent;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.agent.spec.UpdateAgentException;
 import net.java.trueupdate.jms.JmsMessageReceiver;
-import net.java.trueupdate.jms.JmsMessageTransmitter;
+import net.java.trueupdate.jms.JmsMessageSender;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
@@ -89,7 +89,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
 
     @Override
     protected void send(UpdateMessage message) throws Exception {
-        JmsMessageTransmitter.create(context(), connectionFactory())
+        JmsMessageSender.create(namingContext(), connectionFactory())
                 .send(message);
     }
 
@@ -103,10 +103,10 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
 
     @SuppressWarnings("unchecked")
     private <T> T lookup(String name) throws NamingException {
-        return (T) context().lookup(name);
+        return (T) namingContext().lookup(name);
     }
 
-    private Context context() { return messagingParameters().context(); }
+    private Context namingContext() { return messagingParameters().namingContext(); }
 
     @Override protected String from() { return messagingParameters().from(); }
 

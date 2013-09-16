@@ -9,7 +9,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
 import javax.naming.Context;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.jms.JmsMessageTransmitter;
+import net.java.trueupdate.jms.JmsMessageSender;
 import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.manager.spec.*;
 
@@ -21,24 +21,24 @@ import net.java.trueupdate.manager.spec.*;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-final class MiniUpdateManager extends UpdateManager {
+final class ConfiguredUpdateManager extends UpdateManager {
 
     private final @WillCloseWhenClosed Connection connection;
-    private final Context context;
+    private final Context namingContext;
     private final UpdateClient updateClient;
     private final UpdateInstaller updateInstaller;
 
-    MiniUpdateManager(
+    ConfiguredUpdateManager(
             final ConnectionFactory factory,
-            final Context context,
+            final Context namingContext,
             final UpdateClient updateClient,
             final UpdateInstaller updateInstaller)
     throws JMSException {
-        assert null != context;
+        assert null != namingContext;
         assert null != updateClient;
         assert null != updateInstaller;
         this.connection = factory.createConnection();
-        this.context = context;
+        this.namingContext = namingContext;
         this.updateClient = updateClient;
         this.updateInstaller = updateInstaller;
     }
@@ -51,7 +51,7 @@ final class MiniUpdateManager extends UpdateManager {
 
     @Override
     protected void send(UpdateMessage message) throws Exception {
-        JmsMessageTransmitter.create(context, connection).send(message);
+        JmsMessageSender.create(namingContext, connection).send(message);
     }
 
     @Override public synchronized void onUpdateMessage(UpdateMessage message)

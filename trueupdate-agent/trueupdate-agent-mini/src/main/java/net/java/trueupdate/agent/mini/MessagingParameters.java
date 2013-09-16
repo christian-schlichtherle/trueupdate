@@ -17,19 +17,20 @@ import static net.java.trueupdate.util.Strings.requireNonEmpty;
 @Immutable
 public final class MessagingParameters {
 
-    private final Context context;
+    private final Context namingContext;
     private final String connectionFactory, from, to;
 
     MessagingParameters(final Builder<?> b) {
-        this.context = nonNullOrNewInitialContext(b.context);
+        this.namingContext = nonNullOrNewInitialContext(b.namingContext);
         this.connectionFactory = requireNonEmpty(b.connectionFactory);
         this.from = requireNonEmpty(b.from);
         this.to = requireNonEmpty(b.to);
     }
 
-    private static Context nonNullOrNewInitialContext(final Context context) {
+    private static Context nonNullOrNewInitialContext(
+            final Context namingContext) {
         try {
-            return null != context ? context : new InitialContext();
+            return null != namingContext ? namingContext : new InitialContext();
         } catch (NamingException ex) {
             throw new IllegalStateException(
                     "Cannot create a new javax.naming.InitialContext() for you, so you need to inject a javax.naming.Context.",
@@ -40,7 +41,7 @@ public final class MessagingParameters {
     /** Returns a new builder for messaging parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    public Context context() { return context; }
+    public Context namingContext() { return namingContext; }
 
     public String connectionFactory() { return connectionFactory; }
 
@@ -56,13 +57,13 @@ public final class MessagingParameters {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> {
 
-        @CheckForNull Context context;
+        @CheckForNull Context namingContext;
         @CheckForNull String connectionFactory, from, to;
 
         protected Builder() { }
 
-        public Builder<P> context(final @Nullable Context context) {
-            this.context = context;
+        public Builder<P> namingContext(final @Nullable Context namingContext) {
+            this.namingContext = namingContext;
             return this;
         }
 

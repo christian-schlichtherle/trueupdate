@@ -12,16 +12,16 @@ import net.java.trueupdate.manager.core.UpdateManager;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-final class MiniTimer implements Runnable {
+final class UpdateTimer implements Runnable {
 
     private static final Logger
-            logger = Logger.getLogger(MiniTimer.class.getName());
+            logger = Logger.getLogger(UpdateTimer.class.getName());
 
     private final UpdateManager updateManager;
     private final int checkUpdatesIntervalMinutes;
     private boolean closed;
 
-    MiniTimer(
+    UpdateTimer(
             final UpdateManager updateManager,
             final int checkUpdatesIntervalMinutes) {
         assert null != updateManager;

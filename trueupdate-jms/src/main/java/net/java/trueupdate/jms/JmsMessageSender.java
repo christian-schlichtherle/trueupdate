@@ -18,57 +18,57 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class JmsMessageTransmitter {
+public abstract class JmsMessageSender {
 
     private static final Logger logger =
-            Logger.getLogger(JmsMessageTransmitter.class.getName());
+            Logger.getLogger(JmsMessageSender.class.getName());
 
     /**
-     * Returns a new {@code JmsMessageTransmitter} with the given properties.
+     * Returns a new {@code JmsMessageSender} with the given properties.
      *
-     * @param context the context for looking up the destination using the
-     *        {@link UpdateMessage#to()} property of the messages.
+     * @param namingContext the context for looking up the destination using
+     *        the {@link UpdateMessage#to()} property of the messages.
      * @param connectionFactory the factory for the connection for sending the
      *        messages.
      */
-    public static JmsMessageTransmitter create(
-            final Context context,
+    public static JmsMessageSender create(
+            final Context namingContext,
             final @WillNotClose ConnectionFactory connectionFactory) {
-        requireNonNull(context);
+        requireNonNull(namingContext);
         requireNonNull(connectionFactory);
-        return new JmsMessageTransmitter() {
+        return new JmsMessageSender() {
             @Override
             public void send(UpdateMessage message)
             throws NamingException, JMSException {
-                send(message, destination(message, context), connectionFactory);
+                send(message, destination(message, namingContext), connectionFactory);
             }
         };
     }
 
     /**
-     * Returns a new {@code JmsMessageTransmitter} with the given properties.
+     * Returns a new {@code JmsMessageSender} with the given properties.
      *
-     * @param context the context for looking up the destination using the
-     *        {@link UpdateMessage#to()} property of the messages.
+     * @param namingContext the context for looking up the destination using
+     *        the {@link UpdateMessage#to()} property of the messages.
      * @param connectionFactory the connection for sending the messages.
      */
-    public static JmsMessageTransmitter create(
-            final Context context,
+    public static JmsMessageSender create(
+            final Context namingContext,
             final @WillNotClose Connection connection) {
-        requireNonNull(context);
+        requireNonNull(namingContext);
         requireNonNull(connection);
-        return new JmsMessageTransmitter() {
+        return new JmsMessageSender() {
             @Override
             public void send(UpdateMessage message)
             throws NamingException, JMSException {
-                send(message, destination(message, context), connection);
+                send(message, destination(message, namingContext), connection);
             }
         };
     }
 
-    static Destination destination(UpdateMessage message, Context context)
+    static Destination destination(UpdateMessage message, Context namingContext)
     throws NamingException {
-        return (Destination) context.lookup(message.to());
+        return (Destination) namingContext.lookup(message.to());
     }
 
     static void send(

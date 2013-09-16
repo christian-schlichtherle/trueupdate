@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.jms.*;
 import javax.naming.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.jms.JmsMessageTransmitter;
+import net.java.trueupdate.jms.JmsMessageSender;
 import net.java.trueupdate.manager.core.UpdateManager;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.util.SystemProperties;
@@ -46,7 +46,7 @@ public class UpdateManagerBean extends UpdateManager {
 
     private Connection connection;
 
-    private Context context;
+    private Context namingContext;
 
     private UpdateClient updateClient;
 
@@ -82,13 +82,13 @@ public class UpdateManagerBean extends UpdateManager {
 
     private void open() throws Exception {
         // HC SUNT DRACONIS!
-        context = newContext();
+        namingContext = newNamingContext();
         updateClient = newUpdateClient();
         connection = newConnection();
         timer = newTimer();
     }
 
-    private Context newContext() throws NamingException {
+    private Context newNamingContext() throws NamingException {
         return new InitialContext();
     }
 
@@ -115,7 +115,7 @@ public class UpdateManagerBean extends UpdateManager {
 
     @Override
     protected void send(UpdateMessage message) throws Exception {
-        JmsMessageTransmitter.create(context, connection).send(message);
+        JmsMessageSender.create(namingContext, connection).send(message);
     }
 
     @Override public void close() throws Exception {
