@@ -16,23 +16,23 @@ public class MiniUpdateAgentBuilder
 extends BasicUpdateAgentBuilder<MiniUpdateAgentBuilder, Void> {
 
     @CheckForNull
-    private TransportParameters transportParameters;
+    private MessagingParameters messagingParameters;
 
-    public TransportParameters.Builder<MiniUpdateAgentBuilder> transportParameters() {
-        return new TransportParameters.Builder<MiniUpdateAgentBuilder>() {
+    public MessagingParameters.Builder<MiniUpdateAgentBuilder> messagingParameters() {
+        return new MessagingParameters.Builder<MiniUpdateAgentBuilder>() {
             @Override public MiniUpdateAgentBuilder inject() {
-                return transportParameters(build());
+                return messagingParameters(build());
             }
         };
     }
 
-    public MiniUpdateAgentBuilder transportParameters(
-            final @Nullable TransportParameters transportParameters) {
-        this.transportParameters = transportParameters;
+    public MiniUpdateAgentBuilder messagingParameters(
+            final @Nullable MessagingParameters messagingParameters) {
+        this.messagingParameters = messagingParameters;
         return this;
     }
 
     @Override public UpdateAgent build() {
-        return new MiniUpdateAgent(applicationParameters, transportParameters);
+        return new MiniUpdateAgent(applicationParameters, messagingParameters);
     }
 }

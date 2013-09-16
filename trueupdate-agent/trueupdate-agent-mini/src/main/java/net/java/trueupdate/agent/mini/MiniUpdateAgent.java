@@ -25,13 +25,13 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
 final class MiniUpdateAgent extends BasicUpdateAgent {
 
     private final ApplicationParameters applicationParameters;
-    private final TransportParameters transportParameters;
+    private final MessagingParameters messagingParameters;
     private @CheckForNull JmsMessageReceiver receiver;
 
     MiniUpdateAgent(final ApplicationParameters applicationParameters,
-                    final TransportParameters transportParameters) {
+                    final MessagingParameters messagingParameters) {
         this.applicationParameters = requireNonNull(applicationParameters);
-        this.transportParameters = requireNonNull(transportParameters);
+        this.messagingParameters = requireNonNull(messagingParameters);
     }
 
     @Override
@@ -94,7 +94,7 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
     }
 
     private ConnectionFactory connectionFactory() throws NamingException {
-        return lookup(transportParameters().connectionFactory());
+        return lookup(messagingParameters().connectionFactory());
     }
 
     private Destination fromDestination() throws NamingException {
@@ -106,17 +106,17 @@ final class MiniUpdateAgent extends BasicUpdateAgent {
         return (T) context().lookup(name);
     }
 
-    private Context context() { return transportParameters().context(); }
+    private Context context() { return messagingParameters().context(); }
 
-    @Override protected String from() { return transportParameters().from(); }
+    @Override protected String from() { return messagingParameters().from(); }
 
-    @Override protected String to() { return transportParameters().to(); }
+    @Override protected String to() { return messagingParameters().to(); }
 
     @Override protected ApplicationParameters applicationParameters() {
         return applicationParameters;
     }
 
-    private TransportParameters transportParameters() {
-        return transportParameters;
+    private MessagingParameters messagingParameters() {
+        return messagingParameters;
     }
 }

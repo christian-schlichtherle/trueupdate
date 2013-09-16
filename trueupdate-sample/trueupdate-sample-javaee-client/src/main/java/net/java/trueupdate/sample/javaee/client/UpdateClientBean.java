@@ -43,7 +43,7 @@ public class UpdateClientBean extends ApplicationListener {
                         .inject()
                     .updateLocation(lookup("updateLocation"))
                     .inject()
-                .transportParameters()
+                .messagingParameters()
                     .connectionFactory(lookup("connectionFactory"))
                     .from(lookup("from"))
                     .to(lookup("to"))

@@ -10,17 +10,17 @@ import javax.naming.*;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
 
 /**
- * Transport parameters for JMS.
+ * Parameters for JMS.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class TransportParameters {
+public final class MessagingParameters {
 
     private final Context context;
     private final String connectionFactory, from, to;
 
-    TransportParameters(final Builder<?> b) {
+    MessagingParameters(final Builder<?> b) {
         this.context = nonNullOrNewInitialContext(b.context);
         this.connectionFactory = requireNonEmpty(b.connectionFactory);
         this.from = requireNonEmpty(b.from);
@@ -37,7 +37,7 @@ public final class TransportParameters {
         }
     }
 
-    /** Returns a new builder for transport parameters. */
+    /** Returns a new builder for messaging parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
     public Context context() { return context; }
@@ -49,7 +49,7 @@ public final class TransportParameters {
     public String to() { return to; }
 
     /**
-     * A builder for transport parameters.
+     * A builder for messaging parameters.
      *
      * @param <P> The type of the parent builder.
      */
@@ -82,8 +82,8 @@ public final class TransportParameters {
             return this;
         }
 
-        public TransportParameters build() {
-            return new TransportParameters(this);
+        public MessagingParameters build() {
+            return new MessagingParameters(this);
         }
 
         /**
