@@ -48,31 +48,36 @@ public final class TransportParameters {
 
     public String to() { return to; }
 
+    /**
+     * A builder for transport parameters.
+     *
+     * @param <P> The type of the parent builder.
+     */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<T> {
+    public static class Builder<P> {
 
         @CheckForNull Context context;
         @CheckForNull String connectionFactory, from, to;
 
         protected Builder() { }
 
-        public Builder<T> context(final @Nullable Context context) {
+        public Builder<P> context(final @Nullable Context context) {
             this.context = context;
             return this;
         }
 
-        public Builder<T> connectionFactory(
+        public Builder<P> connectionFactory(
                 final @Nullable String connectionFactory) {
             this.connectionFactory = connectionFactory;
             return this;
         }
 
-        public Builder<T> from(final @Nullable String from) {
+        public Builder<P> from(final @Nullable String from) {
             this.from = from;
             return this;
         }
 
-        public Builder<T> to(final @Nullable String to) {
+        public Builder<P> to(final @Nullable String to) {
             this.to = to;
             return this;
         }
@@ -81,8 +86,14 @@ public final class TransportParameters {
             return new TransportParameters(this);
         }
 
-        public T inject() throws NamingException {
-            throw new IllegalStateException("No target for injection.");
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() throws NamingException {
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }
