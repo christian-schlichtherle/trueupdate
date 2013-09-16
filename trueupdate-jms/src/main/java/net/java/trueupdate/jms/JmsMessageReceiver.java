@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.jms;
 
-import java.util.logging.*;
+import java.lang.reflect.UndeclaredThrowableException;
 import javax.annotation.*;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
@@ -24,9 +24,6 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  */
 @ThreadSafe
 public final class JmsMessageReceiver implements Runnable {
-
-    private static final Logger logger =
-            Logger.getLogger(JmsMessageReceiver.class.getName());
 
     private static final boolean NO_LOCAL = true;
 
@@ -49,6 +46,8 @@ public final class JmsMessageReceiver implements Runnable {
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
     @Override public void run() {
+        /*if (null != messageConsumer)
+            throw new java.lang.IllegalStateException();*/
         try {
             final Connection c = connection;
             try {
@@ -69,7 +68,7 @@ public final class JmsMessageReceiver implements Runnable {
                 c.close();
             }
         } catch (JMSException ex) {
-            logger.log(Level.SEVERE, "JMS exception:", ex);
+            throw new UndeclaredThrowableException(ex);
         }
     }
 
