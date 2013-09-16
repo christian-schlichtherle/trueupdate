@@ -92,7 +92,7 @@ public final class TransportParameters {
          *
          * @throws IllegalStateException if there is no parent builder defined.
          */
-        public P inject() throws NamingException {
+        public P inject() {
             throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
