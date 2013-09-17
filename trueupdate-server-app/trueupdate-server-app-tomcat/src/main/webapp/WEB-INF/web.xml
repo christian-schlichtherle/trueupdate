@@ -9,8 +9,8 @@
          version="3.0">
     <context-param>
         <description>
-            The URI of the XML to configure the mandatory local Maven
-            repository and the optional remote Maven repositories to
+            The URI of the XML document which configures the mandatory local
+            Maven repository and the optional remote Maven repositories to
             use for the artifact resolution, encoded as a string.
 
             If the decoded URI is absolute (i.e. if it has a scheme

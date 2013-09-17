@@ -9,8 +9,8 @@
          version="3.0">
     <context-param>
         <description>
-            The URI of the XML to configure the mandatory local Maven
-            repository and the optional remote Maven repositories to
+            The URI of the XML document which configures the mandatory local
+            Maven repository and the optional remote Maven repositories to
             use for the artifact resolution, encoded as a string.
 
             If the decoded URI is absolute (i.e. if it has a scheme
@@ -24,9 +24,9 @@
             E.g. "package/repositories.xml".
 
             In either case, if the string contains references of the
-            form \${key}, then they get replaced with the value
+            form ${key}, then they get replaced with the value
             of the system property with the specified key.
-            E.g. "file://\${user.home}/.repositories.xml".
+            E.g. "file://${user.home}/.repositories.xml".
 
             The default value refers to a resource on the class path
             which contains the XML to configure the local repository
