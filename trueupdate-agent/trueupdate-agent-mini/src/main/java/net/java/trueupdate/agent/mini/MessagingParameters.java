@@ -30,7 +30,9 @@ public final class MessagingParameters {
     private static Context nonNullOrNewInitialContext(
             final Context namingContext) {
         try {
-            return null != namingContext ? namingContext : new InitialContext();
+            return null != namingContext
+                    ? namingContext
+                    : (Context) new InitialContext().lookup("java:comp/env");
         } catch (NamingException ex) {
             throw new IllegalStateException(
                     "Cannot create a new javax.naming.InitialContext() for you, so you need to inject a javax.naming.Context.",

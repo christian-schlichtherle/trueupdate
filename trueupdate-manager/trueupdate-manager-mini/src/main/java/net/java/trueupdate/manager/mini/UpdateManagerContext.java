@@ -35,7 +35,7 @@ final class UpdateManagerContext {
     UpdateManagerContext(final ServletContext servletContext)
     throws NamingException, JMSException {
         this.servletContext = servletContext;
-        namingContext = new InitialContext();
+        namingContext = (Context) new InitialContext().lookup("java:comp/env");
         final ConnectionFactory connectionFactory = (ConnectionFactory)
                 lookup("connectionFactory");
         manager = new ConfiguredUpdateManager(

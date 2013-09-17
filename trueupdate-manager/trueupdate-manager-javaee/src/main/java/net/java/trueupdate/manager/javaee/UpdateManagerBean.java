@@ -89,7 +89,7 @@ public class UpdateManagerBean extends UpdateManager {
     }
 
     private Context newNamingContext() throws NamingException {
-        return new InitialContext();
+        return (Context) new InitialContext().lookup("java:comp/env");
     }
 
     private UpdateClient newUpdateClient() throws URISyntaxException {
