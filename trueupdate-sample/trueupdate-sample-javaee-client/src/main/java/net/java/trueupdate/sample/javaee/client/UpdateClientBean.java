@@ -45,8 +45,8 @@ public class UpdateClientBean extends ApplicationListener {
                     .inject()
                 .messagingParameters()
                     .connectionFactory(lookup("connectionFactory"))
-                    .from(lookup("from"))
-                    .to(lookup("to"))
+                    .from(lookup("updateAgent"))
+                    .to(lookup("updateManager"))
                     .inject()
                 .build();
 
