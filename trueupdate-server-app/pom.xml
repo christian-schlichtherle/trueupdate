@@ -22,6 +22,5 @@
 
     <modules>
         <module>trueupdate-server-app-javaee</module>
-        <module>trueupdate-server-app-tomcat</module>
     </modules>
 </project>
