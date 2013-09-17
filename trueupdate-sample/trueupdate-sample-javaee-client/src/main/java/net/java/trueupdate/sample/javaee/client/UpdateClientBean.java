@@ -50,41 +50,42 @@ public class UpdateClientBean extends ApplicationListener {
                     .inject()
                 .build();
 
+    private boolean subscribed;
+
     private static @Nullable String parameter(String key) {
         try { return bundle.getString(key); }
         catch (MissingResourceException ex) { return null; }
     }
 
-    @Resource
-    private SessionContext context;
-
     @PostConstruct private void subscribe() {
-        log(new Callable<Void>() {
+        if (subscribed) return;
+        wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 updateAgent.subscribe();
                 return null;
             }
         });
+        subscribed = true;
     }
 
     @PreDestroy private void unsubscribe() {
-        log(new Callable<Void>() {
+        if (!subscribed) return;
+        wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 updateAgent.unsubscribe();
                 return null;
             }
         });
+        subscribed = false;
     }
 
-    private @Nullable <V> V log(final Callable<V> task) {
+    private @Nullable <V> V wrap(final Callable<V> task) {
         try {
             return task.call();
         } catch (RuntimeException ex) {
             throw ex;
         } catch (final Exception ex) {
-            context.setRollbackOnly();
-            logger.log(Level.WARNING, "Error while processing task.", ex);
-            return null;
+            throw new EJBException(ex);
         }
     }
 

@@ -53,6 +53,7 @@ public class UpdateManagerBean extends UpdateManager {
     private Timer timer;
 
     @PostConstruct private void postConstruct() {
+        if (null != timer) return;
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 open();
@@ -62,6 +63,7 @@ public class UpdateManagerBean extends UpdateManager {
     }
 
     @PreDestroy private void preDestroy() {
+        if (null == timer) return;
         wrap(new Callable<Void>() {
             @Override public Void call() throws Exception {
                 close();
@@ -123,6 +125,8 @@ public class UpdateManagerBean extends UpdateManager {
         timer.cancel();
         super.close();
         connection.close();
+        timer = null;
+        connection = null;
     }
 
     @Override protected UpdateClient updateClient() { return updateClient; }
