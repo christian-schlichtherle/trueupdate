@@ -32,12 +32,12 @@ public final class CargoUpdateInstaller extends LocalUpdateInstaller {
 
             @Override public File path() { return path; }
 
-            @Override public Transaction deploymentTransaction() {
-                return context.deploymentTransaction();
-            }
-
             @Override public Transaction undeploymentTransaction() {
                 return context.undeploymentTransaction();
+            }
+
+            @Override public Transaction deploymentTransaction() {
+                return context.deploymentTransaction();
             }
         } // ResolvedContext
 

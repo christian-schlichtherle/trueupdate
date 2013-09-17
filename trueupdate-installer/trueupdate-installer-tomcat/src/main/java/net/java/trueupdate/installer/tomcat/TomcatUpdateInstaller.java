@@ -70,29 +70,13 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
             @Override public File path() { return path; }
 
-            @Override public Transaction deploymentTransaction() {
-
-                class DeploymentTransaction extends ServiceTransaction {
-
-                    @Override public void performAtomic() throws Exception {
-                        deploy();
-                    }
-
-                    @Override public void rollbackAtomic() throws Exception {
-                        try {
-                            undeploy();
-                        } finally {
-                            config.removeServiced(name);
-                        }
-                    }
-                } // DeploymentTransaction
-
-                return new DeploymentTransaction();
-            }
-
             @Override public Transaction undeploymentTransaction() {
 
-                class UndeploymentTransaction extends ServiceTransaction {
+                class UndeploymentTransaction extends AtomicMethodsTransaction {
+
+                    @Override public void prepareAtomic() throws Exception {
+                        config.addServiced(name);
+                    }
 
                     @Override public void performAtomic() throws Exception {
                         undeploy();
@@ -105,9 +89,29 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
                             config.removeServiced(name);
                         }
                     }
+
+                    @Override public void commitAtomic() throws Exception {
+                        config.removeServiced(name);
+                    }
                 } // UndeploymentTransaction
 
                 return new UndeploymentTransaction();
+            }
+
+            @Override public Transaction deploymentTransaction() {
+
+                class DeploymentTransaction extends AtomicMethodsTransaction {
+
+                    @Override public void performAtomic() throws Exception {
+                        deploy();
+                    }
+
+                    @Override public void rollbackAtomic() throws Exception {
+                        undeploy();
+                    }
+                } // DeploymentTransaction
+
+                return new DeploymentTransaction();
             }
 
             void deploy() throws Exception {
@@ -130,17 +134,6 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
             void cleanupUnwantedSideEffectsOfDeployment() throws IOException {
                 if (path == war) Files.deletePath(dir);
             }
-
-            abstract class ServiceTransaction extends AtomicMethodsTransaction {
-
-                @Override public void prepareAtomic() throws Exception {
-                    config.addServiced(name);
-                }
-
-                @Override public void commitAtomic() throws Exception {
-                    config.removeServiced(name);
-                }
-            } // ServiceTransaction
         } // ResolvedContext
 
         if (null == host || null == config)

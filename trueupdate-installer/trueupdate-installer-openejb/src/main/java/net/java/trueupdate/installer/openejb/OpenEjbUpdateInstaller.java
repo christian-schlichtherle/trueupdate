@@ -37,22 +37,6 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
 
             @Override public File path() { return path; }
 
-            @Override public Transaction deploymentTransaction() {
-
-                class DeploymentTransaction extends AtomicMethodsTransaction {
-
-                    @Override public void performAtomic() throws Exception {
-                        deployer.deploy(path.getPath());
-                    }
-
-                    @Override public void rollbackAtomic() throws Exception {
-                        deployer.undeploy(path.getPath());
-                    }
-                } // DeploymentTransaction
-
-                return new DeploymentTransaction();
-            }
-
             @Override public Transaction undeploymentTransaction() {
 
                 class UndeploymentTransaction extends AtomicMethodsTransaction {
@@ -67,6 +51,22 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
                 } // UndeploymentTransaction
 
                 return new UndeploymentTransaction();
+            }
+
+            @Override public Transaction deploymentTransaction() {
+
+                class DeploymentTransaction extends AtomicMethodsTransaction {
+
+                    @Override public void performAtomic() throws Exception {
+                        deployer.deploy(path.getPath());
+                    }
+
+                    @Override public void rollbackAtomic() throws Exception {
+                        deployer.undeploy(path.getPath());
+                    }
+                } // DeploymentTransaction
+
+                return new DeploymentTransaction();
             }
         } // ResolvedContext
 

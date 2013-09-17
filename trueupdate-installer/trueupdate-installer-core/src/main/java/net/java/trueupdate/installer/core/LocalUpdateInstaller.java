@@ -139,10 +139,10 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
         /** Returns the path of the application. */
         File path();
 
-        /** Returns the transaction for deploying the application. */
-        Transaction deploymentTransaction();
-
         /** Returns the transaction for undeploying the application. */
         Transaction undeploymentTransaction();
+
+        /** Returns the transaction for deploying the application. */
+        Transaction deploymentTransaction();
     }
 }
