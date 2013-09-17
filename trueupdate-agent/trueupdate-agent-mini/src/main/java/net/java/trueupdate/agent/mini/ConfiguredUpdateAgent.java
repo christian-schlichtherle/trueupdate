@@ -110,7 +110,9 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         return (T) namingContext().lookup(name);
     }
 
-    private Context namingContext() { return messagingParameters().namingContext(); }
+    private Context namingContext() {
+        return messagingParameters().namingContext();
+    }
 
     @Override protected ApplicationParameters applicationParameters() {
         return applicationParameters;
