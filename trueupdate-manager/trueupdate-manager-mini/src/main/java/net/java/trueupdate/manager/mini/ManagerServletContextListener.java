@@ -10,6 +10,8 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 
 /**
+ * Starts and stops the update manager.
+ *
  * @author Christian Schlichtherle
  */
 @WebListener
