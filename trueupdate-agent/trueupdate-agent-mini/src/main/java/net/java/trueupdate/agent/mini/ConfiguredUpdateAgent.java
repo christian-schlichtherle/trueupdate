@@ -58,7 +58,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
                         .messageSelector("manager = false")
                         .messageListener(new ConfiguredUpdateMessageListener(applicationParameters))
                         .build();
-                new Thread(receiver, "TrueUpdate Agent Mini Receiver Daemon") {
+                new Thread(receiver, "TrueUpdate Agent Mini / Receiver Daemon") {
                     { super.setDaemon(true); }
                 }.start();
                 return null;

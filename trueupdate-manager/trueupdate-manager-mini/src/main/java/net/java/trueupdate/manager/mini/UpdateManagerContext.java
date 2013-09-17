@@ -62,13 +62,13 @@ final class UpdateManagerContext {
     }
 
     private Thread timer() {
-        return new Thread(timer, "TrueUpdate Manager Mini Timer Daemon") {
+        return new Thread(timer, "TrueUpdate Manager Mini / Timer Daemon") {
             { super.setDaemon(true); }
         };
     }
 
     private Thread receiver() {
-        return new Thread(receiver, "TrueUpdate Manager Mini Receiver Daemon") {
+        return new Thread(receiver, "TrueUpdate Manager Mini / Receiver Daemon") {
             { super.setDaemon(true); }
         };
     }
