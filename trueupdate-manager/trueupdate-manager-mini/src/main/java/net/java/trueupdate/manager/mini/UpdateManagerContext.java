@@ -14,6 +14,7 @@ import javax.servlet.ServletContext;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.jms.JmsMessageReceiver;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
+import net.java.trueupdate.util.Objects;
 
 /**
  * Provides the objects required for this package.
@@ -37,7 +38,7 @@ final class UpdateManagerContext {
         this.servletContext = servletContext;
         namingContext = (Context) new InitialContext().lookup("java:comp/env");
         final ConnectionFactory connectionFactory = (ConnectionFactory)
-                lookup("connectionFactory");
+                lookup(parameter("connectionFactory"));
         manager = new ConfiguredUpdateManager(
                 connectionFactory,
                 namingContext,
@@ -77,13 +78,13 @@ final class UpdateManagerContext {
     }
 
     private URI updateServiceBaseUri() {
-        final URI usburi = URI.create(initParameter("updateServiceBaseUri"));
+        final URI usburi = URI.create(parameter("updateServiceBaseUri"));
         logger.log(Level.CONFIG, "Base URI of the update service is {0} .", usburi);
         return usburi;
     }
 
     private int checkUpdatesIntervalMinutes() {
-        final int cuim = Integer.parseInt(initParameter("checkUpdatesIntervalMinutes"));
+        final int cuim = Integer.parseInt(parameter("checkUpdatesIntervalMinutes"));
         logger.log(Level.CONFIG, "Interval for checking for updates is {0} minutes.", cuim);
         return cuim;
     }
@@ -101,15 +102,15 @@ final class UpdateManagerContext {
         return lookup(from());
     }
 
-    private String from() { return initParameter("manager"); }
+    private String from() { return parameter("manager"); }
 
     @SuppressWarnings("unchecked")
     private <T> T lookup(String name) throws NamingException {
-        return (T) namingContext.lookup(initParameter(name));
+        return (T) namingContext.lookup(name);
     }
 
-    private String initParameter(String name) {
-        return servletContext.getInitParameter(name);
+    private String parameter(String name) {
+        return Objects.requireNonNull(servletContext.getInitParameter(name));
     }
 
     void stop() throws Exception {
