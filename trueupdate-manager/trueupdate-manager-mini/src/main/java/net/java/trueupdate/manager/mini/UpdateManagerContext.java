@@ -37,7 +37,7 @@ final class UpdateManagerContext {
         this.servletContext = servletContext;
         namingContext = new InitialContext();
         final ConnectionFactory connectionFactory = (ConnectionFactory)
-                lookup("jms/ConnectionFactory");
+                lookup("connectionFactory");
         manager = new ConfiguredUpdateManager(
                 connectionFactory,
                 namingContext,
@@ -48,7 +48,7 @@ final class UpdateManagerContext {
         receiver = JmsMessageReceiver
                 .builder()
                 .connectionFactory(connectionFactory)
-                .destination((Destination) lookup("jms/TrueUpdate Manager"))
+                .destination((Destination) lookup("from"))
                 .subscriptionName("TrueUpdate Manager")
                 .messageSelector("manager = true")
                 .messageListener(manager)

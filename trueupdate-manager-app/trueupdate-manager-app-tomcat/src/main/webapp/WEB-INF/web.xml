@@ -9,6 +9,27 @@
          version="3.0">
     <context-param>
         <description>
+            The interval for checking for artifact updates in minutes.
+        </description>
+        <param-name>checkUpdatesIntervalMinutes</param-name>
+        <param-value>720</param-value>
+    </context-param>
+    <context-param>
+        <description>
+            The JNDI name of the JMS connection factory.
+        </description>
+        <param-name>connectionFactory</param-name>
+        <param-value>jms/ConnectionFactory</param-value>
+    </context-param>
+    <context-param>
+        <description>
+            The JNDI name of the JMS destination for the update manager.
+        </description>
+        <param-name>from</param-name>
+        <param-value>jms/TrueUpdate Manager</param-value>
+    </context-param>
+    <context-param>
+        <description>
             The base URI of the TrueUpdate Server application, ending
             with a slash forward character.
 
@@ -19,26 +40,5 @@
         </description>
         <param-name>updateServiceBaseUri</param-name>
         <param-value>http://localhost:8080/trueupdate-server/</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            The interval for checking for artifact updates in minutes.
-        </description>
-        <param-name>checkUpdatesIntervalMinutes</param-name>
-        <param-value>720</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Maps the parameter name to a JNDI name for lookup.
-        </description>
-        <param-name>jms/ConnectionFactory</param-name>
-        <param-value>jms/ConnectionFactory</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Maps the parameter name to a JNDI name for lookup.
-        </description>
-        <param-name>jms/TrueUpdate Manager</param-name>
-        <param-value>jms/TrueUpdate Manager</param-value>
     </context-param>
 </web-app>
