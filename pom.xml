@@ -19,7 +19,7 @@
 
     <name>TrueUpdate</name>
     <description>
-        An enterprise app for updating enterprise apps.
+        A framework for updating Java enterprise applications.
     </description>
     <url>https://trueupdate.java.net</url>
     <inceptionYear>2013</inceptionYear>
