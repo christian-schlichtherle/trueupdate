@@ -33,24 +33,24 @@ public class UpdateClientBean extends ApplicationListener {
                     .applicationListener(this)
                     .applicationDescriptor()
                         .artifactDescriptor()
-                            .groupId(lookup("groupId"))
-                            .artifactId(lookup("artifactId"))
-                            .version(lookup("version"))
-                            .classifier(lookup("classifier"))
-                            .extension(lookup("extension"))
+                            .groupId(parameter("groupId"))
+                            .artifactId(parameter("artifactId"))
+                            .version(parameter("version"))
+                            .classifier(parameter("classifier"))
+                            .extension(parameter("extension"))
                             .inject()
-                        .currentLocation(lookup("currentLocation"))
+                        .currentLocation(parameter("currentLocation"))
                         .inject()
-                    .updateLocation(lookup("updateLocation"))
+                    .updateLocation(parameter("updateLocation"))
                     .inject()
                 .messagingParameters()
-                    .connectionFactory(lookup("connectionFactory"))
-                    .from(lookup("agent"))
-                    .to(lookup("manager"))
+                    .connectionFactory(parameter("connectionFactory"))
+                    .from(parameter("agent"))
+                    .to(parameter("manager"))
                     .inject()
                 .build();
 
-    private static @Nullable String lookup(String key) {
+    private static @Nullable String parameter(String key) {
         try { return bundle.getString(key); }
         catch (MissingResourceException ex) { return null; }
     }
