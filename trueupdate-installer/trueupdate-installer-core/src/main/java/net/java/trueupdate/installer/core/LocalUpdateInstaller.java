@@ -86,33 +86,33 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 final File backup = new File(tempDir, "backup");
                 if (current.path().isFile()) {
                     Transactions.execute(new CompositeTransaction(
-                            timed("the patching of the current application file",
+                            timed("patching of the current application file",
                                     new PathTaskTransaction(updateJar, new PatchTask(current.path()))),
-                            timed("the undeployment of the current application",
+                            timed("undeployment of the current application",
                                     undeploymentTransaction(update)),
-                            timed("the swapping-out of the current application file",
+                            timed("swapping-out of the current application file",
                                     new RenamePathTransaction(update.path(), backup)),
-                            timed("the swapping-in of the updated application file",
+                            timed("swapping-in of the updated application file",
                                     new RenamePathTransaction(updateJar, update.path())),
-                            timed("the deployment of the updated application",
+                            timed("deployment of the updated application",
                                     deploymentTransaction(update))));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updateDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
-                            timed("the zipping of the current application directory",
+                            timed("zipping of the current application directory",
                                     new ZipTransaction(currentZip, current.path(), "")),
-                            timed("the patching of the current application file",
+                            timed("patching of the current application file",
                                     new PathTaskTransaction(updateJar, new PatchTask(currentZip))),
-                            timed("the unzipping of the updated application file",
+                            timed("unzipping of the updated application file",
                                     new UnzipTransaction(updateJar, updateDir)),
-                            timed("the undeployment of the current application",
+                            timed("undeployment of the current application",
                                     undeploymentTransaction(update)),
-                            timed("the swapping-out of the current application directory",
+                            timed("swapping-out of the current application directory",
                                     new RenamePathTransaction(update.path(), backup)),
-                            timed("the swapping-in of the updated application directory",
+                            timed("swapping-in of the updated application directory",
                                     new RenamePathTransaction(updateDir, update.path())),
-                            timed("the deployment of the updated application", deploymentTransaction(update))));
+                            timed("deployment of the updated application", deploymentTransaction(update))));
                 }
                 return null;
             }

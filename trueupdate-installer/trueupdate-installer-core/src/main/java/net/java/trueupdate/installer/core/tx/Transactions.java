@@ -123,7 +123,7 @@ public class Transactions {
                 if (logger.isLoggable(level)) {
                     final float duration = (finished - started) / 1000.0f;
                     logger.log(level,
-                            "{0} to {1} {2} in {3} seconds.",
+                            "{0} to {1} the {2} in {3} seconds.",
                             new Object[]{
                                     null == ex ? "Succeeded" : "Failed",
                                     method.name(), name, duration
