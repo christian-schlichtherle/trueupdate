@@ -54,7 +54,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
                         .builder()
                         .connectionFactory(connectionFactory())
                         .destination(fromDestination())
-                        .subscriptionName("TrueUpdate Agent")
+                        .subscriptionName(from())
                         .messageSelector("manager = false")
                         .messageListener(new ConfiguredUpdateMessageListener(applicationParameters))
                         .build();
@@ -101,16 +101,16 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         return lookup(from());
     }
 
+    @Override protected String from() { return messagingParameters().from(); }
+
+    @Override protected String to() { return messagingParameters().to(); }
+
     @SuppressWarnings("unchecked")
     private <T> T lookup(String name) throws NamingException {
         return (T) namingContext().lookup(name);
     }
 
     private Context namingContext() { return messagingParameters().namingContext(); }
-
-    @Override protected String from() { return messagingParameters().from(); }
-
-    @Override protected String to() { return messagingParameters().to(); }
 
     @Override protected ApplicationParameters applicationParameters() {
         return applicationParameters;
