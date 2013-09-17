@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.java.trueupdate</groupId>
         <artifactId>trueupdate-jaxrs</artifactId>
-        <version>0.1.10-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>trueupdate-jaxrs-server</artifactId>
@@ -23,12 +23,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-artifact-spec</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>trueupdate-artifact-spec</artifactId>
-            <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
