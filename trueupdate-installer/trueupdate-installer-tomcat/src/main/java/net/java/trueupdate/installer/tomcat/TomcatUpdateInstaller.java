@@ -72,14 +72,18 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
             @Override public Transaction deploymentTransaction() {
 
-                class DeploymentTransaction extends AtomicMethodsTransaction {
+                class DeploymentTransaction extends ServiceTransaction {
 
                     @Override public void performAtomic() throws Exception {
                         deploy();
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
-                        undeploy();
+                        try {
+                            undeploy();
+                        } finally {
+                            config.removeServiced(name);
+                        }
                     }
                 } // DeploymentTransaction
 
@@ -88,14 +92,18 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
             @Override public Transaction undeploymentTransaction() {
 
-                class UndeploymentTransaction extends AtomicMethodsTransaction {
+                class UndeploymentTransaction extends ServiceTransaction {
 
                     @Override public void performAtomic() throws Exception {
                         undeploy();
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
-                        deploy();
+                        try {
+                            deploy();
+                        } finally {
+                            config.removeServiced(name);
+                        }
                     }
                 } // UndeploymentTransaction
 
@@ -103,31 +111,36 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
             }
 
             void deploy() throws Exception {
-                if (config.isServiced(name))
+                if (config.isDeployed(name))
                     throw new Exception(String.format(
                             "The application %s is already deployed.",
                             cn.getDisplayName()));
                 config.check(name);
-                assert !config.isServiced(name);
-                config.addServiced(name);
-                assert config.isServiced(name);
             }
 
             void undeploy() throws Exception {
-                if (!config.isServiced(name))
+                if (!config.isDeployed(name))
                     throw new Exception(String.format(
                             "The application %s is not deployed.",
                             cn.getDisplayName()));
                 config.unmanageApp(name);
-                assert config.isServiced(name);
-                config.removeServiced(name);
-                assert !config.isServiced(name);
                 cleanupUnwantedSideEffectsOfDeployment();
             }
 
             void cleanupUnwantedSideEffectsOfDeployment() throws IOException {
                 if (path == war) Files.deletePath(dir);
             }
+
+            abstract class ServiceTransaction extends AtomicMethodsTransaction {
+
+                @Override public void prepareAtomic() throws Exception {
+                    config.addServiced(name);
+                }
+
+                @Override public void commitAtomic() throws Exception {
+                    config.removeServiced(name);
+                }
+            } // ServiceTransaction
         } // ResolvedContext
 
         if (null == host || null == config)
