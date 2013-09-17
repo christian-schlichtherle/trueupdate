@@ -17,6 +17,7 @@ final class UpdateTimer implements Runnable {
     private static final Logger
             logger = Logger.getLogger(UpdateTimer.class.getName());
 
+    private final Object lock = new Object();
     private final UpdateManager updateManager;
     private final int checkUpdatesIntervalMinutes;
     private boolean closed;
@@ -37,29 +38,41 @@ final class UpdateTimer implements Runnable {
     @Override public void run() {
         final long intervalMillis = checkUpdatesIntervalMinutes * 60L * 1000;
         long startedMillis = System.currentTimeMillis();
-        while (true) {
-            try {
-                final long durationMillis = System.currentTimeMillis() - startedMillis;
-                final long sleepMillis = intervalMillis - durationMillis;
-                if (0 < sleepMillis) Thread.sleep(sleepMillis);
-                startedMillis = System.currentTimeMillis();
-                synchronized (this) {
+        synchronized (lock) {
+            while (true) {
+                try {
+                    final long durationMillis = System.currentTimeMillis() - startedMillis;
+                    final long sleepMillis = intervalMillis - durationMillis;
+                    try {
+                        lock.wait(Math.max(sleepMillis, 1));
+                    } catch (InterruptedException wakeUpCall) {
+                    }
+                    startedMillis = System.currentTimeMillis();
                     if (closed) break;
                     updateManager.checkUpdates();
+                } catch (Exception ex) {
+                    logger.log(Level.SEVERE, "Checking for updates failed.", ex);
                 }
-            } catch (InterruptedException ex) {
-            } catch (Exception ex) {
-                logger.log(Level.SEVERE, "Checking for updates failed.", ex);
             }
+            lock.notifyAll();
         }
     }
 
     /**
-     * Stops this timer.
-     * After the call to this method, the client may safely assume that this
-     * timer will not call {@link UpdateManager#checkUpdates} anymore.
+     * Stops this runnable from a different thread.
+     * When returning from this method, the client may safely assume that the
+     * other thread is not executing the {@link #run()} method anymore.
      */
-    synchronized void stop() {
-        closed = true;
+    void stop() {
+        synchronized (lock) {
+            if (closed) return;
+            closed = true;
+            lock.notifyAll();
+            while (true) try {
+                lock.wait();
+                break;
+            } catch (InterruptedException dontStopTillYouDrop) {
+            }
+        }
     }
 }

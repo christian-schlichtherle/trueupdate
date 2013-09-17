@@ -26,20 +26,21 @@ public final class JmsMessageReceiver implements Runnable {
 
     private static final boolean NO_LOCAL = true;
 
-    private final @WillCloseWhenClosed Connection connection;
-    private final Destination destination;
+    private final Object lock = new Object();
     private final @Nullable String subscriptionName;
     private final @CheckForNull String messageSelector;
     private final MessageListener messageListener;
+    private final Destination destination;
+    private final ConnectionFactory connectionFactory;
 
     private MessageConsumer messageConsumer;
 
-    private JmsMessageReceiver(final Builder<?> b) throws JMSException {
+    private JmsMessageReceiver(final Builder<?> b) {
         this.subscriptionName = b.subscriptionName;
         this.messageSelector = b.messageSelector;
         this.messageListener = requireNonNull(b.messageListener);
         this.destination = requireNonNull(b.destination);
-        this.connection = b.connectionFactory.createConnection();
+        this.connectionFactory = requireNonNull(b.connectionFactory);
     }
 
     /** Returns a new builder for JMS message loops. */
@@ -50,11 +51,11 @@ public final class JmsMessageReceiver implements Runnable {
             Connection c = null;
             try {
                 MessageConsumer mc;
-                synchronized (this) {
+                synchronized (lock) {
                     mc = messageConsumer;
                     if (null != mc)
                         throw new java.lang.IllegalStateException("Already running.");
-                    c = connection;
+                    c = connectionFactory.createConnection();
                     final Session s = c.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                     final Destination d = destination;
                     messageConsumer = mc = d instanceof Topic
@@ -63,14 +64,17 @@ public final class JmsMessageReceiver implements Runnable {
                 }
                 c.start();
                 for (Message m; null != (m = mc.receive()); ) {
-                    synchronized(this) {
+                    synchronized(lock) {
                         if (null == messageConsumer) break;
                         m.acknowledge();
                         messageListener.onMessage(m);
                     }
                 }
             } finally {
-                if (null != c) c.close();
+                if (null != c) {
+                    c.close();
+                    synchronized (lock) { lock.notifyAll(); }
+                }
             }
         } catch (JMSException ex) {
             throw new java.lang.IllegalStateException(ex);
@@ -79,23 +83,26 @@ public final class JmsMessageReceiver implements Runnable {
 
     /**
      * Stops this runnable from a different thread.
-     * After the call to this method, the client may safely assume that this
-     * runnable will not call {@link MessageListener#onMessage} anymore and
-     * will terminate as soon as possible.
+     * When returning from this method, the client may safely assume that the
+     * other thread is not executing the {@link #run()} method anymore.
      */
-    public synchronized void stop() throws JMSException {
-        // HC SUNT DRACONIS!
-        final MessageConsumer mc = messageConsumer;
-        if (null != mc) {
-            mc.close();
+    public void stop() throws JMSException {
+        synchronized (lock) {
+            if (null == messageConsumer) return;
+            messageConsumer.close();
             messageConsumer = null;
+            while (true) try {
+                lock.wait();
+                break;
+            } catch (InterruptedException dontStopTillYouDrop) {
+            }
         }
     }
 
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<T> {
 
-        @Nullable ConnectionFactory connectionFactory;
+        @CheckForNull ConnectionFactory connectionFactory;
         @CheckForNull Destination destination;
         @CheckForNull String messageSelector, subscriptionName;
         @CheckForNull MessageListener messageListener;
@@ -134,7 +141,7 @@ public final class JmsMessageReceiver implements Runnable {
             return this;
         }
 
-        public JmsMessageReceiver build() throws JMSException {
+        public JmsMessageReceiver build() {
             return new JmsMessageReceiver(this);
         }
 
