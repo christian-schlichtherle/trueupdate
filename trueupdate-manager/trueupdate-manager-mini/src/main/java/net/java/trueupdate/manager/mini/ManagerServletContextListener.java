@@ -19,6 +19,7 @@ implements ServletContextListener {
     private UpdateManagerContext context;
 
     @Override public void contextInitialized(final ServletContextEvent sce) {
+        if (null != context) return;
         try {
             context = new UpdateManagerContext(sce.getServletContext());
         } catch (NamingException ex) {
@@ -30,6 +31,7 @@ implements ServletContextListener {
     }
 
     @Override public void contextDestroyed(ServletContextEvent sce) {
+        if (null == context) return;
         try {
             context.stop();
         } catch (RuntimeException ex) {
