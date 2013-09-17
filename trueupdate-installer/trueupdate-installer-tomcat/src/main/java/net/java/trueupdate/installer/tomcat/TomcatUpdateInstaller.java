@@ -75,16 +75,21 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
                 class UndeploymentTransaction extends AtomicMethodsTransaction {
 
                     @Override public void prepareAtomic() throws Exception {
+                        if (!config.isDeployed(name))
+                            throw new Exception(String.format(
+                                    "The application %s is not deployed.",
+                                    cn.getDisplayName()));
                         config.addServiced(name);
                     }
 
                     @Override public void performAtomic() throws Exception {
-                        undeploy();
+                        config.unmanageApp(name);
+                        cleanupUnwantedSideEffectsOfDeployment();
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
                         try {
-                            deploy();
+                            config.check(name);
                         } finally {
                             config.removeServiced(name);
                         }
@@ -102,33 +107,22 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
                 class DeploymentTransaction extends AtomicMethodsTransaction {
 
+                    @Override
+                    public void prepareAtomic() throws Exception {
+                        assert !config.isDeployed(name);
+                    }
+
                     @Override public void performAtomic() throws Exception {
-                        deploy();
+                        config.check(name);
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
-                        undeploy();
+                        config.unmanageApp(name);
+                        cleanupUnwantedSideEffectsOfDeployment();
                     }
                 } // DeploymentTransaction
 
                 return new DeploymentTransaction();
-            }
-
-            void deploy() throws Exception {
-                if (config.isDeployed(name))
-                    throw new Exception(String.format(
-                            "The application %s is already deployed.",
-                            cn.getDisplayName()));
-                config.check(name);
-            }
-
-            void undeploy() throws Exception {
-                if (!config.isDeployed(name))
-                    throw new Exception(String.format(
-                            "The application %s is not deployed.",
-                            cn.getDisplayName()));
-                config.unmanageApp(name);
-                cleanupUnwantedSideEffectsOfDeployment();
             }
 
             void cleanupUnwantedSideEffectsOfDeployment() throws IOException {
