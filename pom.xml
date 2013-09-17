@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.java.truecommons</groupId>
         <artifactId>truecommons-parent</artifactId>
-        <version>61</version>
+        <version>62</version>
     </parent>
 
     <groupId>net.java.trueupdate</groupId>
@@ -53,6 +53,7 @@
         <url>https://java.net/jira/browse/TRUEUPDATE</url>
     </issueManagement>
     <scm>
+        <connection>scm:git:https://bitbucket.org/christian_schlichtherle/trueupdate.git</connection>
         <developerConnection>scm:git:git@bitbucket.org:christian_schlichtherle/trueupdate.git</developerConnection>
         <url>https://bitbucket.org/christian_schlichtherle/trueupdate</url>
         <tag>HEAD</tag>
@@ -305,12 +306,6 @@
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
                 <version>1.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
