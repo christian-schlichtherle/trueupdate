@@ -101,7 +101,7 @@ final class UpdateManagerContext {
         return lookup(from());
     }
 
-    private String from() { return initParameter("updateManager"); }
+    private String from() { return initParameter("manager"); }
 
     @SuppressWarnings("unchecked")
     private <T> T lookup(String name) throws NamingException {
