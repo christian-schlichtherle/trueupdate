@@ -90,12 +90,6 @@
         <jersey.version>1.17.1</jersey.version>
         <maven.version>3.1.0</maven.version>
         <openejb.version>4.5.2</openejb.version>
-        <!--
-          - jersey-test-framework-embedded-glassfish 1.17.1 does not work with
-          - slf4j-api 1.6.0 or higher because glassfish-embedded-all 3.1.1
-          - has an older version of slf4j-api endorsed!
-          -->
-        <slf4j.version>1.5.11</slf4j.version>
         <tomcat.version>7.0.42</tomcat.version>
         <wagon.version>1.2.1</wagon.version>
     </properties>

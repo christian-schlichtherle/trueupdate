@@ -20,6 +20,21 @@
         repository and some optional remote Maven repositories.
     </description>
 
+    <properties>
+        <!--
+          - Some environments may provide versions of the SLF4J API prior to
+          - 1.6.0, e.g. jersey-test-framework-embedded-glassfish 1.17.1.
+          - These older versions are not binary compatible with the version
+          - which is used as the transitive dependency of our Aether dependency.
+          - As a workaround, this module depends on the older API version at
+          - compile time and provides an alternative implementation of the
+          - original logger bridge implementation provided by Aether.
+          - At runtime, a test is done which implementation should be used:
+          - The alternative in this module or the original in Aether.
+          -->
+        <slf4j.version>1.5.11</slf4j.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
