@@ -30,7 +30,7 @@ implements ServletContextListener {
         context.start();
     }
 
-    @Override public void contextDestroyed(ServletContextEvent sce) {
+    @Override public void contextDestroyed(final ServletContextEvent sce) {
         if (null == context) return;
         try {
             context.stop();
