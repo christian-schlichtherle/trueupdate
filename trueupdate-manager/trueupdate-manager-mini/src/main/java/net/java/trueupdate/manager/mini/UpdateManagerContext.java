@@ -48,8 +48,8 @@ final class UpdateManagerContext {
         receiver = JmsMessageReceiver
                 .builder()
                 .connectionFactory(connectionFactory)
-                .destination((Destination) lookup("from"))
-                .subscriptionName("TrueUpdate Manager")
+                .destination(fromDestination())
+                .subscriptionName(from())
                 .messageSelector("manager = true")
                 .messageListener(manager)
                 .build();
@@ -97,8 +97,15 @@ final class UpdateManagerContext {
         return ui;
     }
 
-    private Object lookup(String name) throws NamingException {
-        return namingContext.lookup(initParameter(name));
+    private Destination fromDestination() throws NamingException {
+        return lookup(from());
+    }
+
+    private String from() { return initParameter("updateManager"); }
+
+    @SuppressWarnings("unchecked")
+    private <T> T lookup(String name) throws NamingException {
+        return (T) namingContext.lookup(initParameter(name));
     }
 
     private String initParameter(String name) {
