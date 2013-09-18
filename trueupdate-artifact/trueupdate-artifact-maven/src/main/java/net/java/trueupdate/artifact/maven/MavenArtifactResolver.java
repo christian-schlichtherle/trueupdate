@@ -10,14 +10,11 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
 import static net.java.trueupdate.artifact.maven.ArtifactConverters.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.core.codec.JaxbCodec;
-import net.java.trueupdate.core.io.Source;
 import static net.java.trueupdate.util.Objects.*;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.*;
@@ -240,35 +237,4 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         hash = 31 * hash + remoteRepositories().hashCode();
         return hash;
     }
-
-    /**
-     * Decodes a maven artifact resolver from XML.
-     *
-     * @param source the source for reading the XML.
-     * @return the decoded repositories.
-     * @throws Exception at the discretion of the JAXB codec, e.g. if the
-     *         source isn't readable.
-     */
-    public static MavenArtifactResolver decodeFromXml(Source source)
-    throws Exception {
-        return new JaxbCodec(jaxbContext())
-                .decode(source, MavenArtifactResolver.class);
-    }
-
-    /** Returns a JAXB context which binds only this class. */
-    public static JAXBContext jaxbContext() { return Lazy.JAXB_CONTEXT; }
-
-    private static class Lazy {
-
-        static final JAXBContext JAXB_CONTEXT;
-
-        static {
-            try {
-                JAXB_CONTEXT = JAXBContext
-                        .newInstance(MavenArtifactResolver.class);
-            } catch (JAXBException ex) {
-                throw new AssertionError(ex);
-            }
-        }
-    } // Lazy
 }

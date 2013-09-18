@@ -28,37 +28,37 @@ final class XmlAdapters {
 
 @Immutable
 final class LocalRepositoryAdapter
-extends XmlAdapter<Local, LocalRepository> {
+extends XmlAdapter<LocalRepositoryDescriptor, LocalRepository> {
 
-    @Override public LocalRepository unmarshal(Local l) {
+    @Override public LocalRepository unmarshal(LocalRepositoryDescriptor l) {
         return new LocalRepository(new File(resolve(l.basedir)),
                 resolve(l.type));
     }
 
-    @Override public Local marshal(final LocalRepository lr) {
-        final Local l = new Local();
+    @Override public LocalRepositoryDescriptor marshal(final LocalRepository lr) {
+        final LocalRepositoryDescriptor l = new LocalRepositoryDescriptor();
         l.basedir = nonEmptyOrNull(lr.getBasedir().getPath());
         l.type = nonEmptyOrNull(lr.getContentType());
         return l;
     }
 } // LocalRepositoryAdapter
 
-final class Local {
+final class LocalRepositoryDescriptor {
     public String basedir, type;
-} // Local
+} // LocalRepositoryDescriptor
 
 @Immutable
 final class RemoteRepositoryAdapter
-extends XmlAdapter<Remote, RemoteRepository> {
+extends XmlAdapter<RemoteRepositoryDescriptor, RemoteRepository> {
 
-    @Override public RemoteRepository unmarshal(Remote r) {
+    @Override public RemoteRepository unmarshal(RemoteRepositoryDescriptor r) {
         return new RemoteRepository
                 .Builder(resolve(r.id), resolve(r.type), resolve(r.url))
                 .build();
     }
 
-    @Override public Remote marshal(final RemoteRepository rr) {
-        final Remote r = new Remote();
+    @Override public RemoteRepositoryDescriptor marshal(final RemoteRepository rr) {
+        final RemoteRepositoryDescriptor r = new RemoteRepositoryDescriptor();
         r.id = nonEmptyOrNull(rr.getId());
         r.type = nonEmptyOrNull(rr.getContentType());
         r.url = nonEmptyOrNull(rr.getUrl());
@@ -66,6 +66,6 @@ extends XmlAdapter<Remote, RemoteRepository> {
     }
 } // RemoteRepositoryAdapter
 
-final class Remote {
+final class RemoteRepositoryDescriptor {
     public String id, type, url;
-} // Remote
+} // RemoteRepositoryDescriptor
