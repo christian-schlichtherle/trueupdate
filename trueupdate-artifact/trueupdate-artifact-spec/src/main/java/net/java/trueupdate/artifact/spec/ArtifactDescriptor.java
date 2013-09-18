@@ -47,18 +47,10 @@ public final class ArtifactDescriptor implements Serializable {
                 .extension(extension());
     }
 
-    /**
-     * Returns a new builder for an artifact descriptor.
-     * The default value for the property {@code classifier} is an empty string
-     * and the default value for the property {@code extension} is
-     * {@code "jar"}.
-     */
+    /** Returns a new builder for an artifact descriptor. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    /**
-     * Returns the group id, e.g. {@code net.java.trueupdate}.
-     * The default value of this property is {@code ""}.
-     */
+    /** Returns the group id, e.g. {@code net.java.trueupdate}. */
     public String groupId() { return groupId; }
 
     /** Returns an artifact descriptor with the given group id. */
@@ -68,10 +60,7 @@ public final class ArtifactDescriptor implements Serializable {
                 : update().groupId(groupId).build();
     }
 
-    /**
-     * Returns the artifact id, e.g. {@code trueupdate-core}.
-     * The default value of this property is {@code ""}.
-     */
+    /** Returns the artifact id, e.g. {@code trueupdate-core}. */
     public String artifactId() { return artifactId; }
 
     /** Returns an artifact descriptor with the given artifact id. */
@@ -81,10 +70,7 @@ public final class ArtifactDescriptor implements Serializable {
                 : update().artifactId(artifactId).build();
     }
 
-    /**
-     * Returns the version, e.g. {@code 3.2.1}.
-     * The default value of this property is {@code ""}.
-     */
+    /** Returns the version, e.g. {@code 3.2.1}. */
     public String version() { return version; }
 
     /** Returns an artifact descriptor with the given version. */
@@ -96,7 +82,7 @@ public final class ArtifactDescriptor implements Serializable {
 
     /**
      * Returns the classifier.
-     * The default value of this property is {@code ""}.
+     * The default value is {@code ""}.
      */
     public String classifier() { return classifier; }
 
@@ -111,7 +97,7 @@ public final class ArtifactDescriptor implements Serializable {
      * Returns the extension, e.g. {@code war}.
      * In the Maven realm, this may also be referred to as the artifact
      * <i>type</i> or <i>extension</i>.
-     * The default value of this property is {@code "jar"}.
+     * The default value is {@code "jar"}.
      */
     public String extension() { return extension; }
 
