@@ -30,16 +30,18 @@ final class XmlAdapters {
 final class LocalRepositoryAdapter
 extends XmlAdapter<LocalRepositoryDescriptor, LocalRepository> {
 
-    @Override public LocalRepository unmarshal(LocalRepositoryDescriptor l) {
-        return new LocalRepository(new File(resolve(l.basedir)),
-                resolve(l.type));
+    @Override
+    public LocalRepository unmarshal(LocalRepositoryDescriptor lrd) {
+        return new LocalRepository(new File(resolve(lrd.basedir)),
+                resolve(lrd.type));
     }
 
-    @Override public LocalRepositoryDescriptor marshal(final LocalRepository lr) {
-        final LocalRepositoryDescriptor l = new LocalRepositoryDescriptor();
-        l.basedir = nonEmptyOrNull(lr.getBasedir().getPath());
-        l.type = nonEmptyOrNull(lr.getContentType());
-        return l;
+    @Override
+    public LocalRepositoryDescriptor marshal(final LocalRepository lr) {
+        final LocalRepositoryDescriptor lrd = new LocalRepositoryDescriptor();
+        lrd.basedir = nonEmptyOrNull(lr.getBasedir().getPath());
+        lrd.type = nonEmptyOrNull(lr.getContentType());
+        return lrd;
     }
 } // LocalRepositoryAdapter
 
@@ -51,18 +53,20 @@ final class LocalRepositoryDescriptor {
 final class RemoteRepositoryAdapter
 extends XmlAdapter<RemoteRepositoryDescriptor, RemoteRepository> {
 
-    @Override public RemoteRepository unmarshal(RemoteRepositoryDescriptor r) {
+    @Override
+    public RemoteRepository unmarshal(RemoteRepositoryDescriptor rrd) {
         return new RemoteRepository
-                .Builder(resolve(r.id), resolve(r.type), resolve(r.url))
+                .Builder(resolve(rrd.id), resolve(rrd.type), resolve(rrd.url))
                 .build();
     }
 
-    @Override public RemoteRepositoryDescriptor marshal(final RemoteRepository rr) {
-        final RemoteRepositoryDescriptor r = new RemoteRepositoryDescriptor();
-        r.id = nonEmptyOrNull(rr.getId());
-        r.type = nonEmptyOrNull(rr.getContentType());
-        r.url = nonEmptyOrNull(rr.getUrl());
-        return r;
+    @Override
+    public RemoteRepositoryDescriptor marshal(final RemoteRepository rr) {
+        final RemoteRepositoryDescriptor rrd = new RemoteRepositoryDescriptor();
+        rrd.id = nonEmptyOrNull(rr.getId());
+        rrd.type = nonEmptyOrNull(rr.getContentType());
+        rrd.url = nonEmptyOrNull(rr.getUrl());
+        return rrd;
     }
 } // RemoteRepositoryAdapter
 

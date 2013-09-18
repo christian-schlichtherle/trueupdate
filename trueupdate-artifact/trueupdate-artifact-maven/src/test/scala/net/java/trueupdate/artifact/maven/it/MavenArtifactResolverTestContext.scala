@@ -16,10 +16,10 @@ trait MavenArtifactResolverTestContext
 extends TestContext with ArtifactResolverTestContext {
 
   override def artifactResolver: MavenArtifactResolver =
-    new JaxbCodec(jaxbContext).decode(
-      testRepositories, classOf[MavenArtifactResolver])
+    new JaxbCodec(jaxbContext)
+      .decode(repositories, classOf[MavenArtifactResolver])
 
-  private def testRepositories = Sources.forResource(
+  private def repositories = Sources.forResource(
     "repositories.xml", classOf[MavenArtifactResolverTestContext])
 
   final override lazy val jaxbContext = JAXBContext.newInstance(

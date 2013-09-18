@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.util.*;
-import net.java.trueupdate.util.Objects;
 
 /**
  * A Value Object which represents the meta data in a ZIP patch file.
@@ -44,8 +43,7 @@ public final class DiffModel implements Serializable {
     private final String algorithm;
 
     @XmlAttribute
-    private final @CheckForNull
-    Integer numBytes;
+    private final @CheckForNull Integer numBytes;
 
     @XmlJavaTypeAdapter(EntryNameAndTwoDigestsMapAdapter.class)
     private final Map<String, EntryNameAndTwoDigests> changed;
