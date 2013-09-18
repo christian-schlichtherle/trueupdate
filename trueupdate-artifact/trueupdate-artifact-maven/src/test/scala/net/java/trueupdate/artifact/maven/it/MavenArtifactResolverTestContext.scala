@@ -20,7 +20,7 @@ extends TestContext with ArtifactResolverTestContext {
       testRepositories, classOf[MavenArtifactResolver])
 
   private def testRepositories = Sources.forResource(
-    "test-repositories.xml", classOf[MavenArtifactResolverTestContext])
+    "repositories.xml", classOf[MavenArtifactResolverTestContext])
 
   final override lazy val jaxbContext = JAXBContext.newInstance(
     classOf[MavenArtifactResolver])
