@@ -6,7 +6,6 @@ package net.java.trueupdate.artifact.maven;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URL;
 import java.util.*;
 import static java.util.Arrays.asList;
 import javax.annotation.*;
@@ -45,11 +44,11 @@ import org.eclipse.aether.version.Version;
 public final class MavenArtifactResolver implements ArtifactResolver {
 
     @XmlJavaTypeAdapter(LocalRepositoryAdapter.class)
-    private final LocalRepository local;
+    private final @Nullable LocalRepository local;
 
     @XmlElement(name = "remote")
     @XmlJavaTypeAdapter(RemoteRepositoryAdapter.class)
-    private final List<RemoteRepository> remotes;
+    private final @Nullable List<RemoteRepository> remotes;
 
     private transient volatile ServiceLocator serviceLocator;
     private transient volatile RepositorySystemSession repositorySystemSession;
@@ -242,11 +241,6 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         return hash;
     }
 
-    /** Returns the URL of the {@code "main-repositories.xml"} resource. */
-    public static URL mainRepositoriesResource() {
-        return MavenArtifactResolver.class.getResource("main-repositories.xml");
-    }
-
     /**
      * Decodes a maven artifact resolver from XML.
      *
@@ -270,10 +264,11 @@ public final class MavenArtifactResolver implements ArtifactResolver {
 
         static {
             try {
-                JAXB_CONTEXT = JAXBContext.newInstance(MavenArtifactResolver.class);
+                JAXB_CONTEXT = JAXBContext
+                        .newInstance(MavenArtifactResolver.class);
             } catch (JAXBException ex) {
                 throw new AssertionError(ex);
             }
         }
-    }
+    } // Lazy
 }
