@@ -22,6 +22,5 @@ with MavenArtifactResolverTestContext {
       Array[String](classOf[MavenUpdateServerApplication].getPackage.getName,
                     classOf[UpdateServiceExceptionMapper].getPackage.getName): _*)
       .contextPath("test")
-      .contextParam("configuration", "net/java/trueupdate/artifact/maven/main-repositories.xml")
       .build
 }

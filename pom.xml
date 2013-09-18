@@ -472,7 +472,6 @@
         <module>trueupdate-manager-app</module>
         <module>trueupdate-sample</module>
         <module>trueupdate-server</module>
-        <module>trueupdate-server-app</module>
         <module>trueupdate-util</module>
     </modules>
 </project>
