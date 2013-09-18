@@ -21,18 +21,20 @@ import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
 @Immutable
 public final class MavenUpdateServer extends BasicUpdateServer {
 
+    private static final String CONFIGURATION = "META-INF/update/server.xml";
+
     private final ArtifactResolver artifactResolver;
 
     public MavenUpdateServer() {
         try {
-            this.artifactResolver = ServerParameters
-                    .decodeFromXml(
-                        Sources.forResource(
-                            "META-INF/update/server.xml",
-                            Thread.currentThread().getContextClassLoader()))
-                    .mavenArtifactResolver();
+            this.artifactResolver = ServerParameters.decodeFromXml(
+                    Sources.forResource(CONFIGURATION,
+                        Thread.currentThread().getContextClassLoader())
+                    ).mavenArtifactResolver();
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(String.format(
+                    "Failed to load configuration from %s .", CONFIGURATION),
+                    ex);
         }
     }
 
