@@ -14,22 +14,22 @@ import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.util.Objects;
 
 /**
- * A server context.
+ * Server parameters.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
 @XmlRootElement(name = "server")
 @XmlAccessorType(XmlAccessType.FIELD)
-final class ServerContext {
+final class ServerParameters {
 
     @XmlElement(name = "repositories")
     private final @Nullable MavenArtifactResolver mavenArtifactResolver;
 
     /** Required for JAXB. */
-    private ServerContext() { mavenArtifactResolver = null; }
+    private ServerParameters() { mavenArtifactResolver = null; }
 
-    ServerContext(final MavenArtifactResolver mavenArtifactResolver) {
+    ServerParameters(final MavenArtifactResolver mavenArtifactResolver) {
         this.mavenArtifactResolver = Objects.requireNonNull(mavenArtifactResolver);
     }
 
@@ -38,15 +38,15 @@ final class ServerContext {
     }
 
     /**
-     * Decodes a server context from XML.
+     * Decodes server parameters from XML.
      *
      * @param source the source for reading the XML.
-     * @return the decoded server context.
+     * @return the decoded server parameters.
      * @throws Exception at the discretion of the JAXB codec, e.g. if the
      *         source isn't readable.
      */
-    static ServerContext decodeFromXml(Source source) throws Exception {
-        return new JaxbCodec(jaxbContext()).decode(source, ServerContext.class);
+    static ServerParameters decodeFromXml(Source source) throws Exception {
+        return new JaxbCodec(jaxbContext()).decode(source, ServerParameters.class);
     }
 
     /** Returns a JAXB context which binds this class. */
@@ -59,10 +59,10 @@ final class ServerContext {
         static {
             try {
                 JAXB_CONTEXT = JAXBContext
-                        .newInstance(ServerContext.class);
+                        .newInstance(ServerParameters.class);
             } catch (JAXBException ex) {
                 throw new AssertionError(ex);
             }
         }
     } // Lazy
-} // ServerContext
+} // ServerParameters

@@ -25,7 +25,7 @@ public final class MavenUpdateServer extends BasicUpdateServer {
 
     public MavenUpdateServer() {
         try {
-            this.artifactResolver = ServerContext
+            this.artifactResolver = ServerParameters
                     .decodeFromXml(
                         Sources.forResource(
                             "META-INF/update/server.xml",
