@@ -55,21 +55,20 @@ final class UpdateManagerParameters {
         int checkUpdatesIntervalMinutes;
         @CheckForNull MessagingParameters messagingParameters;
 
-        /** Parses the given nullable configuration. */
-        Builder parse(final @CheckForNull UpdateManagerConfiguration config) {
-            if (null != config) {
-                updateServiceBaseUri = parseUri(config.updateServiceBaseUri,
-                                                updateServiceBaseUri);
-                checkUpdatesIntervalMinutes =
-                        parseInt(config.checkUpdatesIntervalMinutes,
-                                 checkUpdatesIntervalMinutes);
-                if (null != config.messaging)
-                    messagingParameters = MessagingParameters
-                            .builder()
-                            .parseNaming(config.naming)
-                            .parseMessaging(config.messaging)
-                            .build();
-            }
+        /** Parses the given configuration. */
+        Builder parse(final UpdateManagerConfiguration config) {
+            updateServiceBaseUri = parseUri(
+                    config.updateServiceBaseUri,
+                    updateServiceBaseUri);
+            checkUpdatesIntervalMinutes = parseInt(
+                    config.checkUpdatesIntervalMinutes,
+                    checkUpdatesIntervalMinutes);
+            if (null != config.messaging)
+                messagingParameters = MessagingParameters
+                        .builder()
+                        .parseNaming(config.naming)
+                        .parseMessaging(config.messaging)
+                        .build();
             return this;
         }
 

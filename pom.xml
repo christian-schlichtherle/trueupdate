@@ -108,12 +108,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-javaee</artifactId>
-                <type>ejb</type>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-agent-mini</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -219,12 +213,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-mini</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-sample-javaee-client</artifactId>
-                <type>ejb</type>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -469,8 +457,6 @@
         <module>trueupdate-jaxrs</module>
         <module>trueupdate-jms</module>
         <module>trueupdate-manager</module>
-        <module>trueupdate-manager-app</module>
-        <module>trueupdate-sample</module>
         <module>trueupdate-server</module>
         <module>trueupdate-util</module>
     </modules>

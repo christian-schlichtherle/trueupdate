@@ -19,7 +19,7 @@ import static net.java.trueupdate.util.Strings.nonEmptyOr;
 @SuppressWarnings("rawtypes")
 public final class ApplicationParameters {
 
-    private final ApplicationListener applicationListener;
+    private final UpdateAgentListener applicationListener;
     private final ApplicationDescriptor applicationDescriptor;
     private final String updateLocation;
 
@@ -37,7 +37,7 @@ public final class ApplicationParameters {
      */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    public ApplicationListener applicationListener() {
+    public UpdateAgentListener applicationListener() {
         return applicationListener;
     }
 
@@ -55,7 +55,7 @@ public final class ApplicationParameters {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> {
 
-        @CheckForNull ApplicationListener applicationListener;
+        @CheckForNull UpdateAgentListener applicationListener;
         @CheckForNull ApplicationDescriptor applicationDescriptor;
         @CheckForNull String updateLocation;
 
@@ -70,7 +70,7 @@ public final class ApplicationParameters {
         }
 
         public Builder<P> applicationListener(
-                final @Nullable ApplicationListener applicationListener) {
+                final @Nullable UpdateAgentListener applicationListener) {
             this.applicationListener = applicationListener;
             return this;
         }

@@ -6,7 +6,11 @@ package net.java.trueupdate.server.maven;
 
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.Path;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
+import net.java.trueupdate.core.codec.JaxbCodec;
+import net.java.trueupdate.core.io.Source;
 import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
 import net.java.trueupdate.server.maven.config.UpdateServerConfiguration;
@@ -29,6 +33,8 @@ public final class MavenUpdateServer extends BasicUpdateServer {
     public MavenUpdateServer() {
         try {
             this.artifactResolver = parameters().artifactResolver();
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new IllegalStateException(String.format(
                     "Failed to load configuration from %s .", CONFIGURATION),
@@ -41,11 +47,30 @@ public final class MavenUpdateServer extends BasicUpdateServer {
     }
 
     private static UpdateServerConfiguration configuration() throws Exception {
-        return UpdateServerConfiguration.decodeFromXml(
-                Sources.forResource(CONFIGURATION,
-                    Thread.currentThread().getContextClassLoader()));
+        return decodeFromXml(Sources.forResource(CONFIGURATION,
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Override
     protected ArtifactResolver artifactResolver() { return artifactResolver; }
+
+    private static UpdateServerConfiguration decodeFromXml(Source source)
+    throws Exception {
+        return new JaxbCodec(Lazy.JAXB_CONTEXT)
+                .decode(source, UpdateServerConfiguration.class);
+    }
+
+    private static class Lazy {
+
+        static final JAXBContext JAXB_CONTEXT;
+
+        static {
+            try {
+                JAXB_CONTEXT = JAXBContext
+                        .newInstance(UpdateServerConfiguration.class);
+            } catch (JAXBException ex) {
+                throw new AssertionError(ex);
+            }
+        }
+    } // Lazy
 }

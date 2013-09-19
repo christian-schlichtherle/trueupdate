@@ -9,12 +9,10 @@ import javax.annotation.CheckForNull;
 import javax.jms.*;
 import javax.naming.*;
 import net.java.trueupdate.agent.core.BasicUpdateAgent;
-import net.java.trueupdate.agent.spec.ApplicationParameters;
-import net.java.trueupdate.agent.spec.UpdateAgentException;
-import net.java.trueupdate.jms.JmsMessageReceiver;
-import net.java.trueupdate.jms.JmsMessageSender;
+import net.java.trueupdate.agent.spec.*;
+import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.spec.UpdateMessage;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import net.java.trueupdate.manager.spec.UpdateMessageListener;
 
 /**
  * An implementation of the abstract update agent class with minimal
@@ -28,10 +26,9 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
     private final MessagingParameters messagingParameters;
     private @CheckForNull JmsMessageReceiver receiver;
 
-    ConfiguredUpdateAgent(final ApplicationParameters applicationParameters,
-                    final MessagingParameters messagingParameters) {
-        this.applicationParameters = requireNonNull(applicationParameters);
-        this.messagingParameters = requireNonNull(messagingParameters);
+    ConfiguredUpdateAgent(final UpdateAgentParameters parameters) {
+        this.applicationParameters = parameters.applicationParameters();
+        this.messagingParameters = parameters.messagingParameters();
     }
 
     @Override
@@ -56,7 +53,7 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
                         .destination(fromDestination())
                         .subscriptionName(from())
                         .messageSelector("manager = false")
-                        .messageListener(new ConfiguredUpdateMessageListener(applicationParameters))
+                        .messageListener(updateMessageListener())
                         .build();
                 new Thread(receiver, "TrueUpdate Agent Mini / Receiver Daemon") {
                     { super.setDaemon(true); }
@@ -64,6 +61,10 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
                 return null;
             }
         });
+    }
+
+    private UpdateMessageListener updateMessageListener() {
+        return new ConfiguredUpdateMessageListener(this, applicationParameters);
     }
 
     private void stopUpdateMessageListener() throws UpdateAgentException {
@@ -93,29 +94,28 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
                 .send(message);
     }
 
-    private ConnectionFactory connectionFactory() throws NamingException {
-        return lookup(messagingParameters().connectionFactory());
-    }
-
-    private Destination fromDestination() throws NamingException {
-        return lookup(from());
-    }
-
-    @Override protected String from() { return messagingParameters().from(); }
-
-    @Override protected String to() { return messagingParameters().to(); }
-
-    @SuppressWarnings("unchecked")
-    private <T> T lookup(String name) throws NamingException {
-        return (T) namingContext().lookup(name);
+    @Override protected ApplicationParameters applicationParameters() {
+        return applicationParameters;
     }
 
     private Context namingContext() {
         return messagingParameters().namingContext();
     }
 
-    @Override protected ApplicationParameters applicationParameters() {
-        return applicationParameters;
+    private ConnectionFactory connectionFactory() {
+        return messagingParameters().connectionFactory();
+    }
+
+    private Destination fromDestination() {
+        return messagingParameters().fromDestination();
+    }
+
+    @Override protected String from() {
+        return messagingParameters().fromName();
+    }
+
+    @Override protected String to() {
+        return messagingParameters().toName();
     }
 
     private MessagingParameters messagingParameters() {

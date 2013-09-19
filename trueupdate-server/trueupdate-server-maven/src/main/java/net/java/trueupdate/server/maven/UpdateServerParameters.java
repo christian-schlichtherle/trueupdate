@@ -36,12 +36,9 @@ final class UpdateServerParameters {
 
         @CheckForNull MavenArtifactResolver artifactResolver;
 
-        /** Parses the given nullable configuration. */
-        Builder parse(final @CheckForNull UpdateServerConfiguration config) {
-            if (null != config) {
-                artifactResolver = nonNullOr(config.repositories,
-                                             artifactResolver);
-            }
+        /** Parses the given configuration. */
+        Builder parse(final UpdateServerConfiguration config) {
+            artifactResolver = nonNullOr(config.repositories, artifactResolver);
             return this;
         }
 

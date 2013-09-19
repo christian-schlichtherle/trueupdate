@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update agent which depends on the Java EE API.
+ * Provides Data Transfer Objects (DTO) for configuring an update agent
+ * via XML.
  *
  * @author Christian Schlichtherle
  */
-@javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.agent.javaee;
+package net.java.trueupdate.agent.mini.config;

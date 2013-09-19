@@ -4,11 +4,12 @@
  */
 package net.java.trueupdate.manager.mini;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import net.java.trueupdate.core.io.Sources;
+import javax.xml.bind.*;
+import net.java.trueupdate.core.codec.JaxbCodec;
+import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.manager.mini.config.UpdateManagerConfiguration;
 
 /**
@@ -31,6 +32,8 @@ implements ServletContextListener {
         if (null != context) return;
         try {
             context = new UpdateManagerContext(parameters());
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new IllegalStateException(String.format(
                     "Failed to load configuration from %s .", CONFIGURATION),
@@ -48,16 +51,6 @@ implements ServletContextListener {
                 context.updateInstaller().getClass().getCanonicalName());
     }
 
-    private static UpdateManagerParameters parameters() throws Exception {
-        return UpdateManagerParameters.builder().parse(configuration()).build();
-    }
-
-    private static UpdateManagerConfiguration configuration() throws Exception {
-        return UpdateManagerConfiguration.decodeFromXml(
-                Sources.forResource(CONFIGURATION,
-                    Thread.currentThread().getContextClassLoader()));
-    }
-
     @Override public void contextDestroyed(final ServletContextEvent sce) {
         if (null == context) return;
         try {
@@ -68,4 +61,33 @@ implements ServletContextListener {
             throw new IllegalStateException(ex);
         }
     }
+
+    private static UpdateManagerParameters parameters() throws Exception {
+        return UpdateManagerParameters.builder().parse(configuration()).build();
+    }
+
+    private static UpdateManagerConfiguration configuration() throws Exception {
+        return decodeFromXml(Sources.forResource(CONFIGURATION,
+                Thread.currentThread().getContextClassLoader()));
+    }
+
+    private static UpdateManagerConfiguration decodeFromXml(Source source)
+    throws Exception {
+        return new JaxbCodec(Lazy.JAXB_CONTEXT)
+                .decode(source, UpdateManagerConfiguration.class);
+    }
+
+    private static class Lazy {
+
+        static final JAXBContext JAXB_CONTEXT;
+
+        static {
+            try {
+                JAXB_CONTEXT = JAXBContext
+                        .newInstance(UpdateManagerConfiguration.class);
+            } catch (JAXBException ex) {
+                throw new AssertionError(ex);
+            }
+        }
+    } // Lazy
 }

@@ -7,6 +7,7 @@ package net.java.trueupdate.agent.mini;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.util.Objects;
 
 /**
  * Listens to update messages and forwards them to the configured application
@@ -18,10 +19,14 @@ import net.java.trueupdate.manager.spec.*;
 @Immutable
 final class ConfiguredUpdateMessageListener extends UpdateMessageListener {
 
-    private final ApplicationListener listener;
+    private final UpdateAgent agent;
+    private final UpdateAgentListener listener;
     private final UpdateMessageFilter filter;
 
-    ConfiguredUpdateMessageListener(final ApplicationParameters parameters) {
+    ConfiguredUpdateMessageListener(
+            final UpdateAgent agent,
+            final ApplicationParameters parameters) {
+        this.agent = Objects.requireNonNull(agent);
         this.listener = parameters.applicationListener();
         this.filter = new UpdateMessageFilter() {
             final ApplicationDescriptor applicationDescriptor =
@@ -39,42 +44,49 @@ final class ConfiguredUpdateMessageListener extends UpdateMessageListener {
     @Override
     protected void onSubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
-        listener.onSubscriptionSuccessResponse(message);
+        listener.onSubscriptionSuccessResponse(event(message));
     }
 
     @Override
     protected void onSubscriptionFailureResponse(UpdateMessage message)
     throws Exception {
-        listener.onSubscriptionFailureResponse(message);
+        listener.onSubscriptionFailureResponse(event(message));
     }
 
     @Override
     protected void onUpdateNotice(UpdateMessage message)
     throws Exception {
-        listener.onUpdateNotice(message);
+        listener.onUpdateNotice(event(message));
     }
 
     @Override
     protected void onInstallationSuccessResponse(UpdateMessage message)
     throws Exception {
-        listener.onInstallationSuccessResponse(message);
+        listener.onInstallationSuccessResponse(event(message));
     }
 
     @Override
     protected void onInstallationFailureResponse(UpdateMessage message)
     throws Exception {
-        listener.onInstallationFailureResponse(message);
+        listener.onInstallationFailureResponse(event(message));
     }
 
     @Override
     protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
     throws Exception {
-        listener.onUnsubscriptionSuccessResponse(message);
+        listener.onUnsubscriptionSuccessResponse(event(message));
     }
 
     @Override
     protected void onUnsubscriptionFailureResponse(UpdateMessage message)
     throws Exception {
-        listener.onUnsubscriptionFailureResponse(message);
+        listener.onUnsubscriptionFailureResponse(event(message));
+    }
+
+    private UpdateAgentEvent event(final UpdateMessage message) {
+        return new UpdateAgentEvent() {
+            @Override public UpdateAgent updateAgent() { return agent; }
+            @Override public UpdateMessage updateMessage() { return message; }
+        };
     }
 }

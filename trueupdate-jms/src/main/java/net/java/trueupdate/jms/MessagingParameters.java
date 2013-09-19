@@ -139,20 +139,17 @@ public final class MessagingParameters {
         /**
          * Parses the given nullable configuration for the JMS administered
          * objects.
-         * Unless the configuration is {@code null}, the naming context must be
-         * already configured.
+         * Prior to calling this method, the naming context must be already
+         * configured.
          *
          * @see #namingContext(Context)
          * @see #parseNaming(NamingConfiguration)
          */
-        public Builder<P> parseMessaging(
-                final @CheckForNull MessagingConfiguration config) {
-            if (null != config) {
-                connectionFactory = nonNullOr(config.connectionFactory,
-                                              connectionFactory);
-                from = nonNullOr(config.from, from);
-                to = nonNullOr(config.to, to);
-            }
+        public Builder<P> parseMessaging(final MessagingConfiguration config) {
+            connectionFactory = nonNullOr(config.connectionFactory,
+                                          connectionFactory);
+            from = nonNullOr(config.from, from);
+            to = nonNullOr(config.to, to);
             return this;
         }
 
