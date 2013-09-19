@@ -4,8 +4,7 @@
  */
 package net.java.trueupdate.util;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -30,11 +29,14 @@ public final class SystemProperties {
      * @return the resulting string
      */
     public static String resolve(final String string) {
-        final StringBuffer result = new StringBuffer(string.length());
+        final StringBuffer sb = new StringBuffer(string.length());
         final Matcher matcher = REFERENCE_PATTERN.matcher(string);
-        while (matcher.find())
-            matcher.appendReplacement(result, replacement(matcher));
-        return matcher.appendTail(result).toString();
+        boolean found = false;
+        while (matcher.find()) {
+            found = true;
+            matcher.appendReplacement(sb, replacement(matcher));
+        }
+        return found ? matcher.appendTail(sb).toString() : string;
     }
 
     private static String replacement(final Matcher matcher) {
