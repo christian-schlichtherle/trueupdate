@@ -12,8 +12,8 @@ import static net.java.trueupdate.core.zip.model.DiffModel.*;
 
 @Immutable
 final class EntryNameAndDigestMapAdapter
-        extends XmlAdapter<EntryNameAndDigestCollectionHolder,
-        Map<String, EntryNameAndDigest>> {
+extends XmlAdapter<EntryNameAndDigestCollectionHolder,
+                   Map<String, EntryNameAndDigest>> {
 
     @Override public Map<String, EntryNameAndDigest> unmarshal(
             EntryNameAndDigestCollectionHolder holder) {
@@ -37,8 +37,8 @@ final class EntryNameAndDigestCollectionHolder {
 
 @Immutable
 final class EntryNameAndTwoDigestsMapAdapter
-        extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
-        Map<String, EntryNameAndTwoDigests>> {
+extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
+                   Map<String, EntryNameAndTwoDigests>> {
 
     @Override public Map<String, EntryNameAndTwoDigests> unmarshal(
             EntryNameAndTwoDigestsCollectionHolder holder) {
