@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
+import net.java.trueupdate.server.maven.config.UpdateServerConfiguration;
 
 /**
  * An artifact update server which uses a maven artifact resolver.
@@ -27,15 +28,22 @@ public final class MavenUpdateServer extends BasicUpdateServer {
 
     public MavenUpdateServer() {
         try {
-            this.artifactResolver = ServerParameters.decodeFromXml(
-                    Sources.forResource(CONFIGURATION,
-                        Thread.currentThread().getContextClassLoader())
-                    ).mavenArtifactResolver();
+            this.artifactResolver = parameters().artifactResolver();
         } catch (Exception ex) {
             throw new IllegalStateException(String.format(
                     "Failed to load configuration from %s .", CONFIGURATION),
                     ex);
         }
+    }
+
+    private static UpdateServerParameters parameters() throws Exception {
+        return UpdateServerParameters.builder().parse(configuration()).build();
+    }
+
+    private static UpdateServerConfiguration configuration() throws Exception {
+        return UpdateServerConfiguration.decodeFromXml(
+                Sources.forResource(CONFIGURATION,
+                    Thread.currentThread().getContextClassLoader()));
     }
 
     @Override
