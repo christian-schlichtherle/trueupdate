@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.util;
 
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -19,7 +20,7 @@ public final class Strings {
         return string;
     }
 
-    public static String nonEmptyOr(String string, String defaultValue) {
+    public static @Nullable String nonEmptyOr(@CheckForNull String string, @Nullable String defaultValue) {
         return null != string && !string.isEmpty() ? string : defaultValue;
     }
 
