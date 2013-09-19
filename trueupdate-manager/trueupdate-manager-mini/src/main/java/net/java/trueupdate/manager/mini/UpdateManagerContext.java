@@ -6,15 +6,11 @@ package net.java.trueupdate.manager.mini;
 
 import java.net.URI;
 import java.util.ServiceLoader;
-import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
-import javax.naming.*;
-import javax.servlet.ServletContext;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.jms.JmsMessageReceiver;
+import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
-import net.java.trueupdate.util.Objects;
 
 /**
  * Provides the objects required for this package.
@@ -24,37 +20,45 @@ import net.java.trueupdate.util.Objects;
 @Immutable
 final class UpdateManagerContext {
 
-    private static final Logger
-            logger = Logger.getLogger(UpdateManagerContext.class.getName());
-
-    private final ServletContext servletContext;
-    private final Context namingContext;
+    private final UpdateManagerParameters parameters;
+    private final UpdateInstaller updateInstaller;
     private final ConfiguredUpdateManager manager;
     private final UpdateTimer timer;
     private final JmsMessageReceiver receiver;
 
-    UpdateManagerContext(final ServletContext servletContext)
-    throws NamingException, JMSException {
-        this.servletContext = servletContext;
-        namingContext = (Context) new InitialContext().lookup("java:comp/env");
-        final ConnectionFactory connectionFactory = (ConnectionFactory)
-                lookup(parameter("connectionFactory"));
+    UpdateManagerContext(final UpdateManagerParameters parameters)
+    throws JMSException {
+        // HC SVNT DRACONIS
+        this.parameters = parameters;
+        final MessagingParameters mp = parameters.messagingParameters();
+        updateInstaller = ServiceLoader.load(
+                UpdateInstaller.class,
+                Thread.currentThread().getContextClassLoader()
+                ).iterator().next();
         manager = new ConfiguredUpdateManager(
-                connectionFactory,
-                namingContext,
-                updateClient(),
-                updateInstaller());
+                mp.connectionFactory(),
+                mp.namingContext(),
+                new UpdateClient(updateServiceBaseUri()),
+                updateInstaller);
         timer = new UpdateTimer(manager,
                 checkUpdatesIntervalMinutes());
         receiver = JmsMessageReceiver
                 .builder()
-                .connectionFactory(connectionFactory)
-                .destination(fromDestination())
-                .subscriptionName(from())
+                .connectionFactory(mp.connectionFactory())
+                .destination(mp.fromDestination())
+                .subscriptionName(mp.fromName())
                 .messageSelector("manager = true")
                 .messageListener(manager)
                 .build();
     }
+
+    URI updateServiceBaseUri() { return parameters.updateServiceBaseUri(); }
+
+    int checkUpdatesIntervalMinutes() {
+        return parameters.checkUpdatesIntervalMinutes();
+    }
+
+    UpdateInstaller updateInstaller() { return updateInstaller; }
 
     void start() {
         timer().start();
@@ -71,46 +75,6 @@ final class UpdateManagerContext {
         return new Thread(receiver, "TrueUpdate Manager Mini / Receiver Daemon") {
             { super.setDaemon(true); }
         };
-    }
-
-    private UpdateClient updateClient() {
-        return new UpdateClient(updateServiceBaseUri());
-    }
-
-    private URI updateServiceBaseUri() {
-        final URI usburi = URI.create(parameter("updateServiceBaseUri"));
-        logger.log(Level.CONFIG, "Base URI of the update service is {0} .", usburi);
-        return usburi;
-    }
-
-    private int checkUpdatesIntervalMinutes() {
-        final int cuim = Integer.parseInt(parameter("checkUpdatesIntervalMinutes"));
-        logger.log(Level.CONFIG, "Interval for checking for updates is {0} minutes.", cuim);
-        return cuim;
-    }
-
-    private UpdateInstaller updateInstaller() {
-        final UpdateInstaller ui = ServiceLoader.load(
-                UpdateInstaller.class,
-                Thread.currentThread().getContextClassLoader()
-                ).iterator().next();
-        logger.log(Level.CONFIG, "UpdateInstaller class is {0} .", ui.getClass());
-        return ui;
-    }
-
-    private Destination fromDestination() throws NamingException {
-        return lookup(from());
-    }
-
-    private String from() { return parameter("manager"); }
-
-    @SuppressWarnings("unchecked")
-    private <T> T lookup(String name) throws NamingException {
-        return (T) namingContext.lookup(name);
-    }
-
-    private String parameter(String name) {
-        return Objects.requireNonNull(servletContext.getInitParameter(name));
     }
 
     void stop() throws Exception {
