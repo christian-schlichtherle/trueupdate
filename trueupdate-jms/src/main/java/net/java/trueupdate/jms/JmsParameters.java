@@ -8,7 +8,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import javax.naming.*;
-import static net.java.trueupdate.util.SystemProperties.resolve;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * JMS parameters.
@@ -16,37 +16,21 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
  * @author Christian Schlichtherle
  */
 @Immutable
-@SuppressWarnings("unchecked")
 public final class JmsParameters {
 
     private final Context namingContext;
     private final ConnectionFactory connectionFactory;
     private final @CheckForNull Destination agent, manager;
 
-    public JmsParameters(final NamingDescriptor namingDesriptor,
-                         final MessagingDescriptor messagingDescriptor) {
-        try {
-            namingContext = (Context) loadContext(namingDesriptor.initialContextClass())
-                    .lookup(resolve(namingDesriptor.lookup()));
-            connectionFactory = lookup(messagingDescriptor.connectionFactory());
-            agent = lookup(messagingDescriptor.agent());
-            manager = lookup(messagingDescriptor.manager());
-        } catch (Exception ex) {
-            throw new IllegalArgumentException(ex);
-        }
+    JmsParameters(final Builder<?> b) {
+        this.namingContext = requireNonNull(b.namingContext);
+        this.connectionFactory = requireNonNull(b.connectionFactory);
+        this.agent = b.agent;
+        this.manager = b.manager;
     }
 
-    private static Context loadContext(String name) throws Exception {
-        return (Context) Thread
-                .currentThread()
-                .getContextClassLoader()
-                .loadClass(resolve(name))
-                .newInstance();
-    }
-
-    private <T> T lookup(@CheckForNull String name) throws NamingException {
-        return null == name ? null : (T) namingContext.lookup(resolve(name));
-    }
+    /** Returns a new builder for messaging parameters. */
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     /** Returns the naming context. */
     public Context namingContext() { return namingContext; }
@@ -59,4 +43,52 @@ public final class JmsParameters {
 
     /** Returns the nullable destination for the update manager. */
     public @Nullable Destination manager() { return manager; }
+
+    /**
+     * A builder for messaging parameters.
+     *
+     * @param <P> The type of the parent builder.
+     */
+    @SuppressWarnings("PackageVisibleField")
+    public static class Builder<P> {
+
+        @CheckForNull Context namingContext;
+        @CheckForNull ConnectionFactory connectionFactory;
+        @CheckForNull Destination agent, manager;
+
+        protected Builder() { }
+
+        public Builder<P> namingContext(final @Nullable Context namingContext) {
+            this.namingContext = namingContext;
+            return this;
+        }
+
+        public Builder<P> connectionFactory(
+                final @Nullable ConnectionFactory connectionFactory) {
+            this.connectionFactory = connectionFactory;
+            return this;
+        }
+
+        public Builder<P> agent(final @Nullable Destination agent) {
+            this.agent = agent;
+            return this;
+        }
+
+        public Builder<P> manager(final @Nullable Destination manager) {
+            this.manager = manager;
+            return this;
+        }
+
+        public JmsParameters build() { return new JmsParameters(this); }
+
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new java.lang.IllegalStateException("No parent builder defined.");
+        }
+    } // Builder
 }
