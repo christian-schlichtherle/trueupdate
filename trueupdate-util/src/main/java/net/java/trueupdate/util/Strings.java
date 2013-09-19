@@ -12,7 +12,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class Strings {
+public final class Strings {
 
     public static String requireNonEmpty(final String string) {
         if (string.isEmpty()) throw new IllegalArgumentException();

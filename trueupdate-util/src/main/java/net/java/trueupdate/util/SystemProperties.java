@@ -15,7 +15,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle
  */
 @Immutable
-public class SystemProperties {
+public final class SystemProperties {
 
     private static Pattern
             REFERENCE_PATTERN = Pattern.compile("\\$\\{([^\\}]*)\\}");

@@ -13,7 +13,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle (copied from TrueCommons Shed 2.3.2)
  */
 @Immutable
-public class HashMaps {
+public final class HashMaps {
 
     /**
      * The number of entries which should be additionally accomodatable by a

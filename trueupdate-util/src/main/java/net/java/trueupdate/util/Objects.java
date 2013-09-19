@@ -14,7 +14,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Christian Schlichtherle (copied from TrueLicense Core 2.3.1)
  */
 @Immutable
-public class Objects {
+public final class Objects {
 
     public static boolean equals(@CheckForNull Object a, @CheckForNull Object b) {
         return a == b || null != a && a.equals(b);
