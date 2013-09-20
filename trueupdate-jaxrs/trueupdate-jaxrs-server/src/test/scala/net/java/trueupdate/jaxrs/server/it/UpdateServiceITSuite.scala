@@ -14,13 +14,15 @@ import net.java.trueupdate.core.zip.model.DiffModel
 import net.java.trueupdate.jaxrs.client.UpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
+import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
-import net.java.trueupdate.artifact.spec.ArtifactResolverTestContext
 import java.util.logging.Level
 
 /** @author Christian Schlichtherle */
-class UpdateServiceITSuite extends JerseyTest {
-  context: TestContext with ArtifactResolverTestContext =>
+abstract class UpdateServiceITSuite extends JerseyTest {
+  context: TestContext =>
+
+  def artifactDescriptor: ArtifactDescriptor
 
   @Test def testLifeCycle() {
     assertVersion()

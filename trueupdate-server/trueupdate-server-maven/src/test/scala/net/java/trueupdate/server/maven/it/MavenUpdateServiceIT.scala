@@ -15,8 +15,6 @@ final class MavenUpdateServiceIT
 extends UpdateServiceITSuite
 with MavenArtifactResolverTestContext {
 
-  override def artifactResolver = throw new UnsupportedOperationException
-
   override protected def configure =
     new WebAppDescriptor.Builder(
       Array[String](classOf[MavenUpdateServerApplication].getPackage.getName,

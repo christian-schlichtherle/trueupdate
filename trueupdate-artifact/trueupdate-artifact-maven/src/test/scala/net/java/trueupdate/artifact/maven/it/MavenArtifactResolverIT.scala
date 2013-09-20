@@ -37,20 +37,16 @@ extends WordSpec with MavenArtifactResolverTestContext {
   def resolvedPath(descriptor: ArtifactDescriptor) =
     new File(baseDir, relativePath(descriptor))
 
-  def baseDir = artifactResolver.localRepository.getBasedir.getAbsoluteFile
+  def baseDir = parameters.localRepository.getBasedir.getAbsoluteFile
 
   "A maven artifact resolver" should {
-    "be round-trip XML-serializable" in {
-      assertRoundTripXmlSerializable(artifactResolver)
-    }
-
     "resolve a readable artifact file" in {
       val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
       artifactFile should equal (resolvedPath(artifactDescriptor))
       artifactFile canRead () should be (true)
     }
 
-    "resolve an update descriptor and a readable artifact file" in {
+    "resolve an update version and a readable artifact file" in {
       val updateVersion = artifactResolver resolveUpdateVersion artifactDescriptor
       updateVersion should not equal (artifactDescriptor.version)
       val updateDescriptor = artifactDescriptor version updateVersion

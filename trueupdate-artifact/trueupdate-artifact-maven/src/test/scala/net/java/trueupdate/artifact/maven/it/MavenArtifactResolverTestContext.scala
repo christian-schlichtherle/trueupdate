@@ -6,22 +6,25 @@ package net.java.trueupdate.artifact.maven.it
 
 import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
-import net.java.trueupdate.core.codec.JaxbCodec
-import net.java.trueupdate.core.io.Sources
 import javax.xml.bind.JAXBContext
-import net.java.trueupdate.artifact.maven.MavenArtifactResolver
+import net.java.trueupdate.artifact.maven._
+import net.java.trueupdate.artifact.maven.dto.MavenParametersDto
 
 /** @author Christian Schlichtherle */
 trait MavenArtifactResolverTestContext
 extends TestContext with ArtifactResolverTestContext {
 
-  override def artifactResolver: MavenArtifactResolver =
-    new JaxbCodec(jaxbContext)
-      .decode(repositories, classOf[MavenArtifactResolver])
+  override def artifactResolver = new MavenArtifactResolver(parameters)
 
-  private def repositories = Sources.forResource(
-    "repositories.xml", classOf[MavenArtifactResolverTestContext])
+  val parameters = MavenParameters.builder.parse(configuration()).build
+
+  private def configuration() =
+    jaxbContext
+      .createUnmarshaller
+      .unmarshal(classOf[MavenArtifactResolverTestContext]
+        .getResource("repositories.xml"))
+      .asInstanceOf[MavenParametersDto]
 
   final override lazy val jaxbContext =
-    JAXBContext.newInstance(classOf[MavenArtifactResolver])
+    JAXBContext.newInstance(classOf[MavenParametersDto])
 }
