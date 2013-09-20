@@ -50,7 +50,7 @@ public abstract class JmsMessageSender {
      *
      * @param namingContext the context for looking up the destination using
      *        the {@link UpdateMessage#to()} property of the messages.
-     * @param connectionFactory the connection for sending the messages.
+     * @param connection the connection for sending the messages.
      */
     public static JmsMessageSender create(
             final Context namingContext,

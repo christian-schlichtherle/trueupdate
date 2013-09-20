@@ -5,7 +5,7 @@
 package net.java.trueupdate.server.maven;
 
 import java.util.*;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import net.java.trueupdate.jaxrs.server.UpdateServiceExceptionMapper;
@@ -13,13 +13,11 @@ import net.java.trueupdate.jaxrs.server.UpdateServiceExceptionMapper;
 /**
  * An application which provides the class {@link UpdateServiceExceptionMapper}
  * and a new {@link MavenUpdateServer}.
- * Once {@linkplain #setServletContext initialized}, it is safe to use this
- * class in multiple threads.
  *
  * @author Christian Schlichtherle
  */
 @ApplicationPath("/")
-@ThreadSafe
+@Immutable
 public final class MavenUpdateServerApplication extends Application {
 
     /** Returns a set with {@link UpdateServiceExceptionMapper}. */
