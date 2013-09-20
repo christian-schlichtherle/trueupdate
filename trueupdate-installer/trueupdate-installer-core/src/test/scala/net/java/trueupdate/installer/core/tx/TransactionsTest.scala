@@ -44,10 +44,9 @@ class TransactionsTest extends WordSpec {
       val parameters = ArgumentCaptor.forClass(classOf[Array[AnyRef]])
       io verify logger isLoggable level
       io verify logger log (Matchers.eq(level), any, parameters.capture)
-      parameters.getValue()(0) should be (if (succeeded) "Succeeded" else "Failed")
-      parameters.getValue()(1) should be (method.name)
-      parameters.getValue()(2) should be ("slow transaction")
-      parameters.getValue()(3).asInstanceOf[java.lang.Float].floatValue() should
+      parameters.getValue()(0) should be (method.name)
+      parameters.getValue()(1) should be ("slow transaction")
+      parameters.getValue()(2).asInstanceOf[java.lang.Float].floatValue() should
         be >= (.0f)
     }
   }

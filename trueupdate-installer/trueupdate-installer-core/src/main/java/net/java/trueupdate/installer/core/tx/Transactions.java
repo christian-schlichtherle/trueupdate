@@ -115,21 +115,17 @@ public class Transactions {
             throws Exception {
                 Exception ex = null;
                 final long started = System.currentTimeMillis();
-                try { task.call(); }
-                catch (Exception ex2) { ex = ex2; }
+                try { task.call(); } catch (Exception ex2) { ex = ex2; }
                 final long finished = System.currentTimeMillis();
                 final Logger logger = config.logger();
-                final Level level = config.level(method, null == ex);
+                final boolean succeeded = null == ex;
+                final Level level = config.level(method, succeeded);
                 if (logger.isLoggable(level)) {
                     final float duration = (finished - started) / 1000.0f;
-                    logger.log(level,
-                            "{0} to {1} the {2} in {3} seconds.",
-                            new Object[]{
-                                    null == ex ? "Succeeded" : "Failed",
-                                    method.name(), name, duration
-                            });
+                    logger.log(level, config.pattern(succeeded),
+                            new Object[]{ config.verb(method), name, duration });
                 }
-                if (null != ex) throw ex;
+                if (!succeeded) throw ex;
             }
 
         } // TimedTransaction
@@ -157,6 +153,14 @@ public class Transactions {
     public static abstract class LoggerConfig {
 
         public abstract Logger logger();
+
+        public String pattern(boolean succeeded) {
+            return succeeded
+                    ? "Succeeded to {0} the {1} in {2} seconds."
+                    : "Failed to {0} the {1} in {2} seconds.";
+        }
+
+        public String verb(Method method) { return method.name(); }
 
         public Level level(Method method, boolean succeeded) {
             return succeeded ? method.succeeded() : method.failed();
