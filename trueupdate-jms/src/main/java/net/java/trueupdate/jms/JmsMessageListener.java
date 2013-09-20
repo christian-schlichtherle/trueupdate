@@ -48,6 +48,7 @@ public abstract class JmsMessageListener implements MessageListener {
                     updateMessageListener().onUpdateMessage((UpdateMessage) body);
             }
         } catch (RuntimeException ex) {
+            logger.log(Level.WARNING, "Could not process JMS message:", ex);
             throw ex;
         } catch (final Exception ex) {
             logger.log(Level.WARNING, "Could not process JMS message:", ex);
