@@ -108,7 +108,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-mini</artifactId>
+                <artifactId>trueupdate-agent-servlets</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -212,7 +212,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-mini</artifactId>
+                <artifactId>trueupdate-manager-servlets</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

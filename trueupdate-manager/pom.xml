@@ -22,7 +22,7 @@
 
     <modules>
         <module>trueupdate-manager-core</module>
-        <module>trueupdate-manager-mini</module>
+        <module>trueupdate-manager-servlets</module>
         <module>trueupdate-manager-spec</module>
     </modules>
 </project>
