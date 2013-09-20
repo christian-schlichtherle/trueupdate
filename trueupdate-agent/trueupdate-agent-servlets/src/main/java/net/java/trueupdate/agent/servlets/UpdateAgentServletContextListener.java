@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebListener;
 import javax.xml.bind.JAXBContext;
 import net.java.trueupdate.agent.servlets.config.UpdateAgentConfiguration;
 import net.java.trueupdate.agent.spec.UpdateAgent;
+import net.java.trueupdate.agent.spec.UpdateAgentException;
 
 /**
  * Starts and stops the update agent.
@@ -27,12 +28,16 @@ implements ServletContextListener {
         if (null != agent) return;
         try {
             agent = new ConfiguredUpdateAgent(parameters());
-            agent.subscribe();
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Exception ex) {
             throw new IllegalStateException(String.format(
                     "Failed to load configuration from %s .", CONFIGURATION),
+                    ex);
+        }
+        try {
+            agent.subscribe();
+        } catch (UpdateAgentException ex) {
+            throw new IllegalStateException(
+                    "Failed to subscribe to update notices.",
                     ex);
         }
     }
@@ -41,10 +46,10 @@ implements ServletContextListener {
         if (null == agent) return;
         try {
             agent.unsubscribe();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+        } catch (UpdateAgentException ex) {
+            throw new IllegalStateException(
+                    "Failed to unsubscribe from update notices.",
+                    ex);
         }
     }
 

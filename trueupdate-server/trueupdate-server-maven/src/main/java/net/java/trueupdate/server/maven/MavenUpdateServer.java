@@ -33,8 +33,6 @@ public final class MavenUpdateServer extends BasicUpdateServer {
     public MavenUpdateServer() {
         try {
             this.artifactResolver = parameters().artifactResolver();
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Exception ex) {
             throw new IllegalStateException(String.format(
                     "Failed to load configuration from %s .", CONFIGURATION),

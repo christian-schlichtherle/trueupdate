@@ -32,8 +32,6 @@ implements ServletContextListener {
         if (null != context) return;
         try {
             context = new UpdateManagerContext(parameters());
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Exception ex) {
             throw new IllegalStateException(String.format(
                     "Failed to load configuration from %s .", CONFIGURATION),
@@ -55,10 +53,8 @@ implements ServletContextListener {
         if (null == context) return;
         try {
             context.stop();
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException("Failed to stop the update manager context.", ex);
         }
     }
 
