@@ -5,6 +5,7 @@
 package net.java.trueupdate.util;
 
 import java.util.regex.*;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -25,7 +26,22 @@ public final class SystemProperties {
      * Replaces references to system properties of the form {@code ${key}} with
      * their values.
      *
-     * @param string the string to process
+     * @param string the nullable string to process.
+     * @param defaultValue the nullable default value to return if and only if
+     *        {@code string} is {@code null}.
+     *        Note that this parameter does not get processed.
+     * @return the resulting string
+     */
+    public static @Nullable String resolve(@CheckForNull String string,
+                                           @Nullable String defaultValue) {
+        return null == string ? defaultValue : resolve(string);
+    }
+
+    /**
+     * Replaces references to system properties of the form {@code ${key}} with
+     * their values.
+     *
+     * @param string the string to process.
      * @return the resulting string
      */
     public static String resolve(final String string) {
