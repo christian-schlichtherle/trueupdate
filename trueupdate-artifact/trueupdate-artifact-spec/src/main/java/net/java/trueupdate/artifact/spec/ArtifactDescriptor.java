@@ -7,8 +7,10 @@ package net.java.trueupdate.artifact.spec;
 import java.io.Serializable;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.artifact.spec.ci.ArtifactCi;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
+import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
  * An artifact descriptor comprises of a group ID, an artifact ID, a version,
@@ -158,6 +160,15 @@ public final class ArtifactDescriptor implements Serializable {
                              extension;
 
         protected Builder() { }
+
+        public Builder<P> parse(final ArtifactCi ci) {
+            groupId = resolve(ci.groupId, groupId);
+            artifactId = resolve(ci.artifactId, artifactId);
+            version = resolve(ci.version, version);
+            classifier = resolve(ci.classifier, classifier);
+            extension = resolve(ci.extension, extension);
+            return this;
+        }
 
         public Builder<P> groupId(final @Nullable String groupId) {
             this.groupId = groupId;

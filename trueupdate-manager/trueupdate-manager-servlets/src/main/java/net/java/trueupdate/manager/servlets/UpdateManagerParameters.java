@@ -8,7 +8,7 @@ import java.net.URI;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.MessagingParameters;
-import net.java.trueupdate.manager.servlets.config.UpdateManagerConfiguration;
+import net.java.trueupdate.manager.servlets.ci.UpdateManagerCi;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
@@ -56,7 +56,7 @@ final class UpdateManagerParameters {
         @CheckForNull MessagingParameters messagingParameters;
 
         /** Parses the given configuration. */
-        Builder parse(final UpdateManagerConfiguration config) {
+        Builder parse(final UpdateManagerCi config) {
             updateServiceBaseUri = parseUri(
                     config.updateServiceBaseUri,
                     updateServiceBaseUri);

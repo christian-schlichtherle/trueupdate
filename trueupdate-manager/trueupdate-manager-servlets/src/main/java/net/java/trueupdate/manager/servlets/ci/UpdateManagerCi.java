@@ -2,10 +2,11 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.servlets.config;
+package net.java.trueupdate.manager.servlets.ci;
 
+import net.java.trueupdate.jms.ci.NamingCi;
+import net.java.trueupdate.jms.ci.MessagingCi;
 import javax.xml.bind.annotation.XmlRootElement;
-import net.java.trueupdate.jms.config.*;
 
 /**
  * Configures an update manager.
@@ -14,8 +15,8 @@ import net.java.trueupdate.jms.config.*;
  */
 @XmlRootElement(name = "manager")
 @SuppressWarnings("PublicField")
-public class UpdateManagerConfiguration {
+public class UpdateManagerCi {
     public String updateServiceBaseUri, checkUpdatesIntervalMinutes;
-    public NamingConfiguration naming;
-    public MessagingConfiguration messaging;
+    public NamingCi naming;
+    public MessagingCi messaging;
 }

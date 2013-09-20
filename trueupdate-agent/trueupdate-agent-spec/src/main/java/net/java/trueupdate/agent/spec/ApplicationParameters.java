@@ -6,9 +6,11 @@ package net.java.trueupdate.agent.spec;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.agent.spec.ci.ApplicationCi;
 import net.java.trueupdate.manager.spec.ApplicationDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.nonEmptyOr;
+import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
  * Application Parameters.
@@ -60,6 +62,32 @@ public final class ApplicationParameters {
         @CheckForNull String updateLocation;
 
         protected Builder() { }
+
+        public Builder<P> parse(final ApplicationCi ci) {
+            applicationListener = listener(ci.listenerClass);
+            applicationDescriptor = ApplicationDescriptor
+                    .builder()
+                    .artifactDescriptor()
+                        .parse(ci.artifact)
+                        .inject()
+                    .currentLocation(resolve(ci.currentLocation))
+                    .build();
+            updateLocation = resolve(ci.updateLocation, updateLocation);
+            return this;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static UpdateAgentListener listener(final String className) {
+            try {
+                return (UpdateAgentListener) Thread
+                        .currentThread()
+                        .getContextClassLoader()
+                        .loadClass(resolve(className))
+                        .newInstance();
+            } catch (Exception ex) {
+                throw new IllegalArgumentException(ex);
+            }
+        }
 
         public ApplicationDescriptor.Builder<Builder<P>> applicationDescriptor() {
             return new ApplicationDescriptor.Builder<Builder<P>>() {

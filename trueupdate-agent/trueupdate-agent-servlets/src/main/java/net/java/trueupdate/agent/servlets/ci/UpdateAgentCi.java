@@ -2,10 +2,12 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.servlets.config;
+package net.java.trueupdate.agent.servlets.ci;
 
+import net.java.trueupdate.jms.ci.NamingCi;
+import net.java.trueupdate.jms.ci.MessagingCi;
+import net.java.trueupdate.agent.spec.ci.ApplicationCi;
 import javax.xml.bind.annotation.XmlRootElement;
-import net.java.trueupdate.jms.config.*;
 
 /**
  * Configures an update agent.
@@ -14,8 +16,8 @@ import net.java.trueupdate.jms.config.*;
  */
 @XmlRootElement(name = "agent")
 @SuppressWarnings("PublicField")
-public class UpdateAgentConfiguration {
-    public ApplicationConfiguration application;
-    public NamingConfiguration naming;
-    public MessagingConfiguration messaging;
+public class UpdateAgentCi {
+    public ApplicationCi application;
+    public NamingCi naming;
+    public MessagingCi messaging;
 }

@@ -7,13 +7,9 @@ package net.java.trueupdate.server.maven;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.Path;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.core.codec.JaxbCodec;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
-import net.java.trueupdate.server.maven.config.UpdateServerConfiguration;
+import net.java.trueupdate.server.maven.ci.UpdateServerCi;
 
 /**
  * An artifact update server which uses a maven artifact resolver.
@@ -44,31 +40,16 @@ public final class MavenUpdateServer extends BasicUpdateServer {
         return UpdateServerParameters.builder().parse(configuration()).build();
     }
 
-    private static UpdateServerConfiguration configuration() throws Exception {
-        return decodeFromXml(Sources.forResource(CONFIGURATION,
-                Thread.currentThread().getContextClassLoader()));
+    private static UpdateServerCi configuration() throws Exception {
+        return (UpdateServerCi) JAXBContext
+                .newInstance(UpdateServerCi.class)
+                .createUnmarshaller()
+                .unmarshal(Thread
+                    .currentThread()
+                    .getContextClassLoader()
+                    .getResource(CONFIGURATION));
     }
 
     @Override
     protected ArtifactResolver artifactResolver() { return artifactResolver; }
-
-    private static UpdateServerConfiguration decodeFromXml(Source source)
-    throws Exception {
-        return new JaxbCodec(Lazy.JAXB_CONTEXT)
-                .decode(source, UpdateServerConfiguration.class);
-    }
-
-    private static class Lazy {
-
-        static final JAXBContext JAXB_CONTEXT;
-
-        static {
-            try {
-                JAXB_CONTEXT = JAXBContext
-                        .newInstance(UpdateServerConfiguration.class);
-            } catch (JAXBException ex) {
-                throw new AssertionError(ex);
-            }
-        }
-    } // Lazy
 }

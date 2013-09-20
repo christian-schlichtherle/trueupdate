@@ -2,14 +2,15 @@
  * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jms.config;
+package net.java.trueupdate.jms.ci;
 
 /**
- * Addresses JMS administered objects by their JNDI name.
+ * Addresses a JNDI context by an initial context class name and a relative
+ * path name.
  *
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PublicField")
-public class MessagingConfiguration {
-    public String connectionFactory, from, to;
+public class NamingCi {
+    public String initialContextClass, relativePath;
 }

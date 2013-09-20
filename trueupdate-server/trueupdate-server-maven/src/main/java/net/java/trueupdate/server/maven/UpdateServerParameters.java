@@ -8,7 +8,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.maven.MavenArtifactResolver;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.server.maven.config.UpdateServerConfiguration;
+import net.java.trueupdate.server.maven.ci.UpdateServerCi;
 import static net.java.trueupdate.util.Objects.*;
 
 /**
@@ -37,8 +37,8 @@ final class UpdateServerParameters {
         @CheckForNull MavenArtifactResolver artifactResolver;
 
         /** Parses the given configuration. */
-        Builder parse(final UpdateServerConfiguration config) {
-            artifactResolver = nonNullOr(config.repositories, artifactResolver);
+        Builder parse(final UpdateServerCi ci) {
+            artifactResolver = nonNullOr(ci.repositories, artifactResolver);
             return this;
         }
 

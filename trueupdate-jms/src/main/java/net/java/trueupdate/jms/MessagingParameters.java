@@ -7,11 +7,10 @@ package net.java.trueupdate.jms;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
-import javax.jms.IllegalStateException;
 import javax.naming.*;
-import net.java.trueupdate.jms.config.MessagingConfiguration;
-import net.java.trueupdate.jms.config.NamingConfiguration;
-import static net.java.trueupdate.util.Objects.*;
+import net.java.trueupdate.jms.ci.MessagingCi;
+import net.java.trueupdate.jms.ci.NamingCi;
+import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
@@ -118,17 +117,16 @@ public final class MessagingParameters {
         /**
          * Parses the given nullable configuration for the naming context.
          */
-        public Builder<P> parseNaming(
-                final @CheckForNull NamingConfiguration config) {
-            if (null != config) {
+        public Builder<P> parseNaming(final @CheckForNull NamingCi ci) {
+            if (null != ci) {
                 try {
                     namingContext = (Context) (
                             (Context) Thread
                                 .currentThread()
                                 .getContextClassLoader()
-                                .loadClass(resolve(config.initialContextClass))
+                                .loadClass(resolve(ci.initialContextClass))
                                 .newInstance()
-                            ).lookup(resolve(config.relativePath));
+                            ).lookup(resolve(ci.relativePath));
                 } catch (Exception ex) {
                     throw new IllegalArgumentException(ex);
                 }
@@ -143,13 +141,12 @@ public final class MessagingParameters {
          * configured.
          *
          * @see #namingContext(Context)
-         * @see #parseNaming(NamingConfiguration)
+         * @see #parseNaming(NamingCi)
          */
-        public Builder<P> parseMessaging(final MessagingConfiguration config) {
-            connectionFactory = nonNullOr(config.connectionFactory,
-                                          connectionFactory);
-            from = nonNullOr(config.from, from);
-            to = nonNullOr(config.to, to);
+        public Builder<P> parseMessaging(final MessagingCi ci) {
+            connectionFactory = resolve(ci.connectionFactory, connectionFactory);
+            from = resolve(ci.from, from);
+            to = resolve(ci.to, to);
             return this;
         }
 

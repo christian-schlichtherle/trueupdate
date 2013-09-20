@@ -4,17 +4,11 @@
  */
 package net.java.trueupdate.agent.servlets;
 
-import net.java.trueupdate.agent.servlets.config.ApplicationConfiguration;
-import net.java.trueupdate.agent.servlets.config.ArtifactConfiguration;
-import net.java.trueupdate.agent.servlets.config.UpdateAgentConfiguration;
 import javax.annotation.CheckForNull;
-import net.java.trueupdate.agent.spec.UpdateAgentListener;
+import net.java.trueupdate.agent.servlets.ci.UpdateAgentCi;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
-import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jms.MessagingParameters;
-import net.java.trueupdate.manager.spec.ApplicationDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
-import net.java.trueupdate.util.SystemProperties;
 
 /**
  * Update agent parameters.
@@ -50,60 +44,17 @@ final class UpdateAgentParameters {
         @CheckForNull MessagingParameters messagingParameters;
 
         /** Parses the given configuration. */
-        Builder parse(final UpdateAgentConfiguration config) {
-            applicationParameters = parse(
-                        ApplicationParameters.builder(),
-                        config.application
-                    ).build();
+        Builder parse(final UpdateAgentCi ci) {
+            applicationParameters = ApplicationParameters
+                    .builder()
+                    .parse(ci.application)
+                    .build();
             messagingParameters = MessagingParameters
                     .builder()
-                    .parseNaming(config.naming)
-                    .parseMessaging(config.messaging)
+                    .parseNaming(ci.naming)
+                    .parseMessaging(ci.messaging)
                     .build();
             return this;
-        }
-
-        private static <P> ApplicationParameters.Builder<P> parse(
-                ApplicationParameters.Builder<P> builder,
-                ApplicationConfiguration config) {
-            return parse(builder.applicationDescriptor(), config).inject()
-                    .applicationListener(listener(config.listenerClass))
-                    .updateLocation(resolve(config.updateLocation));
-        }
-
-        private static <P> ApplicationDescriptor.Builder<P> parse(
-                ApplicationDescriptor.Builder<P> builder,
-                ApplicationConfiguration config) {
-            return parse(builder.artifactDescriptor(), config.artifact).inject()
-                    .currentLocation(resolve(config.currentLocation));
-        }
-
-        private static <P> ArtifactDescriptor.Builder<P> parse(
-                ArtifactDescriptor.Builder<P> builder,
-                ArtifactConfiguration config) {
-            return builder
-                    .groupId(resolve(config.groupId))
-                    .artifactId(resolve(config.artifactId))
-                    .version(resolve(config.version))
-                    .classifier(resolve(config.classifier))
-                    .extension(resolve(config.extension));
-        }
-
-        private static String resolve(String string) {
-            return null == string ? null : SystemProperties.resolve(string);
-        }
-
-        @SuppressWarnings("unchecked")
-        private static UpdateAgentListener listener(final String className) {
-            try {
-                return (UpdateAgentListener) Thread
-                        .currentThread()
-                        .getContextClassLoader()
-                        .loadClass(resolve(className))
-                        .newInstance();
-            } catch (Exception ex) {
-                throw new IllegalArgumentException(ex);
-            }
         }
 
         UpdateAgentParameters build() {

@@ -8,9 +8,7 @@ import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import javax.xml.bind.*;
-import net.java.trueupdate.core.codec.JaxbCodec;
-import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.manager.servlets.config.UpdateManagerConfiguration;
+import net.java.trueupdate.manager.servlets.ci.UpdateManagerCi;
 
 /**
  * Starts and stops the update manager.
@@ -62,28 +60,13 @@ implements ServletContextListener {
         return UpdateManagerParameters.builder().parse(configuration()).build();
     }
 
-    private static UpdateManagerConfiguration configuration() throws Exception {
-        return decodeFromXml(Sources.forResource(CONFIGURATION,
-                Thread.currentThread().getContextClassLoader()));
+    private static UpdateManagerCi configuration() throws Exception {
+        return (UpdateManagerCi) JAXBContext
+                .newInstance(UpdateManagerCi.class)
+                .createUnmarshaller()
+                .unmarshal(Thread
+                    .currentThread()
+                    .getContextClassLoader()
+                    .getResource(CONFIGURATION));
     }
-
-    private static UpdateManagerConfiguration decodeFromXml(Source source)
-    throws Exception {
-        return new JaxbCodec(Lazy.JAXB_CONTEXT)
-                .decode(source, UpdateManagerConfiguration.class);
-    }
-
-    private static class Lazy {
-
-        static final JAXBContext JAXB_CONTEXT;
-
-        static {
-            try {
-                JAXB_CONTEXT = JAXBContext
-                        .newInstance(UpdateManagerConfiguration.class);
-            } catch (JAXBException ex) {
-                throw new AssertionError(ex);
-            }
-        }
-    } // Lazy
 }

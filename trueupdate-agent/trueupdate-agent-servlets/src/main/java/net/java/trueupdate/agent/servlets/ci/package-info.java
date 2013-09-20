@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides Data Transfer Objects (DTO) for configuring an update manager
- * via XML.
+ * Provides Configuration Items (CI) for configuring an update agent.
+ * This package is used with JAXB to load some configuration.
  *
  * @author Christian Schlichtherle
  */
-package net.java.trueupdate.manager.servlets.config;
+package net.java.trueupdate.agent.servlets.ci;

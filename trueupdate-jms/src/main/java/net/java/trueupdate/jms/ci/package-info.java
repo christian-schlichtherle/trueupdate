@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides Data Transfer Objects (DTO) for configuring an update agent
- * via XML.
+ * Provides Configuration Items (CI) for configuring JMS.
+ * This package is used with JAXB to load some configuration.
  *
  * @author Christian Schlichtherle
  */
-package net.java.trueupdate.agent.servlets.config;
+package net.java.trueupdate.jms.ci;
