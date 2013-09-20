@@ -49,22 +49,4 @@ public interface UpdateAgent {
      *         for some reason.
      */
     void unsubscribe() throws UpdateAgentException;
-
-    /**
-     * A builder for update agents.
-     * <p>
-     * Applications have no need to implement this class and should not do so
-     * because it may be subject to future expansion.
-     *
-     * @param <B> The type of this builder.
-     * @param <P> The type of the parent builder, if defined.
-     */
-    interface Builder<B extends Builder<B>> {
-
-        ApplicationParameters.Builder<B> applicationParameters();
-
-        B applicationParameters(ApplicationParameters applicationParameters);
-
-        UpdateAgent build();
-    }
 }
