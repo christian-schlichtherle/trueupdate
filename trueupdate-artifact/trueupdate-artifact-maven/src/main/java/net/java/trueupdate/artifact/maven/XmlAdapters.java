@@ -9,6 +9,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import static net.java.trueupdate.artifact.maven.XmlAdapters.*;
+import net.java.trueupdate.artifact.maven.ci.*;
 import net.java.trueupdate.util.SystemProperties;
 import org.eclipse.aether.repository.*;
 
@@ -28,48 +29,40 @@ final class XmlAdapters {
 
 @Immutable
 final class LocalRepositoryAdapter
-extends XmlAdapter<LocalRepositoryDescriptor, LocalRepository> {
+extends XmlAdapter<LocalRepositoryCi, LocalRepository> {
 
     @Override
-    public LocalRepository unmarshal(LocalRepositoryDescriptor lrd) {
+    public LocalRepository unmarshal(LocalRepositoryCi lrd) {
         return new LocalRepository(new File(resolve(lrd.basedir)),
                 resolve(lrd.type));
     }
 
     @Override
-    public LocalRepositoryDescriptor marshal(final LocalRepository lr) {
-        final LocalRepositoryDescriptor lrd = new LocalRepositoryDescriptor();
+    public LocalRepositoryCi marshal(final LocalRepository lr) {
+        final LocalRepositoryCi lrd = new LocalRepositoryCi();
         lrd.basedir = nonEmptyOrNull(lr.getBasedir().getPath());
         lrd.type = nonEmptyOrNull(lr.getContentType());
         return lrd;
     }
 } // LocalRepositoryAdapter
 
-final class LocalRepositoryDescriptor {
-    public String basedir, type;
-} // LocalRepositoryDescriptor
-
 @Immutable
 final class RemoteRepositoryAdapter
-extends XmlAdapter<RemoteRepositoryDescriptor, RemoteRepository> {
+extends XmlAdapter<RemoteRepositoryCi, RemoteRepository> {
 
     @Override
-    public RemoteRepository unmarshal(RemoteRepositoryDescriptor rrd) {
+    public RemoteRepository unmarshal(RemoteRepositoryCi rrd) {
         return new RemoteRepository
                 .Builder(resolve(rrd.id), resolve(rrd.type), resolve(rrd.url))
                 .build();
     }
 
     @Override
-    public RemoteRepositoryDescriptor marshal(final RemoteRepository rr) {
-        final RemoteRepositoryDescriptor rrd = new RemoteRepositoryDescriptor();
+    public RemoteRepositoryCi marshal(final RemoteRepository rr) {
+        final RemoteRepositoryCi rrd = new RemoteRepositoryCi();
         rrd.id = nonEmptyOrNull(rr.getId());
         rrd.type = nonEmptyOrNull(rr.getContentType());
         rrd.url = nonEmptyOrNull(rr.getUrl());
         return rrd;
     }
 } // RemoteRepositoryAdapter
-
-final class RemoteRepositoryDescriptor {
-    public String id, type, url;
-} // RemoteRepositoryDescriptor

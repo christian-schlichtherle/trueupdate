@@ -56,6 +56,11 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         remotes = null;
     }
 
+    public MavenArtifactResolver(final AetherParameters parameters) {
+        this.local = parameters.localRepository();
+        this.remotes = parameters.remoteRepositories();
+    }
+
     /**
      * Constructs a Maven artifact resolver which uses the given local and
      * remote repositories.
