@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
   - All rights reserved. Use is subject to license terms.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -30,10 +30,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <organization>
-        <name>Stimulus Software</name>
-        <url>https://www.stimulus.com</url>
-    </organization>
     <developers>
         <developer>
             <name>Christian Schlichtherle</name>
@@ -48,6 +44,16 @@
             </properties>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <organization>Stimulus Software</organization>
+            <url>https://www.stimulus.com</url>
+            <timezone>1</timezone>
+            <roles>
+                <role>sponsor</role>
+            </roles>
+        </contributor>
+    </contributors>
     <issueManagement>
         <system>JIRA</system>
         <url>https://java.net/jira/browse/TRUEUPDATE</url>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Stimulus Software & Schlichtherle IT Services.
+ * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
 package net.java.trueupdate.artifact.maven.it
