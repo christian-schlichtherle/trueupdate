@@ -21,7 +21,7 @@ public interface UpdateAgent {
 
     /**
      * Sends a request to subscribe to the list of recipients for update
-     * announcements for the application.
+     * notices for the application.
      *
      * @throws UpdateAgentException if sending the request is not possible
      *         for some reason.
@@ -43,7 +43,7 @@ public interface UpdateAgent {
 
     /**
      * Sends a request to unsubscribe from the list of recipients for update
-     * announcements for the application.
+     * notices for the application.
      *
      * @throws UpdateAgentException if sending the request is not possible
      *         for some reason.
