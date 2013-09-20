@@ -10,7 +10,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.maven.dto.*;
 import static net.java.trueupdate.util.Objects.requireNonNull;
-import static net.java.trueupdate.util.SystemProperties.resolve;
+import net.java.trueupdate.util.SystemProperties;
 import org.eclipse.aether.repository.*;
 
 /**
@@ -64,14 +64,19 @@ public final class MavenParameters {
             return this;
         }
 
-        private Builder<P> parse(final List<RemoteRepositoryDto> cis) {
+        private Builder<P> parse(final @CheckForNull List<RemoteRepositoryDto> cis) {
             remotes = new ArrayList<RemoteRepository>();
-            for (RemoteRepositoryDto ci : cis)
-                remotes.add(new RemoteRepository.Builder(
-                        resolve(ci.id),
-                        resolve(ci.type),
-                        resolve(ci.url)).build());
+            if (null != cis)
+                for (RemoteRepositoryDto ci : cis)
+                    remotes.add(new RemoteRepository.Builder(
+                            resolve(ci.id),
+                            resolve(ci.type),
+                            resolve(ci.url)).build());
             return this;
+        }
+
+        private static @Nullable String resolve(@CheckForNull String string) {
+            return null== string ? null : SystemProperties.resolve(string);
         }
 
         public Builder<P> localRepository(
