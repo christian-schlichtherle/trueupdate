@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 import javax.xml.bind.JAXBContext;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
-import net.java.trueupdate.server.maven.ci.UpdateServerCi;
+import net.java.trueupdate.server.maven.dto.UpdateServerParametersDto;
 
 /**
  * An artifact update server which uses a maven artifact resolver.
@@ -40,9 +40,9 @@ public final class MavenUpdateServer extends BasicUpdateServer {
         return UpdateServerParameters.builder().parse(configuration()).build();
     }
 
-    private static UpdateServerCi configuration() throws Exception {
-        return (UpdateServerCi) JAXBContext
-                .newInstance(UpdateServerCi.class)
+    private static UpdateServerParametersDto configuration() throws Exception {
+        return (UpdateServerParametersDto) JAXBContext
+                .newInstance(UpdateServerParametersDto.class)
                 .createUnmarshaller()
                 .unmarshal(Thread
                     .currentThread()

@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.maven.ci.*;
+import net.java.trueupdate.artifact.maven.dto.*;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import org.eclipse.aether.repository.*;
@@ -53,19 +53,20 @@ public final class MavenParameters {
 
         protected Builder() { }
 
-        public Builder<P> parse(MavenCi ci) {
+        /** Parses the given configuration item. */
+        public Builder<P> parse(MavenParametersDto ci) {
             return parse(ci.local).parse(ci.remotes);
         }
 
-        private Builder<P> parse(final LocalRepositoryCi ci) {
+        private Builder<P> parse(final LocalRepositoryDto ci) {
             local = new LocalRepository(new File(resolve(ci.basedir)),
                                                  resolve(ci.type));
             return this;
         }
 
-        private Builder<P> parse(final List<RemoteRepositoryCi> cis) {
+        private Builder<P> parse(final List<RemoteRepositoryDto> cis) {
             remotes = new ArrayList<RemoteRepository>();
-            for (RemoteRepositoryCi ci : cis)
+            for (RemoteRepositoryDto ci : cis)
                 remotes.add(new RemoteRepository.Builder(
                         resolve(ci.id),
                         resolve(ci.type),

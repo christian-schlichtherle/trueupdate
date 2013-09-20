@@ -10,6 +10,6 @@ package net.java.trueupdate.artifact.spec.ci;
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PublicField")
-public class ArtifactCi {
+public class ArtifactDescriptorDto {
     public String groupId, artifactId, version, classifier, extension;
 }

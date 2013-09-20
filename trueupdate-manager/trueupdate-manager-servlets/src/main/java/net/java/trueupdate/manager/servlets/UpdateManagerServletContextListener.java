@@ -8,7 +8,7 @@ import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import javax.xml.bind.*;
-import net.java.trueupdate.manager.servlets.ci.UpdateManagerCi;
+import net.java.trueupdate.manager.servlets.dto.UpdateManagerParametersDto;
 
 /**
  * Starts and stops the update manager.
@@ -60,9 +60,9 @@ implements ServletContextListener {
         return UpdateManagerParameters.builder().parse(configuration()).build();
     }
 
-    private static UpdateManagerCi configuration() throws Exception {
-        return (UpdateManagerCi) JAXBContext
-                .newInstance(UpdateManagerCi.class)
+    private static UpdateManagerParametersDto configuration() throws Exception {
+        return (UpdateManagerParametersDto) JAXBContext
+                .newInstance(UpdateManagerParametersDto.class)
                 .createUnmarshaller()
                 .unmarshal(Thread
                     .currentThread()

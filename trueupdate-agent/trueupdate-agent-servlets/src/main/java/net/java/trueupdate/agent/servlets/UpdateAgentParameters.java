@@ -5,7 +5,7 @@
 package net.java.trueupdate.agent.servlets;
 
 import javax.annotation.CheckForNull;
-import net.java.trueupdate.agent.servlets.ci.UpdateAgentCi;
+import net.java.trueupdate.agent.servlets.dto.UpdateAgentParametersDto;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.jms.MessagingParameters;
 import static net.java.trueupdate.util.Objects.requireNonNull;
@@ -43,8 +43,8 @@ final class UpdateAgentParameters {
         @CheckForNull ApplicationParameters applicationParameters;
         @CheckForNull MessagingParameters messagingParameters;
 
-        /** Parses the given configuration. */
-        Builder parse(final UpdateAgentCi ci) {
+        /** Parses the given configuration item. */
+        Builder parse(final UpdateAgentParametersDto ci) {
             applicationParameters = ApplicationParameters
                     .builder()
                     .parse(ci.application)

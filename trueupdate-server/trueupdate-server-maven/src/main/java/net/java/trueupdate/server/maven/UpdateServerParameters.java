@@ -6,10 +6,9 @@ package net.java.trueupdate.server.maven;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.maven.MavenParameters;
-import net.java.trueupdate.artifact.maven.MavenArtifactResolver;
+import net.java.trueupdate.artifact.maven.*;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.server.maven.ci.UpdateServerCi;
+import net.java.trueupdate.server.maven.dto.UpdateServerParametersDto;
 import static net.java.trueupdate.util.Objects.*;
 
 /**
@@ -37,8 +36,8 @@ final class UpdateServerParameters {
 
         @CheckForNull MavenArtifactResolver artifactResolver;
 
-        /** Parses the given configuration. */
-        Builder parse(final UpdateServerCi ci) {
+        /** Parses the given configuration item. */
+        Builder parse(final UpdateServerParametersDto ci) {
             artifactResolver = new MavenArtifactResolver(MavenParameters
                     .builder()
                     .parse(ci.repositories)

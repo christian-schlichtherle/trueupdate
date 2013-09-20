@@ -8,7 +8,7 @@ import java.net.URI;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.MessagingParameters;
-import net.java.trueupdate.manager.servlets.ci.UpdateManagerCi;
+import net.java.trueupdate.manager.servlets.dto.UpdateManagerParametersDto;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
@@ -55,19 +55,19 @@ final class UpdateManagerParameters {
         int checkUpdatesIntervalMinutes;
         @CheckForNull MessagingParameters messagingParameters;
 
-        /** Parses the given configuration. */
-        Builder parse(final UpdateManagerCi config) {
+        /** Parses the given configuration item. */
+        Builder parse(final UpdateManagerParametersDto ci) {
             updateServiceBaseUri = parseUri(
-                    config.updateServiceBaseUri,
+                    ci.updateServiceBaseUri,
                     updateServiceBaseUri);
             checkUpdatesIntervalMinutes = parseInt(
-                    config.checkUpdatesIntervalMinutes,
+                    ci.checkUpdatesIntervalMinutes,
                     checkUpdatesIntervalMinutes);
-            if (null != config.messaging)
+            if (null != ci.messaging)
                 messagingParameters = MessagingParameters
                         .builder()
-                        .parseNaming(config.naming)
-                        .parseMessaging(config.messaging)
+                        .parseNaming(ci.naming)
+                        .parseMessaging(ci.messaging)
                         .build();
             return this;
         }

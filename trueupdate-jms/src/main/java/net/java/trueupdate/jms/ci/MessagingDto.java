@@ -2,14 +2,14 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.artifact.maven.ci;
+package net.java.trueupdate.jms.ci;
 
 /**
- * Configures a remote repository.
+ * Addresses JMS administered objects by their JNDI name.
  *
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PublicField")
-public class RemoteRepositoryCi {
-    public String id, type, url;
+public class MessagingDto {
+    public String connectionFactory, from, to;
 }

@@ -8,8 +8,8 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import javax.naming.*;
-import net.java.trueupdate.jms.ci.MessagingCi;
-import net.java.trueupdate.jms.ci.NamingCi;
+import net.java.trueupdate.jms.ci.MessagingDto;
+import net.java.trueupdate.jms.ci.NamingDto;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
@@ -117,7 +117,7 @@ public final class MessagingParameters {
         /**
          * Parses the given nullable configuration for the naming context.
          */
-        public Builder<P> parseNaming(final @CheckForNull NamingCi ci) {
+        public Builder<P> parseNaming(final @CheckForNull NamingDto ci) {
             if (null != ci) {
                 try {
                     namingContext = (Context) (
@@ -141,9 +141,9 @@ public final class MessagingParameters {
          * configured.
          *
          * @see #namingContext(Context)
-         * @see #parseNaming(NamingCi)
+         * @see #parseNaming(NamingDto)
          */
-        public Builder<P> parseMessaging(final MessagingCi ci) {
+        public Builder<P> parseMessaging(final MessagingDto ci) {
             connectionFactory = resolve(ci.connectionFactory, connectionFactory);
             from = resolve(ci.from, from);
             to = resolve(ci.to, to);

@@ -2,10 +2,10 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.server.maven.ci;
+package net.java.trueupdate.server.maven.dto;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import net.java.trueupdate.artifact.maven.ci.MavenCi;
+import net.java.trueupdate.artifact.maven.dto.MavenParametersDto;
 
 /**
  * Configures an update server.
@@ -14,6 +14,6 @@ import net.java.trueupdate.artifact.maven.ci.MavenCi;
  */
 @XmlRootElement(name = "server")
 @SuppressWarnings("PublicField")
-public class UpdateServerCi {
-    public MavenCi repositories;
+public class UpdateServerParametersDto {
+    public MavenParametersDto repositories;
 }

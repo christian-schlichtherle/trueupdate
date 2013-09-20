@@ -7,7 +7,7 @@ package net.java.trueupdate.agent.servlets;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import javax.xml.bind.JAXBContext;
-import net.java.trueupdate.agent.servlets.ci.UpdateAgentCi;
+import net.java.trueupdate.agent.servlets.dto.UpdateAgentParametersDto;
 import net.java.trueupdate.agent.spec.UpdateAgent;
 import net.java.trueupdate.agent.spec.UpdateAgentException;
 
@@ -57,9 +57,9 @@ implements ServletContextListener {
         return UpdateAgentParameters.builder().parse(configuration()).build();
     }
 
-    private static UpdateAgentCi configuration() throws Exception {
-        return (UpdateAgentCi) JAXBContext
-                .newInstance(UpdateAgentCi.class)
+    private static UpdateAgentParametersDto configuration() throws Exception {
+        return (UpdateAgentParametersDto) JAXBContext
+                .newInstance(UpdateAgentParametersDto.class)
                 .createUnmarshaller()
                 .unmarshal(Thread
                     .currentThread()

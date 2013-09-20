@@ -6,7 +6,7 @@ package net.java.trueupdate.agent.spec;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.agent.spec.ci.ApplicationCi;
+import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
 import net.java.trueupdate.manager.spec.ApplicationDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.nonEmptyOr;
@@ -63,7 +63,8 @@ public final class ApplicationParameters {
 
         protected Builder() { }
 
-        public Builder<P> parse(final ApplicationCi ci) {
+        /** Parses the given configuration item. */
+        public Builder<P> parse(final ApplicationParametersDto ci) {
             applicationListener = listener(ci.listenerClass);
             applicationDescriptor = ApplicationDescriptor
                     .builder()
