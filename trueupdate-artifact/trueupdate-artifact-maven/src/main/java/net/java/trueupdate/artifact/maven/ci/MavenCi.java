@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PublicField")
-public class AetherCi {
+public class MavenCi {
     public LocalRepositoryCi local;
     public @XmlElement(name = "remote") List<RemoteRepositoryCi> remotes;
 }

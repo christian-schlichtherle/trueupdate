@@ -5,7 +5,7 @@
 package net.java.trueupdate.server.maven.ci;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import net.java.trueupdate.artifact.maven.ci.AetherCi;
+import net.java.trueupdate.artifact.maven.ci.MavenCi;
 
 /**
  * Configures an update server.
@@ -15,5 +15,5 @@ import net.java.trueupdate.artifact.maven.ci.AetherCi;
 @XmlRootElement(name = "server")
 @SuppressWarnings("PublicField")
 public class UpdateServerCi {
-    public AetherCi repositories;
+    public MavenCi repositories;
 }

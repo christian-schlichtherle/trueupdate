@@ -19,12 +19,12 @@ import org.eclipse.aether.repository.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class AetherParameters {
+public final class MavenParameters {
 
     private final LocalRepository local;
     private final List<RemoteRepository> remotes;
 
-    AetherParameters(final Builder<?> b) {
+    MavenParameters(final Builder<?> b) {
         this.local = requireNonNull(b.local);
         this.remotes = Collections.unmodifiableList(
                 new ArrayList<RemoteRepository>(b.remotes));
@@ -53,7 +53,7 @@ public final class AetherParameters {
 
         protected Builder() { }
 
-        public Builder<P> parse(AetherCi ci) {
+        public Builder<P> parse(MavenCi ci) {
             return parse(ci.local).parse(ci.remotes);
         }
 
@@ -92,7 +92,7 @@ public final class AetherParameters {
             return this;
         }
 
-        public AetherParameters build() { return new AetherParameters(this); }
+        public MavenParameters build() { return new MavenParameters(this); }
 
         /**
          * Injects the product of this builder into the parent builder, if

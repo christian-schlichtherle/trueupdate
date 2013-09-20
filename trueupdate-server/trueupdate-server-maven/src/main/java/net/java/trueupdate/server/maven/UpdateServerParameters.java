@@ -6,7 +6,7 @@ package net.java.trueupdate.server.maven;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.maven.AetherParameters;
+import net.java.trueupdate.artifact.maven.MavenParameters;
 import net.java.trueupdate.artifact.maven.MavenArtifactResolver;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.server.maven.ci.UpdateServerCi;
@@ -39,7 +39,7 @@ final class UpdateServerParameters {
 
         /** Parses the given configuration. */
         Builder parse(final UpdateServerCi ci) {
-            artifactResolver = new MavenArtifactResolver(AetherParameters
+            artifactResolver = new MavenArtifactResolver(MavenParameters
                     .builder()
                     .parse(ci.repositories)
                     .build());
