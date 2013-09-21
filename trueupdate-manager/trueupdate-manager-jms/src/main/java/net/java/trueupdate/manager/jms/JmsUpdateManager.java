@@ -9,7 +9,6 @@ import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
 import javax.naming.Context;
-import javax.naming.NamingException;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.*;
@@ -25,22 +24,22 @@ import net.java.trueupdate.manager.spec.*;
 @ThreadSafe
 final class JmsUpdateManager extends BasicUpdateManager {
 
-    private final ConnectionFactory connectionFactory;
-    private final Context namingContext;
     private final UpdateClient updateClient;
     private final UpdateInstaller updateInstaller;
+    private final ConnectionFactory connectionFactory;
+    private final Context namingContext;
 
     private volatile @WillCloseWhenClosed Connection connection;
 
     JmsUpdateManager(final JmsUpdateManagerParameters parameters) {
         this.updateClient = new UpdateClient(parameters.updateServiceBaseUri());
-        final MessagingParameters mp = parameters.messagingParameters();
-        this.connectionFactory = mp.connectionFactory();
-        this.namingContext = mp.namingContext();
         this.updateInstaller = ServiceLoader.load(
                 UpdateInstaller.class,
                 Thread.currentThread().getContextClassLoader()
                 ).iterator().next();
+        final MessagingParameters mp = parameters.messagingParameters();
+        this.connectionFactory = mp.connectionFactory();
+        this.namingContext = mp.namingContext();
     }
 
     @Override protected UpdateClient updateClient() { return updateClient; }
@@ -49,15 +48,8 @@ final class JmsUpdateManager extends BasicUpdateManager {
         return updateInstaller;
     }
 
-    @Override
-    protected void send(UpdateMessage message) throws UpdateManagerException {
-        try {
-            JmsMessageSender.create(namingContext, connection()).send(message);
-        } catch (NamingException ex) {
-            throw new UpdateManagerException(ex);
-        } catch (JMSException ex) {
-            throw new UpdateManagerException(ex);
-        }
+    @Override protected void send(UpdateMessage message) throws Exception {
+        JmsMessageSender.create(namingContext, connection()).send(message);
     }
 
     private Connection connection() throws JMSException {
@@ -75,16 +67,15 @@ final class JmsUpdateManager extends BasicUpdateManager {
         super.onUpdateMessage(message);
     }
 
-    @Override public synchronized void checkUpdates()
-    throws UpdateManagerException {
+    @Override
+    public synchronized void checkUpdates() throws UpdateManagerException {
         super.checkUpdates();
     }
 
-    @Override public synchronized void close()
-    throws UpdateManagerException {
+    @Override public synchronized void close() throws UpdateManagerException {
         // HC SVNT DRACONIS!
         super.close();
-        try {
+        if (null != connection) try {
             connection.close();
         } catch (JMSException ex) {
             throw new UpdateManagerException(ex);

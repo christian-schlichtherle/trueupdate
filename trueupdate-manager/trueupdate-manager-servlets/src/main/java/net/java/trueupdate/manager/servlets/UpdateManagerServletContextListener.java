@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.manager.servlets;
 
-import net.java.trueupdate.manager.jms.JmsUpdateManagerContext;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import net.java.trueupdate.manager.core.UpdateManagerException;
+import net.java.trueupdate.manager.jms.JmsUpdateManagerContext;
 
 /**
  * Starts and stops the update manager.
@@ -26,7 +26,7 @@ implements ServletContextListener {
 
     @Override public void contextInitialized(final ServletContextEvent sce) {
         if (null != context) return;
-        context = JmsUpdateManagerContext.load();
+        context = new JmsUpdateManagerContext();
         try {
             context.start();
         } catch (UpdateManagerException ex) {

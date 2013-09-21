@@ -4,8 +4,11 @@
  */
 package net.java.trueupdate.agent.jms;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import java.net.URL;
+import java.util.ServiceConfigurationError;
+import javax.annotation.*;
+import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.JAXB;
 import net.java.trueupdate.agent.jms.dto.JmsUpdateAgentParametersDto;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.jms.MessagingParameters;
@@ -16,7 +19,10 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  *
  * @author Christian Schlichtherle
  */
+@Immutable
 public final class JmsUpdateAgentParameters {
+
+    private static final String CONFIGURATION = "META-INF/update/agent.xml";
 
     private final ApplicationParameters applicationParameters;
     private final MessagingParameters messagingParameters;
@@ -24,6 +30,24 @@ public final class JmsUpdateAgentParameters {
     JmsUpdateAgentParameters(final Builder b) {
         this.applicationParameters = requireNonNull(b.applicationParameters);
         this.messagingParameters = requireNonNull(b.messagingParameters);
+    }
+
+    /**
+     * Loads JMS Update Agent Parameters from the configuration resource
+     * file with the name {@code META-INF/update/agent.xml}.
+     */
+    public static JmsUpdateAgentParameters load() {
+        return load(net.java.trueupdate.util.Resources.locate(CONFIGURATION));
+    }
+
+    static JmsUpdateAgentParameters load(final URL source) {
+        try {
+            return parse(JAXB.unmarshal(source, JmsUpdateAgentParametersDto.class));
+        } catch (Exception ex) {
+            throw new ServiceConfigurationError(String.format(
+                    "Failed to load configuration from %s .", source),
+                    ex);
+        }
     }
 
     /** Parses the given configuration item. */

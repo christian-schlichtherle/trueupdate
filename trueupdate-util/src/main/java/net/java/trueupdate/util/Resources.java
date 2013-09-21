@@ -4,8 +4,9 @@
  */
 package net.java.trueupdate.util;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.*;
+import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -16,12 +17,21 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class Resources {
 
-    public static URL locate(final String name) throws FileNotFoundException {
-        final URL url = Thread.currentThread().getContextClassLoader()
-                .getResource(name);
-        if (null == url)
-            throw new FileNotFoundException(String.format(
-                    "Cannot locate resource %s on the class path.", name));
+    public static URL locate(final String name) throws ServiceConfigurationError {
+        final Enumeration<URL> en;
+        final URL url;
+        try {
+            en = Thread.currentThread()
+                    .getContextClassLoader().getResources(name);
+            url = en.nextElement();
+        } catch (Exception ex) {
+            throw new ServiceConfigurationError(String.format(
+                    "Cannot locate resource %s on the class path.", name), ex);
+        }
+        if (en.hasMoreElements())
+            Logger.getLogger(Resources.class.getName()).log(Level.WARNING,
+                    "There is more than one resource with the name {0} on the class path. Selecting {1} .",
+                    new Object[] { name, url });
         return url;
     }
 

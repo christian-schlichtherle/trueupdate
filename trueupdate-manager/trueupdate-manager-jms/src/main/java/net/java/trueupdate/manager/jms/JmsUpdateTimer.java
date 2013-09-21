@@ -23,16 +23,11 @@ final class JmsUpdateTimer implements Runnable {
     private boolean closed;
 
     JmsUpdateTimer(
-            final UpdateManager updateManager,
-            final int checkUpdatesIntervalMinutes) {
+            final JmsUpdateManagerParameters parameters,
+            final UpdateManager updateManager) {
+        checkUpdatesIntervalMinutes = parameters.checkUpdatesIntervalMinutes();
         assert null != updateManager;
         this.updateManager = updateManager;
-        this.checkUpdatesIntervalMinutes = requirePositive(checkUpdatesIntervalMinutes);
-    }
-
-    private static int requirePositive(int n) {
-        if (0 >= n) throw new IllegalArgumentException();
-        return n;
     }
 
     @Override public void run() {

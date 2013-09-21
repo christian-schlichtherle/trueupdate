@@ -7,6 +7,7 @@ package net.java.trueupdate.manager.core;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import javax.annotation.concurrent.ThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
@@ -18,6 +19,7 @@ import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_N
  *
  * @author Christian Schlichtherle
  */
+@ThreadSafe
 public abstract class BasicUpdateManager
 extends UpdateMessageListener implements UpdateManager {
 
@@ -155,13 +157,23 @@ extends UpdateMessageListener implements UpdateManager {
 
     private void sendAndLog(final UpdateMessage message)
     throws UpdateManagerException {
-        send(message);
+        sendChecked(message);
         logSent(message);
     }
 
+    private void sendChecked(UpdateMessage message)
+    throws UpdateManagerException {
+        try {
+            send(message);
+        } catch (UpdateManagerException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new UpdateManagerException(ex);
+        }
+    }
+
     /** Sends the given update message. */
-    protected abstract void send(UpdateMessage message)
-    throws UpdateManagerException;
+    protected abstract void send(UpdateMessage message) throws Exception;
 
     private static void logReceived(UpdateMessage message) {
         logger.log(Level.FINE,
@@ -189,7 +201,7 @@ extends UpdateMessageListener implements UpdateManager {
     private void persistSubscriptions() throws UpdateManagerException {
         for (final Iterator<UpdateMessage> it = subscriptions.values().iterator();
                 it.hasNext(); ) {
-            send(it.next().type(SUBSCRIPTION_NOTICE));
+            sendChecked(it.next().type(SUBSCRIPTION_NOTICE));
             it.remove();
         }
     }

@@ -5,63 +5,42 @@
 package net.java.trueupdate.manager.jms;
 
 import java.net.URI;
-import java.net.URL;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.JAXB;
 import net.java.trueupdate.jms.*;
-import net.java.trueupdate.manager.jms.JmsUpdateManagerParameters;
-import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
-import net.java.trueupdate.manager.spec.UpdateInstaller;
 import net.java.trueupdate.manager.core.UpdateManagerException;
-import static net.java.trueupdate.util.Resources.locate;
+import net.java.trueupdate.manager.spec.UpdateInstaller;
 
 /**
- * Provides the objects required for this package.
+ * A context for the JMS Update Manager.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
 public final class JmsUpdateManagerContext {
 
-    private static final String CONFIGURATION = "META-INF/update/manager.xml";
-
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
     private final JmsUpdateTimer timer;
     private final JmsMessageReceiver receiver;
 
-    public static JmsUpdateManagerContext load() { return load(CONFIGURATION); }
-
-    static JmsUpdateManagerContext load(final String resourceName) {
-        try {
-            return new JmsUpdateManagerContext(parameters(locate(resourceName)));
-        } catch (Exception ex) {
-            throw new java.lang.IllegalStateException(String.format(
-                    "Failed to load configuration from %s .", resourceName),
-                    ex);
-        }
+    public JmsUpdateManagerContext() {
+        this(JmsUpdateManagerParameters.load());
     }
 
-    private static JmsUpdateManagerParameters parameters(final URL source)
-    throws Exception {
-        return JmsUpdateManagerParameters.parse(
-                JAXB.unmarshal(source, JmsUpdateManagerParametersDto.class));
-    }
-
-    public JmsUpdateManagerContext(final JmsUpdateManagerParameters ump) {
+    public JmsUpdateManagerContext(final JmsUpdateManagerParameters parameters) {
         // HC SVNT DRACONIS
-        this.parameters = ump;
-        final MessagingParameters mp = ump.messagingParameters();
-        manager = new JmsUpdateManager(ump);
-        timer = new JmsUpdateTimer(manager, ump.checkUpdatesIntervalMinutes());
+        this.parameters = parameters;
+        manager = new JmsUpdateManager(parameters);
+        final MessagingParameters mp = parameters.messagingParameters();
         receiver = JmsMessageReceiver
                 .builder()
                 .connectionFactory(mp.connectionFactory())
                 .destination(mp.fromDestination())
                 .subscriptionName(mp.fromName())
                 .messageSelector("manager = true")
-                .messageListener(manager)
+                .updateMessageListener(manager)
                 .build();
+        timer = new JmsUpdateTimer(parameters, manager);
     }
 
     public URI updateServiceBaseUri() {
@@ -77,30 +56,30 @@ public final class JmsUpdateManagerContext {
     }
 
     public void start() throws UpdateManagerException {
-        timer().start();
-        receiver().start();
-    }
-
-    private Thread timer() {
-        return new Thread(timer, "TrueUpdate Manager Mini / Timer Daemon") {
-            { super.setDaemon(true); }
-        };
-    }
-
-    private Thread receiver() {
-        return new Thread(receiver, "TrueUpdate Manager Mini / Receiver Daemon") {
-            { super.setDaemon(true); }
-        };
+        receiverThread().start();
+        timerThread().start();
     }
 
     public void stop() throws UpdateManagerException {
+        // HC SUNT DRACONIS!
         try {
-            // HC SUNT DRACONIS!
-            receiver.stop();
             timer.stop();
-            manager.close();
+            receiver.stop();
         } catch (Exception ex) {
             throw new UpdateManagerException(ex);
         }
+        manager.close();
+    }
+
+    private Thread timerThread() {
+        return new Thread(timer, "TrueUpdate Manager / Timer Daemon") {
+            { super.setDaemon(true); }
+        };
+    }
+
+    private Thread receiverThread() {
+        return new Thread(receiver, "TrueUpdate Manager / Receiver Daemon") {
+            { super.setDaemon(true); }
+        };
     }
 }

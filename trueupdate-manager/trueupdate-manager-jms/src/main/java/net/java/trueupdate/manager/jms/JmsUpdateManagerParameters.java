@@ -4,9 +4,11 @@
  */
 package net.java.trueupdate.manager.jms;
 
-import java.net.URI;
+import java.net.*;
+import java.util.ServiceConfigurationError;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.JAXB;
 import net.java.trueupdate.jms.MessagingParameters;
 import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
 import static net.java.trueupdate.util.Objects.requireNonNull;
@@ -19,6 +21,8 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
  */
 @Immutable
 public final class JmsUpdateManagerParameters {
+
+    private static final String CONFIGURATION = "META-INF/update/manager.xml";
 
     private final URI updateServiceBaseUri;
     private final int checkUpdatesIntervalMinutes;
@@ -33,6 +37,24 @@ public final class JmsUpdateManagerParameters {
     private static int requirePositive(final int i) {
         if (0 >= i) throw new IllegalArgumentException();
         return i;
+    }
+
+    /**
+     * Loads JMS Update Manager Parameters from the configuration resource
+     * file with the name {@code META-INF/update/manager.xml}.
+     */
+    public static JmsUpdateManagerParameters load() {
+        return load(net.java.trueupdate.util.Resources.locate(CONFIGURATION));
+    }
+
+    static JmsUpdateManagerParameters load(final URL source) {
+        try {
+            return parse(JAXB.unmarshal(source, JmsUpdateManagerParametersDto.class));
+        } catch (Exception ex) {
+            throw new ServiceConfigurationError(String.format(
+                    "Failed to load configuration from %s .", source),
+                    ex);
+        }
     }
 
     /** Parses the given configuration item. */

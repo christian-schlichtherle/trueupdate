@@ -4,30 +4,52 @@
  */
 package net.java.trueupdate.server.maven;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import java.net.URL;
+import java.util.ServiceConfigurationError;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.JAXB;
 import net.java.trueupdate.artifact.maven.*;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.server.maven.dto.UpdateServerParametersDto;
+import net.java.trueupdate.server.maven.dto.MavenUpdateServerParametersDto;
 import static net.java.trueupdate.util.Objects.*;
 
 /**
- * Update Server parameters.
+ * Maven Update Server Parameters.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
-final class UpdateServerParameters {
+public final class MavenUpdateServerParameters {
+
+    private static final String CONFIGURATION = "META-INF/update/server.xml";
 
     private final ArtifactResolver artifactResolver;
 
-    UpdateServerParameters(final Builder b) {
+    MavenUpdateServerParameters(final Builder b) {
         this.artifactResolver = requireNonNull(b.artifactResolver);
     }
 
+    /**
+     * Loads Maevn Update Server Parameters from the configuration resource
+     * file with the name {@code META-INF/update/server.xml}.
+     */
+    public static MavenUpdateServerParameters load() {
+        return load(net.java.trueupdate.util.Resources.locate(CONFIGURATION));
+    }
+
+    static MavenUpdateServerParameters load(final URL source) {
+        try {
+            return parse(JAXB.unmarshal(source, MavenUpdateServerParametersDto.class));
+        } catch (Exception ex) {
+            throw new ServiceConfigurationError(String.format(
+                    "Failed to load configuration from %s .", source),
+                    ex);
+        }
+    }
+
     /** Parses the given configuration item. */
-    public static UpdateServerParameters parse(UpdateServerParametersDto ci) {
+    public static MavenUpdateServerParameters parse(MavenUpdateServerParametersDto ci) {
         return builder().parse(ci).build();
     }
 
@@ -43,7 +65,7 @@ final class UpdateServerParameters {
         @CheckForNull ArtifactResolver artifactResolver;
 
         /** Selectively parses the given configuration item. */
-        public Builder parse(final UpdateServerParametersDto ci) {
+        public Builder parse(final MavenUpdateServerParametersDto ci) {
             if (null != ci.repositories)
                 artifactResolver = new MavenArtifactResolver(MavenParameters
                         .parse(ci.repositories));
@@ -56,8 +78,8 @@ final class UpdateServerParameters {
             return this;
         }
 
-        public UpdateServerParameters build() {
-            return new UpdateServerParameters(this);
+        public MavenUpdateServerParameters build() {
+            return new MavenUpdateServerParameters(this);
         }
     } // Builder
 }

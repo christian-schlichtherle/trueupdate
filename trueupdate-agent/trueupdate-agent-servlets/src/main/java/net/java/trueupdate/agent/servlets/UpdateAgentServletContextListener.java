@@ -18,13 +18,13 @@ import net.java.trueupdate.agent.spec.*;
 public final class UpdateAgentServletContextListener
 implements ServletContextListener {
 
-    private UpdateAgent agent;
+    private JmsUpdateAgentContext context;
 
     @Override public void contextInitialized(ServletContextEvent sce) {
-        if (null != agent) return;
-        agent = JmsUpdateAgent.load();
+        if (null != context) return;
+        context = new JmsUpdateAgentContext();
         try {
-            agent.subscribe();
+            context.start();
         } catch (UpdateAgentException ex) {
             throw new IllegalStateException(
                     "Failed to start the update agent.", ex);
@@ -32,9 +32,9 @@ implements ServletContextListener {
     }
 
     @Override public void contextDestroyed(ServletContextEvent sce) {
-        if (null == agent) return;
+        if (null == context) return;
         try {
-            agent.unsubscribe();
+            context.stop();
         } catch (UpdateAgentException ex) {
             throw new IllegalStateException(
                     "Failed to stop the update agent.", ex);
