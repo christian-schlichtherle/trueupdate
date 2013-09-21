@@ -6,8 +6,7 @@ package net.java.trueupdate.agent.jms;
 
 import javax.annotation.concurrent.Immutable;
 import javax.jms.JMSException;
-import net.java.trueupdate.jms.JmsMessageReceiver;
-import net.java.trueupdate.jms.MessagingParameters;
+import net.java.trueupdate.jms.*;
 
 /**
  * A context for the JMS Update Agent.

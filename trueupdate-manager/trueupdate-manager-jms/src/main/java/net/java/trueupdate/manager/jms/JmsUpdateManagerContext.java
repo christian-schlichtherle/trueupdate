@@ -4,10 +4,10 @@
  */
 package net.java.trueupdate.manager.jms;
 
-import net.java.trueupdate.manager.core.UpdateTimer;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
+import net.java.trueupdate.manager.core.UpdateTimer;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 
 /**
