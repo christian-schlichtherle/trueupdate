@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.jms;
 
-import java.io.Serializable;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
@@ -42,14 +41,13 @@ public abstract class JmsMessageListener implements MessageListener {
     @Override public final void onMessage(final Message message) {
         logger.log(Level.FINEST, "Received JMS message: {0}", message);
         try {
-            if (message instanceof ObjectMessage) {
-                final Serializable body = ((ObjectMessage) message).getObject();
-                if (body instanceof UpdateMessage)
-                    updateMessageListener().onUpdateMessage((UpdateMessage) body);
+            final String contentType = message.getStringProperty("Content-type");
+            if (null != contentType && contentType.startsWith("application/xml;")) {
+                final String body = ((TextMessage) message).getText();
+                updateMessageListener().onUpdateMessage(JAXB.decode(body));
+            } else {
+                logger.log(Level.WARNING, "Unsupported Content-type property in JMS message: {0}", contentType);
             }
-        } catch (RuntimeException ex) {
-            logger.log(Level.WARNING, "Could not process JMS message:", ex);
-            throw ex;
         } catch (final Exception ex) {
             logger.log(Level.WARNING, "Could not process JMS message:", ex);
             onException(ex);

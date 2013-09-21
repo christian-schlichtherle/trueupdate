@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.artifact.spec.*;
 import static net.java.trueupdate.util.Objects.*;
 
@@ -20,6 +21,7 @@ import static net.java.trueupdate.util.Objects.*;
  * @author Christian Schlichtherle
  */
 @Immutable
+@XmlJavaTypeAdapter(UpdateMessageAdapter.class)
 public final class UpdateMessage implements Serializable {
 
     private static final long serialVersionUID = 0L;

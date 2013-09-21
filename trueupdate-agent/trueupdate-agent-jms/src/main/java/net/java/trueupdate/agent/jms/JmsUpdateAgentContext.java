@@ -31,7 +31,7 @@ public final class JmsUpdateAgentContext {
                 .connectionFactory(mp.connectionFactory())
                 .destination(mp.fromDestination())
                 .subscriptionName(mp.fromName())
-                .messageSelector("manager = false")
+                .messageSelector("Manager = false")
                 .updateMessageListener(agent)
                 .build();
     }

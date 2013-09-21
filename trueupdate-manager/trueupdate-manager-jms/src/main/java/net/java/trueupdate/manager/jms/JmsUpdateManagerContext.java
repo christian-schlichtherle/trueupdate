@@ -37,7 +37,7 @@ public final class JmsUpdateManagerContext {
                 .connectionFactory(mp.connectionFactory())
                 .destination(mp.fromDestination())
                 .subscriptionName(mp.fromName())
-                .messageSelector("manager = true")
+                .messageSelector("Manager = true")
                 .updateMessageListener(manager)
                 .build();
         timer = new UpdateTimer(manager,

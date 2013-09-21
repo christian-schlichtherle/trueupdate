@@ -38,8 +38,7 @@ public abstract class JmsMessageSender {
         requireNonNull(connectionFactory);
         return new JmsMessageSender() {
             @Override
-            public void send(UpdateMessage message)
-            throws NamingException, JMSException {
+            public void send(UpdateMessage message) throws Exception {
                 send(message, destination(message, namingContext), connectionFactory);
             }
         };
@@ -59,8 +58,7 @@ public abstract class JmsMessageSender {
         requireNonNull(connection);
         return new JmsMessageSender() {
             @Override
-            public void send(UpdateMessage message)
-            throws NamingException, JMSException {
+            public void send(UpdateMessage message) throws Exception {
                 send(message, destination(message, namingContext), connection);
             }
         };
@@ -75,7 +73,7 @@ public abstract class JmsMessageSender {
             final UpdateMessage message,
             final Destination destination,
             final ConnectionFactory connectionFactory)
-    throws JMSException {
+    throws Exception {
         final Connection connection = connectionFactory.createConnection();
         try {
             send(message, destination, connection);
@@ -88,11 +86,12 @@ public abstract class JmsMessageSender {
             final UpdateMessage message,
             final Destination destination,
             final @WillNotClose Connection connection)
-    throws JMSException {
+    throws Exception {
         final Session s = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         try {
-            final Message m = s.createObjectMessage(message);
-            m.setBooleanProperty("manager", message.type().forManager());
+            final Message m = s.createTextMessage(JAXB.encode(message));
+            m.setStringProperty("Content-type", "application/xml; charset=utf-8");
+            m.setBooleanProperty("Manager", message.type().forManager());
             s.createProducer(destination).send(m);
             logger.log(Level.FINEST, "Transmitted JMS message {0} to {1} .",
                     new Object[] { m, destination });
@@ -105,6 +104,5 @@ public abstract class JmsMessageSender {
     }
 
     /** Transmits the given update message. */
-    public abstract void send(UpdateMessage message)
-    throws NamingException, JMSException;
+    public abstract void send(UpdateMessage message) throws Exception;
 }
