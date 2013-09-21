@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.core.zip.model;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.*;
@@ -13,7 +15,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import net.java.trueupdate.core.codec.JaxbCodec;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.util.HashMaps;
 import net.java.trueupdate.util.Objects;
@@ -202,8 +203,16 @@ public final class DiffModel implements Serializable {
      * @throws Exception at the discretion of the JAXB codec, e.g. if the
      *         sink isn't writable.
      */
-    public void encodeToXml(Sink sink) throws Exception {
-        new JaxbCodec(jaxbContext()).encode(sink, this);
+    public void encodeToXml(final Sink sink) throws Exception {
+
+        class EncodeTask implements OutputTask<Void, JAXBException> {
+            @Override public Void execute(OutputStream out) throws JAXBException {
+                jaxbContext().createMarshaller().marshal(DiffModel.this, out);
+                return null;
+            }
+        } // EncodeTask
+
+        Sinks.execute(new EncodeTask()).on(sink);
     }
 
     /**
@@ -215,7 +224,14 @@ public final class DiffModel implements Serializable {
      *         source isn't readable.
      */
     public static DiffModel decodeFromXml(Source source) throws Exception {
-        return new JaxbCodec(jaxbContext()).decode(source, DiffModel.class);
+
+        class DecodeTask implements InputTask<DiffModel, JAXBException> {
+            @Override public DiffModel execute(InputStream in) throws JAXBException {
+                return (DiffModel) jaxbContext().createUnmarshaller().unmarshal(in);
+            }
+        } // DecodeTask
+
+        return Sources.execute(new DecodeTask()).on(source);
     }
 
     /** Returns a JAXB context which binds only this class. */
