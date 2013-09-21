@@ -26,9 +26,9 @@ extends XmlAdapter<EntryNameAndDigestCollectionDto,
             final @CheckForNull Map<String, EntryNameAndDigest> map) {
         if (null == map || map.isEmpty()) return null;
         final EntryNameAndDigestCollectionDto
-                holder = new EntryNameAndDigestCollectionDto();
-        holder.entries = map.values();
-        return holder;
+                dto = new EntryNameAndDigestCollectionDto();
+        dto.entries = map.values();
+        return dto;
     }
 }
 
@@ -51,9 +51,9 @@ extends XmlAdapter<EntryNameAndTwoDigestsCollectionDto,
             final @CheckForNull Map<String, EntryNameAndTwoDigests> map) {
         if (null == map || map.isEmpty()) return null;
         final EntryNameAndTwoDigestsCollectionDto
-                holder = new EntryNameAndTwoDigestsCollectionDto();
-        holder.entries = map.values();
-        return holder;
+                dto = new EntryNameAndTwoDigestsCollectionDto();
+        dto.entries = map.values();
+        return dto;
     }
 }
 
