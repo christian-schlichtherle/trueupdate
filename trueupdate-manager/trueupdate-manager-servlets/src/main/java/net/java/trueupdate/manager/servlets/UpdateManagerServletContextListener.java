@@ -8,6 +8,9 @@ import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import javax.xml.bind.*;
+import net.java.trueupdate.core.codec.JaxbCodec;
+import net.java.trueupdate.core.io.Source;
+import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.manager.servlets.dto.UpdateManagerParametersDto;
 
 /**
@@ -61,12 +64,17 @@ implements ServletContextListener {
     }
 
     private static UpdateManagerParametersDto configuration() throws Exception {
-        return (UpdateManagerParametersDto) JAXBContext
-                .newInstance(UpdateManagerParametersDto.class)
-                .createUnmarshaller()
-                .unmarshal(Thread
-                    .currentThread()
-                    .getContextClassLoader()
-                    .getResource(CONFIGURATION));
+        return jaxbCodec().decode(configurationSource(),
+                UpdateManagerParametersDto.class);
+    }
+
+    private static JaxbCodec jaxbCodec() throws JAXBException {
+        return new JaxbCodec(JAXBContext.
+                newInstance(UpdateManagerParametersDto.class));
+    }
+
+    private static Source configurationSource() {
+        return Sources.forResource(CONFIGURATION,
+                Thread.currentThread().getContextClassLoader());
     }
 }

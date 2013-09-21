@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
+import java.io.InputStream
 
 /**
  * @author Christian Schlichtherle
@@ -28,8 +29,11 @@ class MessageDigestsIT extends WordSpec {
       forAll(table) { (referenceValue, resourceName) =>
         import MessageDigests._
         val digest = sha1
-        updateDigestFrom(digest,
-          Sources.forResource(resourceName, classOf[MessageDigestsIT]))
+        val source = new Source {
+          def input() = classOf[MessageDigestsIT]
+            .getResourceAsStream(resourceName)
+        }
+        updateDigestFrom(digest, source)
         valueOf(digest) should equal (referenceValue)
       }
     }

@@ -7,7 +7,11 @@ package net.java.trueupdate.server.maven;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.Path;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
+import net.java.trueupdate.core.codec.JaxbCodec;
+import net.java.trueupdate.core.io.Source;
+import net.java.trueupdate.core.io.Sources;
 import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
 import net.java.trueupdate.server.maven.dto.UpdateServerParametersDto;
 
@@ -41,13 +45,18 @@ public final class MavenUpdateServer extends BasicUpdateServer {
     }
 
     private static UpdateServerParametersDto configuration() throws Exception {
-        return (UpdateServerParametersDto) JAXBContext
-                .newInstance(UpdateServerParametersDto.class)
-                .createUnmarshaller()
-                .unmarshal(Thread
-                    .currentThread()
-                    .getContextClassLoader()
-                    .getResource(CONFIGURATION));
+        return jaxbCodec().decode(configurationSource(),
+                UpdateServerParametersDto.class);
+    }
+
+    private static JaxbCodec jaxbCodec() throws JAXBException {
+        return new JaxbCodec(JAXBContext.
+                newInstance(UpdateServerParametersDto.class));
+    }
+
+    private static Source configurationSource() {
+        return Sources.forResource(CONFIGURATION,
+                Thread.currentThread().getContextClassLoader());
     }
 
     @Override

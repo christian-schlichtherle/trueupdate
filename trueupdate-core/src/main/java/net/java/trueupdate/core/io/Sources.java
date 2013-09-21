@@ -6,9 +6,9 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
-import java.net.URL;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.util.Objects;
 
 /**
  * Provides functions for {@link Source}s.
@@ -17,38 +17,6 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public class Sources {
-
-    /**
-     * Returns a source which loads the entity of the given {@code url}.
-     *
-     * @param  url the URL.
-     * @return A source which loads the entity of the given {@code url}.
-     */
-    public static Source forUrl(final URL url) {
-        return new Source() {
-            @Override public InputStream input() throws IOException {
-                return url.openStream();
-            }
-        };
-    }
-
-    /**
-     * Returns a source which loads the resource with the given {@code name}.
-     * This method will use the given class to resolve the resource name and
-     * the class loader as described in
-     * {@link Class#getResourceAsStream(String)}.
-     *
-     * @param  name the name of the resource to load.
-     * @param  clazz the class to use for loading the resource.
-     * @return A source which loads the resource with the given {@code name}.
-     */
-    public static Source forResource(final String name, final Class<?> clazz) {
-        return new Source() {
-            @Override public InputStream input() throws IOException {
-                return check(clazz.getResourceAsStream(name), name);
-            }
-        };
-    }
 
     /**
      * Returns a source which loads the resource with the given {@code name}.
@@ -67,20 +35,22 @@ public class Sources {
     public static Source forResource(
             final String name,
             final @CheckForNull ClassLoader loader) {
+        Objects.requireNonNull(name);
         return new Source() {
             @Override public InputStream input() throws IOException {
                 return check(null != loader
                         ? loader.getResourceAsStream(name)
                         : ClassLoader.getSystemResourceAsStream(name), name);
             }
-        };
-    }
 
-    static InputStream check(final @CheckForNull InputStream in,
-                             final String name)
+            InputStream check(final @CheckForNull InputStream in,
+                              final String name)
             throws FileNotFoundException {
-        if (null == in) throw new FileNotFoundException(name);
-        return in;
+                if (null == in) throw new FileNotFoundException(String.format(
+                        "Cannot locate resource %s .", name));
+                return in;
+            }
+        };
     }
 
     public static <V, X extends Exception>
