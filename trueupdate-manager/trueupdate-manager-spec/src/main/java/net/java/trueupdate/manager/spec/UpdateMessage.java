@@ -208,10 +208,7 @@ public final class UpdateMessage implements Serializable {
                 .build();
     }
 
-    /**
-     * Vends an application descriptor from the information in this update
-     * message.
-     */
+    /** Vends an application descriptor from this update message. */
     public ApplicationDescriptor applicationDescriptor() {
         try {
             return ApplicationDescriptor
@@ -224,10 +221,7 @@ public final class UpdateMessage implements Serializable {
         }
     }
 
-    /**
-     * Vends an update descriptor from the information in this update
-     * message.
-     */
+    /** Vends an update descriptor from this update message. */
     public UpdateDescriptor updateDescriptor() {
         try {
             return UpdateDescriptor
