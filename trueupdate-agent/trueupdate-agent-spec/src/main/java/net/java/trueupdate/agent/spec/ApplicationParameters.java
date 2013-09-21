@@ -8,7 +8,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.manager.spec.ApplicationDescriptor;
+import net.java.trueupdate.message.ApplicationDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;

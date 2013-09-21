@@ -10,7 +10,7 @@ import javax.naming.*;
 import net.java.trueupdate.agent.core.BasicUpdateAgent;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.jms.*;
-import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * An implementation of the update agent which depends only on JMS.

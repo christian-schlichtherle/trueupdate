@@ -8,14 +8,14 @@ import java.io.Serializable;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
-import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.message.*;
 import net.java.trueupdate.util.Objects;
 
 /**
- * Adapts the {@link UpdateMessageListener} class to the
+ * Adapts the {@link net.java.trueupdate.message.UpdateMessageListener} class to the
  * {@link MessageListener} interface.
  * Instances of this class listen to JMS messages, filter those with an
- * embedded {@link UpdateMessage} and forward them to the update message
+ * embedded {@link net.java.trueupdate.message.UpdateMessage} and forward them to the update message
  * listener instance provided by the abstract method
  * {@link #updateMessageListener()}.
  * All other JMS messages get silently ignored.

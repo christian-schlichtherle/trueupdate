@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec;
+package net.java.trueupdate.message;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.ejb.EJB;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
 import net.java.trueupdate.installer.core.tx.*;
-import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.message.UpdateMessage;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
 

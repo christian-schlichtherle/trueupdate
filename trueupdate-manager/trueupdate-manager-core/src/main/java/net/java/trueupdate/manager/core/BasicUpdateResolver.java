@@ -10,7 +10,7 @@ import java.util.logging.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.manager.spec.UpdateDescriptor;
+import net.java.trueupdate.message.UpdateDescriptor;
 
 /**
  * Resolves diff ZIP files for artifact updates and manages their life cycle.

@@ -18,7 +18,8 @@ import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.manager.spec._
-import net.java.trueupdate.manager.spec.UpdateMessage.Type
+import net.java.trueupdate.message.UpdateMessage
+import UpdateMessage.Type
 import net.java.trueupdate.core.zip.io.JarFileStore
 
 /**

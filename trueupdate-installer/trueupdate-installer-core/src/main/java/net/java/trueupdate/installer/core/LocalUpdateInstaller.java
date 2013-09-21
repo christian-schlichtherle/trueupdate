@@ -15,6 +15,7 @@ import net.java.trueupdate.installer.core.io.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
 import net.java.trueupdate.installer.core.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * A local update installer.
@@ -49,8 +50,8 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     /**
      * Resolves the context for the given update message and location.
      *
-     * @param location either {@code message.}{@link UpdateMessage#currentLocation currentLocation}
-     *                 or {@code message.}{@link UpdateMessage#updateLocation updateLocation}.
+     * @param location either {@code message.}{@link net.java.trueupdate.message.UpdateMessage#currentLocation currentLocation}
+     *                 or {@code message.}{@link net.java.trueupdate.message.UpdateMessage#updateLocation updateLocation}.
      * @param message the update message as provided to the {@link #install}
      *                method.
      */

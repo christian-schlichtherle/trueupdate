@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.agent.spec;
 
-import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * An update agent event.

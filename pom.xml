@@ -207,11 +207,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-spec</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -223,6 +218,16 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-manager-servlets</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-manager-spec</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-message</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -472,6 +477,7 @@
         <module>trueupdate-jaxrs</module>
         <module>trueupdate-jms</module>
         <module>trueupdate-manager</module>
+        <module>trueupdate-message</module>
         <module>trueupdate-server</module>
         <module>trueupdate-util</module>
     </modules>

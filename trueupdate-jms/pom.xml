@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-spec</artifactId>
+            <artifactId>trueupdate-message</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>

@@ -11,8 +11,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
-import net.java.trueupdate.manager.spec.UpdateMessage.Type;
-import static net.java.trueupdate.manager.spec.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
+import net.java.trueupdate.message.*;
+import static net.java.trueupdate.message.UpdateMessage.Type.*;
 
 /**
  * A basic update manager.
@@ -69,7 +69,7 @@ extends UpdateMessageListener implements UpdateManager {
         return subscription
                 .successResponse()
                 .update()
-                .type(Type.UPDATE_NOTICE)
+                .type(UPDATE_NOTICE)
                 .updateVersion(updateVersion)
                 .build();
     }

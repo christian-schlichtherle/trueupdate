@@ -8,21 +8,22 @@
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-manager</artifactId>
+        <artifactId>trueupdate</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-spec</artifactId>
+    <artifactId>trueupdate-message</artifactId>
 
-    <name>TrueUpdate Manager Specification</name>
+    <name>TrueUpdate Message</name>
     <description>
-        Specifies the API for an update manager.
+        Provides the classes for exchanging update messages between an update
+        agent and an update manager.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-message</artifactId>
+            <artifactId>trueupdate-artifact-spec</artifactId>
         </dependency>
     </dependencies>
 </project>

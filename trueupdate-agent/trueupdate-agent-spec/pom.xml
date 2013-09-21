@@ -16,13 +16,13 @@
 
     <name>TrueUpdate Agent Specification</name>
     <description>
-        Specifies an API for an agent for updating an application.
+        Specifies the API for an update agent.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-spec</artifactId>
+            <artifactId>trueupdate-message</artifactId>
         </dependency>
     </dependencies>
 </project>

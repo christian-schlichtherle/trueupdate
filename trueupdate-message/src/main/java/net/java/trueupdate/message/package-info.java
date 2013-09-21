@@ -3,10 +3,10 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides services to transmit and receive
- * {@link net.java.trueupdate.message.UpdateMessage}s via JMS.
+ * Provides the classes for exchanging update messages between an update
+ * agent and an update manager.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.jms;
+package net.java.trueupdate.message;

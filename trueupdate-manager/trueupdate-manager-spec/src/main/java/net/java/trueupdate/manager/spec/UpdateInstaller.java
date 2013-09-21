@@ -5,6 +5,7 @@
 package net.java.trueupdate.manager.spec;
 
 import java.io.File;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * Cooperates with an update resolver to install artifact updates.

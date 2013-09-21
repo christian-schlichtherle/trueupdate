@@ -16,7 +16,7 @@
 
     <name>TrueUpdate Manager Core</name>
     <description>
-        Provides a basic implementation of a manager for updating applications.
+        Provides a basic implementation of an update manager.
     </description>
 
     <dependencies>

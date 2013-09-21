@@ -9,7 +9,7 @@ import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import javax.naming.*;
-import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.message.UpdateMessage;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**

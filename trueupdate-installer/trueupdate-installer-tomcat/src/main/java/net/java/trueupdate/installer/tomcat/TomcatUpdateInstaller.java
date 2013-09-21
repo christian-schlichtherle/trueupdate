@@ -10,7 +10,7 @@ import javax.management.*;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.installer.core.tx.*;
-import net.java.trueupdate.manager.spec.UpdateMessage;
+import net.java.trueupdate.message.UpdateMessage;
 import org.apache.catalina.*;
 import org.apache.catalina.startup.HostConfig;
 import org.apache.catalina.util.ContextName;

@@ -3,7 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a basic implementation of a manager for updating applications.
+ * Provides a basic implementation of an update manager.
+ * The classes in this package have no dependencies on the JMS or Java EE APIs.
  *
  * @author Christian Schlichtherle
  */

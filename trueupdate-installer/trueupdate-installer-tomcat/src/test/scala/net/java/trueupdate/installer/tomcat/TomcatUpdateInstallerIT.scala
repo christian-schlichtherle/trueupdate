@@ -18,8 +18,9 @@ import org.junit.runner.RunWith
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.tx.Transactions
 import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
-import net.java.trueupdate.manager.spec.UpdateMessage
-import net.java.trueupdate.manager.spec.UpdateMessage.Type
+import net.java.trueupdate.message.UpdateMessage
+import UpdateMessage.Type
+import net.java.trueupdate.message.UpdateMessage
 
 /**
  * @author Christian Schlichtherle

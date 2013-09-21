@@ -13,6 +13,7 @@ import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.*;
 import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * An implementation of the abstract update manager class with minimal

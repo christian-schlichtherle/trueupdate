@@ -7,8 +7,8 @@ package net.java.trueupdate.agent.core;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.agent.spec.*;
-import net.java.trueupdate.manager.spec.*;
-import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
+import net.java.trueupdate.message.*;
+import static net.java.trueupdate.message.UpdateMessage.Type.*;
 
 /**
  * A basic update agent.
