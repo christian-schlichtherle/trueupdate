@@ -119,7 +119,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-servlets</artifactId>
+                <artifactId>trueupdate-agent-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -217,7 +217,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-servlets</artifactId>
+                <artifactId>trueupdate-manager-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-- Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
-- All rights reserved. Use is subject to license terms.
--->
+  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+  - All rights reserved. Use is subject to license terms.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-manager</artifactId>
+        <artifactId>trueupdate-agent</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-manager-servlets</artifactId>
+    <artifactId>trueupdate-agent-servlet</artifactId>
 
-    <name>TrueUpdate Manager Servlets</name>
+    <name>TrueUpdate Agent Servlet</name>
     <description>
-        Provides an update manager for use within Servlet environments.
+        Provides an update agent for use within Servlet environments.
         It depends on the Servlet and JMS APIs.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-jms</artifactId>
+            <artifactId>trueupdate-agent-jms</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

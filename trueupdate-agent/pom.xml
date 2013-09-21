@@ -23,7 +23,7 @@
     <modules>
         <module>trueupdate-agent-core</module>
         <module>trueupdate-agent-jms</module>
-        <module>trueupdate-agent-servlets</module>
+        <module>trueupdate-agent-servlet</module>
         <module>trueupdate-agent-spec</module>
     </modules>
 </project>
