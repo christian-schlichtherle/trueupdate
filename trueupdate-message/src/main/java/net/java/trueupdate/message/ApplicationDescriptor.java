@@ -4,9 +4,7 @@
  */
 package net.java.trueupdate.message;
 
-import java.io.Serializable;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
@@ -21,9 +19,7 @@ import static net.java.trueupdate.util.Strings.requireNonEmpty;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ApplicationDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 0L;
+public final class ApplicationDescriptor {
 
     private final ArtifactDescriptor artifactDescriptor;
     private final String currentLocation;

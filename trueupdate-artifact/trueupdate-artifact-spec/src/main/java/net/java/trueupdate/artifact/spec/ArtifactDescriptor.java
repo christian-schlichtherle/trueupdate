@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.artifact.spec;
 
-import java.io.Serializable;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
@@ -25,9 +24,7 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class ArtifactDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 0L;
+public final class ArtifactDescriptor {
 
     private final String groupId, artifactId, version, classifier, extension;
 

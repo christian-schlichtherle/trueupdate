@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.jms
 
-import javax.xml.bind.JAXBContext
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
