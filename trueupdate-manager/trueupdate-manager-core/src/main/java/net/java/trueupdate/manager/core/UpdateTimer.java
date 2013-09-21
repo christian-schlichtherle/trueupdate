@@ -2,32 +2,41 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.jms;
+package net.java.trueupdate.manager.core;
 
 import java.util.logging.*;
+import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.ThreadSafe;
-import net.java.trueupdate.manager.core.UpdateManager;
+import net.java.trueupdate.util.Objects;
 
 /**
+ * A runnable which periodically checks for artifact updates.
+ * Once started, this runnable continues until another thread calls
+ * {@link #stop()}.
+ *
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-final class JmsUpdateTimer implements Runnable {
+public final class UpdateTimer implements Runnable {
 
     private static final Logger
-            logger = Logger.getLogger(JmsUpdateTimer.class.getName());
+            logger = Logger.getLogger(UpdateTimer.class.getName());
 
     private final Object lock = new Object();
     private final UpdateManager updateManager;
     private final int checkUpdatesIntervalMinutes;
     private boolean closed;
 
-    JmsUpdateTimer(
-            final JmsUpdateManagerParameters parameters,
-            final UpdateManager updateManager) {
-        checkUpdatesIntervalMinutes = parameters.checkUpdatesIntervalMinutes();
-        assert null != updateManager;
-        this.updateManager = updateManager;
+    public UpdateTimer(
+            final @WillNotClose UpdateManager updateManager,
+            final int checkUpdatesIntervalMinutes) {
+        this.updateManager = Objects.requireNonNull(updateManager);
+        this.checkUpdatesIntervalMinutes = requirePositive(checkUpdatesIntervalMinutes);
+    }
+
+    private static int requirePositive(final int i) {
+        if (0 >= i) throw new IllegalArgumentException();
+        return i;
     }
 
     @Override public void run() {
@@ -58,7 +67,7 @@ final class JmsUpdateTimer implements Runnable {
      * When returning from this method, the client may safely assume that the
      * other thread is not executing the {@link #run()} method anymore.
      */
-    void stop() {
+    public void stop() {
         synchronized (lock) {
             if (closed) return;
             closed = true;

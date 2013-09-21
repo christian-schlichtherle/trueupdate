@@ -20,7 +20,7 @@ package net.java.trueupdate.manager.core;
 public interface UpdateManager {
 
     /** Checks for updates and notifies the subscribed agents. */
-    void checkUpdates() throws UpdateManagerException;
+    void checkUpdates() throws Exception;
 
     /**
      * Closes this update manager.
@@ -29,5 +29,5 @@ public interface UpdateManager {
      * manager isn't used anymore after the call to this method, even if it
      * fails.
      */
-    void close() throws UpdateManagerException;
+    void close() throws Exception;
 }

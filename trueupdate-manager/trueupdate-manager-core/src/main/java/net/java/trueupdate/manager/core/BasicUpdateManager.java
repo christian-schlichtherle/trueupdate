@@ -40,7 +40,7 @@ extends UpdateMessageListener implements UpdateManager {
 
     /** Checks for updates and notifies the subscribed agents. */
     @Override
-    public void checkUpdates() throws UpdateManagerException {
+    public void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
@@ -48,24 +48,19 @@ extends UpdateMessageListener implements UpdateManager {
         final Map<ArtifactDescriptor, String>
                 updateVersions = new HashMap<ArtifactDescriptor, String>();
         updateResolver.restart();
-        try {
-            for (final UpdateMessage subscription : subscriptions.values()) {
-                final ArtifactDescriptor artifactDescriptor =
-                        subscription.artifactDescriptor();
-                String updateVersion = updateVersions.get(artifactDescriptor);
-                if (null == updateVersion)
-                    updateVersions.put(artifactDescriptor, updateVersion =
-                            updateClient.version(artifactDescriptor));
-                if (!updateVersion.equals(artifactDescriptor.version())) {
-                    final UpdateMessage
-                            un = updateNotice(subscription, updateVersion);
-                    updateResolver.allocate(un.updateDescriptor());
-                    sendAndLog(un);
-                }
+        for (final UpdateMessage subscription : subscriptions.values()) {
+            final ArtifactDescriptor artifactDescriptor =
+                    subscription.artifactDescriptor();
+            String updateVersion = updateVersions.get(artifactDescriptor);
+            if (null == updateVersion)
+                updateVersions.put(artifactDescriptor, updateVersion =
+                        updateClient.version(artifactDescriptor));
+            if (!updateVersion.equals(artifactDescriptor.version())) {
+                final UpdateMessage
+                        un = updateNotice(subscription, updateVersion);
+                updateResolver.allocate(un.updateDescriptor());
+                sendAndLog(un);
             }
-        } catch (IOException ex) {
-            logger.log(Level.WARNING,
-                    "Failed to resolve artifact update version:", ex);
         }
     }
 
@@ -155,21 +150,9 @@ extends UpdateMessageListener implements UpdateManager {
         subscriptions.remove(message.applicationDescriptor());
     }
 
-    private void sendAndLog(final UpdateMessage message)
-    throws UpdateManagerException {
-        sendChecked(message);
+    private void sendAndLog(final UpdateMessage message) throws Exception {
+        send(message);
         logSent(message);
-    }
-
-    private void sendChecked(UpdateMessage message)
-    throws UpdateManagerException {
-        try {
-            send(message);
-        } catch (UpdateManagerException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new UpdateManagerException(ex);
-        }
     }
 
     /** Sends the given update message. */
@@ -193,15 +176,15 @@ extends UpdateMessageListener implements UpdateManager {
      * fails.
      */
     @Override
-    public void close() throws UpdateManagerException {
+    public void close() throws Exception {
         updateResolver.close();
         persistSubscriptions();
     }
 
-    private void persistSubscriptions() throws UpdateManagerException {
+    private void persistSubscriptions() throws Exception {
         for (final Iterator<UpdateMessage> it = subscriptions.values().iterator();
                 it.hasNext(); ) {
-            sendChecked(it.next().type(SUBSCRIPTION_NOTICE));
+            send(it.next().type(SUBSCRIPTION_NOTICE));
             it.remove();
         }
     }

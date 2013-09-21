@@ -7,7 +7,6 @@ package net.java.trueupdate.agent.servlets;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import net.java.trueupdate.agent.jms.*;
-import net.java.trueupdate.agent.spec.*;
 
 /**
  * Starts and stops the update agent.
@@ -25,7 +24,7 @@ implements ServletContextListener {
         context = new JmsUpdateAgentContext();
         try {
             context.start();
-        } catch (UpdateAgentException ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to start the update agent.", ex);
         }
@@ -35,7 +34,7 @@ implements ServletContextListener {
         if (null == context) return;
         try {
             context.stop();
-        } catch (UpdateAgentException ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update agent.", ex);
         }

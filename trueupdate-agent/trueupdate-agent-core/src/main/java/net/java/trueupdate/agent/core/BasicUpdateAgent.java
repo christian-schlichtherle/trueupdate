@@ -27,21 +27,21 @@ extends UpdateMessageListener implements UpdateAgent {
 
     protected abstract String to();
 
-    @Override public void subscribe() throws UpdateAgentException {
-        sendChecked(SUBSCRIPTION_REQUEST, null);
+    @Override public void subscribe() throws Exception {
+        send(SUBSCRIPTION_REQUEST, null);
     }
 
-    @Override public void unsubscribe() throws UpdateAgentException {
-        sendChecked(UNSUBSCRIPTION_NOTICE, null);
+    @Override public void unsubscribe() throws Exception {
+        send(UNSUBSCRIPTION_NOTICE, null);
     }
 
-    @Override public void install(String version) throws UpdateAgentException {
-        sendChecked(INSTALLATION_REQUEST, version);
+    @Override public void install(String version) throws Exception {
+        send(INSTALLATION_REQUEST, version);
     }
 
-    private void sendChecked(final UpdateMessage.Type type,
-                             final @Nullable String updateVersion)
-    throws UpdateAgentException {
+    private void send(final UpdateMessage.Type type,
+                      final @Nullable String updateVersion)
+    throws Exception {
         final ApplicationParameters ap = applicationParameters();
         final UpdateMessage message = UpdateMessage
                     .builder()
@@ -53,13 +53,7 @@ extends UpdateMessageListener implements UpdateAgent {
                     .updateLocation(ap.updateLocation())
                     .updateVersion(updateVersion)
                     .build();
-        try {
-            send(message);
-        } catch (UpdateAgentException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new UpdateAgentException(ex);
-        }
+        send(message);
     }
 
     protected abstract void send(UpdateMessage message) throws Exception;

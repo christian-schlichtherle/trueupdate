@@ -6,7 +6,6 @@ package net.java.trueupdate.agent.jms;
 
 import javax.annotation.concurrent.Immutable;
 import javax.jms.JMSException;
-import net.java.trueupdate.agent.spec.UpdateAgentException;
 import net.java.trueupdate.jms.JmsMessageReceiver;
 import net.java.trueupdate.jms.MessagingParameters;
 
@@ -38,17 +37,17 @@ public final class JmsUpdateAgentContext {
                 .build();
     }
 
-    public void start() throws UpdateAgentException {
+    public void start() throws Exception {
         receiverThread().start();
         agent.subscribe();
     }
 
-    public void stop() throws UpdateAgentException {
+    public void stop() throws Exception {
         // HC SVNT DRACONIS
         try {
             receiver.stop();
         } catch (JMSException ex) {
-            throw new UpdateAgentException(ex);
+            throw new Exception(ex);
         }
         agent.unsubscribe();
     }

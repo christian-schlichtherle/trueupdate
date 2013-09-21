@@ -68,17 +68,17 @@ final class JmsUpdateManager extends BasicUpdateManager {
     }
 
     @Override
-    public synchronized void checkUpdates() throws UpdateManagerException {
+    public synchronized void checkUpdates() throws Exception {
         super.checkUpdates();
     }
 
-    @Override public synchronized void close() throws UpdateManagerException {
+    @Override public synchronized void close() throws Exception {
         // HC SVNT DRACONIS!
         super.close();
         if (null != connection) try {
             connection.close();
         } catch (JMSException ex) {
-            throw new UpdateManagerException(ex);
+            throw new Exception(ex);
         }
     }
 }

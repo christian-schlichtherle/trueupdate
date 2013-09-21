@@ -22,31 +22,24 @@ public interface UpdateAgent {
     /**
      * Sends a request to subscribe to the list of recipients for update
      * notices for the application.
-     *
-     * @throws UpdateAgentException if sending the request is not possible
-     *         for some reason.
      */
-    void subscribe() throws UpdateAgentException;
+    void subscribe() throws Exception;
 
     /**
-     * Sends a request to shutdown the application, install the given version
-     * and restart it.
+     * Sends a request to install the given artifact version.
+     * On success, this will subsequently shutdown this application, install
+     * the update and restart the updated application.
      *
-     * @param version the version to install.
+     * @param version the artifact version to install.
      *        Specifying the current version shows no effect.
      *        Specifying a higher version upgrades the application.
      *        Specifying a prior version downgrades the application.
-     * @throws UpdateAgentException if sending the request is not possible
-     *         for some reason.
      */
-    void install(String version) throws UpdateAgentException;
+    void install(String version) throws Exception;
 
     /**
      * Sends a request to unsubscribe from the list of recipients for update
      * notices for the application.
-     *
-     * @throws UpdateAgentException if sending the request is not possible
-     *         for some reason.
      */
-    void unsubscribe() throws UpdateAgentException;
+    void unsubscribe() throws Exception;
 }

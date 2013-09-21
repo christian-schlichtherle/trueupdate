@@ -7,7 +7,6 @@ package net.java.trueupdate.manager.servlets;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import net.java.trueupdate.manager.core.UpdateManagerException;
 import net.java.trueupdate.manager.jms.JmsUpdateManagerContext;
 
 /**
@@ -29,7 +28,7 @@ implements ServletContextListener {
         context = new JmsUpdateManagerContext();
         try {
             context.start();
-        } catch (UpdateManagerException ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to start the update manager.", ex);
         }
@@ -48,7 +47,7 @@ implements ServletContextListener {
         if (null == context) return;
         try {
             context.stop();
-        } catch (UpdateManagerException ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update manager.", ex);
         }

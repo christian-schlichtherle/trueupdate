@@ -4,10 +4,10 @@
  */
 package net.java.trueupdate.manager.jms;
 
+import net.java.trueupdate.manager.core.UpdateTimer;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
-import net.java.trueupdate.manager.core.UpdateManagerException;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 
 /**
@@ -20,7 +20,7 @@ public final class JmsUpdateManagerContext {
 
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
-    private final JmsUpdateTimer timer;
+    private final UpdateTimer timer;
     private final JmsMessageReceiver receiver;
 
     public JmsUpdateManagerContext() {
@@ -40,7 +40,8 @@ public final class JmsUpdateManagerContext {
                 .messageSelector("manager = true")
                 .updateMessageListener(manager)
                 .build();
-        timer = new JmsUpdateTimer(parameters, manager);
+        timer = new UpdateTimer(manager,
+                                   parameters.checkUpdatesIntervalMinutes());
     }
 
     public URI updateServiceBaseUri() {
@@ -55,19 +56,15 @@ public final class JmsUpdateManagerContext {
         return manager.updateInstaller();
     }
 
-    public void start() throws UpdateManagerException {
+    public void start() throws Exception {
         receiverThread().start();
         timerThread().start();
     }
 
-    public void stop() throws UpdateManagerException {
+    public void stop() throws Exception {
         // HC SUNT DRACONIS!
-        try {
-            timer.stop();
-            receiver.stop();
-        } catch (Exception ex) {
-            throw new UpdateManagerException(ex);
-        }
+        timer.stop();
+        receiver.stop();
         manager.close();
     }
 
