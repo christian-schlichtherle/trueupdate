@@ -19,22 +19,15 @@ import javax.annotation.concurrent.Immutable;
 public class Sources {
 
     /**
-     * Returns a source which reads from standard input without ever closing it.
-     */
-    public static Source input() { return uncloseable(System.in); }
-
-    /**
-     * Returns a source which reads from the given input stream and ignores any
-     * call to the {@link InputStream#close} method of the input stream.
+     * Returns a source which loads the entity of the given {@code url}.
      *
-     * @param in the input stream to use.
+     * @param  url the URL.
+     * @return A source which loads the entity of the given {@code url}.
      */
-    public static Source uncloseable(final InputStream in) {
+    public static Source forUrl(final URL url) {
         return new Source() {
-            @Override public InputStream input() {
-                return new FilterInputStream(in) {
-                    @Override public void close() throws IOException { }
-                };
+            @Override public InputStream input() throws IOException {
+                return url.openStream();
             }
         };
     }
@@ -83,21 +76,8 @@ public class Sources {
         };
     }
 
-    /**
-     * Returns a source which loads the entity of the given {@code url}.
-     *
-     * @param  url the URL.
-     * @return A source which loads the entity of the given {@code url}.
-     */
-    public static Source forUrl(final URL url) {
-        return new Source() {
-            @Override public InputStream input() throws IOException {
-                return url.openStream();
-            }
-        };
-    }
-
-    static InputStream check(final @CheckForNull InputStream in, final String name)
+    static InputStream check(final @CheckForNull InputStream in,
+                             final String name)
             throws FileNotFoundException {
         if (null == in) throw new FileNotFoundException(name);
         return in;
