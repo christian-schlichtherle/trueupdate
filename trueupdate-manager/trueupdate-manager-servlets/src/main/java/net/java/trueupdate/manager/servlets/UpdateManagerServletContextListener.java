@@ -4,14 +4,11 @@
  */
 package net.java.trueupdate.manager.servlets;
 
+import net.java.trueupdate.manager.jms.JmsUpdateManagerContext;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import javax.xml.bind.*;
-import net.java.trueupdate.core.codec.JaxbCodec;
-import net.java.trueupdate.core.io.Source;
-import net.java.trueupdate.core.io.Sources;
-import net.java.trueupdate.manager.servlets.dto.UpdateManagerParametersDto;
+import net.java.trueupdate.manager.core.UpdateManagerException;
 
 /**
  * Starts and stops the update manager.
@@ -25,20 +22,17 @@ implements ServletContextListener {
     private static final Logger logger = Logger.getLogger(
             UpdateManagerServletContextListener.class.getName());
 
-    private static final String CONFIGURATION = "META-INF/update/manager.xml";
-
-    private UpdateManagerContext context;
+    private JmsUpdateManagerContext context;
 
     @Override public void contextInitialized(final ServletContextEvent sce) {
         if (null != context) return;
+        context = JmsUpdateManagerContext.load();
         try {
-            context = new UpdateManagerContext(parameters());
-        } catch (Exception ex) {
-            throw new IllegalStateException(String.format(
-                    "Failed to load configuration from %s .", CONFIGURATION),
-                    ex);
+            context.start();
+        } catch (UpdateManagerException ex) {
+            throw new IllegalStateException(
+                    "Failed to start the update manager.", ex);
         }
-        context.start();
         logger.log(Level.CONFIG,
                 "The base URI of the update service is {0} .",
                 context.updateServiceBaseUri());
@@ -54,27 +48,9 @@ implements ServletContextListener {
         if (null == context) return;
         try {
             context.stop();
-        } catch (Exception ex) {
-            throw new IllegalStateException("Failed to stop the update manager context.", ex);
+        } catch (UpdateManagerException ex) {
+            throw new IllegalStateException(
+                    "Failed to stop the update manager.", ex);
         }
-    }
-
-    private static UpdateManagerParameters parameters() throws Exception {
-        return UpdateManagerParameters.builder().parse(configuration()).build();
-    }
-
-    private static UpdateManagerParametersDto configuration() throws Exception {
-        return jaxbCodec().decode(configurationSource(),
-                UpdateManagerParametersDto.class);
-    }
-
-    private static JaxbCodec jaxbCodec() throws JAXBException {
-        return new JaxbCodec(JAXBContext.
-                newInstance(UpdateManagerParametersDto.class));
-    }
-
-    private static Source configurationSource() {
-        return Sources.forResource(CONFIGURATION,
-                Thread.currentThread().getContextClassLoader());
     }
 }

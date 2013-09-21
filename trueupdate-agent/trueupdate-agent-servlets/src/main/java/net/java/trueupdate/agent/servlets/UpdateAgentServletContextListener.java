@@ -6,10 +6,8 @@ package net.java.trueupdate.agent.servlets;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import javax.xml.bind.JAXBContext;
-import net.java.trueupdate.agent.servlets.dto.UpdateAgentParametersDto;
-import net.java.trueupdate.agent.spec.UpdateAgent;
-import net.java.trueupdate.agent.spec.UpdateAgentException;
+import net.java.trueupdate.agent.jms.*;
+import net.java.trueupdate.agent.spec.*;
 
 /**
  * Starts and stops the update agent.
@@ -20,25 +18,16 @@ import net.java.trueupdate.agent.spec.UpdateAgentException;
 public final class UpdateAgentServletContextListener
 implements ServletContextListener {
 
-    private static final String CONFIGURATION = "META-INF/update/agent.xml";
-
     private UpdateAgent agent;
 
     @Override public void contextInitialized(ServletContextEvent sce) {
         if (null != agent) return;
-        try {
-            agent = new ConfiguredUpdateAgent(parameters());
-        } catch (Exception ex) {
-            throw new IllegalStateException(String.format(
-                    "Failed to load configuration from %s .", CONFIGURATION),
-                    ex);
-        }
+        agent = JmsUpdateAgent.load();
         try {
             agent.subscribe();
         } catch (UpdateAgentException ex) {
             throw new IllegalStateException(
-                    "Failed to subscribe to update notices.",
-                    ex);
+                    "Failed to start the update agent.", ex);
         }
     }
 
@@ -48,22 +37,7 @@ implements ServletContextListener {
             agent.unsubscribe();
         } catch (UpdateAgentException ex) {
             throw new IllegalStateException(
-                    "Failed to unsubscribe from update notices.",
-                    ex);
+                    "Failed to stop the update agent.", ex);
         }
-    }
-
-    private static UpdateAgentParameters parameters() throws Exception {
-        return UpdateAgentParameters.builder().parse(configuration()).build();
-    }
-
-    private static UpdateAgentParametersDto configuration() throws Exception {
-        return (UpdateAgentParametersDto) JAXBContext
-                .newInstance(UpdateAgentParametersDto.class)
-                .createUnmarshaller()
-                .unmarshal(Thread
-                    .currentThread()
-                    .getContextClassLoader()
-                    .getResource(CONFIGURATION));
     }
 }

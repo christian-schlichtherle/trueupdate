@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.servlets;
+package net.java.trueupdate.manager.jms;
 
 import java.util.logging.*;
 import javax.annotation.concurrent.ThreadSafe;
@@ -12,17 +12,17 @@ import net.java.trueupdate.manager.core.UpdateManager;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-final class UpdateTimer implements Runnable {
+final class JmsUpdateTimer implements Runnable {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateTimer.class.getName());
+            logger = Logger.getLogger(JmsUpdateTimer.class.getName());
 
     private final Object lock = new Object();
     private final UpdateManager updateManager;
     private final int checkUpdatesIntervalMinutes;
     private boolean closed;
 
-    UpdateTimer(
+    JmsUpdateTimer(
             final UpdateManager updateManager,
             final int checkUpdatesIntervalMinutes) {
         assert null != updateManager;

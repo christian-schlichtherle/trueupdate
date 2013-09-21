@@ -6,6 +6,7 @@ package net.java.trueupdate.artifact.maven;
 
 import java.io.File;
 import java.util.*;
+import static java.util.Collections.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.maven.dto.*;
@@ -24,16 +25,23 @@ public final class MavenParameters {
     private final LocalRepository local;
     private final List<RemoteRepository> remotes;
 
+    @SuppressWarnings("unchecked")
     MavenParameters(final Builder<?> b) {
-        this.local = requireNonNull(b.local);
-        this.remotes = Collections.unmodifiableList(
-                new ArrayList<RemoteRepository>(b.remotes));
+        this.local = requireNonNull(b.localRepositories);
+        this.remotes = null == b.remoteRepositories
+                ? EMPTY_LIST
+                : unmodifiableList(new ArrayList<RemoteRepository>(b.remoteRepositories));
+    }
+
+    /** Parses the given configuration item. */
+    public static MavenParameters parse(MavenParametersDto ci) {
+        return builder().parse(ci).build();
     }
 
     /** Returns a new builder for Aether parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    /** Returns the local repository. */
+    /** Returns the localRepositories repository. */
     public LocalRepository localRepository() { return local; }
 
     /** Returns the immutable list of remote repositories. */
@@ -48,31 +56,33 @@ public final class MavenParameters {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> {
 
-        @CheckForNull LocalRepository local;
-        @CheckForNull List<RemoteRepository> remotes;
+        @CheckForNull LocalRepository localRepositories;
+        @CheckForNull List<RemoteRepository> remoteRepositories;
 
         protected Builder() { }
 
-        /** Parses the given configuration item. */
+        /** Selectively parses the given configuration item. */
         public Builder<P> parse(MavenParametersDto ci) {
-            return parse(ci.local).parse(ci.remotes);
-        }
-
-        private Builder<P> parse(final LocalRepositoryDto ci) {
-            local = new LocalRepository(new File(resolve(ci.basedir)),
-                                                 resolve(ci.type));
+            if (null != ci.local) localRepositories = local(ci.local);
+            if (null != ci.remotes) remoteRepositories = remotes(ci.remotes);
             return this;
         }
 
-        private Builder<P> parse(final @CheckForNull List<RemoteRepositoryDto> cis) {
-            remotes = new ArrayList<RemoteRepository>();
-            if (null != cis)
-                for (RemoteRepositoryDto ci : cis)
-                    remotes.add(new RemoteRepository.Builder(
-                            resolve(ci.id),
-                            resolve(ci.type),
-                            resolve(ci.url)).build());
-            return this;
+        private static LocalRepository local(final LocalRepositoryDto ci) {
+            return new LocalRepository(new File(resolve(ci.basedir)),
+                    resolve(ci.type));
+        }
+
+        private static List<RemoteRepository> remotes(
+                final List<RemoteRepositoryDto> cis) {
+            final List<RemoteRepository> remotes =
+                    new ArrayList<RemoteRepository>(cis.size());
+            for (RemoteRepositoryDto ci : cis)
+                remotes.add(new RemoteRepository.Builder(
+                        resolve(ci.id),
+                        resolve(ci.type),
+                        resolve(ci.url)).build());
+            return remotes;
         }
 
         private static @Nullable String resolve(@CheckForNull String string) {
@@ -81,20 +91,20 @@ public final class MavenParameters {
 
         public Builder<P> localRepository(
                 final @Nullable LocalRepository local) {
-            this.local = local;
+            this.localRepositories = local;
             return this;
         }
 
         public Builder<P> remoteRepositories(
                 final @Nullable RemoteRepository... remotes) {
-            this.remotes = null == remotes ? null : Arrays.asList(remotes);
+            this.remoteRepositories = null == remotes ? null : Arrays.asList(remotes);
             return this;
         }
 
         @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
         public Builder<P> remoteRepositories(
                 final @Nullable List<RemoteRepository> remotes) {
-            this.remotes = remotes;
+            this.remoteRepositories = remotes;
             return this;
         }
 

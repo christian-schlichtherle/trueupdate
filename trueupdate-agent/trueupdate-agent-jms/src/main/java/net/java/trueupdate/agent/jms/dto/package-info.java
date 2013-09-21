@@ -8,4 +8,4 @@
  *
  * @author Christian Schlichtherle
  */
-package net.java.trueupdate.agent.servlets.dto;
+package net.java.trueupdate.agent.jms.dto;

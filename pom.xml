@@ -114,6 +114,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-agent-jms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-agent-servlets</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -212,8 +217,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-manager-javaee</artifactId>
-                <type>ejb</type>
+                <artifactId>trueupdate-manager-jms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

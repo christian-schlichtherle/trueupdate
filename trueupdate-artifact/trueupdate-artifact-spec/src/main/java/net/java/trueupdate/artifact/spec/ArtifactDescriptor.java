@@ -7,7 +7,7 @@ package net.java.trueupdate.artifact.spec;
 import java.io.Serializable;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.spec.ci.ArtifactDescriptorDto;
+import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
@@ -47,6 +47,11 @@ public final class ArtifactDescriptor implements Serializable {
                 .version(version())
                 .classifier(classifier())
                 .extension(extension());
+    }
+
+    /** Parses the given configuration item. */
+    public static ArtifactDescriptor parse(ArtifactDescriptorDto ci) {
+        return builder().parse(ci).build();
     }
 
     /** Returns a new builder for an artifact descriptor. */
@@ -161,7 +166,7 @@ public final class ArtifactDescriptor implements Serializable {
 
         protected Builder() { }
 
-        /** Parses the given configuration item. */
+        /** Selectively parses the given configuration item. */
         public Builder<P> parse(final ArtifactDescriptorDto ci) {
             groupId = resolve(ci.groupId, groupId);
             artifactId = resolve(ci.artifactId, artifactId);

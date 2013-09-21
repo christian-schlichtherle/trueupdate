@@ -41,7 +41,7 @@ public final class MavenUpdateServer extends BasicUpdateServer {
     }
 
     private static UpdateServerParameters parameters() throws Exception {
-        return UpdateServerParameters.builder().parse(configuration()).build();
+        return UpdateServerParameters.parse(configuration());
     }
 
     private static UpdateServerParametersDto configuration() throws Exception {

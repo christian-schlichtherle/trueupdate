@@ -17,10 +17,10 @@ import net.java.trueupdate.manager.spec.UpdateDescriptor;
  *
  * @author Christian Schlichtherle
  */
-abstract class UpdateResolver {
+abstract class BasicUpdateResolver {
 
     private static final Logger
-            logger = Logger.getLogger(UpdateResolver.class.getName());
+            logger = Logger.getLogger(BasicUpdateResolver.class.getName());
 
     private final Map<UpdateDescriptor, FileAccount>
             accounts = new HashMap<UpdateDescriptor, FileAccount>();

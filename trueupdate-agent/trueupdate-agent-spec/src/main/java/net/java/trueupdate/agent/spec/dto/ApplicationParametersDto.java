@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.agent.spec.dto;
 
-import net.java.trueupdate.artifact.spec.ci.ArtifactDescriptorDto;
+import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
 
 /**
  * Configures an application.

@@ -10,7 +10,7 @@ package net.java.trueupdate.agent.spec;
  * All communication between the update agent and the update manager is
  * asynchronous.
  * <p>
- * Implementations should be immutable and hence, thread-safe.
+ * Implementations must be thread-safe.
  * <p>
  * Applications have no need to implement this class and should not do so
  * because it may be subject to future expansion.

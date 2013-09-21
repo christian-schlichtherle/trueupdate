@@ -8,7 +8,7 @@ package net.java.trueupdate.util;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Utility functions for hash maps.
+ * Provides functions for hash maps.
  *
  * @author Christian Schlichtherle (copied from TrueCommons Shed 2.3.2)
  */

@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides Data Transfer Objects (DTO) for artifacts.
- * This package is used with JAXB to load some configuration.
+ * Provides an update agent which depends on the JMS API.
  *
  * @author Christian Schlichtherle
  */
-package net.java.trueupdate.artifact.spec.ci;
+@javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
+package net.java.trueupdate.agent.jms;

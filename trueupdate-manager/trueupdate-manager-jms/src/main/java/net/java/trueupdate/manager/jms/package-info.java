@@ -3,10 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update manager for use within Servlet environments.
- * It depends on the Servlet and JMS APIs.
+ * Provides an update manager which depends on the JMS API.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.manager.servlets;
+package net.java.trueupdate.manager.jms;

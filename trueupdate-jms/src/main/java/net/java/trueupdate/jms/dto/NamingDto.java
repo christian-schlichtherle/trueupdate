@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.jms.ci;
+package net.java.trueupdate.jms.dto;
 
 /**
  * Addresses a JNDI context by an initial context class name and a relative

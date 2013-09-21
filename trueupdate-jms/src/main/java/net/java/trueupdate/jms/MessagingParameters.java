@@ -9,8 +9,8 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import javax.naming.*;
-import net.java.trueupdate.jms.ci.MessagingDto;
-import net.java.trueupdate.jms.ci.NamingDto;
+import net.java.trueupdate.jms.dto.MessagingDto;
+import net.java.trueupdate.jms.dto.NamingDto;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
@@ -49,6 +49,11 @@ public final class MessagingParameters {
     @SuppressWarnings("unchecked")
     private <T> T lookup(String name) throws NamingException {
         return (T) namingContext.lookup(resolve(name));
+    }
+
+    /** Parses the given configuration item. */
+    public static MessagingParameters parse(MessagingDto messaging) {
+        return builder().parse(messaging).build();
     }
 
     /** Returns a new builder for messaging parameters. */
@@ -115,40 +120,27 @@ public final class MessagingParameters {
             return this;
         }
 
-        /**
-         * Parses the given nullable configuration for the naming context.
-         */
-        public Builder<P> parseNaming(final @CheckForNull NamingDto ci) {
-            if (null != ci) {
-                try {
-                    namingContext = (Context) (
-                            (Context) Thread
-                                .currentThread()
-                                .getContextClassLoader()
-                                .loadClass(resolve(ci.initialContextClass))
-                                .newInstance()
-                            ).lookup(resolve(ci.relativePath));
-                } catch (Exception ex) {
-                    throw new IllegalArgumentException(ex);
-                }
-            }
-            return this;
-        }
-
-        /**
-         * Parses the given nullable configuration for the JMS administered
-         * objects.
-         * Prior to calling this method, the naming context must be already
-         * configured.
-         *
-         * @see #namingContext(Context)
-         * @see #parseNaming(NamingDto)
-         */
-        public Builder<P> parseMessaging(final MessagingDto ci) {
+        /** Selectively parses the given configuration item. */
+        public Builder<P> parse(final MessagingDto ci) {
+            if (null != ci.naming) namingContext = namingContext(ci.naming);
             connectionFactory = resolve(ci.connectionFactory, connectionFactory);
             from = resolve(ci.from, from);
             to = resolve(ci.to, to);
             return this;
+        }
+
+        private static Context namingContext(final NamingDto ci) {
+            try {
+                return (Context) (
+                        (Context) Thread
+                            .currentThread()
+                            .getContextClassLoader()
+                            .loadClass(resolve(ci.initialContextClass))
+                            .newInstance()
+                        ).lookup(resolve(ci.relativePath));
+            } catch (Exception ex) {
+                throw new IllegalArgumentException(ex);
+            }
         }
 
         public MessagingParameters build() {

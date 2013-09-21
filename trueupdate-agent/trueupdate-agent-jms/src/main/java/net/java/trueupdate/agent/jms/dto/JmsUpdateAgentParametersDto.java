@@ -2,10 +2,9 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.servlets.dto;
+package net.java.trueupdate.agent.jms.dto;
 
-import net.java.trueupdate.jms.ci.NamingDto;
-import net.java.trueupdate.jms.ci.MessagingDto;
+import net.java.trueupdate.jms.dto.MessagingDto;
 import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -16,8 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "agent")
 @SuppressWarnings("PublicField")
-public class UpdateAgentParametersDto {
+public class JmsUpdateAgentParametersDto {
     public ApplicationParametersDto application;
-    public NamingDto naming;
     public MessagingDto messaging;
 }

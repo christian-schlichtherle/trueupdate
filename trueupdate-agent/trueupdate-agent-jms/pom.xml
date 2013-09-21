@@ -12,22 +12,25 @@
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent-servlets</artifactId>
+    <artifactId>trueupdate-agent-jms</artifactId>
 
-    <name>TrueUpdate Agent Servlets</name>
+    <name>TrueUpdate Agent JMS</name>
     <description>
-        Provides an update agent for use within Servlet environments.
-        It depends on the Servlet and JMS APIs.
+        Provides an update agent which depends on the JMS API.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-agent-jms</artifactId>
+            <artifactId>trueupdate-agent-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms-api</artifactId>
         </dependency>
     </dependencies>
 </project>

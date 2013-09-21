@@ -2,31 +2,55 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.servlets;
+package net.java.trueupdate.agent.jms;
 
+import java.net.URL;
 import java.util.concurrent.Callable;
 import javax.annotation.CheckForNull;
+import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
 import javax.naming.*;
+import javax.xml.bind.JAXB;
 import net.java.trueupdate.agent.core.BasicUpdateAgent;
+import net.java.trueupdate.agent.jms.dto.JmsUpdateAgentParametersDto;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.jms.*;
-import net.java.trueupdate.manager.spec.UpdateMessage;
-import net.java.trueupdate.manager.spec.UpdateMessageListener;
+import net.java.trueupdate.manager.spec.*;
+import static net.java.trueupdate.util.Resources.locate;
 
 /**
- * An implementation of the abstract update agent class with minimal
- * dependencies.
+ * An implementation of the update agent which depends only on JMS.
  *
  * @author Christian Schlichtherle
  */
-final class ConfiguredUpdateAgent extends BasicUpdateAgent {
+@ThreadSafe
+public final class JmsUpdateAgent extends BasicUpdateAgent {
+
+    private static final String CONFIGURATION = "META-INF/update/agent.xml";
 
     private final ApplicationParameters applicationParameters;
     private final MessagingParameters messagingParameters;
     private @CheckForNull JmsMessageReceiver receiver;
 
-    ConfiguredUpdateAgent(final UpdateAgentParameters parameters) {
+    public static JmsUpdateAgent load() { return load(CONFIGURATION); }
+
+    static JmsUpdateAgent load(final String resourceName) {
+        try {
+            return new JmsUpdateAgent(parameters(locate(resourceName)));
+        } catch (Exception ex) {
+            throw new java.lang.IllegalStateException(String.format(
+                    "Failed to load configuration from %s .", resourceName),
+                    ex);
+        }
+    }
+
+    private static JmsUpdateAgentParameters parameters(final URL source)
+    throws Exception {
+        return JmsUpdateAgentParameters.parse(
+                JAXB.unmarshal(source, JmsUpdateAgentParametersDto.class));
+    }
+
+    public JmsUpdateAgent(final JmsUpdateAgentParameters parameters) {
         this.applicationParameters = parameters.applicationParameters();
         this.messagingParameters = parameters.messagingParameters();
     }
@@ -43,7 +67,8 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         stopUpdateMessageListener();
     }
 
-    private void startUpdateMessageListener() throws UpdateAgentException {
+    private synchronized void startUpdateMessageListener()
+    throws UpdateAgentException {
         if (null != receiver) return;
         wrap(new Callable<Void>() {
             @Override public Void call() throws NamingException, JMSException {
@@ -63,11 +88,12 @@ final class ConfiguredUpdateAgent extends BasicUpdateAgent {
         });
     }
 
-    private UpdateMessageListener updateMessageListener() {
-        return new ConfiguredUpdateMessageListener(this, applicationParameters);
+    UpdateMessageListener updateMessageListener() {
+        return new JmsUpdateMessageListener(this, applicationParameters);
     }
 
-    private void stopUpdateMessageListener() throws UpdateAgentException {
+    private synchronized void stopUpdateMessageListener()
+    throws UpdateAgentException {
         if (null == receiver) return;
         wrap(new Callable<Void>() {
             @Override public Void call() throws JMSException {

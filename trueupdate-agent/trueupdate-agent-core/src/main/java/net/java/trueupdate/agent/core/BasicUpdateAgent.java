@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.agent.spec.UpdateAgent;
 import net.java.trueupdate.agent.spec.UpdateAgentException;
-import net.java.trueupdate.manager.spec.ApplicationDescriptor;
 import net.java.trueupdate.manager.spec.UpdateMessage;
 import static net.java.trueupdate.manager.spec.UpdateMessage.Type.*;
 
@@ -41,14 +40,13 @@ public abstract class BasicUpdateAgent implements UpdateAgent {
                       final @Nullable String updateVersion)
     throws UpdateAgentException {
         final ApplicationParameters ap = applicationParameters();
-        final ApplicationDescriptor ad = ap.applicationDescriptor();
         final UpdateMessage message = UpdateMessage
                     .builder()
                     .from(from())
                     .to(to())
                     .type(type)
-                    .artifactDescriptor(ad.artifactDescriptor())
-                    .currentLocation(ad.currentLocation())
+                    .artifactDescriptor(ap.artifactDescriptor())
+                    .currentLocation(ap.currentLocation())
                     .updateLocation(ap.updateLocation())
                     .updateVersion(updateVersion)
                     .build();

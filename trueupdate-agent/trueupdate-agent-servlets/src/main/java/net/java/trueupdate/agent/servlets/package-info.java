@@ -3,7 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update agent which only depends on Servlets, JNDI and JMS.
+ * Provides an update agent for use within Servlet environments.
+ * It depends on the Servlet and JMS APIs.
  *
  * @author Christian Schlichtherle
  */

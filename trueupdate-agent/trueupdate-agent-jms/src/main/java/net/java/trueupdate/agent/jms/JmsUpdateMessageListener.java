@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.servlets;
+package net.java.trueupdate.agent.jms;
 
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.agent.spec.*;
@@ -17,17 +17,17 @@ import net.java.trueupdate.util.Objects;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class ConfiguredUpdateMessageListener extends UpdateMessageListener {
+final class JmsUpdateMessageListener extends UpdateMessageListener {
 
     private final UpdateAgent agent;
     private final UpdateAgentListener listener;
     private final UpdateMessageFilter filter;
 
-    ConfiguredUpdateMessageListener(
+    JmsUpdateMessageListener(
             final UpdateAgent agent,
             final ApplicationParameters parameters) {
         this.agent = Objects.requireNonNull(agent);
-        this.listener = parameters.applicationListener();
+        this.listener = parameters.updateAgentListener();
         this.filter = new UpdateMessageFilter() {
             final ApplicationDescriptor applicationDescriptor =
                     parameters.applicationDescriptor();

@@ -2,10 +2,9 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.servlets.dto;
+package net.java.trueupdate.manager.jms.dto;
 
-import net.java.trueupdate.jms.ci.NamingDto;
-import net.java.trueupdate.jms.ci.MessagingDto;
+import net.java.trueupdate.jms.dto.MessagingDto;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -15,8 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "manager")
 @SuppressWarnings("PublicField")
-public class UpdateManagerParametersDto {
+public class JmsUpdateManagerParametersDto {
     public String updateServiceBaseUri, checkUpdatesIntervalMinutes;
-    public NamingDto naming;
     public MessagingDto messaging;
 }
