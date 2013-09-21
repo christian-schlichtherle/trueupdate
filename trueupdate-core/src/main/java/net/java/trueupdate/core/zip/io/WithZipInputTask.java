@@ -6,7 +6,6 @@ package net.java.trueupdate.core.zip.io;
 
 import java.io.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.util.Objects;
 
 /**
  * @see ZipSources#execute
@@ -17,9 +16,7 @@ implements ZipSources.ExecuteStatement<V, X> {
 
     private final ZipInputTask<V, X> task;
 
-    WithZipInputTask(final ZipInputTask<V, X> task) {
-        this.task = Objects.requireNonNull(task);
-    }
+    WithZipInputTask(final ZipInputTask<V, X> task) { this.task = task; }
 
     @Override public V on(File file) throws X, IOException {
         return on(new ZipFileStore(file));

@@ -5,6 +5,8 @@
 package net.java.trueupdate.core.zip.model;
 
 import java.util.*;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -12,50 +14,50 @@ import static net.java.trueupdate.core.zip.model.DiffModel.*;
 
 @Immutable
 final class EntryNameAndDigestMapAdapter
-extends XmlAdapter<EntryNameAndDigestCollectionHolder,
+extends XmlAdapter<EntryNameAndDigestCollectionDto,
                    Map<String, EntryNameAndDigest>> {
 
-    @Override public Map<String, EntryNameAndDigest> unmarshal(
-            EntryNameAndDigestCollectionHolder holder) {
-        return null == holder ? null : unchangedMap(holder.entries);
+    @Override public @Nullable Map<String, EntryNameAndDigest> unmarshal(
+            @CheckForNull EntryNameAndDigestCollectionDto dto) {
+        return null == dto ? null : unchangedMap(dto.entries);
     }
 
-    @Override public EntryNameAndDigestCollectionHolder marshal(
-            final Map<String, EntryNameAndDigest> map) {
+    @Override public @Nullable EntryNameAndDigestCollectionDto marshal(
+            final @CheckForNull Map<String, EntryNameAndDigest> map) {
         if (null == map || map.isEmpty()) return null;
-        final EntryNameAndDigestCollectionHolder
-                holder = new EntryNameAndDigestCollectionHolder();
+        final EntryNameAndDigestCollectionDto
+                holder = new EntryNameAndDigestCollectionDto();
         holder.entries = map.values();
         return holder;
     }
 }
 
-final class EntryNameAndDigestCollectionHolder {
+final class EntryNameAndDigestCollectionDto {
     @XmlElement(name = "entry")
     public Collection<EntryNameAndDigest> entries;
 }
 
 @Immutable
 final class EntryNameAndTwoDigestsMapAdapter
-extends XmlAdapter<EntryNameAndTwoDigestsCollectionHolder,
+extends XmlAdapter<EntryNameAndTwoDigestsCollectionDto,
                    Map<String, EntryNameAndTwoDigests>> {
 
-    @Override public Map<String, EntryNameAndTwoDigests> unmarshal(
-            EntryNameAndTwoDigestsCollectionHolder holder) {
-        return null == holder ? null : changedMap(holder.entries);
+    @Override public @Nullable Map<String, EntryNameAndTwoDigests> unmarshal(
+            @CheckForNull EntryNameAndTwoDigestsCollectionDto dto) {
+        return null == dto ? null : changedMap(dto.entries);
     }
 
-    @Override public EntryNameAndTwoDigestsCollectionHolder marshal(
-            final Map<String, EntryNameAndTwoDigests> map) {
+    @Override public @Nullable EntryNameAndTwoDigestsCollectionDto marshal(
+            final @CheckForNull Map<String, EntryNameAndTwoDigests> map) {
         if (null == map || map.isEmpty()) return null;
-        final EntryNameAndTwoDigestsCollectionHolder
-                holder = new EntryNameAndTwoDigestsCollectionHolder();
+        final EntryNameAndTwoDigestsCollectionDto
+                holder = new EntryNameAndTwoDigestsCollectionDto();
         holder.entries = map.values();
         return holder;
     }
 }
 
-final class EntryNameAndTwoDigestsCollectionHolder {
+final class EntryNameAndTwoDigestsCollectionDto {
     @XmlElement(name = "entry")
     public Collection<EntryNameAndTwoDigests> entries;
 }

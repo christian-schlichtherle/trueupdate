@@ -5,7 +5,6 @@
 package net.java.trueupdate.core.io;
 
 import java.io.*;
-import net.java.trueupdate.util.Objects;
 
 /**
  * @see Sources#execute
@@ -16,9 +15,7 @@ implements Sources.ExecuteStatement<V, X> {
 
     private final InputTask<V, X> task;
 
-    WithInputTask(final InputTask<V, X> task) {
-        this.task = Objects.requireNonNull(task);
-    }
+    WithInputTask(final InputTask<V, X> task) { this.task = task; }
 
     @Override public V on(File file) throws X, IOException {
         return on(new FileStore(file));

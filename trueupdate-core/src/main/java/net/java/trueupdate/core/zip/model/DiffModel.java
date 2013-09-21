@@ -170,8 +170,8 @@ public final class DiffModel implements Serializable {
         return removed.get(name);
     }
 
-    @Override@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
-    public boolean equals(final Object obj) {
+    @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+    @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof DiffModel)) return false;
         final DiffModel that = (DiffModel) obj;
@@ -282,5 +282,5 @@ public final class DiffModel implements Serializable {
         }
 
         public DiffModel build() { return new DiffModel(this); }
-    }
+    } // Builder
 }
