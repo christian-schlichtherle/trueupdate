@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.jms;
 
+import java.lang.IllegalStateException;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
@@ -161,7 +162,7 @@ public final class MessagingParameters {
          * @throws IllegalStateException if there is no parent builder defined.
          */
         public P inject() {
-            throw new java.lang.IllegalStateException("No parent builder defined.");
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }
