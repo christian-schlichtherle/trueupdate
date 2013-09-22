@@ -26,7 +26,7 @@ final class JAXB {
     }
 
     static String encode(final UpdateMessage message) throws Exception {
-        final StringWriter sw = new StringWriter(256);
+        final StringWriter sw = new StringWriter(1024);
         CONTEXT.createMarshaller().marshal(adapter().marshal(message), sw);
         return sw.toString();
     }
