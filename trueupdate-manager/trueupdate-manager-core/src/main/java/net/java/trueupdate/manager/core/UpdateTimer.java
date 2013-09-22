@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.core;
 
+import net.java.trueupdate.manager.spec.UpdateManager;
 import java.util.logging.*;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.ThreadSafe;

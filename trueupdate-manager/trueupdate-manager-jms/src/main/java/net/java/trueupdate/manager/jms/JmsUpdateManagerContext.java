@@ -41,7 +41,7 @@ public final class JmsUpdateManagerContext {
                 .updateMessageListener(manager)
                 .build();
         timer = new UpdateTimer(manager,
-                                   parameters.checkUpdatesIntervalMinutes());
+                parameters.checkUpdatesIntervalMinutes());
     }
 
     public URI updateServiceBaseUri() {

@@ -97,11 +97,9 @@ abstract class BasicUpdateResolver {
         if (!account.fileResolved()) return;
         assert 0 <= account.usages();
         final File file = account.file();
-        if (file.delete()) {
+        if (file.delete())
             logger.log(Level.INFO, "Deleted file {0} .", file);
-        } else {
-            logger.log(Level.WARNING, "Could not delete file {0} .",
-                    file);
-        }
+        else
+            logger.log(Level.WARNING, "Could not delete file {0} .", file);
     }
 }

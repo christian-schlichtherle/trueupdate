@@ -38,9 +38,7 @@ extends UpdateMessageListener implements UpdateManager {
     /** Returns the update installer. */
     protected abstract UpdateInstaller updateInstaller();
 
-    /** Checks for updates and notifies the subscribed agents. */
-    @Override
-    public void checkUpdates() throws Exception {
+    @Override public void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
@@ -168,15 +166,7 @@ extends UpdateMessageListener implements UpdateManager {
                 "Sent update message to update agent:\n{0}", message);
     }
 
-    /**
-     * Closes this update manager.
-     * This method is idempotent.
-     * However, it's the caller's responsibility to make sure that this update
-     * manager isn't used anymore after the call to this method, even if it
-     * fails.
-     */
-    @Override
-    public void close() throws Exception {
+    @Override public void close() throws Exception {
         updateResolver.close();
         persistSubscriptions();
     }
