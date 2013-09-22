@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.artifact.maven.it
 
+import java.io.File
+import net.java.trueupdate.artifact.maven._
 import net.java.trueupdate.artifact.spec._
 import net.java.trueupdate.core.TestContext
-import javax.xml.bind.JAXBContext
-import net.java.trueupdate.artifact.maven._
-import net.java.trueupdate.artifact.maven.dto.MavenParametersDto
+import org.eclipse.aether.repository._
 
 /** @author Christian Schlichtherle */
 trait MavenArtifactResolverTestContext
@@ -16,15 +16,11 @@ extends TestContext with ArtifactResolverTestContext {
 
   override def artifactResolver = new MavenArtifactResolver(parameters)
 
-  val parameters = MavenParameters.builder.parse(configuration()).build
-
-  private def configuration() =
-    jaxbContext
-      .createUnmarshaller
-      .unmarshal(classOf[MavenArtifactResolverTestContext]
-        .getResource("repositories.xml"))
-      .asInstanceOf[MavenParametersDto]
-
-  final override lazy val jaxbContext =
-    JAXBContext.newInstance(classOf[MavenParametersDto])
+  lazy val parameters = MavenParameters
+    .builder
+    .localRepository(new LocalRepository(new File("target/repository")))
+    .remoteRepositories(new RemoteRepository
+                        .Builder("central", "default", "http://repo1.maven.org/maven2/")
+                        .build)
+    .build
 }
