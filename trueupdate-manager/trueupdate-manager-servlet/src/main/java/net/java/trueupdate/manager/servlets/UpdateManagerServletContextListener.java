@@ -8,6 +8,7 @@ import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import net.java.trueupdate.manager.jms.JmsUpdateManagerContext;
+import net.java.trueupdate.manager.jms.JmsUpdateManagerParameters;
 
 /**
  * Starts and stops the update manager.
@@ -26,21 +27,19 @@ implements ServletContextListener {
     @Override public void contextInitialized(final ServletContextEvent sce) {
         if (null != context) return;
         context = new JmsUpdateManagerContext();
+        final JmsUpdateManagerParameters p = context.parameters();
+        logger.log(Level.CONFIG,
+                "The base URI of the update service is {0} .",
+                p.updateServiceBaseUri());
+        logger.log(Level.CONFIG,
+                "The interval for checking for artifact updates is {0} minutes.",
+                p.checkUpdatesIntervalMinutes());
         try {
             context.start();
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to start the update manager.", ex);
         }
-        logger.log(Level.CONFIG,
-                "The base URI of the update service is {0} .",
-                context.updateServiceBaseUri());
-        logger.log(Level.CONFIG,
-                "The interval for checking for artifact updates is {0} minutes.",
-                context.checkUpdatesIntervalMinutes());
-        logger.log(Level.CONFIG,
-                "The canonical class name of the update installer is {0} .",
-                context.updateInstaller().getClass().getCanonicalName());
     }
 
     @Override public void contextDestroyed(final ServletContextEvent sce) {

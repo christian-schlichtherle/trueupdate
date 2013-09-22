@@ -5,6 +5,7 @@
 package net.java.trueupdate.manager.core;
 
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.ThreadSafe;
@@ -32,11 +33,35 @@ extends UpdateMessageListener implements UpdateManager {
     private final BasicUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
 
-    /** Returns the update client. */
-    protected abstract UpdateClient updateClient();
+    private final UpdateInstaller updateInstaller;
+    private volatile UpdateClient updateClient;
 
-    /** Returns the update installer. */
-    protected abstract UpdateInstaller updateInstaller();
+    protected BasicUpdateManager() {
+        updateInstaller = newUpdateInstaller();
+    }
+
+    private static UpdateInstaller newUpdateInstaller() {
+        final UpdateInstaller ui = ServiceLoader.load(UpdateInstaller.class,
+                Thread.currentThread().getContextClassLoader()
+                ).iterator().next();
+        logger.log(Level.CONFIG,
+                "The class name of the update installer is {0} .",
+                ui.getClass().getName());
+        return ui;
+    }
+
+    private UpdateClient updateClient() {
+        return null != updateClient
+                ? updateClient
+                : (updateClient = newUpdateClient());
+    }
+
+    private UpdateClient newUpdateClient() {
+        return new UpdateClient(updateServiceBaseUri());
+    }
+
+    /** Returns the update service base URI. */
+    protected abstract URI updateServiceBaseUri();
 
     @Override public void checkUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
@@ -109,7 +134,7 @@ extends UpdateMessageListener implements UpdateManager {
     private void install(final UpdateMessage message) throws Exception {
         final UpdateDescriptor descriptor = message.updateDescriptor();
         final File diffZip = updateResolver.resolveDiffZip(descriptor);
-        updateInstaller().install(message, diffZip);
+        updateInstaller.install(message, diffZip);
         updateResolver.release(descriptor);
     }
 

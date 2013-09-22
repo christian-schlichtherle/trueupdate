@@ -4,11 +4,9 @@
  */
 package net.java.trueupdate.manager.jms;
 
-import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.UpdateTimer;
-import net.java.trueupdate.manager.spec.UpdateInstaller;
 
 /**
  * A context for the JMS Update Manager.
@@ -44,17 +42,7 @@ public final class JmsUpdateManagerContext {
                 parameters.checkUpdatesIntervalMinutes());
     }
 
-    public URI updateServiceBaseUri() {
-        return parameters.updateServiceBaseUri();
-    }
-
-    public int checkUpdatesIntervalMinutes() {
-        return parameters.checkUpdatesIntervalMinutes();
-    }
-
-    public UpdateInstaller updateInstaller() {
-        return manager.updateInstaller();
-    }
+    public JmsUpdateManagerParameters parameters() { return parameters; }
 
     public void start() throws Exception {
         receiverThread().start();

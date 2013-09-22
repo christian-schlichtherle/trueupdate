@@ -4,15 +4,13 @@
  */
 package net.java.trueupdate.manager.jms;
 
-import java.util.ServiceLoader;
+import java.net.URI;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
 import javax.naming.Context;
-import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.*;
-import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
@@ -25,29 +23,21 @@ import net.java.trueupdate.message.UpdateMessage;
 @ThreadSafe
 final class JmsUpdateManager extends BasicUpdateManager {
 
-    private final UpdateClient updateClient;
-    private final UpdateInstaller updateInstaller;
-    private final ConnectionFactory connectionFactory;
+    private final URI updateServiceBaseUri;
     private final Context namingContext;
+    private final ConnectionFactory connectionFactory;
 
     private volatile @WillCloseWhenClosed Connection connection;
 
     JmsUpdateManager(final JmsUpdateManagerParameters parameters) {
-        this.updateClient = new UpdateClient(parameters.updateServiceBaseUri());
-        this.updateInstaller = ServiceLoader.load(
-                UpdateInstaller.class,
-                Thread.currentThread().getContextClassLoader()
-                ).iterator().next();
+        updateServiceBaseUri = parameters.updateServiceBaseUri();
         final MessagingParameters mp = parameters.messagingParameters();
-        this.connectionFactory = mp.connectionFactory();
-        this.namingContext = mp.namingContext();
+        namingContext = mp.namingContext();
+        connectionFactory = mp.connectionFactory();
     }
 
-    @Override protected UpdateClient updateClient() { return updateClient; }
-
-    @Override protected UpdateInstaller updateInstaller() {
-        return updateInstaller;
-    }
+    @Override
+    protected URI updateServiceBaseUri() { return updateServiceBaseUri; }
 
     @Override protected void send(UpdateMessage message) throws Exception {
         JmsMessageSender.create(namingContext, connection()).send(message);
