@@ -11,7 +11,7 @@ import javax.jms.*;
 import javax.naming.*;
 import net.java.trueupdate.jms.dto.MessagingDto;
 import net.java.trueupdate.jms.dto.NamingDto;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
@@ -21,6 +21,16 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
  */
 @Immutable
 public final class MessagingParameters {
+
+    private static final Context defaultContext;
+    static {
+        try {
+            defaultContext = (Context) new InitialContext()
+                    .lookup("java:comp/env");
+        } catch (NamingException ex) {
+            throw new java.lang.IllegalStateException(ex);
+        }
+    }
 
     private final Context namingContext;
     private final ConnectionFactory connectionFactory;
@@ -32,7 +42,7 @@ public final class MessagingParameters {
     MessagingParameters(final Builder<?> b) {
         try {
             // HC SVNT DRACONIS
-            this.namingContext = requireNonNull(b.namingContext);
+            this.namingContext = nonNullOr(b.namingContext, defaultContext);
             this.connectionFactory = lookup(b.connectionFactory);
             this.fromDestination = lookup(this.fromName = b.from);
             this.toDestination = lookupNullable(this.toName = b.to);
@@ -85,17 +95,7 @@ public final class MessagingParameters {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> {
 
-        private static final Context defaultContext;
-        static {
-            try {
-                defaultContext = (Context) new InitialContext()
-                        .lookup("java:comp/env");
-            } catch (NamingException ex) {
-                throw new java.lang.IllegalStateException(ex);
-            }
-        }
-
-        @CheckForNull Context namingContext = defaultContext;
+        @CheckForNull Context namingContext;
         @CheckForNull String connectionFactory, from, to;
 
         protected Builder() { }
