@@ -15,18 +15,18 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactArtifactDescriptorDto {
 
-    /** groupId */
-    String g;
+    @XmlElement(name = "g")
+    String groupId;
 
-    /** artifactId */
-    String a;
+    @XmlElement(name = "a")
+    String artifactId;
 
-    /** version */
-    String v;
+    @XmlElement(name = "v")
+    String version;
 
-    /** classifier */
-    String c;
+    @XmlElement(name = "c")
+    String classifier;
 
-    /** extension */
-    String e;
+    @XmlElement(name = "e")
+    String extension;
 }

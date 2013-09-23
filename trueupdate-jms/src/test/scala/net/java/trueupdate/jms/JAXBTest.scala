@@ -8,9 +8,10 @@ import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.prop.PropertyChecks._
 import net.java.trueupdate.message.UpdateMessage
 import net.java.trueupdate.message.UpdateMessage.Type
-import java.util.logging.{Level, Logger}
+import java.util.logging._
 
 /**
  * @author Christian Schlichtherle
@@ -18,33 +19,46 @@ import java.util.logging.{Level, Logger}
 @RunWith(classOf[JUnitRunner])
 class JAXBTest extends WordSpec {
 
-  def updateMessage = UpdateMessage
-    .builder
-    .from("from")
-    .to("to")
-    .`type`(Type.UPDATE_NOTICE)
-    .artifactDescriptor()
-      .groupId("groupId")
-      .artifactId("artifactId")
-      .version("version")
-      .classifier("classifier")
-      .extension("extension")
-      .inject
-    .currentLocation("currentLocation")
-    .updateLocation("updateLocation")
-    .updateVersion("updateVersion")
-    .status("status")
-    .build
+  def builder = UpdateMessage.builder
 
   "An update message" when {
     "constructed" should {
       "be round-trip XML-serializable" in {
-        val original = updateMessage
-        val originalEncoding = JAXB.encode(original)
-        JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
-        val clone = JAXB.decode(originalEncoding)
-        val cloneEncoding = JAXB.encode(clone)
-        cloneEncoding should equal (originalEncoding)
+        val table = Table(
+          ("original"),
+          (builder
+            .from("from")
+            .to("to")
+            .`type`(Type.UPDATE_NOTICE)
+            .artifactDescriptor()
+              .groupId("groupId")
+              .artifactId("artifactId")
+              .version("version")
+              .inject),
+          (builder
+            .from("from")
+            .to("to")
+            .`type`(Type.UPDATE_NOTICE)
+            .artifactDescriptor()
+              .groupId("groupId")
+              .artifactId("artifactId")
+              .version("version")
+              .classifier("classifier")
+              .extension("extension")
+              .inject
+            .updateVersion("updateVersion")
+            .currentLocation("currentLocation")
+            .updateLocation("updateLocation")
+            .status("status"))
+        )
+        forAll(table) { builder =>
+          val original = builder.build
+          val originalEncoding = JAXB.encode(original)
+          JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
+          val clone = JAXB.decode(originalEncoding)
+          val cloneEncoding = JAXB.encode(clone)
+          cloneEncoding should equal (originalEncoding)
+        }
       }
     }
   }

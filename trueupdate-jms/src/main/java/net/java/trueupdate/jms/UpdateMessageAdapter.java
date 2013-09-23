@@ -24,24 +24,24 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
     @Override
     public @Nullable UpdateMessage unmarshal(final @CheckForNull CompactUpdateMessageDto cumd) throws Exception {
         if (null == cumd) return null;
-        final CompactArtifactDescriptorDto cadd = cumd.ad;
+        final CompactArtifactDescriptorDto cadd = cumd.artifactDescriptor;
         return UpdateMessage
                 .builder()
-                .timestamp(cumd.ts)
-                .from(cumd.fr)
+                .timestamp(cumd.timestamp)
+                .from(cumd.from)
                 .to(cumd.to)
-                .type(Type.valueOf(cumd.ty))
+                .type(Type.valueOf(cumd.type))
                 .artifactDescriptor()
-                    .groupId(cadd.g)
-                    .artifactId(cadd.a)
-                    .version(cadd.v)
-                    .classifier(cadd.c)
-                    .extension(cadd.e)
+                    .groupId(cadd.groupId)
+                    .artifactId(cadd.artifactId)
+                    .version(cadd.version)
+                    .classifier(cadd.classifier)
+                    .extension(cadd.extension)
                     .inject()
-                .updateVersion(cumd.uv)
-                .currentLocation(cumd.cl)
-                .updateLocation(cumd.ul)
-                .status(cumd.st)
+                .updateVersion(cumd.updateVersion)
+                .currentLocation(cumd.currentLocation)
+                .updateLocation(cumd.updateLocation)
+                .status(cumd.status)
                 .build();
     }
 
@@ -50,21 +50,26 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
         if (null == um) return null;
         final ArtifactDescriptor ad = um.artifactDescriptor();
         final CompactArtifactDescriptorDto cadd = new CompactArtifactDescriptorDto();
-        cadd.g = ad.groupId();
-        cadd.a = ad.artifactId();
-        cadd.v = ad.version();
-        cadd.c = ad.classifier();
-        cadd.e = ad.extension();
+        cadd.groupId = ad.groupId();
+        cadd.artifactId = ad.artifactId();
+        cadd.version = ad.version();
+        cadd.classifier = nonDefaultOrNull(ad.classifier(), "");
+        cadd.extension = nonDefaultOrNull(ad.extension(), "jar");
         final CompactUpdateMessageDto cumd = new CompactUpdateMessageDto();
-        cumd.ts = um.timestamp();
-        cumd.fr = um.from();
+        cumd.timestamp = um.timestamp();
+        cumd.from = um.from();
         cumd.to = um.to();
-        cumd.ty = um.type().name();
-        cumd.ad = cadd;
-        cumd.uv = um.updateVersion();
-        cumd.cl = um.currentLocation();
-        cumd.ul = um.updateLocation();
-        cumd.st = um.status();
+        cumd.type = um.type().name();
+        cumd.artifactDescriptor = cadd;
+        cumd.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
+        cumd.currentLocation = nonDefaultOrNull(um.currentLocation(), "");
+        cumd.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
+        cumd.status = nonDefaultOrNull(um.status(), "");
         return cumd;
+    }
+
+    private static @Nullable String nonDefaultOrNull(String string,
+                                                     @Nullable String defaultValue) {
+        return string.equals(defaultValue) ? null : string;
     }
 }

@@ -12,34 +12,34 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schlichtherle
  */
 @SuppressWarnings({ "PublicField", "PackageVisibleField" })
-@XmlRootElement(name = "um")
+@XmlRootElement(name = "m")
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactUpdateMessageDto {
 
-    /** timestamp */
-    long ts;
+    @XmlElement(name = "d")
+    long timestamp;
 
-    /** from */
-    String fr;
+    @XmlElement(name = "f")
+    String from;
 
-    /** to */
+    @XmlElement(name = "t")
     String to;
 
-    /** type */
-    String ty;
+    @XmlElement(name = "y")
+    String type;
 
-    /** artifactDescriptor */
-    CompactArtifactDescriptorDto ad;
+    @XmlElement(name = "a")
+    CompactArtifactDescriptorDto artifactDescriptor;
 
-    /** updateVersion */
-    String uv;
+    @XmlElement(name = "v")
+    String updateVersion;
 
-    /** currentLocation */
-    String cl;
+    @XmlElement(name = "l")
+    String currentLocation;
 
-    /** updateLocation */
-    String ul;
+    @XmlElement(name = "u")
+    String updateLocation;
 
-    /** status */
-    String st;
+    @XmlElement(name = "s")
+    String status;
 }
