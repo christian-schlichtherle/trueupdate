@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 @SuppressWarnings("PublicField")
 //@XmlRootElement(name = "repositories")
 @XmlType(name = "MavenParameters", propOrder = { "local", "remotes" })
-public class MavenParametersDto {
+public final class MavenParametersDto {
 
     @XmlElement(required = true)
     public LocalRepositoryDto local;

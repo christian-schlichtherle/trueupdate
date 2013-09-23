@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "Messaging", propOrder = { })
 @SuppressWarnings("PublicField")
-public class MessagingDto {
+public final class MessagingDto {
 
     public NamingDto naming;
 

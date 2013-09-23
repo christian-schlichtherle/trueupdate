@@ -15,7 +15,7 @@ import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
  */
 @XmlType(name = "ApplicationParameters", propOrder = { })
 @SuppressWarnings("PublicField")
-public class ApplicationParametersDto {
+public final class ApplicationParametersDto {
 
     @XmlElement(required = true)
     public ArtifactDescriptorDto artifact;

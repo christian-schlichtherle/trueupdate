@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "Naming", propOrder = { })
 @SuppressWarnings("PublicField")
-public class NamingDto {
+public final class NamingDto {
 
     @XmlElement(required = true)
     public String initialContextClass, relativePath;

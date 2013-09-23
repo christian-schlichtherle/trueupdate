@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "LocalRepository", propOrder = { })
 @SuppressWarnings("PublicField")
-public class LocalRepositoryDto {
+public final class LocalRepositoryDto {
 
     @XmlElement(required = true)
     public String basedir;

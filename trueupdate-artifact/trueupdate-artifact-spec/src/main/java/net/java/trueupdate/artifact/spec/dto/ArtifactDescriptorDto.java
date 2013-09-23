@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ArtifactDescriptor", propOrder = { })
 @SuppressWarnings("PublicField")
-public class ArtifactDescriptorDto {
+public final class ArtifactDescriptorDto {
 
     @XmlElement(required = true)
     public String groupId, artifactId, version;

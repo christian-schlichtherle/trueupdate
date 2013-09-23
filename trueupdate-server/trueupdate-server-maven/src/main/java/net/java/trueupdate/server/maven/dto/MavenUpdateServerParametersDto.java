@@ -15,7 +15,7 @@ import net.java.trueupdate.artifact.maven.dto.MavenParametersDto;
 @XmlRootElement(name = "server")
 @XmlType(name = "MavenUpdateServerParameters", propOrder = { })
 @SuppressWarnings("PublicField")
-public class MavenUpdateServerParametersDto {
+public final class MavenUpdateServerParametersDto {
 
     @XmlAttribute(required = true)
     public String version;

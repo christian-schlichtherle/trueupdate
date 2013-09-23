@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "RemoteRepository", propOrder = { })
 @SuppressWarnings("PublicField")
-public class RemoteRepositoryDto {
-
+public final class RemoteRepositoryDto {
     public String id, type, url;
 }

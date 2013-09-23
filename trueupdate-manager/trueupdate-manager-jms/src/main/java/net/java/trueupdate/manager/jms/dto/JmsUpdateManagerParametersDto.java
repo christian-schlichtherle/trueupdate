@@ -15,7 +15,7 @@ import net.java.trueupdate.jms.dto.MessagingDto;
 @XmlRootElement(name = "manager")
 @XmlType(name = "JmsUpdateManagerParameters", propOrder = { })
 @SuppressWarnings("PublicField")
-public class JmsUpdateManagerParametersDto {
+public final class JmsUpdateManagerParametersDto {
 
     @XmlAttribute(required = true)
     public String version;
