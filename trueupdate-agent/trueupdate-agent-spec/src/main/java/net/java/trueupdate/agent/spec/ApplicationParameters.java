@@ -27,10 +27,10 @@ public final class ApplicationParameters {
     private final String currentLocation, updateLocation;
 
     ApplicationParameters(final Builder<?> b) {
-        this.updateAgentListener = requireNonNull(b.updateAgentListener);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.currentLocation = requireNonEmpty(b.currentLocation);
         this.updateLocation = nonEmptyOr(b.updateLocation, currentLocation);
+        this.updateAgentListener = requireNonNull(b.updateAgentListener);
     }
 
     /** Parses the given configuration item. */
@@ -78,20 +78,20 @@ public final class ApplicationParameters {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> {
 
-        @CheckForNull UpdateAgentListener updateAgentListener;
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String currentLocation, updateLocation;
+        @CheckForNull UpdateAgentListener updateAgentListener;
 
         protected Builder() { }
 
         /** Parses the given configuration item. */
         public Builder<P> parse(final ApplicationParametersDto ci) {
-            if (null != ci.listenerClass)
-                updateAgentListener = listener(ci.listenerClass);
             if (null != ci.artifact)
                 artifactDescriptor = ArtifactDescriptor.parse(ci.artifact);
             currentLocation = resolve(ci.currentLocation, currentLocation);
             updateLocation = resolve(ci.updateLocation, updateLocation);
+            if (null != ci.listenerClass)
+                updateAgentListener = listener(ci.listenerClass);
             return this;
         }
 
