@@ -11,35 +11,41 @@ import javax.xml.bind.annotation.*;
  *
  * @author Christian Schlichtherle
  */
-@SuppressWarnings({ "PublicField", "PackageVisibleField" })
+@SuppressWarnings("PackagePrivateField")
 @XmlRootElement(name = "m")
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactUpdateMessageDto {
 
-    @XmlElement(name = "d")
+    @XmlElement(name = "a")
     long timestamp;
 
-    @XmlElement(name = "f")
+    @XmlElement(name = "b")
     String from;
 
-    @XmlElement(name = "t")
+    @XmlElement(name = "c")
     String to;
 
-    @XmlElement(name = "y")
+    @XmlElement(name = "d")
     String type;
 
-    @XmlElement(name = "a")
+    @XmlElement(name = "e")
     CompactArtifactDescriptorDto artifactDescriptor;
 
-    @XmlElement(name = "v")
+    @XmlElement(name = "f")
     String updateVersion;
 
-    @XmlElement(name = "l")
+    @XmlElement(name = "g")
     String currentLocation;
 
-    @XmlElement(name = "u")
+    @XmlElement(name = "h")
     String updateLocation;
 
-    @XmlElement(name = "s")
-    String status;
+    @XmlElement(name = "i")
+    String statusText;
+
+    @XmlElement(name = "j")
+    String statusCode;
+
+    @XmlElement(name = "k")
+    Object[] statusArgs;
 }

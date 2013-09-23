@@ -26,14 +26,30 @@ final class JAXB {
 
     static String encode(final UpdateMessage message) throws Exception {
         final StringWriter sw = new StringWriter(1024);
-        CONTEXT.createMarshaller().marshal(adapter().marshal(message), sw);
+        final Marshaller m = marshaller();
+        //m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        try {
+            if (0 != message.numberOfStatusArgs())
+                m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
+                              new CompactNamespaceMapper());
+        } catch(PropertyException aDifferentJaxbImplementationIsUsed) {
+        }
+        m.marshal(adapter().marshal(message), sw);
         return sw.toString();
     }
 
     static UpdateMessage decode(String string) throws Exception {
         return (UpdateMessage) adapter().unmarshal(
-                (CompactUpdateMessageDto) CONTEXT.createUnmarshaller()
-                    .unmarshal(new StringReader(string)));
+                (CompactUpdateMessageDto) unmarshaller().unmarshal(
+                    new StringReader(string)));
+    }
+
+    private static Marshaller marshaller() throws JAXBException {
+        return CONTEXT.createMarshaller();
+    }
+
+    private static Unmarshaller unmarshaller() throws JAXBException {
+        return CONTEXT.createUnmarshaller();
     }
 
     private static UpdateMessageAdapter adapter() {

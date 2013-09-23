@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.*;
  *
  * @author Christian Schlichtherle
  */
-@SuppressWarnings({ "PublicField", "PackageVisibleField" })
+@SuppressWarnings("PackagePrivateField")
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactArtifactDescriptorDto {
 

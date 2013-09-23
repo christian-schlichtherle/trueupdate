@@ -41,7 +41,9 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
                 .updateVersion(cumd.updateVersion)
                 .currentLocation(cumd.currentLocation)
                 .updateLocation(cumd.updateLocation)
-                .status(cumd.status)
+                .statusText(cumd.statusText)
+                .statusCode(cumd.statusCode)
+                .statusArgs(cumd.statusArgs)
                 .build();
     }
 
@@ -64,7 +66,10 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
         cumd.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
         cumd.currentLocation = nonDefaultOrNull(um.currentLocation(), "");
         cumd.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
-        cumd.status = nonDefaultOrNull(um.status(), "");
+        cumd.statusText = nonDefaultOrNull(um.statusText(), "");
+        cumd.statusCode = nonDefaultOrNull(um.statusCode(), "");
+        final Object[] args = um.statusArgs();
+        cumd.statusArgs = 0 == args.length ? null : args;
         return cumd;
     }
 

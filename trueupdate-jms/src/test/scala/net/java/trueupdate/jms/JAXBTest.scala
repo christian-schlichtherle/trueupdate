@@ -10,7 +10,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
 import net.java.trueupdate.message.UpdateMessage
-import net.java.trueupdate.message.UpdateMessage.Type
+import net.java.trueupdate.message.UpdateMessage._
 import java.util.logging._
 
 /**
@@ -49,15 +49,16 @@ class JAXBTest extends WordSpec {
             .updateVersion("updateVersion")
             .currentLocation("currentLocation")
             .updateLocation("updateLocation")
-            .status("status"))
+            .statusText("statusText")
+            .statusCode("") // ! empty => MissingResourceException
+            .statusArgs(1: java.lang.Integer, 2: java.lang.Integer, 3: java.lang.Integer))
         )
         forAll(table) { builder =>
           val original = builder.build
           val originalEncoding = JAXB.encode(original)
           JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
           val clone = JAXB.decode(originalEncoding)
-          val cloneEncoding = JAXB.encode(clone)
-          cloneEncoding should equal (originalEncoding)
+          clone should equal (original)
         }
       }
     }

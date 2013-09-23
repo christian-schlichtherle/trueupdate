@@ -4,7 +4,11 @@
  */
 package net.java.trueupdate.message;
 
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
@@ -21,12 +25,17 @@ import static net.java.trueupdate.util.Objects.*;
 @Immutable
 public final class UpdateMessage {
 
+    private static final ResourceBundle
+            bundle = ResourceBundle.getBundle(UpdateMessage.class.getName());
+
     private final long timestamp;
     private final String from, to;
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
-    private final String updateVersion, status;
+    private final String updateVersion, statusText;
     private final String currentLocation, updateLocation;
+    private final String statusCode;
+    private final Object[] statusArgs;
 
     UpdateMessage(final Builder<?> b) {
         this.timestamp = nonNullOrNow(b.timestamp);
@@ -37,7 +46,10 @@ public final class UpdateMessage {
         this.updateVersion = nonNullOr(b.updateVersion, "");
         this.currentLocation = nonNullOr(b.currentLocation, "");
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
-        this.status = nonNullOr(b.status, "");
+        this.statusText = nonNullOr(b.statusText, "");
+        this.statusCode = nonNullOr(b.statusCode, "");
+        final Object[] args = b.statusArgs;
+        this.statusArgs = null != args ? args.clone() : new Object[0];
     }
 
     private static long nonNullOrNow(Long timestamp) {
@@ -47,15 +59,17 @@ public final class UpdateMessage {
     /** Returns a new builder with all properties set from this instance. */
     public Builder<Void> update() {
         return builder()
-                .timestamp(timestamp())
-                .from(from())
-                .to(to())
-                .type(type())
-                .artifactDescriptor(artifactDescriptor())
-                .updateVersion(updateVersion())
-                .currentLocation(currentLocation())
-                .updateLocation(updateLocation())
-                .status(status());
+                .timestamp(timestamp)
+                .from(from)
+                .to(to)
+                .type(type)
+                .artifactDescriptor(artifactDescriptor)
+                .updateVersion(updateVersion)
+                .currentLocation(currentLocation)
+                .updateLocation(updateLocation)
+                .statusText(statusText)
+                .statusCode(statusCode)
+                .statusArgs(statusArgs);
     }
 
     /**
@@ -75,7 +89,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given update message timestamp. */
     public UpdateMessage timestamp(long timestamp) {
-        return timestamp() == timestamp
+        return timestamp == this.timestamp
                 ? this
                 : update().timestamp(timestamp).build();
     }
@@ -85,7 +99,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given update message sender. */
     public UpdateMessage from(String from) {
-        return from().equals(from)
+        return this.from.equals(from)
                 ? this
                 : update().from(from).build();
     }
@@ -95,7 +109,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given update message recipient. */
     public UpdateMessage to(String to) {
-        return to().equals(to)
+        return to.equals(this.to)
                 ? this
                 : update().to(to).build();
     }
@@ -105,7 +119,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given update message type. */
     public UpdateMessage type(Type type) {
-        return type().equals(type)
+        return type.equals(this.type)
                 ? this
                 : update().type(type).build();
     }
@@ -117,7 +131,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given artifact descriptor. */
     public UpdateMessage artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
-        return artifactDescriptor().equals(artifactDescriptor)
+        return artifactDescriptor.equals(this.artifactDescriptor)
                 ? this
                 : update().artifactDescriptor(artifactDescriptor).build();
     }
@@ -127,7 +141,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given update version. */
     public UpdateMessage updateVersion(String updateVersion) {
-        return updateVersion().equals(updateVersion)
+        return updateVersion.equals(this.updateVersion)
                 ? this
                 : update().updateVersion(updateVersion).build();
     }
@@ -137,7 +151,7 @@ public final class UpdateMessage {
 
     /** Returns an update message with the given current location. */
     public UpdateMessage currentLocation(String currentLocation) {
-        return currentLocation().equals(currentLocation)
+        return currentLocation.equals(this.currentLocation)
                 ? this
                 : update().currentLocation(currentLocation).build();
     }
@@ -150,58 +164,99 @@ public final class UpdateMessage {
     public String updateLocation() { return updateLocation; }
 
     /** Returns an update message with the given update location. */
-    public UpdateMessage updateLocation(String newLocation) {
-        return updateLocation().equals(newLocation)
+    public UpdateMessage updateLocation(String updateLocation) {
+        return updateLocation.equals(this.updateLocation)
                 ? this
-                : update().updateLocation(newLocation).build();
-    }
-
-    /** Returns the status text. */
-    public String status() { return status; }
-
-    /** Returns an update message with the given status text. */
-    public UpdateMessage status(final String status) {
-        return status().equals(status)
-                ? this
-                : update().status(status).build();
+                : update().updateLocation(updateLocation).build();
     }
 
     /**
-     * Returns a success response for this update message with an empty status,
+     * Returns the effective status text which gets computed from the status
+     * text or the status code and the status args, whichever is first found to
+     * be non-empty.
+     * This method uses the default locale to format the status text.
+     */
+    public String status() { return status(Locale.getDefault()); }
+
+    /**
+     * Returns the effective status text which gets computed from the status
+     * text or the status code and status args, whichever is non-empty first.
+     * This method uses the given locale to format the status text.
+     */
+    public String status(Locale locale) {
+        return 0 != statusArgs.length
+                ? new MessageFormat(bundle.getString(statusCode), locale).format(statusArgs())
+                : statusText;
+    }
+
+    public UpdateMessage status(String text) {
+        return update()
+                .statusText(text)
+                .statusCode(null)
+                .statusArgs((Object[]) null)
+                .build();
+    }
+
+    public UpdateMessage status(String code, Object... args) {
+        return update()
+                .statusText(null)
+                .statusCode(code)
+                .statusArgs(args)
+                .build();
+    }
+
+    /** Returns the status text. */
+    public String statusText() { return statusText; }
+
+    /** Returns the status code. */
+    public String statusCode() { return statusCode; }
+
+    /** Returns a protective copy of the status args. */
+    public Object[] statusArgs() { return statusArgs.clone(); }
+
+    /** Returns the number of status args. */
+    public int numberOfStatusArgs() { return statusArgs.length; }
+
+    /**
+     * Returns a success response for this update message with an empty statusText,
      * swapped from/to URIs and an updated time stamp.
      * First, checks if the type of this update message is a {@code *_REQUEST}.
      * If no, then an {@link UnsupportedOperationException} gets thrown.
      * If yes, then a new update message of the corresponding type
-     * {@code *_SUCCESS_RESPONSE} gets returned with an empty status and an
+     * {@code *_SUCCESS_RESPONSE} gets returned with an empty statusText and an
      * updated time stamp.
      */
     public UpdateMessage successResponse() {
         return update()
                 .timestamp(null)
-                .type(type().successResponse())
-                .from(to())
-                .to(from())
-                .status(null)
+                .type(type.successResponse())
+                .from(to)
+                .to(from)
+                .statusText(null)
+                .statusCode(null)
+                .statusArgs((Object[]) null)
                 .build();
     }
 
     /**
      * Returns a failure response for this update message with the string
-     * representation of the given exception as the status, swapped from/to
+     * representation of the given exception as the statusText, swapped from/to
      * URIs and an updated time stamp.
      * First, checks if the type of this update message is a {@code *_REQUEST}.
      * If no, then an {@link UnsupportedOperationException} gets thrown.
      * If yes, then a new update message of the corresponding type
      * {@code *_FAILURE_RESPONSE} gets returned with the string representation
-     * of the given exception as the status and an updated time stamp.
+     * of the given exception as the statusText and an updated time stamp.
      */
     public UpdateMessage failureResponse(Exception ex) {
         return update()
                 .timestamp(null)
-                .type(type().failureResponse())
-                .from(to())
-                .to(from())
-                .status(ex.toString())
+                .type(type.failureResponse())
+                .from(to)
+                .to(from)
+                .statusText(ex.toString())
+                .statusCode(null)
+                .statusArgs((Object[]) null)
                 .build();
     }
 
@@ -210,8 +265,8 @@ public final class UpdateMessage {
         try {
             return ApplicationDescriptor
                     .builder()
-                    .artifactDescriptor(artifactDescriptor())
-                    .currentLocation(currentLocation())
+                    .artifactDescriptor(artifactDescriptor)
+                    .currentLocation(currentLocation)
                     .build();
         } catch (IllegalArgumentException ex) {
             throw new IllegalStateException(ex);
@@ -223,8 +278,8 @@ public final class UpdateMessage {
         try {
             return UpdateDescriptor
                     .builder()
-                    .artifactDescriptor(artifactDescriptor())
-                    .updateVersion(updateVersion())
+                    .artifactDescriptor(artifactDescriptor)
+                    .updateVersion(updateVersion)
                     .build();
         } catch (IllegalArgumentException ex) {
             throw new IllegalStateException(ex);
@@ -235,33 +290,38 @@ public final class UpdateMessage {
      * Returns {@code true} if and only if the given object is an
      * {@code UpdateMessage} with equal properties.
      */
-    @Override public boolean equals(final Object obj) {
+    @Override@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof UpdateMessage)) return false;
         final UpdateMessage that = (UpdateMessage) obj;
-        return  this.timestamp() == that.timestamp() &&
-                this.from().equals(that.from()) &&
-                this.to().equals(that.to()) &&
-                this.type().equals(that.type()) &&
-                this.artifactDescriptor().equals(that.artifactDescriptor()) &&
-                this.updateVersion().equals(that.updateVersion()) &&
-                this.currentLocation().equals(that.currentLocation()) &&
-                this.updateLocation().equals(that.updateLocation()) &&
-                this.status().equals(that.status());
+        return  this.timestamp == that.timestamp &&
+                this.from.equals(that.from) &&
+                this.to.equals(that.to) &&
+                this.type.equals(that.type) &&
+                this.artifactDescriptor.equals(that.artifactDescriptor) &&
+                this.updateVersion.equals(that.updateVersion) &&
+                this.currentLocation.equals(that.currentLocation) &&
+                this.updateLocation.equals(that.updateLocation) &&
+                this.statusText.equals(that.statusText) &&
+                this.statusCode.equals(that.statusCode) &&
+                Arrays.equals(this.statusArgs, that.statusArgs);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
     @Override public int hashCode() {
         int hash = 17;
         hash = 31 * hash + hashCode(timestamp);
-        hash = 31 * hash + from().hashCode();
-        hash = 31 * hash + to().hashCode();
-        hash = 31 * hash + type().hashCode();
-        hash = 31 * hash + artifactDescriptor().hashCode();
-        hash = 31 * hash + updateVersion().hashCode();
-        hash = 31 * hash + currentLocation().hashCode();
-        hash = 31 * hash + updateLocation().hashCode();
-        hash = 31 * hash + status().hashCode();
+        hash = 31 * hash + from.hashCode();
+        hash = 31 * hash + to.hashCode();
+        hash = 31 * hash + type.hashCode();
+        hash = 31 * hash + artifactDescriptor.hashCode();
+        hash = 31 * hash + updateVersion.hashCode();
+        hash = 31 * hash + currentLocation.hashCode();
+        hash = 31 * hash + updateLocation.hashCode();
+        hash = 31 * hash + statusText.hashCode();
+        hash = 31 * hash + statusCode.hashCode();
+        hash = 31 * hash + statusArgs.hashCode();
         return hash;
     }
 
@@ -272,19 +332,20 @@ public final class UpdateMessage {
     /** Returns a human readable string representation of this object. */
     @Override public String toString() {
         StringBuilder sb = new StringBuilder(128);
-        sb      .append("Timestamp: ").append(new Date(timestamp())).append('\n')
-                .append("From: ").append(from()).append('\n')
-                .append("To: ").append(to()).append('\n')
-                .append("Type: ").append(type()).append('\n')
-                .append("Artifact-Descriptor: ").append(artifactDescriptor()).append('\n');
-        if (!updateVersion().isEmpty())
-            sb.append("Update-Version: ").append(updateVersion()).append('\n');
-        if (!currentLocation().isEmpty())
-            sb.append("Current-Location: ").append(currentLocation()).append('\n');
-        if (!updateLocation().isEmpty())
-            sb.append("Update-Location: ").append(updateLocation()).append('\n');
-        if (!status().isEmpty())
-            sb.append("Status: ").append(status()).append('\n');
+        sb      .append("Timestamp: ").append(new Date(timestamp)).append('\n')
+                .append("From: ").append(from).append('\n')
+                .append("To: ").append(to).append('\n')
+                .append("Type: ").append(type).append('\n')
+                .append("Artifact-Descriptor: ").append(artifactDescriptor).append('\n');
+        if (!updateVersion.isEmpty())
+            sb.append("Update-Version: ").append(updateVersion).append('\n');
+        if (!currentLocation.isEmpty())
+            sb.append("Current-Location: ").append(currentLocation).append('\n');
+        if (!updateLocation.isEmpty())
+            sb.append("Update-Location: ").append(updateLocation).append('\n');
+        final String status = status();
+        if (!status.isEmpty())
+            sb.append("Status: ").append(status).append('\n');
         return sb.toString();
     }
 
@@ -527,8 +588,10 @@ public final class UpdateMessage {
         @CheckForNull String from, to;
         @CheckForNull Type type;
         @CheckForNull ArtifactDescriptor artifactDescriptor;
-        @CheckForNull String updateVersion, status;
+        @CheckForNull String updateVersion, statusText;
         @CheckForNull String currentLocation, updateLocation;
+        @CheckForNull String statusCode;
+        @CheckForNull Object statusArgs[];
 
         protected Builder() { }
 
@@ -581,8 +644,19 @@ public final class UpdateMessage {
             return this;
         }
 
-        public Builder<P> status(final @Nullable String status) {
-            this.status = status;
+        public Builder<P> statusText(final @Nullable String text) {
+            this.statusText = text;
+            return this;
+        }
+
+        public Builder<P> statusCode(final @Nullable String code) {
+            this.statusCode = code;
+            return this;
+        }
+
+        @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+        public Builder<P> statusArgs(final @Nullable Object... args) {
+            this.statusArgs = args;
             return this;
         }
 

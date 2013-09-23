@@ -29,13 +29,6 @@ public final class UpdateDescriptor {
         this.updateVersion = requireNonEmpty(b.updateVersion);
     }
 
-    /** Returns a new builder with all properties set from this instance. */
-    public Builder<Void> update() {
-        return builder()
-                .artifactDescriptor(artifactDescriptor())
-                .updateVersion(updateVersion());
-    }
-
     /** Returns a new builder for an update descriptor. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
@@ -44,34 +37,21 @@ public final class UpdateDescriptor {
         return artifactDescriptor;
     }
 
-    /** Returns an update descriptor with the given artifact descriptor. */
-    public UpdateDescriptor artifactDescriptor(ArtifactDescriptor artifactDescriptor) {
-        return artifactDescriptor().equals(artifactDescriptor)
-                ? this
-                : update().artifactDescriptor(artifactDescriptor).build();
-    }
-
     /** Returns the update version. */
     public String updateVersion() { return updateVersion; }
 
-    /** Returns an update descriptor with the given update version. */
-    public UpdateDescriptor updateVersion(String updateVersion) {
-        return updateVersion().equals(updateVersion)
-                ? this
-                : update().updateVersion(updateVersion).build();
-    }
-
-    @Override public boolean equals(Object obj) {
+    @Override@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof UpdateDescriptor)) return false;
         final UpdateDescriptor that = (UpdateDescriptor) obj;
-        return  this.artifactDescriptor().equals(that.artifactDescriptor()) &&
-                this.updateVersion().equals(that.updateVersion());
+        return  this.artifactDescriptor.equals(that.artifactDescriptor) &&
+                this.updateVersion.equals(that.updateVersion);
     }
 
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + artifactDescriptor().hashCode();
+        hash = 31 * hash + artifactDescriptor.hashCode();
         hash = 31 * hash + updateVersion.hashCode();
         return hash;
     }
@@ -108,9 +88,7 @@ public final class UpdateDescriptor {
             return this;
         }
 
-        public UpdateDescriptor build() {
-            return new UpdateDescriptor(this);
-        }
+        public UpdateDescriptor build() { return new UpdateDescriptor(this); }
 
         /**
          * Injects the product of this builder into the parent builder, if

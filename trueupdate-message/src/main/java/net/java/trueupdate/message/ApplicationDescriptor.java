@@ -41,19 +41,20 @@ public final class ApplicationDescriptor {
     public String currentLocation() { return currentLocation; }
 
     @Override
+    @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof ApplicationDescriptor)) return false;
         final ApplicationDescriptor that = (ApplicationDescriptor) obj;
-        return  this.artifactDescriptor().equals(that.artifactDescriptor()) &&
-                this.currentLocation().equals(that.currentLocation());
+        return  this.artifactDescriptor.equals(that.artifactDescriptor) &&
+                this.currentLocation.equals(that.currentLocation);
     }
 
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + artifactDescriptor().hashCode();
-        hash = 31 * hash + currentLocation().hashCode();
+        hash = 31 * hash + artifactDescriptor.hashCode();
+        hash = 31 * hash + currentLocation.hashCode();
         return hash;
     }
 
