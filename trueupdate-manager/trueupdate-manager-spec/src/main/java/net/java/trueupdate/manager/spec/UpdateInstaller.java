@@ -25,7 +25,7 @@ public interface UpdateInstaller {
      *
      * @param message the update message of the
      *        {@linkplain UpdateMessage#type() type}
-     *        {@link UpdateMessage.Type#INSTALLATION_REQUEST}.
+     *        {@link net.java.trueupdate.message.UpdateMessage.Type#INSTALLATION_REQUEST}.
      * @param diffZip the diff zip file for the current artifact.
      *        The implementation must not modify or delete this file.
      * @throws Exception at the discretion of the implementation.
