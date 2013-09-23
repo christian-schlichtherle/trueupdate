@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+- Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+- All rights reserved. Use is subject to license terms.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="https://trueupdate.java.net/xml/ns/config"
+           elementFormDefault="qualified"
+           targetNamespace="https://trueupdate.java.net/xml/ns/config"
+           version="1.0">
+
+    <xs:element name="agent" type="JmsUpdateAgentParameters">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Configures the update agent.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="manager" type="JmsUpdateManagerParameters">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Configures the update manager.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="server" type="MavenUpdateServerParameters">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Configures the update server.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="JmsUpdateAgentParameters">
+        <xs:all>
+            <xs:element name="application" type="ApplicationParameters">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures the client application.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="messaging" type="Messaging">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures messaging parameters for use with JMS.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="JmsUpdateManagerParameters">
+        <xs:all>
+            <xs:element name="updateServiceBaseUri" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The base URI of the update service.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="checkUpdatesIntervalMinutes" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The interval for checking for artifact updates in
+                        minutes.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="messaging" type="Messaging">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures messaging parameters for use with JMS.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="MavenUpdateServerParameters">
+        <xs:sequence>
+            <xs:element name="repositories" type="MavenParameters">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures Maven parameters.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ApplicationParameters">
+        <xs:all>
+            <xs:element name="artifact" type="ArtifactDescriptor">
+                <xs:annotation>
+                    <xs:documentation>
+                        The Maven coordinates for the client application.
+                        See http://maven.apache.org/pom.html#Maven_Coordinates .
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="location" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        The current location of the client application.
+                        The syntax for this string is defined by the
+                        TrueUpdate Installer component which is used by the
+                        update manager.
+                        With the TrueUpdate Installer Tomcat, this is the
+                        context path of the application, e.g. "/myapp".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="updateLocation" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional update location of the client application.
+                        Like the current location, the syntax for this string
+                        is defined by the TrueUpdate Installer component.
+                        If not specified the application is updated in place,
+                        which is the current location.
+                        Note that this property may not be supported by all
+                        TrueUpdate Installer components.
+                        The component TrueUpdate Installer Tomcat does support
+                        this property, however.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element default="net.java.trueupdate.agent.spec.UpdateAgentListener" name="listenerClass" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The name of the listener class for the client
+                        application.
+                        The class must be public, have a public no-argument
+                        constructor and extend the class
+                        net.java.trueupdate.agent.spec.UpdateAgentListener or
+                        be the same class.
+                        If not named, the default value is
+                        "net.java.trueupdate.agent.spec.UpdateAgentListener".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="ArtifactDescriptor">
+        <xs:all>
+            <xs:element name="groupId" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The group identifier.
+                        The syntax for this string is defined by Maven.
+                        See http://maven.apache.org/pom.html#Maven_Coordinates .
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="artifactId" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The artifact identifier.
+                        The syntax for this string is defined by Maven.
+                        See http://maven.apache.org/pom.html#Maven_Coordinates .
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="version" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The version.
+                        The syntax for this string is defined by Maven.
+                        See http://maven.apache.org/pom.html#Maven_Coordinates .
+                        Note that the update manager does only a simple test
+                        for equality using String.equals() to detect if the
+                        client application needs to get updated.
+                        As a result, if you specify a snapshot version here
+                        (e.g. 0.1-SNAPSHOT), then the update manager will
+                        update the client application to this snapshot version
+                        once and will not update the client application to a
+                        newer build unless the version string changes.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="classifier" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional classifier.
+                        The syntax for this string is defined by Maven.
+                        See http://maven.apache.org/pom.html#Maven_Coordinates .
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element default="jar" minOccurs="0" name="extension" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional extension.
+                        The syntax for this string is defined by Maven.
+                        See http://maven.apache.org/pom.html#Maven_Coordinates .
+                        The default value is "jar".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="MavenParameters">
+        <xs:sequence>
+            <xs:element name="local" type="LocalRepository">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures the local Maven repository.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="remote" type="RemoteRepository">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures an optional remote Maven repository.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="LocalRepository">
+        <xs:all>
+            <xs:element default="${user.home}/.m2" minOccurs="0" name="directory" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional base directory of the local Maven repository.
+                        The default value is "${user.home}/.m2".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="type" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional repository type.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="RemoteRepository">
+        <xs:all>
+            <xs:element default="http://repo1.maven.org/maven2/" minOccurs="0" name="url" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional repository URL.
+                        The default value is "http://repo1.maven.org/maven2/",
+                        which is the Maven Central URL.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="id" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional repository identifier.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="type" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional repository type.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Messaging">
+        <xs:all>
+            <xs:element minOccurs="0" name="naming" type="Naming">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures optional naming parameters for use with JNDI.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="connectionFactory" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS connection factory.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="from" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS destination for the sender.
+                        When configuring the update agent, this property refers
+                        to the JMS destination for the update agent, e.g.
+                        "AutoUpdate/Agent".
+                        Likewise, when configuring the update manager, this
+                        property refers to the JMS destination for the update
+                        manager, e.g. "AutoUpdate/Manager".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="to" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS destination for the recipient.
+                        When configuring the update agent, this property refers
+                        to the JMS destination for the update manager, e.g.
+                        "AutoUpdate/Manager".
+                        When configuring the update manager, this property is
+                        optional and ignored.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Naming">
+        <xs:all>
+            <xs:element default="javax.naming.InitialContext" minOccurs="0" name="initialContextClass" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The class name of the initial context.
+                        The default value is "javax.naming.InitialContext".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element default="java:comp/env" minOccurs="0" name="relativePath" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS connection factory.
+                        The default value is "java:comp/env".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+</xs:schema>
