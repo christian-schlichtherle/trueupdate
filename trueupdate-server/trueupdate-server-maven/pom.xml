@@ -82,7 +82,7 @@
                     <transformSchemas>
                         <transformSchema>
                             <uri>https://trueupdate.java.net/xml/ns/config</uri>
-                            <toFile>server-1.0.xsd</toFile>
+                            <toFile>server-${config.version}.xsd</toFile>
                         </transformSchema>
                     </transformSchemas>
                 </configuration>

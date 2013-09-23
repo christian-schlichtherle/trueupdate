@@ -76,6 +76,9 @@
     </distributionManagement>
 
     <properties>
+        <!-- Version number for TrueUpdate configuration XML. -->
+        <config.version>1.0</config.version>
+
         <javase.version>6</javase.version>
         <javaee.version>6</javaee.version>
 
