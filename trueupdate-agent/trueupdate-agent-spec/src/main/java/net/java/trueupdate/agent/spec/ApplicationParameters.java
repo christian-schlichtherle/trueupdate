@@ -22,16 +22,29 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
 @SuppressWarnings("rawtypes")
 public final class ApplicationParameters {
 
-    private final UpdateAgentListener updateAgentListener;
     private final ArtifactDescriptor artifactDescriptor;
     private final String currentLocation, updateLocation;
+    private final UpdateAgentListener updateAgentListener;
 
     ApplicationParameters(final Builder<?> b) {
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.currentLocation = requireNonEmpty(b.currentLocation);
         this.updateLocation = nonEmptyOr(b.updateLocation, currentLocation);
-        this.updateAgentListener =
-                nonNullOr(b.updateAgentListener, new UpdateAgentListener());
+        this.updateAgentListener = null != b.listenerClass
+                ? listener(b.listenerClass)
+                : new UpdateAgentListener();
+    }
+
+    private static UpdateAgentListener listener(final String className) {
+        try {
+            return (UpdateAgentListener) Thread
+                    .currentThread()
+                    .getContextClassLoader()
+                    .loadClass(resolve(className))
+                    .newInstance();
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     /** Parses the given configuration item. */
@@ -80,8 +93,7 @@ public final class ApplicationParameters {
     public static class Builder<P> {
 
         @CheckForNull ArtifactDescriptor artifactDescriptor;
-        @CheckForNull String currentLocation, updateLocation;
-        @CheckForNull UpdateAgentListener updateAgentListener;
+        @CheckForNull String currentLocation, updateLocation, listenerClass;
 
         protected Builder() { }
 
@@ -91,26 +103,7 @@ public final class ApplicationParameters {
                 artifactDescriptor = ArtifactDescriptor.parse(ci.artifact);
             currentLocation = resolve(ci.currentLocation, currentLocation);
             updateLocation = resolve(ci.updateLocation, updateLocation);
-            if (null != ci.listenerClass)
-                updateAgentListener = listener(ci.listenerClass);
-            return this;
-        }
-
-        private static UpdateAgentListener listener(final String className) {
-            try {
-                return (UpdateAgentListener) Thread
-                        .currentThread()
-                        .getContextClassLoader()
-                        .loadClass(resolve(className))
-                        .newInstance();
-            } catch (Exception ex) {
-                throw new IllegalArgumentException(ex);
-            }
-        }
-
-        public Builder<P> updateAgentListener(
-                final @Nullable UpdateAgentListener listener) {
-            this.updateAgentListener = listener;
+            listenerClass = resolve(ci.listenerClass, listenerClass);
             return this;
         }
 
@@ -137,6 +130,11 @@ public final class ApplicationParameters {
         public Builder<P> updateLocation(
                 final @Nullable String location) {
             this.updateLocation = location;
+            return this;
+        }
+
+        public Builder<P> listenerClass(final @Nullable String listenerClass) {
+            this.listenerClass = listenerClass;
             return this;
         }
 

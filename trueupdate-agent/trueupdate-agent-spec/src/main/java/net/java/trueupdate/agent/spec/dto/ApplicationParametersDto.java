@@ -21,7 +21,10 @@ public final class ApplicationParametersDto {
     public ArtifactDescriptorDto artifact;
 
     @XmlElement(required = true)
-    public String currentLocation, listenerClass;
+    public String currentLocation;
 
     public String updateLocation;
+
+    @XmlElement(required = true, defaultValue = "net.java.trueupdate.agent.spec.UpdateAgentListener")
+    public String listenerClass;
 }
