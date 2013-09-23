@@ -10,8 +10,6 @@ import net.java.trueupdate.message.UpdateMessage;
 /**
  * Cooperates with an update resolver to install artifact updates.
  * <p>
- * Implementations should be immutable and hence, thread-safe.
- * <p>
  * Applications have no need to implement this class and should not do so
  * because it may be subject to future expansion.
  *
