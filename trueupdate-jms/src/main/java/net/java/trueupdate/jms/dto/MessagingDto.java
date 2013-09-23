@@ -4,13 +4,22 @@
  */
 package net.java.trueupdate.jms.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Addresses JMS administered objects by their JNDI name.
  *
  * @author Christian Schlichtherle
  */
+@XmlType(name = "Messaging", propOrder = { })
 @SuppressWarnings("PublicField")
 public class MessagingDto {
+
     public NamingDto naming;
-    public String connectionFactory, from, to;
+
+    @XmlElement(required = true)
+    public String connectionFactory, from;
+
+    public String to;
 }

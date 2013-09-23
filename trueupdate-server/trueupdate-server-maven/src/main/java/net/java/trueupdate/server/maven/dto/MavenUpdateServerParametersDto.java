@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.server.maven.dto;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import net.java.trueupdate.artifact.maven.dto.MavenParametersDto;
 
 /**
@@ -13,7 +13,13 @@ import net.java.trueupdate.artifact.maven.dto.MavenParametersDto;
  * @author Christian Schlichtherle
  */
 @XmlRootElement(name = "server")
+@XmlType(name = "MavenUpdateServerParameters", propOrder = { })
 @SuppressWarnings("PublicField")
 public class MavenUpdateServerParametersDto {
+
+    @XmlAttribute(required = true)
+    public String version;
+
+    @XmlElement(required = true)
     public MavenParametersDto repositories;
 }

@@ -4,9 +4,9 @@
  */
 package net.java.trueupdate.agent.jms.dto;
 
-import net.java.trueupdate.jms.dto.MessagingDto;
+import javax.xml.bind.annotation.*;
 import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
-import javax.xml.bind.annotation.XmlRootElement;
+import net.java.trueupdate.jms.dto.MessagingDto;
 
 /**
  * Configures an update agent.
@@ -14,8 +14,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schlichtherle
  */
 @XmlRootElement(name = "agent")
+@XmlType(name = "JmsUpdateAgentParameters", propOrder = { })
 @SuppressWarnings("PublicField")
 public class JmsUpdateAgentParametersDto {
+
+    @XmlAttribute(required = true)
+    public String version;
+
+    @XmlElement(required = true)
     public ApplicationParametersDto application;
+
+    @XmlElement(required = true)
     public MessagingDto messaging;
 }

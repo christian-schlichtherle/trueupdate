@@ -4,8 +4,8 @@
  */
 package net.java.trueupdate.manager.jms.dto;
 
+import javax.xml.bind.annotation.*;
 import net.java.trueupdate.jms.dto.MessagingDto;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Configures an update manager.
@@ -13,8 +13,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schlichtherle
  */
 @XmlRootElement(name = "manager")
+@XmlType(name = "JmsUpdateManagerParameters", propOrder = { })
 @SuppressWarnings("PublicField")
 public class JmsUpdateManagerParametersDto {
+
+    @XmlAttribute(required = true)
+    public String version;
+
+    @XmlElement(required = true)
     public String updateServiceBaseUri, checkUpdatesIntervalMinutes;
+
+    @XmlElement(required = true)
     public MessagingDto messaging;
 }

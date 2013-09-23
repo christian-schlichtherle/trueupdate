@@ -434,6 +434,24 @@
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jaxb2-maven-plugin</artifactId>
+                    <version>1.5</version>
+                    <executions>
+                        <execution>
+                            <id>schemagen</id>
+                            <goals>
+                                <goal>schemagen</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <includes>
+                            <include>**/dto/*.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

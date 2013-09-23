@@ -6,7 +6,7 @@ package net.java.trueupdate.artifact.maven.dto;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Configures Maven.
@@ -14,8 +14,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PublicField")
-@XmlRootElement(name = "repositories")
+//@XmlRootElement(name = "repositories")
+@XmlType(name = "MavenParameters", propOrder = { "local", "remotes" })
 public class MavenParametersDto {
+
+    @XmlElement(required = true)
     public LocalRepositoryDto local;
-    public @XmlElement(name = "remote") List<RemoteRepositoryDto> remotes;
+
+    @XmlElement(name = "remote")
+    public List<RemoteRepositoryDto> remotes;
 }

@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.agent.spec.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
 
 /**
@@ -11,8 +13,15 @@ import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
  *
  * @author Christian Schlichtherle
  */
+@XmlType(name = "ApplicationParameters", propOrder = { })
 @SuppressWarnings("PublicField")
 public class ApplicationParametersDto {
+
+    @XmlElement(required = true)
     public ArtifactDescriptorDto artifact;
-    public String currentLocation, updateLocation, listenerClass;
+
+    @XmlElement(required = true)
+    public String currentLocation, listenerClass;
+
+    public String updateLocation;
 }
