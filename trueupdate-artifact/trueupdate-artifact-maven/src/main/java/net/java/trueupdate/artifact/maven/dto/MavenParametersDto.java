@@ -4,9 +4,7 @@
  */
 package net.java.trueupdate.artifact.maven.dto;
 
-import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 /**
  * Configures Maven.
@@ -22,5 +20,5 @@ public final class MavenParametersDto {
     public LocalRepositoryDto local;
 
     @XmlElement(name = "remote")
-    public List<RemoteRepositoryDto> remotes;
+    public RemoteRepositoryDto[] remotes;
 }
