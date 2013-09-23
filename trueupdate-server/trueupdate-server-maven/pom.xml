@@ -72,21 +72,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <configuration>
-                    <transformSchemas>
-                        <transformSchema>
-                            <uri>https://trueupdate.java.net/xml/ns/config</uri>
-                            <toFile>server-${config.version}.xsd</toFile>
-                        </transformSchema>
-                    </transformSchemas>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
