@@ -10,8 +10,8 @@ import static java.util.Collections.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.maven.dto.*;
-import static net.java.trueupdate.util.Objects.requireNonNull;
-import net.java.trueupdate.util.SystemProperties;
+import static net.java.trueupdate.util.Objects.*;
+import static net.java.trueupdate.util.SystemProperties.resolve;
 import org.eclipse.aether.repository.*;
 
 /**
@@ -69,8 +69,9 @@ public final class MavenParameters {
         }
 
         private static LocalRepository local(final LocalRepositoryDto ci) {
-            return new LocalRepository(new File(resolve(ci.basedir)),
-                    resolve(ci.type));
+            return new LocalRepository(
+                    new File(resolve(nonNullOr(ci.directory, "${user.home}/.m2"))),
+                    resolve(ci.type, null));
         }
 
         private static List<RemoteRepository> remotes(
@@ -79,14 +80,10 @@ public final class MavenParameters {
                     new ArrayList<RemoteRepository>(cis.size());
             for (RemoteRepositoryDto ci : cis)
                 remotes.add(new RemoteRepository.Builder(
-                        resolve(ci.id),
-                        resolve(ci.type),
-                        resolve(ci.url)).build());
+                        resolve(ci.id, null),
+                        resolve(ci.type, null),
+                        resolve(ci.url, "http://repo1.maven.org/maven2/")).build());
             return remotes;
-        }
-
-        private static @Nullable String resolve(@CheckForNull String string) {
-            return null== string ? null : SystemProperties.resolve(string);
         }
 
         public Builder<P> localRepository(

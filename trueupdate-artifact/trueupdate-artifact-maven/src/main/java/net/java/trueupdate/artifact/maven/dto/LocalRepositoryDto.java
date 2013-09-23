@@ -4,8 +4,7 @@
  */
 package net.java.trueupdate.artifact.maven.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 /**
  * Configures a local repository.
@@ -16,8 +15,8 @@ import javax.xml.bind.annotation.XmlType;
 @SuppressWarnings("PublicField")
 public final class LocalRepositoryDto {
 
-    @XmlElement(required = true)
-    public String basedir;
+    @XmlElement(defaultValue = "${user.home}/.m2")
+    public String directory;
 
     public String type;
 }

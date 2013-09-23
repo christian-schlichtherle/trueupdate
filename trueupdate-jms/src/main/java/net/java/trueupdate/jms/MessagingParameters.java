@@ -11,7 +11,6 @@ import javax.jms.*;
 import javax.naming.*;
 import net.java.trueupdate.jms.dto.MessagingDto;
 import net.java.trueupdate.jms.dto.NamingDto;
-import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
@@ -22,38 +21,40 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
 @Immutable
 public final class MessagingParameters {
 
-    private static final Context defaultContext;
-    static {
-        try {
-            defaultContext = (Context) new InitialContext()
-                    .lookup("java:comp/env");
-        } catch (NamingException ex) {
-            throw new java.lang.IllegalStateException(ex);
-        }
-    }
-
     private final Context namingContext;
     private final ConnectionFactory connectionFactory;
     private final String fromName;
     private final Destination fromDestination;
     private final @CheckForNull String toName;
-    private final @CheckForNull Destination toDestination;
 
     MessagingParameters(final Builder<?> b) {
         try {
             // HC SVNT DRACONIS
-            this.namingContext = nonNullOr(b.namingContext, defaultContext);
+            this.namingContext = null != b.namingContext
+                    ? b.namingContext
+                    : namingContext(new NamingDto());
             this.connectionFactory = lookup(b.connectionFactory);
             this.fromDestination = lookup(this.fromName = b.from);
-            this.toDestination = lookupNullable(this.toName = b.to);
+            this.toName = b.to;
         } catch (NamingException ex) {
             throw new IllegalArgumentException(ex);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private @Nullable <T> T lookupNullable(@CheckForNull String name) throws NamingException {
-        return null == name ? null : (T) lookup(name);
+    static Context namingContext(final NamingDto ci) {
+        try {
+            final Context context = null == ci.initialContextClass
+                    ? new InitialContext()
+                    : (Context) Thread
+                        .currentThread()
+                        .getContextClassLoader()
+                        .loadClass(resolve(ci.initialContextClass))
+                        .newInstance();
+            return (Context) context.lookup(resolve(ci.relativePath,
+                                                    "java:comp/env"));
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(ex);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -75,17 +76,14 @@ public final class MessagingParameters {
     /** Returns the connection factory. */
     public ConnectionFactory connectionFactory() { return connectionFactory; }
 
-    /** Returns the JNDI name of the sender. */
+    /** Returns the JNDI name of the JMS destination for the sender. */
     public String fromName() { return fromName; }
 
-    /** Returns the destination for the sender. */
+    /** Returns the JMS destination for the sender. */
     public Destination fromDestination() { return fromDestination; }
 
-    /** Returns the nullable JNDI name for the recipient. */
+    /** Returns the nullable JNDI name of the JMS destination for the recipient. */
     public @Nullable String toName() { return toName; }
-
-    /** Returns the nullable destination for the recipient. */
-    public @Nullable Destination toDestination() { return toDestination; }
 
     /**
      * A builder for messaging parameters.
@@ -122,25 +120,12 @@ public final class MessagingParameters {
 
         /** Selectively parses the given configuration item. */
         public Builder<P> parse(final MessagingDto ci) {
-            if (null != ci.naming) namingContext = namingContext(ci.naming);
+            if (null != ci.naming) namingContext =
+                    MessagingParameters.namingContext(ci.naming);
             connectionFactory = resolve(ci.connectionFactory, connectionFactory);
             from = resolve(ci.from, from);
             to = resolve(ci.to, to);
             return this;
-        }
-
-        private static Context namingContext(final NamingDto ci) {
-            try {
-                return (Context) (
-                        (Context) Thread
-                            .currentThread()
-                            .getContextClassLoader()
-                            .loadClass(resolve(ci.initialContextClass))
-                            .newInstance()
-                        ).lookup(resolve(ci.relativePath));
-            } catch (Exception ex) {
-                throw new IllegalArgumentException(ex);
-            }
         }
 
         public MessagingParameters build() {

@@ -20,7 +20,7 @@ public final class ApplicationParametersDto {
     @XmlElement(required = true)
     public ArtifactDescriptorDto artifact;
 
-    @XmlElement(required = true)
+    @XmlElement(name = "location", required = true)
     public String currentLocation;
 
     public String updateLocation;

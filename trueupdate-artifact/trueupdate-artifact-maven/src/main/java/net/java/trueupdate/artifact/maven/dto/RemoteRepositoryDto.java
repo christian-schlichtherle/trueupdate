@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.artifact.maven.dto;
 
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 /**
  * Configures a remote repository.
@@ -14,5 +14,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RemoteRepository", propOrder = { })
 @SuppressWarnings("PublicField")
 public final class RemoteRepositoryDto {
-    public String id, type, url;
+
+    @XmlElement(defaultValue = "http://repo1.maven.org/maven2/")
+    public String url;
+
+    public String id, type;
 }

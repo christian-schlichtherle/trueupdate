@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.XmlType;
 @SuppressWarnings("PublicField")
 public final class NamingDto {
 
-    @XmlElement(required = true)
-    public String initialContextClass, relativePath;
+    @XmlElement(defaultValue = "javax.naming.InitialContext")
+    public String initialContextClass;
+
+    @XmlElement(defaultValue = "java:comp/env")
+    public String relativePath;
 }
