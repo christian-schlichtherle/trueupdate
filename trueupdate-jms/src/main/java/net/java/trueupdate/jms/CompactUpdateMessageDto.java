@@ -2,43 +2,44 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message.dto;
+package net.java.trueupdate.jms;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 /**
  * Represents an update message.
  *
  * @author Christian Schlichtherle
  */
-@SuppressWarnings("PublicField")
+@SuppressWarnings({ "PublicField", "PackageVisibleField" })
 @XmlRootElement(name = "um")
-public final class CompactUpdateMessageDto {
+@XmlAccessorType(XmlAccessType.FIELD)
+final class CompactUpdateMessageDto {
 
     /** timestamp */
-    public long ts;
+    long ts;
 
     /** from */
-    public String fr;
+    String fr;
 
     /** to */
-    public String to;
+    String to;
 
     /** type */
-    public String ty;
+    String ty;
 
     /** artifactDescriptor */
-    public CompactArtifactDescriptorDto ad;
+    CompactArtifactDescriptorDto ad;
 
     /** updateVersion */
-    public String uv;
+    String uv;
 
     /** currentLocation */
-    public String cl;
+    String cl;
 
     /** updateLocation */
-    public String ul;
+    String ul;
 
     /** status */
-    public String st;
+    String st;
 }

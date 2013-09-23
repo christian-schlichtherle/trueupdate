@@ -2,28 +2,31 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message.dto;
+package net.java.trueupdate.jms;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * Represents an artifact.
  *
  * @author Christian Schlichtherle
  */
-@SuppressWarnings("PublicField")
-public final class CompactArtifactDescriptorDto {
+@SuppressWarnings({ "PublicField", "PackageVisibleField" })
+@XmlAccessorType(XmlAccessType.FIELD)
+final class CompactArtifactDescriptorDto {
 
     /** groupId */
-    public String g;
+    String g;
 
     /** artifactId */
-    public String a;
+    String a;
 
     /** version */
-    public String v;
+    String v;
 
     /** classifier */
-    public String c;
+    String c;
 
     /** extension */
-    public String e;
+    String e;
 }

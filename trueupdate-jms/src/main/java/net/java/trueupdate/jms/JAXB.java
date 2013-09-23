@@ -7,7 +7,6 @@ package net.java.trueupdate.jms;
 import java.io.*;
 import javax.xml.bind.*;
 import net.java.trueupdate.message.*;
-import net.java.trueupdate.message.dto.CompactUpdateMessageDto;
 
 /**
  * Provides functions for JAXB.

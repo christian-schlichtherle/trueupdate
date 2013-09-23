@@ -2,16 +2,15 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message;
+package net.java.trueupdate.jms;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
-import net.java.trueupdate.message.dto.CompactArtifactDescriptorDto;
-import net.java.trueupdate.message.dto.CompactUpdateMessageDto;
 
 /**
  * Marshals an update message to its DTO and vice versa.
@@ -19,7 +18,7 @@ import net.java.trueupdate.message.dto.CompactUpdateMessageDto;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class UpdateMessageAdapter
+final class UpdateMessageAdapter
 extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
 
     @Override

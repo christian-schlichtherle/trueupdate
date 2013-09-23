@@ -7,7 +7,6 @@ package net.java.trueupdate.message;
 import java.util.Date;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.java.trueupdate.artifact.spec.*;
 import static net.java.trueupdate.util.Objects.*;
 
@@ -20,7 +19,6 @@ import static net.java.trueupdate.util.Objects.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-@XmlJavaTypeAdapter(UpdateMessageAdapter.class)
 public final class UpdateMessage {
 
     private final long timestamp;
