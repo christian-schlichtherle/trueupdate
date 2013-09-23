@@ -23,8 +23,7 @@ public class UpdateAgentListener {
      * The implementation in the class {@link UpdateAgentListener} sends a
      * request to install the available artifact update version.
      */
-    public void onUpdateNotice(UpdateAgentEvent event)
-    throws Exception {
+    public void onUpdateNotice(UpdateAgentEvent event) throws Exception {
         event.updateAgent().install(event.updateMessage().updateVersion());
     }
 
