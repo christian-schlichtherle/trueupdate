@@ -17,8 +17,16 @@ public class UpdateAgentListener {
     public void onSubscriptionFailureResponse(UpdateAgentEvent event)
     throws Exception { }
 
+    /**
+     * Responds to the update notice event.
+     * <p>
+     * The implementation in the class {@link UpdateAgentListener} sends a
+     * request to install the available artifact update version.
+     */
     public void onUpdateNotice(UpdateAgentEvent event)
-    throws Exception { }
+    throws Exception {
+        event.updateAgent().install(event.updateMessage().updateVersion());
+    }
 
     public void onInstallationSuccessResponse(UpdateAgentEvent event)
     throws Exception { }
