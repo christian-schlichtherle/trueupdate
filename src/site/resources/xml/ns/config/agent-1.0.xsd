@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="https://trueupdate.java.net/xml/ns/config"
+           elementFormDefault="qualified"
+           targetNamespace="https://trueupdate.java.net/xml/ns/config"
+           version="1.0">
+
+  <xs:element name="agent" type="tns:JmsUpdateAgentParameters"/>
+
+  <xs:complexType name="JmsUpdateAgentParameters">
+    <xs:all>
+      <xs:element name="application" type="tns:ApplicationParameters"/>
+      <xs:element name="messaging" type="tns:Messaging"/>
+    </xs:all>
+    <xs:attribute name="version" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="ApplicationParameters">
+    <xs:all>
+      <xs:element minOccurs="0" name="updateLocation" type="xs:string"/>
+      <xs:element name="listenerClass" type="xs:string"/>
+      <xs:element name="currentLocation" type="xs:string"/>
+      <xs:element name="artifact" type="tns:ArtifactDescriptor"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="ArtifactDescriptor">
+    <xs:all>
+      <xs:element default="jar" minOccurs="0" name="extension" type="xs:string"/>
+      <xs:element minOccurs="0" name="classifier" type="xs:string"/>
+      <xs:element name="version" type="xs:string"/>
+      <xs:element name="artifactId" type="xs:string"/>
+      <xs:element name="groupId" type="xs:string"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="Messaging">
+    <xs:all>
+      <xs:element minOccurs="0" name="to" type="xs:string"/>
+      <xs:element name="from" type="xs:string"/>
+      <xs:element name="connectionFactory" type="xs:string"/>
+      <xs:element minOccurs="0" name="naming" type="tns:Naming"/>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="Naming">
+    <xs:all>
+      <xs:element name="relativePath" type="xs:string"/>
+      <xs:element name="initialContextClass" type="xs:string"/>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>
