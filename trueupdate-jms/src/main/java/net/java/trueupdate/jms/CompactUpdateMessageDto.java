@@ -11,8 +11,9 @@ import javax.xml.bind.annotation.*;
  *
  * @author Christian Schlichtherle
  */
-@SuppressWarnings("PackagePrivateField")
+@SuppressWarnings("PackageVisibleField")
 @XmlRootElement(name = "m")
+@XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactUpdateMessageDto {
 
