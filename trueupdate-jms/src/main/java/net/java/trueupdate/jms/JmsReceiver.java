@@ -22,7 +22,7 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-public final class JmsMessageReceiver implements Runnable {
+public final class JmsReceiver implements Runnable {
 
     private static final boolean NO_LOCAL = true;
 
@@ -35,7 +35,7 @@ public final class JmsMessageReceiver implements Runnable {
 
     private MessageConsumer messageConsumer;
 
-    private JmsMessageReceiver(final Builder<?> b) {
+    private JmsReceiver(final Builder<?> b) {
         this.subscriptionName = b.subscriptionName;
         this.messageSelector = b.messageSelector;
         this.messageListener = requireNonNull(b.messageListener);
@@ -138,12 +138,12 @@ public final class JmsMessageReceiver implements Runnable {
                 final @CheckForNull UpdateMessageListener updateMessageListener) {
             this.messageListener = null == updateMessageListener
                     ? null
-                    : JmsMessageListener.create(updateMessageListener);
+                    : JmsListener.create(updateMessageListener);
             return this;
         }
 
-        public JmsMessageReceiver build() {
-            return new JmsMessageReceiver(this);
+        public JmsReceiver build() {
+            return new JmsReceiver(this);
         }
 
         public T inject() {

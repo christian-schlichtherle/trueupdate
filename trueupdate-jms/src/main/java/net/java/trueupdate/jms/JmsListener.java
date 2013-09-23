@@ -22,16 +22,16 @@ import net.java.trueupdate.util.Objects;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class JmsMessageListener implements MessageListener {
+public abstract class JmsListener implements MessageListener {
 
     private static final Logger logger =
-            Logger.getLogger(JmsMessageListener.class.getName());
+            Logger.getLogger(JmsListener.class.getName());
 
-    /** Returns a new JmsMessageListener with the given properties. */
-    public static JmsMessageListener create(
+    /** Returns a new JmsListener with the given properties. */
+    public static JmsListener create(
             final UpdateMessageListener updateMessageListener) {
         Objects.requireNonNull(updateMessageListener);
-        return new JmsMessageListener() {
+        return new JmsListener() {
             @Override protected UpdateMessageListener updateMessageListener() {
                 return updateMessageListener;
             }

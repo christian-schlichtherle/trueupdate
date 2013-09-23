@@ -19,7 +19,7 @@ public final class JmsUpdateManagerContext {
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
     private final UpdateTimer timer;
-    private final JmsMessageReceiver receiver;
+    private final JmsReceiver receiver;
 
     public JmsUpdateManagerContext() {
         this(JmsUpdateManagerParameters.load());
@@ -30,7 +30,7 @@ public final class JmsUpdateManagerContext {
         this.parameters = parameters;
         manager = new JmsUpdateManager(parameters);
         final MessagingParameters mp = parameters.messagingParameters();
-        receiver = JmsMessageReceiver
+        receiver = JmsReceiver
                 .builder()
                 .connectionFactory(mp.connectionFactory())
                 .destination(mp.fromDestination())

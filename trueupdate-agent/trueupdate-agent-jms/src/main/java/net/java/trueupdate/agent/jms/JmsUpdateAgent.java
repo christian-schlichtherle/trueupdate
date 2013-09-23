@@ -30,8 +30,7 @@ final class JmsUpdateAgent extends BasicUpdateAgent {
 
     @Override
     protected void send(UpdateMessage message) throws Exception {
-        JmsMessageSender.create(namingContext(), connectionFactory())
-                .send(message);
+        JmsSender.create(namingContext(), connectionFactory()).send(message);
     }
 
     private Context namingContext() {

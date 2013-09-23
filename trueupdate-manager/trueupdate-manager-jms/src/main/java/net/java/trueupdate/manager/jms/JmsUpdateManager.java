@@ -40,7 +40,7 @@ final class JmsUpdateManager extends BasicUpdateManager {
     protected URI updateServiceBaseUri() { return updateServiceBaseUri; }
 
     @Override protected void send(UpdateMessage message) throws Exception {
-        JmsMessageSender.create(namingContext, connection()).send(message);
+        JmsSender.create(namingContext, connection()).send(message);
     }
 
     private Connection connection() throws JMSException {

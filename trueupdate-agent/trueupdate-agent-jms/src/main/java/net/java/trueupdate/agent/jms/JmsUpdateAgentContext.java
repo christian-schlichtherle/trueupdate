@@ -17,7 +17,7 @@ import net.java.trueupdate.jms.*;
 public final class JmsUpdateAgentContext {
 
     private final JmsUpdateAgent agent;
-    private final JmsMessageReceiver receiver;
+    private final JmsReceiver receiver;
 
     public JmsUpdateAgentContext() {
         this(JmsUpdateAgentParameters.load());
@@ -26,7 +26,7 @@ public final class JmsUpdateAgentContext {
     public JmsUpdateAgentContext(final JmsUpdateAgentParameters parameters) {
         agent = new JmsUpdateAgent(parameters);
         final MessagingParameters mp = parameters.messagingParameters();
-        receiver = JmsMessageReceiver
+        receiver = JmsReceiver
                 .builder()
                 .connectionFactory(mp.connectionFactory())
                 .destination(mp.fromDestination())

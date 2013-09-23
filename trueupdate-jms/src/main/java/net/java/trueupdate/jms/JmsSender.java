@@ -18,25 +18,25 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class JmsMessageSender {
+public abstract class JmsSender {
 
     private static final Logger logger =
-            Logger.getLogger(JmsMessageSender.class.getName());
+            Logger.getLogger(JmsSender.class.getName());
 
     /**
-     * Returns a new {@code JmsMessageSender} with the given properties.
+     * Returns a new {@code JmsSender} with the given properties.
      *
      * @param namingContext the context for looking up the destination using
      *        the {@link UpdateMessage#to()} property of the messages.
      * @param connectionFactory the factory for the connection for sending the
      *        messages.
      */
-    public static JmsMessageSender create(
+    public static JmsSender create(
             final Context namingContext,
             final @WillNotClose ConnectionFactory connectionFactory) {
         requireNonNull(namingContext);
         requireNonNull(connectionFactory);
-        return new JmsMessageSender() {
+        return new JmsSender() {
             @Override
             public void send(UpdateMessage message) throws Exception {
                 send(message, destination(message, namingContext), connectionFactory);
@@ -45,18 +45,18 @@ public abstract class JmsMessageSender {
     }
 
     /**
-     * Returns a new {@code JmsMessageSender} with the given properties.
+     * Returns a new {@code JmsSender} with the given properties.
      *
      * @param namingContext the context for looking up the destination using
      *        the {@link UpdateMessage#to()} property of the messages.
      * @param connection the connection for sending the messages.
      */
-    public static JmsMessageSender create(
+    public static JmsSender create(
             final Context namingContext,
             final @WillNotClose Connection connection) {
         requireNonNull(namingContext);
         requireNonNull(connection);
-        return new JmsMessageSender() {
+        return new JmsSender() {
             @Override
             public void send(UpdateMessage message) throws Exception {
                 send(message, destination(message, namingContext), connection);
