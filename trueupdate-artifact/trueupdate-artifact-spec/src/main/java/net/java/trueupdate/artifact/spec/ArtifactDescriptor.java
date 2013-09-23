@@ -39,11 +39,11 @@ public final class ArtifactDescriptor {
     /** Returns a new builder with all properties set from this instance. */
     public Builder<Void> update() {
         return builder()
-                .groupId(groupId())
-                .artifactId(artifactId())
-                .version(version())
-                .classifier(classifier())
-                .extension(extension());
+                .groupId(groupId)
+                .artifactId(artifactId)
+                .version(version)
+                .classifier(classifier)
+                .extension(extension);
     }
 
     /** Parses the given configuration item. */
@@ -59,7 +59,7 @@ public final class ArtifactDescriptor {
 
     /** Returns an artifact descriptor with the given group id. */
     public ArtifactDescriptor groupId(String groupId) {
-        return groupId().equals(groupId)
+        return groupId.equals(this.groupId)
                 ? this
                 : update().groupId(groupId).build();
     }
@@ -69,7 +69,7 @@ public final class ArtifactDescriptor {
 
     /** Returns an artifact descriptor with the given artifact id. */
     public ArtifactDescriptor artifactId(String artifactId) {
-        return artifactId().equals(artifactId)
+        return artifactId.equals(this.artifactId)
                 ? this
                 : update().artifactId(artifactId).build();
     }
@@ -79,7 +79,7 @@ public final class ArtifactDescriptor {
 
     /** Returns an artifact descriptor with the given version. */
     public ArtifactDescriptor version(String version) {
-        return version().equals(version)
+        return version.equals(this.version)
                 ? this
                 : update().version(version).build();
     }
@@ -92,7 +92,7 @@ public final class ArtifactDescriptor {
 
     /** Returns an artifact descriptor with the given classifier. */
     public ArtifactDescriptor classifier(String classifier) {
-        return classifier().equals(classifier)
+        return classifier.equals(this.classifier)
                 ? this
                 : update().classifier(classifier).build();
     }
@@ -107,7 +107,7 @@ public final class ArtifactDescriptor {
 
     /** Returns an artifact descriptor with the given extension. */
     public ArtifactDescriptor extension(String extension) {
-        return extension().equals(extension)
+        return extension.equals(this.extension)
                 ? this
                 : update().extension(extension).build();
     }
@@ -116,25 +116,26 @@ public final class ArtifactDescriptor {
      * Returns {@code true} if and only if the given object is an
      * {@code ArtifactDescriptor} with equal properties.
      */
+    @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof ArtifactDescriptor)) return false;
         final ArtifactDescriptor that = (ArtifactDescriptor) obj;
-        return  this.groupId().equals(that.groupId()) &&
-                this.artifactId().equals(that.artifactId()) &&
-                this.version().equals(that.version()) &&
-                this.classifier().equals(that.classifier()) &&
-                this.extension().equals(that.extension());
+        return  this.groupId.equals(that.groupId) &&
+                this.artifactId.equals(that.artifactId) &&
+                this.version.equals(that.version) &&
+                this.classifier.equals(that.classifier) &&
+                this.extension.equals(that.extension);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
     @Override public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + groupId().hashCode();
-        hash = 31 * hash + artifactId().hashCode();
-        hash = 31 * hash + version().hashCode();
-        hash = 31 * hash + classifier().hashCode();
-        hash = 31 * hash + extension().hashCode();
+        hash = 31 * hash + groupId.hashCode();
+        hash = 31 * hash + artifactId.hashCode();
+        hash = 31 * hash + version.hashCode();
+        hash = 31 * hash + classifier.hashCode();
+        hash = 31 * hash + extension.hashCode();
         return hash;
     }
 
@@ -142,10 +143,10 @@ public final class ArtifactDescriptor {
     @Override public String toString() {
         StringBuilder sb = new StringBuilder(128);
         sb      .append(groupId())
-                .append(':').append(artifactId())
-                .append(':').append(extension());
-        if (0 < classifier().length())
-            sb.append(':').append(classifier());
+                .append(':').append(artifactId)
+                .append(':').append(extension);
+        if (0 != classifier.length())
+            sb.append(':').append(classifier);
         sb.append(':').append(version());
         return sb.toString();
     }
