@@ -15,18 +15,19 @@ import org.scalatest.prop.PropertyChecks._
 @RunWith(classOf[JUnitRunner])
 class UpdateDescriptorTest extends WordSpec {
 
+  def builder = UpdateDescriptor.builder
+
+  val subjects = Table(
+    ("builder", "artifactDescriptor", "updateVersion"),
+    (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.updateVersion("update-version"),
+      ArtifactDescriptor.builder.groupId("groupId").artifactId("artifactId").version("version").build,
+      "update-version")
+  )
+
   "An update descriptor" when {
     "build" should {
-      def builder = UpdateDescriptor.builder
-
       "reflect the specified properties" in {
-        val table = Table(
-          ("builder", "artifactDescriptor", "updateVersion"),
-          (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.updateVersion("update-version"),
-            ArtifactDescriptor.builder.groupId("groupId").artifactId("artifactId").version("version").build,
-            "update-version")
-        )
-        forAll (table) { (builder, artifactDescriptor, updateVersion) =>
+        forAll (subjects) { (builder, artifactDescriptor, updateVersion) =>
           val descriptor1 = builder.build
           descriptor1.artifactDescriptor should equal (artifactDescriptor)
           descriptor1.updateVersion should be (updateVersion)

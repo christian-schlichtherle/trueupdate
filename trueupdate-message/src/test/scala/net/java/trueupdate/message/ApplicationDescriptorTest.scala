@@ -15,18 +15,19 @@ import org.scalatest.prop.PropertyChecks._
 @RunWith(classOf[JUnitRunner])
 class ApplicationDescriptorTest extends WordSpec {
 
+  def builder = ApplicationDescriptor.builder
+
+  val subjects = Table(
+    ("builder", "artifactDescriptor", "currentLocation"),
+    (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.currentLocation("here"),
+      ArtifactDescriptor.builder.groupId("groupId").artifactId("artifactId").version("version").build,
+      "here")
+  )
+
   "An application descriptor" when {
     "build" should {
-      def builder = ApplicationDescriptor.builder
-
       "reflect the specified properties" in {
-        val table = Table(
-          ("builder", "artifactDescriptor", "currentLocation"),
-          (builder.artifactDescriptor().groupId("groupId").artifactId("artifactId").version("version").inject.currentLocation("here"),
-            ArtifactDescriptor.builder.groupId("groupId").artifactId("artifactId").version("version").build,
-            "here")
-        )
-        forAll (table) { (builder, artifactDescriptor, currentLocation) =>
+        forAll (subjects) { (builder, artifactDescriptor, currentLocation) =>
           val descriptor1 = builder.build
           descriptor1.artifactDescriptor should equal (artifactDescriptor)
           descriptor1.currentLocation should be (currentLocation)
