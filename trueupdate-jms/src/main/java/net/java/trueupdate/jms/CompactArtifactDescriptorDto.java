@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.jms;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.*;
 
 /**
@@ -14,6 +15,7 @@ import javax.xml.bind.annotation.*;
 @SuppressWarnings("PackageVisibleField")
 @XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
+@Nullable
 final class CompactArtifactDescriptorDto {
 
     @XmlElement(name = "g")

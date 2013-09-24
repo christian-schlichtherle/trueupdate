@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.jms;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.*;
 
 /**
@@ -15,6 +16,7 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "u")
 @XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
+@Nullable
 final class CompactUpdateMessageDto {
 
     @XmlElement(name = "d")
