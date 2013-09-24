@@ -27,7 +27,7 @@ public final class JmsUpdateAgentParameters {
     private final ApplicationParameters applicationParameters;
     private final MessagingParameters messagingParameters;
 
-    JmsUpdateAgentParameters(final Builder b) {
+    JmsUpdateAgentParameters(final Builder<?> b) {
         this.applicationParameters = requireNonNull(b.applicationParameters);
         this.messagingParameters = requireNonNull(b.messagingParameters);
     }
@@ -42,7 +42,8 @@ public final class JmsUpdateAgentParameters {
 
     static JmsUpdateAgentParameters load(final URL source) {
         try {
-            return parse(JAXB.unmarshal(source, JmsUpdateAgentParametersDto.class));
+            return parse(JAXB.unmarshal(source,
+                                        JmsUpdateAgentParametersDto.class));
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
                     "Failed to load configuration from %s .", source),
@@ -51,12 +52,13 @@ public final class JmsUpdateAgentParameters {
     }
 
     /** Parses the given configuration item. */
-    public static JmsUpdateAgentParameters parse(JmsUpdateAgentParametersDto ci) {
+    public static JmsUpdateAgentParameters parse(
+            JmsUpdateAgentParametersDto ci) {
         return builder().parse(ci).build();
     }
 
     /** Returns a new builder for update agent parameters. */
-    public static Builder builder() { return new Builder(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     public ApplicationParameters applicationParameters() {
         return applicationParameters;
@@ -66,36 +68,52 @@ public final class JmsUpdateAgentParameters {
         return messagingParameters;
     }
 
-    /** A builder for update agent parameters. */
-    @SuppressWarnings({ "PackageVisibleField", "PackageVisibleInnerClass" })
-    static class Builder {
+    /**
+     * A builder for update agent parameters.
+     *
+     * @param <P> The type of the parent builder.
+     */
+    @SuppressWarnings("PackageVisibleField")
+    public static class Builder<P> {
 
         @CheckForNull ApplicationParameters applicationParameters;
         @CheckForNull MessagingParameters messagingParameters;
 
         /** Selectively parses the given configuration item. */
-        public Builder parse(final JmsUpdateAgentParametersDto ci) {
+        public final Builder<P> parse(final JmsUpdateAgentParametersDto ci) {
             if (null != ci.application)
-                applicationParameters = ApplicationParameters.parse(ci.application);
+                applicationParameters =
+                        ApplicationParameters.parse(ci.application);
             if (null != ci.messaging)
-                messagingParameters = MessagingParameters.parse(ci.messaging);
+                messagingParameters =
+                        MessagingParameters.parse(ci.messaging);
             return this;
         }
 
-        public Builder applicationParameters(
+        public final Builder<P> applicationParameters(
                 final @Nullable ApplicationParameters applicationParameters) {
             this.applicationParameters = applicationParameters;
             return this;
         }
 
-        public Builder messagingParameters(
+        public final Builder<P> messagingParameters(
                 final @Nullable MessagingParameters messagingParameters) {
             this.messagingParameters = messagingParameters;
             return this;
         }
 
-        public JmsUpdateAgentParameters build() {
+        public final JmsUpdateAgentParameters build() {
             return new JmsUpdateAgentParameters(this);
+        }
+
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

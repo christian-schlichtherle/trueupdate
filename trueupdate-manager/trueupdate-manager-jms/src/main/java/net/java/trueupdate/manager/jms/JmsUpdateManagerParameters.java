@@ -28,9 +28,10 @@ public final class JmsUpdateManagerParameters {
     private final int checkUpdatesIntervalMinutes;
     private final MessagingParameters messagingParameters;
 
-    JmsUpdateManagerParameters(final Builder b) {
+    JmsUpdateManagerParameters(final Builder<?> b) {
         this.updateServiceBaseUri = requireNonNull(b.updateServiceBaseUri);
-        this.checkUpdatesIntervalMinutes = requirePositive(b.checkUpdatesIntervalMinutes);
+        this.checkUpdatesIntervalMinutes =
+                requirePositive(b.checkUpdatesIntervalMinutes);
         this.messagingParameters = requireNonNull(b.messagingParameters);
     }
 
@@ -49,7 +50,8 @@ public final class JmsUpdateManagerParameters {
 
     static JmsUpdateManagerParameters load(final URL source) {
         try {
-            return parse(JAXB.unmarshal(source, JmsUpdateManagerParametersDto.class));
+            return parse(JAXB.unmarshal(source,
+                                        JmsUpdateManagerParametersDto.class));
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
                     "Failed to load configuration from %s .", source),
@@ -58,32 +60,41 @@ public final class JmsUpdateManagerParameters {
     }
 
     /** Parses the given configuration item. */
-    public static JmsUpdateManagerParameters parse(JmsUpdateManagerParametersDto ci) {
+    public static JmsUpdateManagerParameters parse(
+            JmsUpdateManagerParametersDto ci) {
         return builder().parse(ci).build();
     }
 
     /** Returns a new builder for update manager parameters. */
-    public static Builder builder() { return new Builder(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     /** Returns the base URI of the update server. */
     public URI updateServiceBaseUri() { return updateServiceBaseUri; }
 
     /** Returns the interval for checking for artifact updates in minutes. */
-    public int checkUpdatesIntervalMinutes() { return checkUpdatesIntervalMinutes; }
+    public int checkUpdatesIntervalMinutes() {
+        return checkUpdatesIntervalMinutes;
+    }
 
     /** Returns the messagingParameters parameters. */
-    public MessagingParameters messagingParameters() { return messagingParameters; }
+    public MessagingParameters messagingParameters() {
+        return messagingParameters;
+    }
 
-    /** A builder for update manager parameters. */
-    @SuppressWarnings({ "PackageVisibleField", "PackageVisibleInnerClass" })
-    public static class Builder {
+    /**
+     * A builder for update manager parameters.
+     *
+     * @param <P> The type of the parent builder.
+     */
+    @SuppressWarnings("PackageVisibleField")
+    public static class Builder<P> {
 
         @CheckForNull URI updateServiceBaseUri;
         int checkUpdatesIntervalMinutes;
         @CheckForNull MessagingParameters messagingParameters;
 
         /** Selectively parses the given configuration item. */
-        public Builder parse(final JmsUpdateManagerParametersDto ci) {
+        public final Builder<P> parse(final JmsUpdateManagerParametersDto ci) {
             if (null != ci.updateServiceBaseUri)
                 updateServiceBaseUri = URI.create(ensureEndsWithSlash(resolve(
                         ci.updateServiceBaseUri)));
@@ -99,26 +110,36 @@ public final class JmsUpdateManagerParameters {
             return string.endsWith("/") ? string : string + "/";
         }
 
-        public Builder updateServiceBaseUri(
+        public final Builder<P> updateServiceBaseUri(
                 final @Nullable URI updateServiceBaseUri) {
             this.updateServiceBaseUri = updateServiceBaseUri;
             return this;
         }
 
-        public Builder checkUpdatesIntervalMinutes(
+        public final Builder<P> checkUpdatesIntervalMinutes(
                 final int checkUpdatesIntervalMinutes) {
             this.checkUpdatesIntervalMinutes = checkUpdatesIntervalMinutes;
             return this;
         }
 
-        public Builder messagingParameters(
+        public final Builder<P> messagingParameters(
                 final @Nullable MessagingParameters messagingParameters) {
             this.messagingParameters = messagingParameters;
             return this;
         }
 
-        public JmsUpdateManagerParameters build() {
+        public final JmsUpdateManagerParameters build() {
             return new JmsUpdateManagerParameters(this);
+        }
+
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

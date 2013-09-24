@@ -26,7 +26,7 @@ public final class MavenUpdateServerParameters {
 
     private final ArtifactResolver artifactResolver;
 
-    MavenUpdateServerParameters(final Builder b) {
+    MavenUpdateServerParameters(final Builder<?> b) {
         this.artifactResolver = requireNonNull(b.artifactResolver);
     }
 
@@ -40,7 +40,8 @@ public final class MavenUpdateServerParameters {
 
     static MavenUpdateServerParameters load(final URL source) {
         try {
-            return parse(JAXB.unmarshal(source, MavenUpdateServerParametersDto.class));
+            return parse(JAXB.unmarshal(source,
+                                        MavenUpdateServerParametersDto.class));
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
                     "Failed to load configuration from %s .", source),
@@ -54,32 +55,46 @@ public final class MavenUpdateServerParameters {
     }
 
     /** Returns a new builder for update server parameters. */
-    public static Builder builder() { return new Builder(); }
+    public static Builder<Void> builder() { return new Builder<Void>(); }
 
     public ArtifactResolver artifactResolver() { return artifactResolver; }
 
-    /** A builder for update server parameters. */
-    @SuppressWarnings({ "PackageVisibleField", "PackageVisibleInnerClass" })
-    public static class Builder {
+    /**
+     * A builder for update server parameters.
+     *
+     * @param <P> The type of the parent builder.
+     */
+    @SuppressWarnings("PackageVisibleField")
+    public static class Builder<P> {
 
         @CheckForNull ArtifactResolver artifactResolver;
 
         /** Selectively parses the given configuration item. */
-        public Builder parse(final MavenUpdateServerParametersDto ci) {
+        public final Builder<P> parse(final MavenUpdateServerParametersDto ci) {
             if (null != ci.repositories)
                 artifactResolver = new MavenArtifactResolver(MavenParameters
                         .parse(ci.repositories));
             return this;
         }
 
-        public Builder artifactResolver(
+        public final Builder<P> artifactResolver(
                 final @Nullable ArtifactResolver artifactResolver) {
             this.artifactResolver = artifactResolver;
             return this;
         }
 
-        public MavenUpdateServerParameters build() {
+        public final MavenUpdateServerParameters build() {
             return new MavenUpdateServerParameters(this);
+        }
+
+        /**
+         * Injects the product of this builder into the parent builder, if
+         * defined.
+         *
+         * @throws IllegalStateException if there is no parent builder defined.
+         */
+        public P inject() {
+            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }
