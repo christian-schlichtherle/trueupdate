@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PackageVisibleField")
-@XmlRootElement(name = "m")
+@XmlRootElement(name = "u")
 @XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactUpdateMessageDto {
@@ -26,7 +26,7 @@ final class CompactUpdateMessageDto {
     @XmlElement(name = "t")
     String to;
 
-    @XmlElement(name = "y")
+    @XmlElement(name = "s")
     String type;
 
     @XmlElement(name = "a")
@@ -35,12 +35,12 @@ final class CompactUpdateMessageDto {
     @XmlElement(name = "v")
     String updateVersion;
 
-    @XmlElement(name = "l")
+    @XmlElement(name = "c")
     String currentLocation;
 
     @XmlElement(name = "u")
     String updateLocation;
 
-    @XmlElement(name = "m")
+    @XmlElement(name = "l")
     CompactLogMessageDto logMessage;
 }
