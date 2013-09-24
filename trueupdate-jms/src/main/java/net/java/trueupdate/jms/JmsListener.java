@@ -41,7 +41,7 @@ public abstract class JmsListener implements MessageListener {
     @Override public final void onMessage(final Message message) {
         logger.log(Level.FINEST, "Received JMS message: {0}", message);
         try {
-            final String contentType = message.getStringProperty("Content-type");
+            final String contentType = message.getStringProperty("contentType");
             if (null != contentType && contentType.startsWith("application/xml;")) {
                 final String body = ((TextMessage) message).getText();
                 updateMessageListener().onUpdateMessage(JAXB.decode(body));

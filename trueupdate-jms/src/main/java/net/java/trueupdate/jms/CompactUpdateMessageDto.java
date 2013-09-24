@@ -7,7 +7,7 @@ package net.java.trueupdate.jms;
 import javax.xml.bind.annotation.*;
 
 /**
- * Represents an update message.
+ * Represents an {@link net.java.trueupdate.message.UpdateMessage}.
  *
  * @author Christian Schlichtherle
  */
@@ -17,36 +17,30 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 final class CompactUpdateMessageDto {
 
-    @XmlElement(name = "a")
+    @XmlElement(name = "d")
     long timestamp;
 
-    @XmlElement(name = "b")
+    @XmlElement(name = "f")
     String from;
 
-    @XmlElement(name = "c")
+    @XmlElement(name = "t")
     String to;
 
-    @XmlElement(name = "d")
+    @XmlElement(name = "y")
     String type;
 
-    @XmlElement(name = "e")
+    @XmlElement(name = "a")
     CompactArtifactDescriptorDto artifactDescriptor;
 
-    @XmlElement(name = "f")
+    @XmlElement(name = "v")
     String updateVersion;
 
-    @XmlElement(name = "g")
+    @XmlElement(name = "l")
     String currentLocation;
 
-    @XmlElement(name = "h")
+    @XmlElement(name = "u")
     String updateLocation;
 
-    @XmlElement(name = "i")
-    String statusText;
-
-    @XmlElement(name = "j")
-    String statusCode;
-
-    @XmlElement(name = "k")
-    Object[] statusArgs;
+    @XmlElement(name = "m")
+    CompactLogMessageDto logMessage;
 }

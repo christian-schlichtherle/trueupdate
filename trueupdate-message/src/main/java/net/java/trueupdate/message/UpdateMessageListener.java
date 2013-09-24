@@ -37,10 +37,7 @@ public abstract class UpdateMessageListener {
     protected void onSubscriptionRequest(UpdateMessage message)
     throws Exception { }
 
-    protected void onSubscriptionSuccessResponse(UpdateMessage message)
-    throws Exception { }
-
-    protected void onSubscriptionFailureResponse(UpdateMessage message)
+    protected void onSubscriptionResponse(UpdateMessage message)
     throws Exception { }
 
     protected void onUpdateNotice(UpdateMessage message)
@@ -58,12 +55,6 @@ public abstract class UpdateMessageListener {
     protected void onUnsubscriptionNotice(UpdateMessage message)
     throws Exception { }
 
-    protected void onUnsubscriptionRequest(UpdateMessage message)
-    throws Exception { }
-
-    protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
-    throws Exception { }
-
-    protected void onUnsubscriptionFailureResponse(UpdateMessage message)
+    protected void onLogNotice(UpdateMessage message)
     throws Exception { }
 }

@@ -76,15 +76,9 @@ extends UpdateMessageListener implements UpdateAgent {
     }
 
     @Override
-    protected void onSubscriptionSuccessResponse(UpdateMessage message)
+    protected void onSubscriptionResponse(UpdateMessage message)
     throws Exception {
-        listener().onSubscriptionSuccessResponse(event(message));
-    }
-
-    @Override
-    protected void onSubscriptionFailureResponse(UpdateMessage message)
-    throws Exception {
-        listener().onSubscriptionFailureResponse(event(message));
+        listener().onSubscriptionResponse(event(message));
     }
 
     @Override
@@ -103,18 +97,6 @@ extends UpdateMessageListener implements UpdateAgent {
     protected void onInstallationFailureResponse(UpdateMessage message)
     throws Exception {
         listener().onInstallationFailureResponse(event(message));
-    }
-
-    @Override
-    protected void onUnsubscriptionSuccessResponse(UpdateMessage message)
-    throws Exception {
-        listener().onUnsubscriptionSuccessResponse(event(message));
-    }
-
-    @Override
-    protected void onUnsubscriptionFailureResponse(UpdateMessage message)
-    throws Exception {
-        listener().onUnsubscriptionFailureResponse(event(message));
     }
 
     private UpdateAgentListener listener() {

@@ -7,7 +7,7 @@ package net.java.trueupdate.jms;
 import javax.xml.bind.annotation.*;
 
 /**
- * Represents an artifact.
+ * Represents an {@link net.java.trueupdate.artifact.spec.ArtifactDescriptor}.
  *
  * @author Christian Schlichtherle
  */

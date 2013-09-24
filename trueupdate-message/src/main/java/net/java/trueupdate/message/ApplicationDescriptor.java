@@ -11,10 +11,10 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
 
 /**
- * An application descriptor comprises of an artifact descriptor plus a current
+ * An application descriptor comprises of an artifact descriptor and a current
  * location.
- * This class implements an immutable value object, so you can easily share it
- * with anyone.
+ * This class implements an immutable value object, so you can easily share its
+ * instances with anyone or use them as map keys.
  *
  * @author Christian Schlichtherle
  */

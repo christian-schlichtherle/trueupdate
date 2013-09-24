@@ -11,10 +11,7 @@ package net.java.trueupdate.agent.spec;
  */
 public class UpdateAgentListener {
 
-    public void onSubscriptionSuccessResponse(UpdateAgentEvent event)
-    throws Exception { }
-
-    public void onSubscriptionFailureResponse(UpdateAgentEvent event)
+    public void onSubscriptionResponse(UpdateAgentEvent event)
     throws Exception { }
 
     /**
@@ -31,11 +28,5 @@ public class UpdateAgentListener {
     throws Exception { }
 
     public void onInstallationFailureResponse(UpdateAgentEvent event)
-    throws Exception { }
-
-    public void onUnsubscriptionSuccessResponse(UpdateAgentEvent event)
-    throws Exception { }
-
-    public void onUnsubscriptionFailureResponse(UpdateAgentEvent event)
     throws Exception { }
 }

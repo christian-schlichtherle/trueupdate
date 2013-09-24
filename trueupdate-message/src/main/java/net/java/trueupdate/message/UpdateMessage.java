@@ -4,20 +4,21 @@
  */
 package net.java.trueupdate.message;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
+import net.java.trueupdate.util.Objects;
 import static net.java.trueupdate.util.Objects.*;
+import static net.java.trueupdate.util.Strings.requireNonEmpty;
 
 /**
- * An immutable Value Object which gets exchanged between update agents and
- * update managers in order to establish a protocol for the automated
- * installation of application updates.
+ * An update message gets exchanged between update agents and update managers
+ * in order to establish a protocol for the automated installation of artifact
+ * updates.
+ * This class implements an immutable value object, so you can easily share its
+ * instances with anyone or use them as map keys.
  *
  * @see Type
  * @author Christian Schlichtherle
@@ -25,31 +26,24 @@ import static net.java.trueupdate.util.Objects.*;
 @Immutable
 public final class UpdateMessage {
 
-    private static final ResourceBundle
-            bundle = ResourceBundle.getBundle(UpdateMessage.class.getName());
-
     private final long timestamp;
     private final String from, to;
     private final Type type;
     private final ArtifactDescriptor artifactDescriptor;
-    private final String updateVersion, statusText;
+    private final String updateVersion;
     private final String currentLocation, updateLocation;
-    private final String statusCode;
-    private final Object[] statusArgs;
+    private final @CheckForNull LogMessage logMessage;
 
     UpdateMessage(final Builder<?> b) {
         this.timestamp = nonNullOrNow(b.timestamp);
-        this.from = requireNonNull(b.from);
-        this.to = requireNonNull(b.to);
+        this.from = requireNonEmpty(b.from);
+        this.to = requireNonEmpty(b.to);
         this.type = requireNonNull(b.type);
         this.artifactDescriptor = requireNonNull(b.artifactDescriptor);
         this.updateVersion = nonNullOr(b.updateVersion, "");
-        this.currentLocation = nonNullOr(b.currentLocation, "");
+        this.currentLocation = requireNonEmpty(b.currentLocation);
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
-        this.statusText = nonNullOr(b.statusText, "");
-        this.statusCode = nonNullOr(b.statusCode, "");
-        final Object[] args = b.statusArgs;
-        this.statusArgs = null != args ? args.clone() : new Object[0];
+        this.logMessage = b.logMessage;
     }
 
     private static long nonNullOrNow(Long timestamp) {
@@ -67,20 +61,17 @@ public final class UpdateMessage {
                 .updateVersion(updateVersion)
                 .currentLocation(currentLocation)
                 .updateLocation(updateLocation)
-                .statusText(statusText)
-                .statusCode(statusCode)
-                .statusArgs(statusArgs);
+                .logMessage(logMessage);
     }
 
     /**
      * Returns a new builder for an update message.
      * The default value for the property {@code timestamp} is the creation
      * time of the update message in milliseconds since the epoch.
-     * The default value for the properties {@code status} and
-     * {@code updateVersion} is an empty string.
-     * The default value for the property {@code location} is an empty URI.
+     * The default value for the property {@code updateVersion} is an empty
+     * string.
      * The default value for the property {@code updateLocation} is the
-     * effective value of the property {@code location}.
+     * effective value of the property {@code currentLocation}.
      */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
@@ -170,52 +161,15 @@ public final class UpdateMessage {
                 : update().updateLocation(updateLocation).build();
     }
 
-    /**
-     * Returns the effective status text which gets computed from the status
-     * text or the status code and the status args, whichever is first found to
-     * be non-empty.
-     * This method uses the default locale to format the status text.
-     */
-    public String status() { return status(Locale.getDefault()); }
+    /** Returns the nullable log message. */
+    public @Nullable LogMessage logMessage() { return logMessage; }
 
-    /**
-     * Returns the effective status text which gets computed from the status
-     * text or the status code and status args, whichever is non-empty first.
-     * This method uses the given locale to format the status text.
-     */
-    public String status(Locale locale) {
-        return 0 != statusArgs.length
-                ? new MessageFormat(bundle.getString(statusCode), locale).format(statusArgs())
-                : statusText;
+    /** Returns an update message with the given nullable log message. */
+    public UpdateMessage logMessage(@CheckForNull LogMessage logMessage) {
+        return Objects.equals(this.logMessage, logMessage)
+                ? this
+                : update().logMessage(logMessage).build();
     }
-
-    public UpdateMessage status(String text) {
-        return update()
-                .statusText(text)
-                .statusCode(null)
-                .statusArgs((Object[]) null)
-                .build();
-    }
-
-    public UpdateMessage status(String code, Object... args) {
-        return update()
-                .statusText(null)
-                .statusCode(code)
-                .statusArgs(args)
-                .build();
-    }
-
-    /** Returns the status text. */
-    public String statusText() { return statusText; }
-
-    /** Returns the status code. */
-    public String statusCode() { return statusCode; }
-
-    /** Returns a protective copy of the status args. */
-    public Object[] statusArgs() { return statusArgs.clone(); }
-
-    /** Returns the number of status args. */
-    public int numberOfStatusArgs() { return statusArgs.length; }
 
     /**
      * Returns a success response for this update message with an empty statusText,
@@ -232,9 +186,7 @@ public final class UpdateMessage {
                 .type(type.successResponse())
                 .from(to)
                 .to(from)
-                .statusText(null)
-                .statusCode(null)
-                .statusArgs((Object[]) null)
+                .logMessage(null)
                 .build();
     }
 
@@ -254,9 +206,10 @@ public final class UpdateMessage {
                 .type(type.failureResponse())
                 .from(to)
                 .to(from)
-                .statusText(ex.toString())
-                .statusCode(null)
-                .statusArgs((Object[]) null)
+                .logMessage()
+                    .level(Level.WARNING)
+                    .message(ex.toString())
+                    .inject()
                 .build();
     }
 
@@ -290,8 +243,8 @@ public final class UpdateMessage {
      * Returns {@code true} if and only if the given object is an
      * {@code UpdateMessage} with equal properties.
      */
-    @Override@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
-    public boolean equals(final Object obj) {
+    @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+    @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof UpdateMessage)) return false;
         final UpdateMessage that = (UpdateMessage) obj;
@@ -303,9 +256,7 @@ public final class UpdateMessage {
                 this.updateVersion.equals(that.updateVersion) &&
                 this.currentLocation.equals(that.currentLocation) &&
                 this.updateLocation.equals(that.updateLocation) &&
-                this.statusText.equals(that.statusText) &&
-                this.statusCode.equals(that.statusCode) &&
-                Arrays.equals(this.statusArgs, that.statusArgs);
+                Objects.equals(this.logMessage, that.logMessage);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
@@ -319,9 +270,7 @@ public final class UpdateMessage {
         hash = 31 * hash + updateVersion.hashCode();
         hash = 31 * hash + currentLocation.hashCode();
         hash = 31 * hash + updateLocation.hashCode();
-        hash = 31 * hash + statusText.hashCode();
-        hash = 31 * hash + statusCode.hashCode();
-        hash = 31 * hash + statusArgs.hashCode();
+        hash = 31 * hash + Objects.hashCode(logMessage);
         return hash;
     }
 
@@ -336,16 +285,15 @@ public final class UpdateMessage {
                 .append("From: ").append(from).append('\n')
                 .append("To: ").append(to).append('\n')
                 .append("Type: ").append(type).append('\n')
-                .append("Artifact-Descriptor: ").append(artifactDescriptor).append('\n');
+                .append("Artifact-descriptor: ").append(artifactDescriptor).append('\n');
         if (!updateVersion.isEmpty())
-            sb.append("Update-Version: ").append(updateVersion).append('\n');
+            sb.append("Update-version: ").append(updateVersion).append('\n');
         if (!currentLocation.isEmpty())
-            sb.append("Current-Location: ").append(currentLocation).append('\n');
+            sb.append("Current-location: ").append(currentLocation).append('\n');
         if (!updateLocation.isEmpty())
-            sb.append("Update-Location: ").append(updateLocation).append('\n');
-        final String status = status();
-        if (!status.isEmpty())
-            sb.append("Status: ").append(status).append('\n');
+            sb.append("Update-location: ").append(updateLocation).append('\n');
+        if (null != logMessage)
+            sb.append("Log-record: ").append(logMessage).append('\n');
         return sb.toString();
     }
 
@@ -359,8 +307,7 @@ public final class UpdateMessage {
      * for the application.
      * <li>
      * The update manager then needs to send a
-     * {@link #SUBSCRIPTION_SUCCESS_RESPONSE} or a
-     * {@link #SUBSCRIPTION_FAILURE_RESPONSE}.
+     * {@link #SUBSCRIPTION_RESPONSE}.
      * <li>
      * Upon a successful subscription, the update manager needs to send an
      * {@link #UPDATE_NOTICE} for every update.
@@ -371,14 +318,9 @@ public final class UpdateMessage {
      * an {@link #INSTALLATION_SUCCESS_RESPONSE} or an
      * {@link #INSTALLATION_FAILURE_RESPONSE}.
      * <li>
-     * The update agent may send an {@link #UNSUBSCRIPTION_REQUEST} or
-     * {@link #UNSUBSCRIPTION_NOTICE} in order to unsubscribe from the list of
-     * recipients for update announcements for the application.
-     * <li>
-     * If and only if the message is an {@link #UNSUBSCRIPTION_REQUEST}, then
-     * the update manager needs to send an
-     * {@link #UNSUBSCRIPTION_SUCCESS_RESPONSE} or an
-     * {@link #UNSUBSCRIPTION_FAILURE_RESPONSE}.
+     * The update agent may send an {@link #UNSUBSCRIPTION_NOTICE} in order to
+     * unsubscribe from the list of recipients for update announcements for the
+     * application.
      * <li>
      * Finally, the update manager may send itself a
      * {@link #SUBSCRIPTION_NOTICE} for every subscription before shutting down
@@ -387,7 +329,8 @@ public final class UpdateMessage {
      * responding to the update agents.
      * </ol>
      * <p>
-     * Note that messages may get lost or duplicated and no timeout is defined.
+     * Note that messages may get lost or duplicated and generally no timeout
+     * is defined.
      */
     public enum Type {
 
@@ -407,11 +350,7 @@ public final class UpdateMessage {
             @Override public boolean forManager() { return true; }
 
             @Override public Type successResponse() {
-                return SUBSCRIPTION_SUCCESS_RESPONSE;
-            }
-
-            @Override public Type failureResponse() {
-                return SUBSCRIPTION_FAILURE_RESPONSE;
+                return SUBSCRIPTION_RESPONSE;
             }
 
             @Override void dispatchMessageTo(UpdateMessage message,
@@ -421,25 +360,14 @@ public final class UpdateMessage {
             }
         },
 
-        SUBSCRIPTION_SUCCESS_RESPONSE {
+        SUBSCRIPTION_RESPONSE {
 
             @Override public boolean forManager() { return false; }
 
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
-                listener.onSubscriptionSuccessResponse(message);
-            }
-        },
-
-        SUBSCRIPTION_FAILURE_RESPONSE {
-
-            @Override public boolean forManager() { return false; }
-
-            @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
-            throws Exception {
-                listener.onSubscriptionFailureResponse(message);
+                listener.onSubscriptionResponse(message);
             }
         },
 
@@ -506,44 +434,25 @@ public final class UpdateMessage {
             }
         },
 
-        UNSUBSCRIPTION_REQUEST {
+        LOG_NOTICE_FOR_AGENT {
+
+            @Override public boolean forManager() { return false; }
+
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
+            throws Exception {
+                listener.onLogNotice(message);
+            }
+        },
+
+        LOG_NOTICE_FOR_MANAGER {
 
             @Override public boolean forManager() { return true; }
 
-            @Override public Type successResponse() {
-                return UNSUBSCRIPTION_SUCCESS_RESPONSE;
-            }
-
-            @Override public Type failureResponse() {
-                return UNSUBSCRIPTION_FAILURE_RESPONSE;
-            }
-
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
-                listener.onUnsubscriptionRequest(message);
-            }
-        },
-
-        UNSUBSCRIPTION_SUCCESS_RESPONSE {
-
-            @Override public boolean forManager() { return false; }
-
-            @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
-            throws Exception {
-                listener.onUnsubscriptionSuccessResponse(message);
-            }
-        },
-
-        UNSUBSCRIPTION_FAILURE_RESPONSE {
-
-            @Override public boolean forManager() { return false; }
-
-            @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
-            throws Exception {
-                listener.onUnsubscriptionFailureResponse(message);
+                listener.onLogNotice(message);
             }
         };
 
@@ -582,16 +491,15 @@ public final class UpdateMessage {
      * @param <P> The type of the parent builder.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static final class Builder<P> {
+    public static class Builder<P> {
 
         @CheckForNull Long timestamp;
         @CheckForNull String from, to;
         @CheckForNull Type type;
         @CheckForNull ArtifactDescriptor artifactDescriptor;
-        @CheckForNull String updateVersion, statusText;
+        @CheckForNull String updateVersion;
         @CheckForNull String currentLocation, updateLocation;
-        @CheckForNull String statusCode;
-        @CheckForNull Object statusArgs[];
+        @CheckForNull LogMessage logMessage;
 
         protected Builder() { }
 
@@ -616,7 +524,7 @@ public final class UpdateMessage {
         }
 
         public ArtifactDescriptor.Builder<Builder<P> > artifactDescriptor() {
-            return new ArtifactDescriptor.Builder<Builder<P> >() {
+            return new ArtifactDescriptor.Builder<Builder<P>>() {
                 @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
                 }
@@ -644,19 +552,16 @@ public final class UpdateMessage {
             return this;
         }
 
-        public Builder<P> statusText(final @Nullable String text) {
-            this.statusText = text;
-            return this;
+        public LogMessage.Builder<Builder<P>> logMessage() {
+            return new LogMessage.Builder<Builder<P>>() {
+                @Override public Builder<P> inject() {
+                    return logMessage(build());
+                }
+            };
         }
 
-        public Builder<P> statusCode(final @Nullable String code) {
-            this.statusCode = code;
-            return this;
-        }
-
-        @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-        public Builder<P> statusArgs(final @Nullable Object... args) {
-            this.statusArgs = args;
+        public Builder<P> logMessage(final @Nullable LogMessage message) {
+            this.logMessage = message;
             return this;
         }
 

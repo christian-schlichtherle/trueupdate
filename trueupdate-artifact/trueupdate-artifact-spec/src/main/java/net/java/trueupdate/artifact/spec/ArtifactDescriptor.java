@@ -14,11 +14,12 @@ import static net.java.trueupdate.util.SystemProperties.resolve;
 /**
  * An artifact descriptor comprises of a group ID, an artifact ID, a version,
  * an optional classifier and an optional extension.
- * The model is the same as used in Maven in order to enable a Maven based
- * implementation of an {@linkplain ArtifactResolver artifact resolver} without
- * actually depending on Maven in this specification.
- * This class implements an immutable value object, so you can easily share it
- * with anyone.
+ * This is effectively the same model as with Maven coordinates in order to
+ * enable a Maven based implementation of an
+ * {@linkplain ArtifactResolver artifact resolver} without actually depending
+ * on Maven in this specification.
+ * This class implements an immutable value object, so you can easily share its
+ * instances with anyone or use them as map keys.
  *
  * @see    <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven - POM Reference - Maven Coordinates</a>
  * @author Christian Schlichtherle

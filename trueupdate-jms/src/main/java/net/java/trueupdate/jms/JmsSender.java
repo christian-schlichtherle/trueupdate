@@ -90,8 +90,8 @@ public abstract class JmsSender {
         final Session s = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         try {
             final Message m = s.createTextMessage(JAXB.encode(message));
-            m.setStringProperty("Content-type", "application/xml; charset=utf-8");
-            m.setBooleanProperty("Manager", message.type().forManager());
+            m.setStringProperty("contentType", "application/xml; charset=utf-8");
+            m.setBooleanProperty("manager", message.type().forManager());
             s.createProducer(destination).send(m);
             logger.log(Level.FINEST, "Transmitted JMS message {0} to {1} .",
                     new Object[] { m, destination });

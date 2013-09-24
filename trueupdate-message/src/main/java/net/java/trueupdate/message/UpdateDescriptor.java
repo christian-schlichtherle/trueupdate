@@ -11,10 +11,10 @@ import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
 
 /**
- * An update descriptor comprises of an artifact descriptor plus an update
+ * An update descriptor comprises of an artifact descriptor and an update
  * version.
- * This class implements an immutable value object, so you can easily share it
- * with anyone.
+ * This class implements an immutable value object, so you can easily share its
+ * instances with anyone or use them as map keys.
  *
  * @author Christian Schlichtherle
  */

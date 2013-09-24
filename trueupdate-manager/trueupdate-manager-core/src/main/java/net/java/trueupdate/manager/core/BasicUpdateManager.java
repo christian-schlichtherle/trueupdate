@@ -157,12 +157,6 @@ extends UpdateMessageListener implements UpdateManager {
                 .build();
     }
 
-    @Override protected void onUnsubscriptionRequest(final UpdateMessage message)
-    throws Exception {
-        onUnsubscriptionNotice(message);
-        sendAndLog(message.successResponse());
-    }
-
     @Override protected void onUnsubscriptionNotice(final UpdateMessage message)
     throws Exception {
         logReceived(message);

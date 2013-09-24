@@ -21,39 +21,43 @@ class JAXBTest extends WordSpec {
 
   def builder = UpdateMessage.builder
 
+  val subjects = Table(
+    ("original"),
+    (builder
+      .from("from")
+      .to("to")
+      .`type`(Type.UPDATE_NOTICE)
+      .artifactDescriptor()
+        .groupId("groupId")
+        .artifactId("artifactId")
+        .version("version")
+        .inject)
+      .currentLocation("currentLocation"),
+    (builder
+      .from("from")
+      .to("to")
+      .`type`(Type.UPDATE_NOTICE)
+      .artifactDescriptor()
+        .groupId("groupId")
+        .artifactId("artifactId")
+        .version("version")
+        .classifier("classifier")
+        .extension("extension")
+        .inject
+      .updateVersion("updateVersion")
+      .currentLocation("currentLocation")
+      .updateLocation("updateLocation")
+      .logMessage()
+        .level(Level.INFO)
+        .message("message")
+        .parameters(1: java.lang.Integer, 2: java.lang.Integer, 3: java.lang.Integer)
+        .inject)
+  )
+
   "An update message" when {
     "constructed" should {
       "be round-trip XML-serializable" in {
-        val table = Table(
-          ("original"),
-          (builder
-            .from("from")
-            .to("to")
-            .`type`(Type.UPDATE_NOTICE)
-            .artifactDescriptor()
-              .groupId("groupId")
-              .artifactId("artifactId")
-              .version("version")
-              .inject),
-          (builder
-            .from("from")
-            .to("to")
-            .`type`(Type.UPDATE_NOTICE)
-            .artifactDescriptor()
-              .groupId("groupId")
-              .artifactId("artifactId")
-              .version("version")
-              .classifier("classifier")
-              .extension("extension")
-              .inject
-            .updateVersion("updateVersion")
-            .currentLocation("currentLocation")
-            .updateLocation("updateLocation")
-            .statusText("statusText")
-            .statusCode("") // ! empty => MissingResourceException
-            .statusArgs(1: java.lang.Integer, 2: java.lang.Integer, 3: java.lang.Integer))
-        )
-        forAll(table) { builder =>
+        forAll(subjects) { builder =>
           val original = builder.build
           val originalEncoding = JAXB.encode(original)
           JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
