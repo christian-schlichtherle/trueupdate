@@ -98,28 +98,8 @@ public final class MessagingParameters {
 
         protected Builder() { }
 
-        public Builder<P> namingContext(final @Nullable Context namingContext) {
-            this.namingContext = namingContext;
-            return this;
-        }
-
-        public Builder<P> connectionFactory(final @Nullable String connectionFactory) {
-            this.connectionFactory = connectionFactory;
-            return this;
-        }
-
-        public Builder<P> from(final @Nullable String from) {
-            this.from = from;
-            return this;
-        }
-
-        public Builder<P> to(final @Nullable String to) {
-            this.to = to;
-            return this;
-        }
-
         /** Selectively parses the given configuration item. */
-        public Builder<P> parse(final MessagingDto ci) {
+        public final Builder<P> parse(final MessagingDto ci) {
             if (null != ci.naming) namingContext =
                     MessagingParameters.namingContext(ci.naming);
             connectionFactory = resolve(ci.connectionFactory, connectionFactory);
@@ -128,7 +108,29 @@ public final class MessagingParameters {
             return this;
         }
 
-        public MessagingParameters build() {
+        public final Builder<P> namingContext(
+                final @Nullable Context namingContext) {
+            this.namingContext = namingContext;
+            return this;
+        }
+
+        public final Builder<P> connectionFactory(
+                final @Nullable String connectionFactory) {
+            this.connectionFactory = connectionFactory;
+            return this;
+        }
+
+        public final Builder<P> from(final @Nullable String from) {
+            this.from = from;
+            return this;
+        }
+
+        public final Builder<P> to(final @Nullable String to) {
+            this.to = to;
+            return this;
+        }
+
+        public final MessagingParameters build() {
             return new MessagingParameters(this);
         }
 

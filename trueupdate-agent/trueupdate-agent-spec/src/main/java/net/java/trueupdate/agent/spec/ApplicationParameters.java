@@ -98,7 +98,7 @@ public final class ApplicationParameters {
         protected Builder() { }
 
         /** Parses the given configuration item. */
-        public Builder<P> parse(final ApplicationParametersDto ci) {
+        public final Builder<P> parse(final ApplicationParametersDto ci) {
             if (null != ci.artifact)
                 artifactDescriptor = ArtifactDescriptor.parse(ci.artifact);
             currentLocation = resolve(ci.currentLocation, currentLocation);
@@ -107,7 +107,7 @@ public final class ApplicationParameters {
             return this;
         }
 
-        public ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
+        public final ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
             return new ArtifactDescriptor.Builder<Builder<P>>() {
                 @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
@@ -115,30 +115,30 @@ public final class ApplicationParameters {
             };
         }
 
-        public Builder<P> artifactDescriptor(
+        public final Builder<P> artifactDescriptor(
                 final @Nullable ArtifactDescriptor descriptor) {
             this.artifactDescriptor = descriptor;
             return this;
         }
 
-        public Builder<P> currentLocation(
+        public final Builder<P> currentLocation(
                 final @Nullable String location) {
             this.currentLocation = location;
             return this;
         }
 
-        public Builder<P> updateLocation(
+        public final Builder<P> updateLocation(
                 final @Nullable String location) {
             this.updateLocation = location;
             return this;
         }
 
-        public Builder<P> listenerClass(final @Nullable String listenerClass) {
+        public final Builder<P> listenerClass(final @Nullable String listenerClass) {
             this.listenerClass = listenerClass;
             return this;
         }
 
-        public ApplicationParameters build() {
+        public final ApplicationParameters build() {
             return new ApplicationParameters(this);
         }
 

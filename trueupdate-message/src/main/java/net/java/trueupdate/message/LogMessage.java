@@ -105,23 +105,24 @@ public final class LogMessage {
 
         protected Builder() { }
 
-        public Builder<P> level(final @Nullable Level level) {
+        public final Builder<P> level(final @Nullable Level level) {
             this.level = level;
             return this;
         }
 
-        public Builder<P> message(final @Nullable String message) {
+        public final Builder<P> message(final @Nullable String message) {
             this.message = message;
             return this;
         }
 
         @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-        public Builder<P> parameters(final @Nullable Object... parameters) {
+        public final Builder<P> parameters(
+                final @Nullable Object... parameters) {
             this.parameters = parameters;
             return this;
         }
 
-        public LogMessage build() { return new LogMessage(this); }
+        public final LogMessage build() { return new LogMessage(this); }
 
         /**
          * Injects the product of this builder into the parent builder, if

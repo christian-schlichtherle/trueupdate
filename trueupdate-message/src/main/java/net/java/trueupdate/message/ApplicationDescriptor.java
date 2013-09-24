@@ -71,7 +71,7 @@ public final class ApplicationDescriptor {
 
         protected Builder() { }
 
-        public ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
+        public final ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
             return new ArtifactDescriptor.Builder<Builder<P>>() {
                 @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
@@ -79,18 +79,19 @@ public final class ApplicationDescriptor {
             };
         }
 
-        public Builder<P> artifactDescriptor(
+        public final Builder<P> artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
             return this;
         }
 
-        public Builder<P> currentLocation(final @Nullable String currentLocation) {
+        public final Builder<P> currentLocation(
+                final @Nullable String currentLocation) {
             this.currentLocation = currentLocation;
             return this;
         }
 
-        public ApplicationDescriptor build() {
+        public final ApplicationDescriptor build() {
             return new ApplicationDescriptor(this);
         }
 

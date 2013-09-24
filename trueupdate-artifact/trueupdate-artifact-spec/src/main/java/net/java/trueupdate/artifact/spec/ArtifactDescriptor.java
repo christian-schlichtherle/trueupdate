@@ -166,7 +166,7 @@ public final class ArtifactDescriptor {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public Builder<P> parse(final ArtifactDescriptorDto ci) {
+        public final Builder<P> parse(final ArtifactDescriptorDto ci) {
             groupId = resolve(ci.groupId, groupId);
             artifactId = resolve(ci.artifactId, artifactId);
             version = resolve(ci.version, version);
@@ -175,32 +175,32 @@ public final class ArtifactDescriptor {
             return this;
         }
 
-        public Builder<P> groupId(final @Nullable String groupId) {
+        public final Builder<P> groupId(final @Nullable String groupId) {
             this.groupId = groupId;
             return this;
         }
 
-        public Builder<P> artifactId(final @Nullable String artifactId) {
+        public final Builder<P> artifactId(final @Nullable String artifactId) {
             this.artifactId = artifactId;
             return this;
         }
 
-        public Builder<P> version(final @Nullable String version) {
+        public final Builder<P> version(final @Nullable String version) {
             this.version = version;
             return this;
         }
 
-        public Builder<P> classifier(final @Nullable String classifier) {
+        public final Builder<P> classifier(final @Nullable String classifier) {
             this.classifier = classifier;
             return this;
         }
 
-        public Builder<P> extension(final @Nullable String extension) {
+        public final Builder<P> extension(final @Nullable String extension) {
             this.extension = extension;
             return this;
         }
 
-        public ArtifactDescriptor build() {
+        public final ArtifactDescriptor build() {
             return new ArtifactDescriptor(this);
         }
 

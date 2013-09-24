@@ -69,7 +69,7 @@ public final class UpdateDescriptor {
 
         protected Builder() { }
 
-        public ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
+        public final ArtifactDescriptor.Builder<Builder<P>> artifactDescriptor() {
             return new ArtifactDescriptor.Builder<Builder<P>>() {
                 @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
@@ -77,18 +77,21 @@ public final class UpdateDescriptor {
             };
         }
 
-        public Builder<P> artifactDescriptor(
+        public final Builder<P> artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
             return this;
         }
 
-        public Builder<P> updateVersion(final @Nullable String updateVersion) {
+        public final Builder<P> updateVersion(
+                final @Nullable String updateVersion) {
             this.updateVersion = updateVersion;
             return this;
         }
 
-        public UpdateDescriptor build() { return new UpdateDescriptor(this); }
+        public final UpdateDescriptor build() {
+            return new UpdateDescriptor(this);
+        }
 
         /**
          * Injects the product of this builder into the parent builder, if
