@@ -29,7 +29,7 @@ final class JAXB {
         final Marshaller m = marshaller();
         //m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         try {
-            if (null != message.logMessage())
+            if (!message.logMessages().isEmpty())
                 m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
                               new CompactNamespaceMapper());
         } catch(PropertyException aDifferentJaxbImplementationIsUsed) {

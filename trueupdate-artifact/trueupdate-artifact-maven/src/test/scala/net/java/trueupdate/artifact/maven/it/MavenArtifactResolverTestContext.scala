@@ -19,8 +19,10 @@ extends TestContext with ArtifactResolverTestContext {
   lazy val parameters = MavenParameters
     .builder
     .localRepository(new LocalRepository(new File("target/repository")))
-    .remoteRepositories(new RemoteRepository
-                        .Builder("central", "default", "http://repo1.maven.org/maven2/")
-                        .build)
+    .remoteRepositories
+      .add(new RemoteRepository
+           .Builder("central", "default", "http://repo1.maven.org/maven2/")
+           .build)
+      .inject
     .build
 }

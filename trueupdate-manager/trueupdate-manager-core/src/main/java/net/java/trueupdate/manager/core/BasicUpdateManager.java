@@ -89,9 +89,7 @@ extends UpdateMessageListener implements UpdateManager {
 
     private static UpdateMessage updateNotice(UpdateMessage subscription,
                                               String updateVersion) {
-        return subscription
-                .successResponse()
-                .update()
+        return responseFor(subscription)
                 .type(UPDATE_NOTICE)
                 .updateVersion(updateVersion)
                 .build();
@@ -101,7 +99,7 @@ extends UpdateMessageListener implements UpdateManager {
     throws Exception {
         logReceived(message);
         subscribe(message);
-        sendAndLog(message.successResponse());
+        sendAndLog(responseFor(message).type(SUBSCRIPTION_RESPONSE).build());
         checkUpdates();
     }
 
@@ -123,10 +121,8 @@ extends UpdateMessageListener implements UpdateManager {
         try {
             install(message);
             response = installationSuccessResponse(message);
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Exception ex) {
-            response = message.failureResponse(ex);
+            response = installationFailureResponse(message, ex);
         }
         sendAndLog(response);
     }
@@ -139,22 +135,45 @@ extends UpdateMessageListener implements UpdateManager {
     }
 
     private static UpdateMessage installationSuccessResponse(
-            UpdateMessage message) {
-        return message
-                .successResponse()
-                .update()
-                    .artifactDescriptor(updatedArtifactDescriptor(message))
-                    .updateVersion(null)
-                    .build();
-    }
-
-    private static ArtifactDescriptor updatedArtifactDescriptor(
-            UpdateMessage message) {
-        return message
+            UpdateMessage request) {
+        final ArtifactDescriptor ad = request
                 .artifactDescriptor()
                 .update()
-                .version(message.updateVersion())
+                .version(request.updateVersion())
                 .build();
+        return responseFor(request)
+                .type(INSTALLATION_SUCCESS_RESPONSE)
+                .artifactDescriptor(ad)
+                .updateVersion(null)
+                .build();
+    }
+
+    private static UpdateMessage installationFailureResponse(
+            UpdateMessage request,
+            Exception ex) {
+        final LogMessage lm = LogMessage
+                .builder()
+                .level(Level.WARNING)
+                .message("exception")
+                .parameters(ex.toString())
+                .build();
+        return responseFor(request)
+                .type(INSTALLATION_FAILURE_RESPONSE)
+                .logMessages()
+                    .add(lm)
+                    .inject()
+                .build();
+    }
+
+    private static UpdateMessage.Builder<Void> responseFor(
+            UpdateMessage message) {
+        return message
+                .update()
+                .timestamp(null)
+                .from(message.to())
+                .to(message.from())
+                .type(null)
+                .logMessages().inject();
     }
 
     @Override protected void onUnsubscriptionNotice(final UpdateMessage message)

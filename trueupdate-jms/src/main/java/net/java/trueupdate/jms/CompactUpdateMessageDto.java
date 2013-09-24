@@ -29,7 +29,7 @@ final class CompactUpdateMessageDto {
     String to;
 
     @XmlElement(name = "s")
-    String type;
+    int type;
 
     @XmlElement(name = "a")
     CompactArtifactDescriptorDto artifactDescriptor;
@@ -44,5 +44,5 @@ final class CompactUpdateMessageDto {
     String updateLocation;
 
     @XmlElement(name = "l")
-    CompactLogMessageDto logMessage;
+    CompactLogMessageDto[] logMessages;
 }

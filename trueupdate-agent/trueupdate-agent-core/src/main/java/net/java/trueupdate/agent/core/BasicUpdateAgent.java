@@ -31,12 +31,20 @@ extends UpdateMessageListener implements UpdateAgent {
         send(SUBSCRIPTION_REQUEST, null);
     }
 
-    @Override public void unsubscribe() throws Exception {
-        send(UNSUBSCRIPTION_NOTICE, null);
-    }
-
     @Override public void install(String version) throws Exception {
         send(INSTALLATION_REQUEST, version);
+    }
+
+    @Override public void proceed() throws Exception {
+        send(PROCEED_REDEPLOYMENT_RESPONSE, null);
+    }
+
+    @Override public void cancel() throws Exception {
+        send(CANCEL_REDEPLOYMENT_RESPONSE, null);
+    }
+
+    @Override public void unsubscribe() throws Exception {
+        send(UNSUBSCRIPTION_NOTICE, null);
     }
 
     private void send(final UpdateMessage.Type type,
@@ -85,6 +93,12 @@ extends UpdateMessageListener implements UpdateAgent {
     protected void onUpdateNotice(UpdateMessage message)
     throws Exception {
         listener().onUpdateNotice(event(message));
+    }
+
+    @Override
+    protected void onProgressNotice(UpdateMessage message)
+    throws Exception {
+        listener().onProgressNotice(event(message));
     }
 
     @Override

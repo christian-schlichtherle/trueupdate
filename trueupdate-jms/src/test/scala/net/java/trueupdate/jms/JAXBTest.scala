@@ -9,6 +9,7 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
+import net.java.trueupdate.message.LogMessage
 import net.java.trueupdate.message.UpdateMessage
 import net.java.trueupdate.message.UpdateMessage._
 import java.util.logging._
@@ -19,6 +20,8 @@ import java.util.logging._
 @RunWith(classOf[JUnitRunner])
 class JAXBTest extends WordSpec {
 
+  type Int = java.lang.Integer
+
   def builder = UpdateMessage.builder
 
   val subjects = Table(
@@ -27,7 +30,7 @@ class JAXBTest extends WordSpec {
       .from("from")
       .to("to")
       .`type`(Type.UPDATE_NOTICE)
-      .artifactDescriptor()
+      .artifactDescriptor
         .groupId("groupId")
         .artifactId("artifactId")
         .version("version")
@@ -37,7 +40,7 @@ class JAXBTest extends WordSpec {
       .from("from")
       .to("to")
       .`type`(Type.UPDATE_NOTICE)
-      .artifactDescriptor()
+      .artifactDescriptor
         .groupId("groupId")
         .artifactId("artifactId")
         .version("version")
@@ -47,10 +50,13 @@ class JAXBTest extends WordSpec {
       .updateVersion("updateVersion")
       .currentLocation("currentLocation")
       .updateLocation("updateLocation")
-      .logMessage()
-        .level(Level.INFO)
-        .message("message")
-        .parameters(1: java.lang.Integer, 2: java.lang.Integer, 3: java.lang.Integer)
+      .logMessages
+        .add(LogMessage
+          .builder
+          .level(Level.INFO)
+          .message("message")
+          .parameters(1: Int, 2: Int, 3: Int)
+          .build)
         .inject)
   )
 

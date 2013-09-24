@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.jms;
 
-import java.util.logging.Level;
+import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -13,6 +13,7 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.message.LogMessage;
 import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
+import static net.java.trueupdate.util.Objects.nonDefaultOrNull;
 
 /**
  * Marshals an update message to its DTO and vice versa.
@@ -25,41 +26,24 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
 
     @Override
     public @Nullable UpdateMessage unmarshal(
-            final @CheckForNull CompactUpdateMessageDto umd)
+            final @CheckForNull CompactUpdateMessageDto cum)
     throws Exception {
-        if (null == umd) return null;
-
-        final CompactArtifactDescriptorDto add = umd.artifactDescriptor;
-        final ArtifactDescriptor ad = ArtifactDescriptor
-                .builder()
-                .groupId(add.groupId)
-                .artifactId(add.artifactId)
-                .version(add.version)
-                .classifier(add.classifier)
-                .extension(add.extension)
-                .build();
-
-        final CompactLogMessageDto lmd = umd.logMessage;
-        final LogMessage lm = null == lmd
-                ? null
-                : LogMessage
-                    .builder()
-                    .level(Level.parse(lmd.level))
-                    .message(lmd.message)
-                    .parameters(lmd.parameters)
-                    .build();
-
+        if (null == cum) return null;
+        final ArtifactDescriptor ad = new ArtifactDescriptorAdapter()
+                .unmarshal(cum.artifactDescriptor);
+        final List<LogMessage> lms = new LogMessagesAdapter()
+                .unmarshal(cum.logMessages);
         return UpdateMessage
                 .builder()
-                .timestamp(umd.timestamp)
-                .from(umd.from)
-                .to(umd.to)
-                .type(Type.valueOf(umd.type))
+                .timestamp(cum.timestamp)
+                .from(cum.from)
+                .to(cum.to)
+                .type(Type.values()[cum.type])
                 .artifactDescriptor(ad)
-                .updateVersion(umd.updateVersion)
-                .currentLocation(umd.currentLocation)
-                .updateLocation(umd.updateLocation)
-                .logMessage(lm)
+                .updateVersion(cum.updateVersion)
+                .currentLocation(cum.currentLocation)
+                .updateLocation(cum.updateLocation)
+                .logMessages(lms)
                 .build();
     }
 
@@ -68,41 +52,20 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
             final @CheckForNull UpdateMessage um)
     throws Exception {
         if (null == um) return null;
-
-        final ArtifactDescriptor ad = um.artifactDescriptor();
-        final CompactArtifactDescriptorDto add = new CompactArtifactDescriptorDto();
-        add.groupId = ad.groupId();
-        add.artifactId = ad.artifactId();
-        add.version = ad.version();
-        add.classifier = nonDefaultOrNull(ad.classifier(), "");
-        add.extension = nonDefaultOrNull(ad.extension(), "jar");
-
-        final LogMessage lm = um.logMessage();
-        final CompactLogMessageDto lmd;
-        if (null != lm) {
-            lmd = new CompactLogMessageDto();
-            lmd.level = lm.level().getName();
-            lmd.message = lm.message();
-            lmd.parameters = lm.parameters();
-        } else {
-            lmd = null;
-        }
-
-        final CompactUpdateMessageDto umd = new CompactUpdateMessageDto();
-        umd.timestamp = um.timestamp();
-        umd.from = um.from();
-        umd.to = um.to();
-        umd.type = um.type().name();
-        umd.artifactDescriptor = add;
-        umd.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
-        umd.currentLocation = um.currentLocation();
-        umd.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
-        umd.logMessage = lmd;
-        return umd;
-    }
-
-    private static @Nullable String nonDefaultOrNull(String string,
-                                                     @Nullable String defaultValue) {
-        return string.equals(defaultValue) ? null : string;
+        final CompactArtifactDescriptorDto cad = new ArtifactDescriptorAdapter()
+                .marshal(um.artifactDescriptor());
+        final CompactLogMessageDto[] clms = new LogMessagesAdapter()
+                .marshal(um.logMessages());
+        final CompactUpdateMessageDto cum = new CompactUpdateMessageDto();
+        cum.timestamp = um.timestamp();
+        cum.from = um.from();
+        cum.to = um.to();
+        cum.type = um.type().ordinal();
+        cum.artifactDescriptor = cad;
+        cum.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
+        cum.currentLocation = um.currentLocation();
+        cum.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
+        cum.logMessages = clms;
+        return cum;
     }
 }

@@ -46,6 +46,18 @@ public abstract class UpdateMessageListener {
     protected void onInstallationRequest(UpdateMessage message)
     throws Exception { }
 
+    protected void onProgressNotice(UpdateMessage message)
+    throws Exception { }
+
+    protected void onRedeploymentRequest(UpdateMessage message)
+    throws Exception { }
+
+    protected void onContinueRedeploymentResponse(UpdateMessage message)
+    throws Exception { }
+
+    protected void onCancelRedeploymentResponse(UpdateMessage message)
+    throws Exception { }
+
     protected void onInstallationSuccessResponse(UpdateMessage message)
     throws Exception { }
 
@@ -53,8 +65,5 @@ public abstract class UpdateMessageListener {
     throws Exception { }
 
     protected void onUnsubscriptionNotice(UpdateMessage message)
-    throws Exception { }
-
-    protected void onLogNotice(UpdateMessage message)
     throws Exception { }
 }

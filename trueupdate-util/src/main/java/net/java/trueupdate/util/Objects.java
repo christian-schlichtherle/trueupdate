@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.util;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -31,6 +31,10 @@ public final class Objects {
 
     public static <T> T nonNullOr(@CheckForNull T obj, T def) {
         return null != obj ? obj : def;
+    }
+
+    public static @Nullable <T> T nonDefaultOrNull(T obj, @CheckForNull T def) {
+        return obj.equals(def) ? null : obj;
     }
 
     private Objects() { }

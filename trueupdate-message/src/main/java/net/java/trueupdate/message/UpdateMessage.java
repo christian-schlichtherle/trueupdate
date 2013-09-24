@@ -4,12 +4,11 @@
  */
 package net.java.trueupdate.message;
 
-import java.util.Date;
-import java.util.logging.Level;
+import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
-import net.java.trueupdate.util.Objects;
+import net.java.trueupdate.util.ImmutableListBuilder;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
 
@@ -32,8 +31,9 @@ public final class UpdateMessage {
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion;
     private final String currentLocation, updateLocation;
-    private final @CheckForNull LogMessage logMessage;
+    private final List<LogMessage> logMessages;
 
+    @SuppressWarnings("unchecked")
     UpdateMessage(final Builder<?> b) {
         this.timestamp = nonNullOrNow(b.timestamp);
         this.from = requireNonEmpty(b.from);
@@ -43,7 +43,7 @@ public final class UpdateMessage {
         this.updateVersion = nonNullOr(b.updateVersion, "");
         this.currentLocation = requireNonEmpty(b.currentLocation);
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
-        this.logMessage = b.logMessage;
+        this.logMessages = b.logMessages.build();
     }
 
     private static long nonNullOrNow(Long timestamp) {
@@ -61,7 +61,7 @@ public final class UpdateMessage {
                 .updateVersion(updateVersion)
                 .currentLocation(currentLocation)
                 .updateLocation(updateLocation)
-                .logMessage(logMessage);
+                .logMessages(logMessages);
     }
 
     /**
@@ -161,56 +161,15 @@ public final class UpdateMessage {
                 : update().updateLocation(updateLocation).build();
     }
 
-    /** Returns the nullable log message. */
-    public @Nullable LogMessage logMessage() { return logMessage; }
+    /** Returns an immutable list of the log messages. */
+    @SuppressWarnings("ReturnOfCollectionOrArrayField")
+    public List<LogMessage> logMessages() { return logMessages; }
 
     /** Returns an update message with the given nullable log message. */
-    public UpdateMessage logMessage(@CheckForNull LogMessage logMessage) {
-        return Objects.equals(this.logMessage, logMessage)
+    public UpdateMessage logMessages(List<LogMessage> logMessages) {
+        return logMessages.equals(this.logMessages)
                 ? this
-                : update().logMessage(logMessage).build();
-    }
-
-    /**
-     * Returns a success response for this update message with an empty statusText,
-     * swapped from/to URIs and an updated time stamp.
-     * First, checks if the type of this update message is a {@code *_REQUEST}.
-     * If no, then an {@link UnsupportedOperationException} gets thrown.
-     * If yes, then a new update message of the corresponding type
-     * {@code *_SUCCESS_RESPONSE} gets returned with an empty statusText and an
-     * updated time stamp.
-     */
-    public UpdateMessage successResponse() {
-        return update()
-                .timestamp(null)
-                .type(type.successResponse())
-                .from(to)
-                .to(from)
-                .logMessage(null)
-                .build();
-    }
-
-    /**
-     * Returns a failure response for this update message with the string
-     * representation of the given exception as the statusText, swapped from/to
-     * URIs and an updated time stamp.
-     * First, checks if the type of this update message is a {@code *_REQUEST}.
-     * If no, then an {@link UnsupportedOperationException} gets thrown.
-     * If yes, then a new update message of the corresponding type
-     * {@code *_FAILURE_RESPONSE} gets returned with the string representation
-     * of the given exception as the statusText and an updated time stamp.
-     */
-    public UpdateMessage failureResponse(Exception ex) {
-        return update()
-                .timestamp(null)
-                .type(type.failureResponse())
-                .from(to)
-                .to(from)
-                .logMessage()
-                    .level(Level.WARNING)
-                    .message(ex.toString())
-                    .inject()
-                .build();
+                : update().logMessages(logMessages).build();
     }
 
     /** Vends an application descriptor from this update message. */
@@ -256,7 +215,7 @@ public final class UpdateMessage {
                 this.updateVersion.equals(that.updateVersion) &&
                 this.currentLocation.equals(that.currentLocation) &&
                 this.updateLocation.equals(that.updateLocation) &&
-                Objects.equals(this.logMessage, that.logMessage);
+                this.logMessages.equals(that.logMessages);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
@@ -270,7 +229,7 @@ public final class UpdateMessage {
         hash = 31 * hash + updateVersion.hashCode();
         hash = 31 * hash + currentLocation.hashCode();
         hash = 31 * hash + updateLocation.hashCode();
-        hash = 31 * hash + Objects.hashCode(logMessage);
+        hash = 31 * hash + logMessages.hashCode();
         return hash;
     }
 
@@ -292,52 +251,22 @@ public final class UpdateMessage {
             sb.append("Current-location: ").append(currentLocation).append('\n');
         if (!updateLocation.isEmpty())
             sb.append("Update-location: ").append(updateLocation).append('\n');
-        if (null != logMessage)
-            sb.append("Log-record: ").append(logMessage).append('\n');
+        sb.append("Log-messages-count: ").append(logMessages.size());
         return sb.toString();
     }
 
     /**
      * The update message type.
-     * The communication protocol works as follows:
-     * <ol>
-     * <li>
-     * The update agent needs to send a {@link #SUBSCRIPTION_REQUEST} in
-     * order to subscribe to the list of recipients for update announcements
-     * for the application.
-     * <li>
-     * The update manager then needs to send a
-     * {@link #SUBSCRIPTION_RESPONSE}.
-     * <li>
-     * Upon a successful subscription, the update manager needs to send an
-     * {@link #UPDATE_NOTICE} for every update.
-     * <li>
-     * The update agent may then send an {@link #INSTALLATION_REQUEST}.
-     * <li>
-     * The update manager then needs to install the application update and send
-     * an {@link #INSTALLATION_SUCCESS_RESPONSE} or an
-     * {@link #INSTALLATION_FAILURE_RESPONSE}.
-     * <li>
-     * The update agent may send an {@link #UNSUBSCRIPTION_NOTICE} in order to
-     * unsubscribe from the list of recipients for update announcements for the
-     * application.
-     * <li>
-     * Finally, the update manager may send itself a
-     * {@link #SUBSCRIPTION_NOTICE} for every subscription before shutting down
-     * in order to persist them.
-     * Upon startup, the manager then needs to process the messages without
-     * responding to the update agents.
-     * </ol>
      * <p>
-     * Note that messages may get lost or duplicated and generally no timeout
+     * Note that messages may get lost or duplicated and in general, no timeout
      * is defined.
+     * <p>
+     * Note that new types must be <em>strictly</em> added to the <em>end<em>
+     * because the serialization may depend on the enum ordinal!
      */
     public enum Type {
 
-        SUBSCRIPTION_NOTICE {
-
-            @Override public boolean forManager() { return true; }
-
+        SUBSCRIPTION_NOTICE(true) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -345,14 +274,7 @@ public final class UpdateMessage {
             }
         },
 
-        SUBSCRIPTION_REQUEST {
-
-            @Override public boolean forManager() { return true; }
-
-            @Override public Type successResponse() {
-                return SUBSCRIPTION_RESPONSE;
-            }
-
+        SUBSCRIPTION_REQUEST(true) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -360,10 +282,7 @@ public final class UpdateMessage {
             }
         },
 
-        SUBSCRIPTION_RESPONSE {
-
-            @Override public boolean forManager() { return false; }
-
+        SUBSCRIPTION_RESPONSE(false) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -371,10 +290,7 @@ public final class UpdateMessage {
             }
         },
 
-        UPDATE_NOTICE {
-
-            @Override public boolean forManager() { return false; }
-
+        UPDATE_NOTICE(false) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -382,18 +298,7 @@ public final class UpdateMessage {
             }
         },
 
-        INSTALLATION_REQUEST {
-
-            @Override public boolean forManager() { return true; }
-
-            @Override public Type successResponse() {
-                return INSTALLATION_SUCCESS_RESPONSE;
-            }
-
-            @Override public Type failureResponse() {
-                return INSTALLATION_FAILURE_RESPONSE;
-            }
-
+        INSTALLATION_REQUEST(true) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -401,10 +306,39 @@ public final class UpdateMessage {
             }
         },
 
-        INSTALLATION_SUCCESS_RESPONSE {
+        PROGRESS_NOTICE(false) {
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
+            throws Exception {
+                listener.onProgressNotice(message);
+            }
+        },
 
-            @Override public boolean forManager() { return false; }
+        REDEPLOYMENT_REQUEST(false) {
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
+            throws Exception {
+                listener.onRedeploymentRequest(message);
+            }
+        },
 
+        PROCEED_REDEPLOYMENT_RESPONSE(true) {
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
+            throws Exception {
+                listener.onContinueRedeploymentResponse(message);
+            }
+        },
+
+        CANCEL_REDEPLOYMENT_RESPONSE(true) {
+            @Override void dispatchMessageTo(UpdateMessage message,
+                                             UpdateMessageListener listener)
+            throws Exception {
+                listener.onCancelRedeploymentResponse(message);
+            }
+        },
+
+        INSTALLATION_SUCCESS_RESPONSE(false) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -412,10 +346,7 @@ public final class UpdateMessage {
             }
         },
 
-        INSTALLATION_FAILURE_RESPONSE {
-
-            @Override public boolean forManager() { return false; }
-
+        INSTALLATION_FAILURE_RESPONSE(false) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
@@ -423,62 +354,23 @@ public final class UpdateMessage {
             }
         },
 
-        UNSUBSCRIPTION_NOTICE {
-
-            @Override public boolean forManager() { return true; }
-
+        UNSUBSCRIPTION_NOTICE(true) {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
                 listener.onUnsubscriptionNotice(message);
             }
-        },
-
-        LOG_NOTICE_FOR_AGENT {
-
-            @Override public boolean forManager() { return false; }
-
-            @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
-            throws Exception {
-                listener.onLogNotice(message);
-            }
-        },
-
-        LOG_NOTICE_FOR_MANAGER {
-
-            @Override public boolean forManager() { return true; }
-
-            @Override void dispatchMessageTo(UpdateMessage message,
-                                             UpdateMessageListener listener)
-            throws Exception {
-                listener.onLogNotice(message);
-            }
         };
+
+        private final boolean forManager;
+
+        Type(final boolean forManager) { this.forManager = forManager; }
 
         /**
          * Returns {@code true} if and only if messages of this type should be
          * processed by an update manager.
          */
-        public abstract boolean forManager();
-
-        /**
-         * Returns the corresponding {@code *_SUCCESS_RESPONSE} if and only if
-         * this is a {@code *_REQUEST} type.
-         * Otherwise throws an {@link UnsupportedOperationException}.
-         */
-        public Type successResponse() {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Returns the corresponding {@code *_FAILURE_RESPONSE} if and only if
-         * this is a {@code *_REQUEST} type.
-         * Otherwise throws an {@link UnsupportedOperationException}.
-         */
-        public Type failureResponse() {
-            throw new UnsupportedOperationException();
-        }
+        public final boolean forManager() { return forManager; }
 
         abstract void dispatchMessageTo(UpdateMessage message,
                                         UpdateMessageListener listener)
@@ -499,31 +391,32 @@ public final class UpdateMessage {
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String updateVersion;
         @CheckForNull String currentLocation, updateLocation;
-        @CheckForNull LogMessage logMessage;
+        final ImmutableListBuilder<LogMessage, Void>
+                logMessages = ImmutableListBuilder.create();
 
         protected Builder() { }
 
-        public Builder<P> timestamp(final @Nullable Long timestamp) {
+        public final Builder<P> timestamp(final @Nullable Long timestamp) {
             this.timestamp = timestamp;
             return this;
         }
 
-        public Builder<P> from(final @Nullable String from) {
+        public final Builder<P> from(final @Nullable String from) {
             this.from = from;
             return this;
         }
 
-        public Builder<P> to(final @Nullable String to) {
+        public final Builder<P> to(final @Nullable String to) {
             this.to = to;
             return this;
         }
 
-        public Builder<P> type(final @Nullable Type type) {
+        public final Builder<P> type(final @Nullable Type type) {
             this.type = type;
             return this;
         }
 
-        public ArtifactDescriptor.Builder<Builder<P> > artifactDescriptor() {
+        public final ArtifactDescriptor.Builder<Builder<P> > artifactDescriptor() {
             return new ArtifactDescriptor.Builder<Builder<P>>() {
                 @Override public Builder<P> inject() {
                     return artifactDescriptor(build());
@@ -531,41 +424,44 @@ public final class UpdateMessage {
             };
         }
 
-        public Builder<P> artifactDescriptor(
+        public final Builder<P> artifactDescriptor(
                 final @Nullable ArtifactDescriptor artifactDescriptor) {
             this.artifactDescriptor = artifactDescriptor;
             return this;
         }
 
-        public Builder<P> updateVersion(final @Nullable String updateVersion) {
+        public final Builder<P> updateVersion(
+                final @Nullable String updateVersion) {
             this.updateVersion = updateVersion;
             return this;
         }
 
-        public Builder<P> currentLocation(final @Nullable String currentLocation) {
+        public final Builder<P> currentLocation(
+                final @Nullable String currentLocation) {
             this.currentLocation = currentLocation;
             return this;
         }
 
-        public Builder<P> updateLocation(final @Nullable String updateLocation) {
+        public final Builder<P> updateLocation(
+                final @Nullable String updateLocation) {
             this.updateLocation = updateLocation;
             return this;
         }
 
-        public LogMessage.Builder<Builder<P>> logMessage() {
-            return new LogMessage.Builder<Builder<P>>() {
+        public final ImmutableListBuilder<LogMessage, Builder<P>> logMessages() {
+            return new ImmutableListBuilder<LogMessage, Builder<P>>() {
                 @Override public Builder<P> inject() {
-                    return logMessage(build());
+                    return logMessages(build());
                 }
             };
         }
 
-        public Builder<P> logMessage(final @Nullable LogMessage message) {
-            this.logMessage = message;
+        public final Builder<P> logMessages(final List<LogMessage> logMessages) {
+            this.logMessages.setAll(logMessages);
             return this;
         }
 
-        public UpdateMessage build() { return new UpdateMessage(this); }
+        public final UpdateMessage build() { return new UpdateMessage(this); }
 
         /**
          * Injects the product of this builder into the parent builder, if
