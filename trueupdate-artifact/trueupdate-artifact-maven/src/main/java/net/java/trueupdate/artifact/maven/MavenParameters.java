@@ -6,16 +6,16 @@ package net.java.trueupdate.artifact.maven;
 
 import java.io.File;
 import java.util.*;
-import static java.util.Collections.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.maven.dto.*;
+import net.java.trueupdate.util.ImmutableListBuilder;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import org.eclipse.aether.repository.*;
 
 /**
- * Aether parameters.
+ * Maven parameters.
  *
  * @author Christian Schlichtherle
  */
@@ -27,10 +27,8 @@ public final class MavenParameters {
 
     @SuppressWarnings("unchecked")
     MavenParameters(final Builder<?> b) {
-        this.local = requireNonNull(b.localRepositories);
-        this.remotes = null == b.remoteRepositories
-                ? EMPTY_LIST
-                : unmodifiableList(Arrays.asList(b.remoteRepositories.clone()));
+        this.local = requireNonNull(b.local);
+        this.remotes = b.remotes.build();
     }
 
     /** Parses the given configuration item. */
@@ -38,33 +36,34 @@ public final class MavenParameters {
         return builder().parse(ci).build();
     }
 
-    /** Returns a new builder for Aether parameters. */
+    /** Returns a new builder for Maven parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    /** Returns the localRepositories repository. */
+    /** Returns the local repository. */
     public LocalRepository localRepository() { return local; }
 
-    /** Returns the immutable list of remote repositories. */
+    /** Returns an immutable list of the remote repositories. */
     @SuppressWarnings("ReturnOfCollectionOrArrayField")
     public List<RemoteRepository> remoteRepositories() { return remotes; }
 
     /**
-     * A builder for Aether parameters.
+     * A builder for Maven parameters.
      *
      * @param <P> The type of the parent builder.
      */
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> {
 
-        @CheckForNull LocalRepository localRepositories;
-        @CheckForNull RemoteRepository[] remoteRepositories;
+        @CheckForNull LocalRepository local;
+        final ImmutableListBuilder<RemoteRepository, Void>
+                remotes = ImmutableListBuilder.create();
 
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public Builder<P> parse(MavenParametersDto ci) {
-            if (null != ci.local) localRepositories = local(ci.local);
-            if (null != ci.remotes) remoteRepositories = remotes(ci.remotes);
+        public final Builder<P> parse(MavenParametersDto ci) {
+            if (null != ci.local) local = local(ci.local);
+            if (null != ci.remotes) addRemotes(ci.remotes);
             return this;
         }
 
@@ -74,34 +73,41 @@ public final class MavenParameters {
                     resolve(ci.type, null));
         }
 
-        private static RemoteRepository[] remotes(
-                final RemoteRepositoryDto[] cis) {
+        private void addRemotes(final RemoteRepositoryDto[] cis) {
             final int l = cis.length;
-            final RemoteRepository[] remotes = new RemoteRepository[l];
             for (int i = 0; i < l; i++) {
                 final RemoteRepositoryDto ci = cis[i];
-                remotes[i] = new RemoteRepository.Builder(
+                remotes.add(new RemoteRepository.Builder(
                         resolve(ci.id, null),
                         resolve(ci.type, null),
-                        resolve(ci.url, "http://repo1.maven.org/maven2/")).build();
+                        resolve(ci.url, "http://repo1.maven.org/maven2/")
+                        ).build());
             }
-            return remotes;
         }
 
-        public Builder<P> localRepository(
+        public final Builder<P> localRepository(
                 final @Nullable LocalRepository local) {
-            this.localRepositories = local;
+            this.local = local;
             return this;
         }
 
-        @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-        public Builder<P> remoteRepositories(
-                final @Nullable RemoteRepository... remotes) {
-            this.remoteRepositories = remotes;
+        public final ImmutableListBuilder<RemoteRepository, Builder<P>> remoteRepositories() {
+            return new ImmutableListBuilder<RemoteRepository, Builder<P>>() {
+                @Override public Builder<P> inject() {
+                    return remoteRepositories(build());
+                }
+            };
+        }
+
+        public final Builder<P> remoteRepositories(
+                final List<RemoteRepository> remotes) {
+            this.remotes.setAll(remotes);
             return this;
         }
 
-        public MavenParameters build() { return new MavenParameters(this); }
+        public final MavenParameters build() {
+            return new MavenParameters(this);
+        }
 
         /**
          * Injects the product of this builder into the parent builder, if
@@ -110,8 +116,7 @@ public final class MavenParameters {
          * @throws IllegalStateException if there is no parent builder defined.
          */
         public P inject() {
-            throw new java.lang.IllegalStateException("No parent builder defined.");
+            throw new IllegalStateException("No parent builder defined.");
         }
-
     } // Builder
 }
