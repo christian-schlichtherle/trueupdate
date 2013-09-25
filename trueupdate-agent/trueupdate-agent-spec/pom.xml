@@ -16,7 +16,7 @@
 
     <name>TrueUpdate Agent Specification</name>
     <description>
-        Specifies the API for an update agent.
+        Specifies an API for update agents.
     </description>
 
     <dependencies>

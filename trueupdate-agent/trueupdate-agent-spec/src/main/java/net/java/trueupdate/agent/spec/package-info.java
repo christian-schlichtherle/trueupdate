@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Specifies the API for an update agent.
+ * Specifies an API for update agents.
  *
  * @author Christian Schlichtherle
  */

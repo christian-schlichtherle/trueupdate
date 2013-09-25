@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * The stuff that didn't fit anywhere else.
+ * Provides utilities for JAX-RS.
  *
  * @author Christian Schlichtherle
  */

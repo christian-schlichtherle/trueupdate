@@ -16,7 +16,7 @@
 
     <name>TrueUpdate Manager Specification</name>
     <description>
-        Specifies the API for an update manager.
+        Specifies an API for update managers.
     </description>
 
     <dependencies>

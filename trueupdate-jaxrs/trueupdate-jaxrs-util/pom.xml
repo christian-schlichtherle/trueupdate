@@ -16,6 +16,6 @@
 
     <name>TrueUpdate JAX-RS Utilities</name>
     <description>
-        The stuff that didn't fit anywhere else.
+        Provides utilities for JAX-RS.
     </description>
 </project>
