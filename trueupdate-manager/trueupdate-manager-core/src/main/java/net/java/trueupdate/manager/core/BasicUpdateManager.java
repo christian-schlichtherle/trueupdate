@@ -27,18 +27,17 @@ extends UpdateMessageListener implements UpdateManager {
     private static final Logger
             logger = Logger.getLogger(BasicUpdateManager.class.getName());
 
-    private final Map<ApplicationDescriptor, UpdateMessage>
-            subscriptions = new HashMap<ApplicationDescriptor, UpdateMessage>();
+    private final SubscriptionManager
+            subscriptionManager = new SubscriptionManager();
 
     private final BasicUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
 
     private final UpdateInstaller updateInstaller;
+
     private volatile UpdateClient updateClient;
 
-    protected BasicUpdateManager() {
-        updateInstaller = newUpdateInstaller();
-    }
+    protected BasicUpdateManager() { updateInstaller = newUpdateInstaller(); }
 
     private static UpdateInstaller newUpdateInstaller() {
         final UpdateInstaller ui = ServiceLoader.load(UpdateInstaller.class,
@@ -64,25 +63,29 @@ extends UpdateMessageListener implements UpdateManager {
     protected abstract URI updateServiceBaseUri();
 
     @Override public void checkForUpdates() throws Exception {
+        final Collection<UpdateMessage>
+                subscriptions = subscriptionManager.get();
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient.baseUri());
         final Map<ArtifactDescriptor, String>
                 updateVersions = new HashMap<ArtifactDescriptor, String>();
-        updateResolver.restart();
-        for (final UpdateMessage subscription : subscriptions.values()) {
-            final ArtifactDescriptor artifactDescriptor =
-                    subscription.artifactDescriptor();
-            String updateVersion = updateVersions.get(artifactDescriptor);
-            if (null == updateVersion)
-                updateVersions.put(artifactDescriptor, updateVersion =
-                        updateClient.version(artifactDescriptor));
-            if (!updateVersion.equals(artifactDescriptor.version())) {
-                final UpdateMessage
-                        un = updateNotice(subscription, updateVersion);
-                updateResolver.allocate(un.updateDescriptor());
-                sendAndLog(un);
+        synchronized (updateResolver) {
+            updateResolver.restart();
+            for (final UpdateMessage subscription : subscriptions) {
+                final ArtifactDescriptor artifactDescriptor =
+                        subscription.artifactDescriptor();
+                String updateVersion = updateVersions.get(artifactDescriptor);
+                if (null == updateVersion)
+                    updateVersions.put(artifactDescriptor, updateVersion =
+                            updateClient.version(artifactDescriptor));
+                if (!updateVersion.equals(artifactDescriptor.version())) {
+                    final UpdateMessage
+                            un = updateNotice(subscription, updateVersion);
+                    updateResolver.allocate(un.updateDescriptor());
+                    sendAndLog(un);
+                }
             }
         }
     }
@@ -110,10 +113,6 @@ extends UpdateMessageListener implements UpdateManager {
         checkForUpdates();
     }
 
-    private void subscribe(final UpdateMessage message) {
-        subscriptions.put(message.applicationDescriptor(), message);
-    }
-
     @Override protected void onInstallationRequest(final UpdateMessage message)
     throws Exception {
         logReceived(message);
@@ -129,9 +128,11 @@ extends UpdateMessageListener implements UpdateManager {
 
     private void install(final UpdateMessage message) throws Exception {
         final UpdateDescriptor descriptor = message.updateDescriptor();
-        final File diffZip = updateResolver.resolveDiffZip(descriptor);
-        updateInstaller.install(message, diffZip);
-        updateResolver.release(descriptor);
+        synchronized (updateResolver) {
+            final File diffZip = updateResolver.resolveDiffZip(descriptor);
+            updateInstaller.install(message, diffZip);
+            updateResolver.release(descriptor);
+        }
     }
 
     private static UpdateMessage installationSuccessResponse(
@@ -182,10 +183,6 @@ extends UpdateMessageListener implements UpdateManager {
         unsubscribe(message);
     }
 
-    private void unsubscribe(final UpdateMessage message) {
-        subscriptions.remove(message.applicationDescriptor());
-    }
-
     private void sendAndLog(final UpdateMessage message) throws Exception {
         send(message);
         logSent(message);
@@ -205,17 +202,43 @@ extends UpdateMessageListener implements UpdateManager {
     }
 
     @Override public void close() throws Exception {
-        updateResolver.close();
-        persistSubscriptions();
+        synchronized (updateResolver) { updateResolver.close(); }
+        subscriptionManager.close();
     }
 
-    private void persistSubscriptions() throws Exception {
-        for (final Iterator<UpdateMessage> it = subscriptions.values().iterator();
-                it.hasNext(); ) {
-            send(it.next().type(SUBSCRIPTION_NOTICE));
-            it.remove();
-        }
+    private void subscribe(UpdateMessage message) {
+        subscriptionManager.add(message);
     }
+
+    private void unsubscribe(UpdateMessage message) {
+        subscriptionManager.remove(message);
+    }
+
+    private class SubscriptionManager {
+
+        final Map<ApplicationDescriptor, UpdateMessage>
+                map = new HashMap<ApplicationDescriptor, UpdateMessage>();
+
+        synchronized void add(UpdateMessage subscription) {
+            map.put(subscription.applicationDescriptor(), subscription);
+        }
+
+        synchronized void remove(UpdateMessage subscription) {
+            map.remove(subscription.applicationDescriptor());
+        }
+
+        synchronized Collection<UpdateMessage> get() {
+            return new ArrayList<UpdateMessage>(map.values());
+        }
+
+        synchronized void close() throws Exception {
+            for (final Iterator<UpdateMessage> it = map.values().iterator();
+                    it.hasNext(); ) {
+                send(it.next().type(SUBSCRIPTION_NOTICE));
+                it.remove();
+            }
+        }
+    } // SubscriptionManager
 
     private class ConfiguredUpdateResolver extends BasicUpdateResolver {
         @Override protected UpdateClient updateClient() {

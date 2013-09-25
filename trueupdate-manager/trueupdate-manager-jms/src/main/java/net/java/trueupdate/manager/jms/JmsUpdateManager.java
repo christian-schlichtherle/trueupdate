@@ -23,6 +23,8 @@ import net.java.trueupdate.message.UpdateMessage;
 @ThreadSafe
 final class JmsUpdateManager extends BasicUpdateManager {
 
+    private final Object lock = new Object();
+
     private final URI updateServiceBaseUri;
     private final Context namingContext;
     private final ConnectionFactory connectionFactory;
@@ -45,7 +47,7 @@ final class JmsUpdateManager extends BasicUpdateManager {
 
     private Connection connection() throws JMSException {
         if (null == connection) {
-            synchronized (this) {
+            synchronized (lock) {
                 if (null == connection)
                     connection = connectionFactory.createConnection();
             }
@@ -53,22 +55,11 @@ final class JmsUpdateManager extends BasicUpdateManager {
         return connection;
     }
 
-    @Override public synchronized void onUpdateMessage(UpdateMessage message)
-    throws Exception {
-        super.onUpdateMessage(message);
-    }
-
-    @Override public synchronized void checkForUpdates() throws Exception {
-        super.checkForUpdates();
-    }
-
-    @Override public synchronized void close() throws Exception {
+    @Override public void close() throws Exception {
         // HC SVNT DRACONIS!
         super.close();
-        if (null != connection) try {
-            connection.close();
-        } catch (JMSException ex) {
-            throw new Exception(ex);
+        synchronized (lock) {
+            if (null != connection) connection.close();
         }
     }
 }
