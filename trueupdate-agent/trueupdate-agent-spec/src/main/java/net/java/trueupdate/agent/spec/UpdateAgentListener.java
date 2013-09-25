@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.agent.spec;
 
+import java.util.List;
 import java.util.logging.Logger;
 import net.java.trueupdate.message.LogMessage;
 import net.java.trueupdate.message.UpdateMessage;
@@ -23,7 +24,7 @@ public class UpdateAgentListener {
      * Responds to a subscription response.
      * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
-     * the event.
+     * any enclosed messages.
      */
     public void onSubscriptionResponse(UpdateAgentEvent event)
     throws Exception {
@@ -33,8 +34,9 @@ public class UpdateAgentListener {
     /**
      * Responds to an update available notice.
      * <p>
-     * The implementation in the class {@link UpdateAgentListener} logs the
-     * event and sends an {@linkplain UpdateAgent#install installation request}.
+     * The implementation in the class {@link UpdateAgentListener} logs any
+     * enclosed messages and sends an
+     * {@linkplain UpdateAgent#install installation request}.
      */
     public void onUpdateNotice(UpdateAgentEvent event)
     throws Exception {
@@ -46,7 +48,7 @@ public class UpdateAgentListener {
      * Responds to a progress notice.
      * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
-     * the event.
+     * any enclosed messages.
      */
     public void onProgressNotice(UpdateAgentEvent event)
     throws Exception {
@@ -56,8 +58,9 @@ public class UpdateAgentListener {
     /**
      * Responds to a redeployment request.
      * <p>
-     * The implementation in the class {@link UpdateAgentListener} logs the
-     * event and sends a {@linkplain UpdateAgent#proceed positive response}.
+     * The implementation in the class {@link UpdateAgentListener} logs any
+     * enclosed messages and sends a
+     * {@linkplain UpdateAgent#proceed positive response}.
      */
     public void onRedeploymentRequest(UpdateAgentEvent event)
     throws Exception {
@@ -69,7 +72,7 @@ public class UpdateAgentListener {
      * Responds to an installation success response.
      * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
-     * the event.
+     * any enclosed messages.
      */
     public void onInstallationSuccessResponse(UpdateAgentEvent event)
     throws Exception {
@@ -80,15 +83,22 @@ public class UpdateAgentListener {
      * Responds to an installation failure response.
      * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
-     * the event.
+     * any enclosed messages.
      */
     public void onInstallationFailureResponse(UpdateAgentEvent event)
     throws Exception {
         log(event);
     }
 
-    private static void log(UpdateAgentEvent event) throws Exception {
-        for (LogMessage lm : event.updateMessage().logMessages())
-            lm.log(logger);
+    private static void log(UpdateAgentEvent event) {
+        log(event.updateMessage());
+    }
+
+    private static void log(UpdateMessage message) {
+        log(message.logMessages());
+    }
+
+    private static void log(List<LogMessage> messages) {
+        for (LogMessage lm : messages) lm.log(logger);
     }
 }
