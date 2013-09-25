@@ -59,9 +59,13 @@ public final class JmsUpdateManagerContext {
 
     public void stop(final long timeout, final TimeUnit unit) throws Exception {
         // HC SVNT DRACONIS!
+        final long stop = System.currentTimeMillis() + unit.toMillis(timeout);
+        long remaining;
         timer.shutdownNow();
-        //timer.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        receiver.stop(timeout, unit);
+        remaining = stop - System.currentTimeMillis();
+        receiver.stop(remaining, TimeUnit.MILLISECONDS);
+        remaining = stop - System.currentTimeMillis();
+        timer.awaitTermination(remaining, TimeUnit.MILLISECONDS);
         manager.close();
     }
 }
