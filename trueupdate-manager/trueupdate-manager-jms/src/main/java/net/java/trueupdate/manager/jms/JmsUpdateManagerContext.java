@@ -4,9 +4,13 @@
  */
 package net.java.trueupdate.manager.jms;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
-import net.java.trueupdate.manager.core.UpdateTimer;
+import net.java.trueupdate.manager.core.CheckForUpdates;
 
 /**
  * A context for the JMS Update Manager.
@@ -18,7 +22,7 @@ public final class JmsUpdateManagerContext {
 
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
-    private final UpdateTimer timer;
+    private final ScheduledExecutorService timer;
     private final JmsReceiver receiver;
 
     public JmsUpdateManagerContext() {
@@ -38,33 +42,26 @@ public final class JmsUpdateManagerContext {
                 .messageSelector("manager = true")
                 .updateMessageListener(manager)
                 .build();
-        timer = new UpdateTimer(manager,
-                parameters.checkUpdatesIntervalMinutes());
+        timer = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override public Thread newThread(Runnable r) {
+                return new Thread(r, "TrueUpdate Manager JMS / Timer Thread");
+            }
+        });
     }
 
     public JmsUpdateManagerParameters parameters() { return parameters; }
 
     public void start() throws Exception {
-        receiverThread().start();
-        timerThread().start();
+        new Thread(receiver, "TrueUpdate Manager JMS / Receiver Thread").start();
+        final int period = parameters.checkUpdatesIntervalMinutes();
+        timer.scheduleAtFixedRate(new CheckForUpdates(manager), period, period, TimeUnit.MINUTES);
     }
 
-    public void stop() throws Exception {
-        // HC SUNT DRACONIS!
-        timer.stop();
-        receiver.stop();
+    public void stop(final long timeout, final TimeUnit unit) throws Exception {
+        // HC SVNT DRACONIS!
+        timer.shutdownNow();
+        //timer.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        receiver.stop(timeout, unit);
         manager.close();
-    }
-
-    private Thread timerThread() {
-        return new Thread(timer, "TrueUpdate Manager / Timer Daemon") {
-            { super.setDaemon(true); }
-        };
-    }
-
-    private Thread receiverThread() {
-        return new Thread(receiver, "TrueUpdate Manager / Receiver Daemon") {
-            { super.setDaemon(true); }
-        };
     }
 }

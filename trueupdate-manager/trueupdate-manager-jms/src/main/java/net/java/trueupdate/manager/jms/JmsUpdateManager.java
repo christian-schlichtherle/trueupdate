@@ -58,8 +58,8 @@ final class JmsUpdateManager extends BasicUpdateManager {
         super.onUpdateMessage(message);
     }
 
-    @Override public synchronized void checkUpdates() throws Exception {
-        super.checkUpdates();
+    @Override public synchronized void checkForUpdates() throws Exception {
+        super.checkForUpdates();
     }
 
     @Override public synchronized void close() throws Exception {

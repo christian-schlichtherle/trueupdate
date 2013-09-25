@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.jms;
 
+import java.util.concurrent.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
@@ -24,6 +25,13 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
  */
 @ThreadSafe
 public final class JmsReceiver implements Runnable {
+
+    private static final ExecutorService listeners =
+            Executors.newCachedThreadPool(new ThreadFactory() {
+                @Override public Thread newThread(Runnable r) {
+                    return new Thread(r, "TrueUpdate JMS / Message Listener Thread");
+                }
+            });
 
     private static final boolean NO_LOCAL = true;
 
@@ -64,11 +72,17 @@ public final class JmsReceiver implements Runnable {
                             : s.createConsumer(d, messageSelector);
                 }
                 c.start();
-                for (Message m; null != (m = mc.receive()); ) {
+                while (true) {
+                    final Message m = mc.receive();
+                    if (null == m) break;
                     synchronized(lock) {
                         if (null == messageConsumer) break;
                         m.acknowledge();
-                        messageListener.onMessage(m);
+                        listeners.execute(new Runnable() {
+                            @Override public void run() {
+                                messageListener.onMessage(m);
+                            }
+                        });
                     }
                 }
             } finally {
@@ -87,16 +101,16 @@ public final class JmsReceiver implements Runnable {
      * When returning from this method, the client may safely assume that the
      * other thread is not executing the {@link #run()} method anymore.
      */
-    public void stop() throws JMSException {
+    public void stop(long timeout, TimeUnit unit) throws Exception {
         synchronized (lock) {
             if (null == messageConsumer) return;
+            // HC SVNT DRACONIS
             messageConsumer.close();
+            if (0 != listeners.shutdownNow().size())
+                throw new AssertionError();
+            listeners.awaitTermination(timeout, unit);
             messageConsumer = null;
-            while (true) try {
-                lock.wait();
-                break;
-            } catch (InterruptedException dontStopTillYouDrop) {
-            }
+            lock.wait();
         }
     }
 

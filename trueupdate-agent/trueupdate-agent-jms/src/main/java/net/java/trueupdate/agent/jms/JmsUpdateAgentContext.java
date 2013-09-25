@@ -4,8 +4,8 @@
  */
 package net.java.trueupdate.agent.jms;
 
+import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.Immutable;
-import javax.jms.JMSException;
 import net.java.trueupdate.jms.*;
 
 /**
@@ -37,23 +37,13 @@ public final class JmsUpdateAgentContext {
     }
 
     public void start() throws Exception {
-        receiverThread().start();
+        new Thread(receiver, "TrueUpdate Agent JMS / Receiver Thread").start();
         agent.subscribe();
     }
 
-    public void stop() throws Exception {
+    public void stop(final long timeout, final TimeUnit unit) throws Exception {
         // HC SVNT DRACONIS
-        try {
-            receiver.stop();
-        } catch (JMSException ex) {
-            throw new Exception(ex);
-        }
+        receiver.stop(timeout, unit);
         agent.unsubscribe();
-    }
-
-    private Thread receiverThread() {
-        return new Thread(receiver, "TrueUpdate Agent / Receiver Daemon") {
-            { super.setDaemon(true); }
-        };
     }
 }

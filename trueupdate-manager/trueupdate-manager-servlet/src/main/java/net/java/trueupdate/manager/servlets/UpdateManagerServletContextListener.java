@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.servlets;
 
+import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
@@ -45,7 +46,7 @@ implements ServletContextListener {
     @Override public void contextDestroyed(final ServletContextEvent sce) {
         if (null == context) return;
         try {
-            context.stop();
+            context.stop(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update manager.", ex);

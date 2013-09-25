@@ -20,10 +20,10 @@ package net.java.trueupdate.manager.spec;
 public interface UpdateManager {
 
     /** Checks for updates and notifies the subscribed agents. */
-    void checkUpdates() throws Exception;
+    void checkForUpdates() throws Exception;
 
     /**
-     * Closes this update manager.
+     * Stops this update manager.
      * This method is idempotent.
      * However, it's the caller's responsibility to make sure that this update
      * manager isn't used anymore after the call to this method, even if it

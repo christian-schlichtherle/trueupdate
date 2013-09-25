@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.agent.servlets;
 
+import java.util.concurrent.TimeUnit;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import net.java.trueupdate.agent.jms.*;
@@ -33,7 +34,7 @@ implements ServletContextListener {
     @Override public void contextDestroyed(ServletContextEvent sce) {
         if (null == context) return;
         try {
-            context.stop();
+            context.stop(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update agent.", ex);

@@ -63,7 +63,7 @@ extends UpdateMessageListener implements UpdateManager {
     /** Returns the update service base URI. */
     protected abstract URI updateServiceBaseUri();
 
-    @Override public void checkUpdates() throws Exception {
+    @Override public void checkForUpdates() throws Exception {
         if (subscriptions.isEmpty()) return;
         final UpdateClient updateClient = updateClient();
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
@@ -100,14 +100,14 @@ extends UpdateMessageListener implements UpdateManager {
         logReceived(message);
         subscribe(message);
         sendAndLog(responseFor(message).type(SUBSCRIPTION_RESPONSE).build());
-        checkUpdates();
+        checkForUpdates();
     }
 
     @Override protected void onSubscriptionNotice(final UpdateMessage message)
     throws Exception {
         logReceived(message);
         subscribe(message);
-        checkUpdates();
+        checkForUpdates();
     }
 
     private void subscribe(final UpdateMessage message) {
