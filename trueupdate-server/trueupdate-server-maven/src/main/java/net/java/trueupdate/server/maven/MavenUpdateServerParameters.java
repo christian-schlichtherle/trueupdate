@@ -12,7 +12,7 @@ import javax.xml.bind.JAXB;
 import net.java.trueupdate.artifact.maven.*;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import net.java.trueupdate.server.maven.dto.MavenUpdateServerParametersDto;
-import static net.java.trueupdate.util.Objects.*;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * Maven Update Server Parameters.
@@ -27,7 +27,7 @@ public final class MavenUpdateServerParameters {
     private final ArtifactResolver artifactResolver;
 
     MavenUpdateServerParameters(final Builder<?> b) {
-        this.artifactResolver = requireNonNull(b.artifactResolver);
+        this.artifactResolver = new MavenArtifactResolver(b.mavenParameters);
     }
 
     /**
@@ -62,39 +62,27 @@ public final class MavenUpdateServerParameters {
     /**
      * A builder for update server parameters.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
-        @CheckForNull ArtifactResolver artifactResolver;
+        @CheckForNull MavenParameters mavenParameters;
 
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final MavenUpdateServerParametersDto ci) {
-            if (null != ci.repositories)
-                artifactResolver = new MavenArtifactResolver(MavenParameters
-                        .parse(ci.repositories));
+            if (null != ci.repositories) MavenParameters.parse(ci.repositories);
             return this;
         }
 
-        public final Builder<P> artifactResolver(
-                final @Nullable ArtifactResolver artifactResolver) {
-            this.artifactResolver = artifactResolver;
+        public final Builder<P> mavenParameters(
+                final @Nullable MavenParameters mavenParameters) {
+            this.mavenParameters = mavenParameters;
             return this;
         }
 
-        public final MavenUpdateServerParameters build() {
+        @Override public final MavenUpdateServerParameters build() {
             return new MavenUpdateServerParameters(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

@@ -13,6 +13,7 @@ import net.java.trueupdate.jms.MessagingParameters;
 import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * JMS Update Manager Parameters.
@@ -84,10 +85,10 @@ public final class JmsUpdateManagerParameters {
     /**
      * A builder for update manager parameters.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull URI updateServiceBaseUri;
         int checkUpdatesIntervalMinutes;
@@ -128,18 +129,8 @@ public final class JmsUpdateManagerParameters {
             return this;
         }
 
-        public final JmsUpdateManagerParameters build() {
+        @Override public final JmsUpdateManagerParameters build() {
             return new JmsUpdateManagerParameters(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

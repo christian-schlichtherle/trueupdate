@@ -4,7 +4,6 @@
  */
 package net.java.trueupdate.jms;
 
-import java.lang.IllegalStateException;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
@@ -12,6 +11,7 @@ import javax.naming.*;
 import net.java.trueupdate.jms.dto.MessagingDto;
 import net.java.trueupdate.jms.dto.NamingDto;
 import static net.java.trueupdate.util.SystemProperties.resolve;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * Messaging parameters.
@@ -88,10 +88,10 @@ public final class MessagingParameters {
     /**
      * A builder for messaging parameters.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull Context namingContext;
         @CheckForNull String connectionFactory, from, to;
@@ -130,18 +130,8 @@ public final class MessagingParameters {
             return this;
         }
 
-        public final MessagingParameters build() {
+        @Override public final MessagingParameters build() {
             return new MessagingParameters(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

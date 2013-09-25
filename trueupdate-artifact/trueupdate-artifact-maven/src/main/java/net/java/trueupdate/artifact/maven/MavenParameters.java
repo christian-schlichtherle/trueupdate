@@ -9,9 +9,9 @@ import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.maven.dto.*;
-import net.java.trueupdate.util.ImmutableListBuilder;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
+import net.java.trueupdate.util.builder.*;
 import org.eclipse.aether.repository.*;
 
 /**
@@ -49,10 +49,10 @@ public final class MavenParameters {
     /**
      * A builder for Maven parameters.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull LocalRepository local;
         final ImmutableListBuilder<RemoteRepository, Void>
@@ -61,7 +61,7 @@ public final class MavenParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(MavenParametersDto ci) {
+        public final Builder<P> parse(final MavenParametersDto ci) {
             if (null != ci.local) local = local(ci.local);
             if (null != ci.remotes) addRemotes(ci.remotes);
             return this;
@@ -105,18 +105,8 @@ public final class MavenParameters {
             return this;
         }
 
-        public final MavenParameters build() {
+        @Override public final MavenParameters build() {
             return new MavenParameters(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

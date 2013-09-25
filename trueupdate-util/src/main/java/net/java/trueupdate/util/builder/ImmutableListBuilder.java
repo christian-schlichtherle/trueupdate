@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.util;
+package net.java.trueupdate.util.builder;
 
 import java.util.*;
 import static java.util.Collections.*;
@@ -11,9 +11,9 @@ import static java.util.Collections.*;
  * A builder for immutable lists.
  *
  * @param <I> The type of the list items.
- * @param <P> The type of the parent builder.
+ * @param <P> The type of the parent builder, if defined.
  */
-public class ImmutableListBuilder<I, P> {
+public class ImmutableListBuilder<I, P> extends AbstractBuilder<P> {
 
     public static <I> ImmutableListBuilder<I, Void> create() {
         return new ImmutableListBuilder<I, Void>();
@@ -31,6 +31,7 @@ public class ImmutableListBuilder<I, P> {
         return this;
     }
 
+    @SuppressWarnings("ManualArrayToCollectionCopy")
     public final ImmutableListBuilder<I, P> add(final I... items) {
         for (I item : items) this.items.add(item);
         return this;
@@ -57,21 +58,12 @@ public class ImmutableListBuilder<I, P> {
 
     /** Builds an immutable list with the added items. */
     @SuppressWarnings("unchecked")
-    public final List<I> build() {
+    @Override public final List<I> build() {
         final int size = items.size();
         return 0 == size
                 ? EMPTY_LIST
                 : 1 == size
                     ? singletonList(items.get(0))
                     : unmodifiableList(new ArrayList<I>(items));
-    }
-
-    /**
-     * Injects the product of this builder into the parent builder, if defined.
-     *
-     * @throws IllegalStateException if there is no parent builder defined.
-     */
-    public P inject() {
-        throw new IllegalStateException("No parent builder defined.");
     }
 }

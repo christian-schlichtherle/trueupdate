@@ -9,6 +9,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * An application descriptor comprises of an artifact descriptor and a current
@@ -61,10 +62,10 @@ public final class ApplicationDescriptor {
     /**
      * A builder for an application descriptor.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String currentLocation;
@@ -91,18 +92,8 @@ public final class ApplicationDescriptor {
             return this;
         }
 
-        public final ApplicationDescriptor build() {
+        @Override public final ApplicationDescriptor build() {
             return new ApplicationDescriptor(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

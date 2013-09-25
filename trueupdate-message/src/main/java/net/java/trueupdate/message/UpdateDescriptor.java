@@ -9,6 +9,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * An update descriptor comprises of an artifact descriptor and an update
@@ -59,10 +60,10 @@ public final class UpdateDescriptor {
     /**
      * A builder for an update descriptor.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String updateVersion;
@@ -89,18 +90,8 @@ public final class UpdateDescriptor {
             return this;
         }
 
-        public final UpdateDescriptor build() {
+        @Override public final UpdateDescriptor build() {
             return new UpdateDescriptor(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

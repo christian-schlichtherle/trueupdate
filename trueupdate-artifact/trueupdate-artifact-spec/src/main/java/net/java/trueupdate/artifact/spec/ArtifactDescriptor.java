@@ -10,6 +10,7 @@ import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * An artifact descriptor comprises of a group ID, an artifact ID, a version,
@@ -155,10 +156,10 @@ public final class ArtifactDescriptor {
     /**
      * A builder for an artifact descriptor.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull String groupId, artifactId, version, classifier,
                              extension;
@@ -200,18 +201,8 @@ public final class ArtifactDescriptor {
             return this;
         }
 
-        public final ArtifactDescriptor build() {
+        @Override public final ArtifactDescriptor build() {
             return new ArtifactDescriptor(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

@@ -13,6 +13,7 @@ import net.java.trueupdate.agent.jms.dto.JmsUpdateAgentParametersDto;
 import net.java.trueupdate.agent.spec.ApplicationParameters;
 import net.java.trueupdate.jms.MessagingParameters;
 import static net.java.trueupdate.util.Objects.requireNonNull;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * JMS Update Agent Parameters.
@@ -71,10 +72,10 @@ public final class JmsUpdateAgentParameters {
     /**
      * A builder for update agent parameters.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull ApplicationParameters applicationParameters;
         @CheckForNull MessagingParameters messagingParameters;
@@ -102,18 +103,8 @@ public final class JmsUpdateAgentParameters {
             return this;
         }
 
-        public final JmsUpdateAgentParameters build() {
+        @Override public final JmsUpdateAgentParameters build() {
             return new JmsUpdateAgentParameters(this);
-        }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
         }
     } // Builder
 }

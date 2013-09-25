@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * A log message encapsulates the parameters for the method
@@ -94,10 +95,10 @@ public final class LogMessage {
     /**
      * A builder for a log record.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull Level level;
         @CheckForNull String message;
@@ -122,16 +123,8 @@ public final class LogMessage {
             return this;
         }
 
-        public final LogMessage build() { return new LogMessage(this); }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
+        @Override public final LogMessage build() {
+            return new LogMessage(this);
         }
     } // Builder
 }

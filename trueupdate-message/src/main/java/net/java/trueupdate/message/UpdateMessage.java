@@ -8,9 +8,9 @@ import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
-import net.java.trueupdate.util.ImmutableListBuilder;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
+import net.java.trueupdate.util.builder.*;
 
 /**
  * An update message gets exchanged between update agents and update managers
@@ -380,10 +380,10 @@ public final class UpdateMessage {
     /**
      * A builder for an update message.
      *
-     * @param <P> The type of the parent builder.
+     * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<P> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull Long timestamp;
         @CheckForNull String from, to;
@@ -461,16 +461,8 @@ public final class UpdateMessage {
             return this;
         }
 
-        public final UpdateMessage build() { return new UpdateMessage(this); }
-
-        /**
-         * Injects the product of this builder into the parent builder, if
-         * defined.
-         *
-         * @throws IllegalStateException if there is no parent builder defined.
-         */
-        public P inject() {
-            throw new IllegalStateException("No parent builder defined.");
+        @Override public final UpdateMessage build() {
+            return new UpdateMessage(this);
         }
     } // Builder
 }
