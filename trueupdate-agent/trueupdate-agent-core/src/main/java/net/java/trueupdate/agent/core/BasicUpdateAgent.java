@@ -102,6 +102,12 @@ extends UpdateMessageListener implements UpdateAgent {
     }
 
     @Override
+    protected void onRedeploymentRequest(UpdateMessage message)
+    throws Exception {
+        listener().onRedeploymentRequest(event(message));
+    }
+
+    @Override
     protected void onInstallationSuccessResponse(UpdateMessage message)
     throws Exception {
         listener().onInstallationSuccessResponse(event(message));
