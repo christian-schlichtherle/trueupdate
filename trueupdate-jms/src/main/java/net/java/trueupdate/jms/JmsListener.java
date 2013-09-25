@@ -46,7 +46,7 @@ public abstract class JmsListener implements MessageListener {
                 final String body = ((TextMessage) message).getText();
                 updateMessageListener().onUpdateMessage(JAXB.decode(body));
             } else {
-                logger.log(Level.WARNING, "Unsupported Content-type property in JMS message: {0}", contentType);
+                logger.log(Level.WARNING, "Unsupported contentType property in JMS message {0} .", contentType);
             }
         } catch (final Exception ex) {
             logger.log(Level.WARNING, "Could not process JMS message:", ex);
