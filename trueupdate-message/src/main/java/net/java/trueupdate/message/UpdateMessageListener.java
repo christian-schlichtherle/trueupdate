@@ -52,7 +52,7 @@ public abstract class UpdateMessageListener {
     protected void onRedeploymentRequest(UpdateMessage message)
     throws Exception { }
 
-    protected void onContinueRedeploymentResponse(UpdateMessage message)
+    protected void onProceedRedeploymentResponse(UpdateMessage message)
     throws Exception { }
 
     protected void onCancelRedeploymentResponse(UpdateMessage message)

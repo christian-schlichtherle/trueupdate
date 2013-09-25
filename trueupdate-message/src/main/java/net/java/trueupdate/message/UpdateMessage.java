@@ -326,7 +326,7 @@ public final class UpdateMessage {
             @Override void dispatchMessageTo(UpdateMessage message,
                                              UpdateMessageListener listener)
             throws Exception {
-                listener.onContinueRedeploymentResponse(message);
+                listener.onProceedRedeploymentResponse(message);
             }
         },
 
