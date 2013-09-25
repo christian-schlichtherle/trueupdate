@@ -14,6 +14,7 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.message.*;
+import net.java.trueupdate.message.UpdateMessage.Type;
 import static net.java.trueupdate.message.UpdateMessage.Type.*;
 
 /**
@@ -28,8 +29,9 @@ extends UpdateMessageListener implements UpdateManager {
     private static final Logger
             logger = Logger.getLogger(BasicUpdateManager.class.getName());
 
-    private final SubscriptionManager
-            subscriptionManager = new SubscriptionManager();
+    private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
+
+    private final StateManager stateManager = new StateManager();
 
     private final BasicUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
@@ -66,8 +68,9 @@ extends UpdateMessageListener implements UpdateManager {
     @Override public void checkForUpdates() throws Exception {
 
         // Cache subscriptions to allow concurrency.
-        final Collection<UpdateMessage> ums = subscriptionManager.get();
-        if (ums.isEmpty()) return;
+        final Collection<UpdateMessage>
+                subscriptions = stateManager.subscriptions();
+        if (subscriptions.isEmpty()) return;
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient().baseUri());
 
@@ -81,7 +84,7 @@ extends UpdateMessageListener implements UpdateManager {
             Reactor() throws Exception { downloadUpdateVersionsFromServer(); }
 
             void downloadUpdateVersionsFromServer() throws Exception {
-                for (final UpdateMessage um : ums) {
+                for (final UpdateMessage um : subscriptions) {
                     final ArtifactDescriptor ad = um.artifactDescriptor();
                     final UpdateDescriptor ud = uds.get(ad);
                     if (null == ud)
@@ -108,14 +111,14 @@ extends UpdateMessageListener implements UpdateManager {
             void tellUpdateResolver() throws Exception {
                 synchronized (updateResolver) {
                     updateResolver.restart();
-                    for (UpdateMessage um : ums)
+                    for (UpdateMessage um : subscriptions)
                         for (UpdateDescriptor ud : availableUpdate(um))
                             updateResolver.allocate(ud);
                 }
             }
 
             void notifySubscribers() throws Exception {
-                for (UpdateMessage um : ums)
+                for (UpdateMessage um : subscriptions)
                     for (UpdateDescriptor ud : availableUpdate(um))
                         sendAndLog(updateNotice(um, ud.updateVersion()));
             }
@@ -140,7 +143,8 @@ extends UpdateMessageListener implements UpdateManager {
         new Reactor().call();
     }
 
-    @Override protected void onSubscriptionRequest(final UpdateMessage message)
+    @Override
+    protected void onSubscriptionRequest(final UpdateMessage message)
     throws Exception {
         logReceived(message);
         subscribe(message);
@@ -148,16 +152,19 @@ extends UpdateMessageListener implements UpdateManager {
         checkForUpdates();
     }
 
-    @Override protected void onSubscriptionNotice(final UpdateMessage message)
+    @Override
+    protected void onSubscriptionNotice(final UpdateMessage message)
     throws Exception {
         logReceived(message);
         subscribe(message);
         checkForUpdates();
     }
 
-    @Override protected void onInstallationRequest(final UpdateMessage message)
+    @Override
+    protected void onInstallationRequest(final UpdateMessage message)
     throws Exception {
         logReceived(message);
+        subscribe(message);
         UpdateMessage response;
         try {
             install(message);
@@ -168,20 +175,102 @@ extends UpdateMessageListener implements UpdateManager {
         sendAndLog(response);
     }
 
-    private void install(final UpdateMessage message) throws Exception {
-        final UpdateDescriptor descriptor = message.updateDescriptor();
+    private void install(final UpdateMessage request) throws Exception {
+
+        class UpdateMonitor implements ProgressMonitor {
+
+            Exception ex;
+
+            // TODO: Consider conversation with the update agent about this.
+            @Override public boolean isLoggable(Level level) { return true; }
+
+            @Override public void log(
+                    final Level level,
+                    final String key,
+                    final Object... parameters) {
+                final LogMessage lm = LogMessage.create(level, key, parameters);
+                final UpdateMessage um = responseFor(request)
+                        .type(PROGRESS_NOTICE)
+                        .logMessages()
+                            .add(lm)
+                            .inject()
+                        .build();
+                try {
+                    send(um);
+                } catch (final Exception ex2) {
+                    if (null == ex)
+                        logger.log(Level.WARNING, "Cannot send progress notice to update agent:", ex2);
+                    ex = ex2;
+                }
+            }
+
+            @Override public void aboutToRedeploy() throws Exception {
+                sendRedeploymentRequest();
+                final long stop = System.currentTimeMillis()
+                        + HANDSHAKE_TIMEOUT_MILLIS;
+                synchronized (stateManager) {
+                    while (true) {
+                        final UpdateMessage um = stateManager.get(request);
+                        final Type type = um.type();
+                        if (PROCEED_REDEPLOYMENT_RESPONSE.equals(type))
+                            break;
+                        if (CANCEL_REDEPLOYMENT_RESPONSE.equals(type))
+                            throw new Exception("The update agent has cancelled the redeployment.");
+                        final long remaining = stop - System.currentTimeMillis();
+                        if (0 > remaining)
+                            throw new Exception("Timeout while waiting for redeployment response from update agent.");
+                        stateManager.wait(remaining);
+                    }
+                }
+            }
+
+            void sendRedeploymentRequest() throws Exception {
+                final UpdateMessage redeploymentRequest = responseFor(request)
+                        .type(REDEPLOYMENT_REQUEST)
+                        .build();
+                sendAndLog(redeploymentRequest);
+            }
+        } // UpdateMonitor
+
+        final UpdateDescriptor ud = request.updateDescriptor();
         final File diffZip;
         synchronized (updateResolver) {
-            diffZip = updateResolver.resolveDiffZip(descriptor);
+            diffZip = updateResolver.resolveDiffZip(ud);
         }
-        updateInstaller.install(message, diffZip);
+        updateInstaller.install(request, diffZip, new UpdateMonitor());
         synchronized (updateResolver) {
-            updateResolver.release(descriptor);
+            updateResolver.release(ud);
         }
     }
 
+    @Override
+    protected void onProceedRedeploymentResponse(final UpdateMessage message)
+    throws Exception {
+        logReceived(message);
+        subscribe(message);
+    }
+
+    @Override
+    protected void onCancelRedeploymentResponse(final UpdateMessage message)
+    throws Exception {
+        logReceived(message);
+        subscribe(message);
+    }
+
+    @Override
+    protected void onUnsubscriptionNotice(final UpdateMessage message)
+    throws Exception {
+        logReceived(message);
+        unsubscribe(message);
+    }
+
+    private void sendAndLog(final UpdateMessage message) throws Exception {
+        send(message);
+        logSent(message);
+    }
+
     private static UpdateMessage installationSuccessResponse(
-            UpdateMessage request) {
+            final UpdateMessage request) {
         final ArtifactDescriptor ad = request
                 .artifactDescriptor()
                 .update()
@@ -191,12 +280,14 @@ extends UpdateMessageListener implements UpdateManager {
                 .type(INSTALLATION_SUCCESS_RESPONSE)
                 .artifactDescriptor(ad)
                 .updateVersion(null)
+                .currentLocation(request.updateLocation())
+                .updateLocation(null)
                 .build();
     }
 
     private static UpdateMessage installationFailureResponse(
-            UpdateMessage request,
-            Exception ex) {
+            final UpdateMessage request,
+            final Exception ex) {
         final LogMessage lm = LogMessage
                 .builder()
                 .level(Level.WARNING)
@@ -222,17 +313,6 @@ extends UpdateMessageListener implements UpdateManager {
                 .logMessages().inject();
     }
 
-    @Override protected void onUnsubscriptionNotice(final UpdateMessage message)
-    throws Exception {
-        logReceived(message);
-        unsubscribe(message);
-    }
-
-    private void sendAndLog(final UpdateMessage message) throws Exception {
-        send(message);
-        logSent(message);
-    }
-
     /** Sends the given update message. */
     protected abstract void send(UpdateMessage message) throws Exception;
 
@@ -246,33 +326,39 @@ extends UpdateMessageListener implements UpdateManager {
                 "Sent update message to update agent:\n{0}", message);
     }
 
-    @Override public void close() throws Exception {
-        synchronized (updateResolver) { updateResolver.close(); }
-        subscriptionManager.close();
-    }
-
     private void subscribe(UpdateMessage subscription) {
-        subscriptionManager.add(subscription);
+        stateManager.put(subscription);
     }
 
     private void unsubscribe(UpdateMessage subscription) {
-        subscriptionManager.remove(subscription);
+        stateManager.remove(subscription);
     }
 
-    private class SubscriptionManager {
+    @Override public void close() throws Exception {
+        synchronized (updateResolver) { updateResolver.close(); }
+        stateManager.close();
+    }
+
+    private class StateManager {
 
         final Map<ApplicationDescriptor, UpdateMessage>
                 map = new HashMap<ApplicationDescriptor, UpdateMessage>();
 
-        synchronized void add(UpdateMessage subscription) {
+        synchronized UpdateMessage get(UpdateMessage subscription) {
+            return map.get(subscription.applicationDescriptor());
+        }
+
+        synchronized void put(UpdateMessage subscription) {
             map.put(subscription.applicationDescriptor(), subscription);
+            notifyAll();
         }
 
         synchronized void remove(UpdateMessage subscription) {
             map.remove(subscription.applicationDescriptor());
+            notifyAll();
         }
 
-        synchronized Collection<UpdateMessage> get() {
+        synchronized Collection<UpdateMessage> subscriptions() {
             return new ArrayList<UpdateMessage>(map.values());
         }
 

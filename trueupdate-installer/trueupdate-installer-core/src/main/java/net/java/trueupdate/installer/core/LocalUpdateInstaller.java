@@ -60,7 +60,8 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     throws Exception;
 
     @Override public final void install(final UpdateMessage message,
-                                        final File diffZip)
+                                        final File diffZip,
+                                        final ProgressMonitor monitor)
     throws Exception {
 
         class PatchTask implements PathTask<Void, Exception> {
@@ -78,6 +79,14 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
+        class HandshakeTransaction extends Transaction {
+            @Override public void perform() throws Exception {
+                monitor.aboutToRedeploy();
+            }
+
+            @Override public void rollback() throws Exception { }
+        } // HandshakeTransaction
+
         final Context current = resolveContext(message, message.currentLocation());
         final Context update = resolveContext(message, message.updateLocation());
 
@@ -89,6 +98,8 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                     Transactions.execute(new CompositeTransaction(
                             timed("patching of the current application file",
                                     new PathTaskTransaction(updateJar, new PatchTask(current.path()))),
+                            timed("handshaking with the update agent",
+                                    new HandshakeTransaction()),
                             timed("undeployment of the current application",
                                     undeploymentTransaction(update)),
                             timed("swapping-out of the current application file",
@@ -107,6 +118,8 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                                     new PathTaskTransaction(updateJar, new PatchTask(currentZip))),
                             timed("unzipping of the updated application file",
                                     new UnzipTransaction(updateJar, updateDir)),
+                            timed("handshaking with the update agent",
+                                    new HandshakeTransaction()),
                             timed("undeployment of the current application",
                                     undeploymentTransaction(update)),
                             timed("swapping-out of the current application directory",

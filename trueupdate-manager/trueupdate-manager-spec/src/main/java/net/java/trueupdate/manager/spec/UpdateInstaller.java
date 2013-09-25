@@ -21,12 +21,16 @@ public interface UpdateInstaller {
      * Updates the application described in the given update message using the
      * given artifact diff zip file.
      *
-     * @param message the update message of the
-     *        {@linkplain UpdateMessage#type() type}
+     * @param message the update message.
+     *        The {@linkplain UpdateMessage#type() type} of the update message
+     *        is
      *        {@link net.java.trueupdate.message.UpdateMessage.Type#INSTALLATION_REQUEST}.
      * @param diffZip the diff zip file for the current artifact.
      *        The implementation must not modify or delete this file.
-     * @throws Exception at the discretion of the implementation.
+     * @param monitor the progress monitor.
+     *        The installer should use this object to log any progress rather
+     *        than using the {@code java.util.logging} API directly.
      */
-    void install(UpdateMessage message, File diffZip) throws Exception;
+    void install(UpdateMessage message, File diffZip, ProgressMonitor monitor)
+    throws Exception;
 }

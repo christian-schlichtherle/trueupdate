@@ -5,22 +5,24 @@
 package net.java.trueupdate.installer.core
 
 import java.io._
-import java.net.URI
 import org.junit.runner.RunWith
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.diff.ZipDiff
+import net.java.trueupdate.core.zip.io.JarFileStore
 import net.java.trueupdate.installer.core.LocalUpdateInstaller.Context
 import net.java.trueupdate.installer.core.io.Files._
-import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.installer.core.io.PathTask
+import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.manager.spec._
 import net.java.trueupdate.message.UpdateMessage
 import UpdateMessage.Type
-import net.java.trueupdate.core.zip.io.JarFileStore
+import java.util.logging.Level
 
 /**
  * @author Christian Schlichtherle
@@ -50,6 +52,12 @@ class LocalUpdateInstallerIT extends WordSpec {
       def deploymentTransaction() = mock[Transaction]
       def undeploymentTransaction() = mock[Transaction]
     }
+  }
+
+  def progressMonitor = {
+    val m = mock[ProgressMonitor]
+    when(m.isLoggable(any.asInstanceOf[Level])) thenReturn true
+    m
   }
 
   "A local update installer" should {
@@ -84,7 +92,8 @@ class LocalUpdateInstallerIT extends WordSpec {
           copyFile(input1Jar, deployedZip)
           deployedZip.length should be (input1Jar.length)
 
-          updateInstaller install (updateMessage(deployedZip), diffZip)
+          updateInstaller install (updateMessage(deployedZip), diffZip,
+                                   progressMonitor)
           deployedZip.length should be (input2Jar.length)
 
           val deployedDir = new File(tempDir, "deployed.dir")
@@ -93,7 +102,8 @@ class LocalUpdateInstallerIT extends WordSpec {
 
           val deployedContent = new File(deployedDir, content.getName)
           deployedContent.length should be (1)
-          updateInstaller install (updateMessage(deployedDir), diffZip)
+          updateInstaller install (updateMessage(deployedDir), diffZip,
+                                   progressMonitor)
           deployedContent.length should be (2)
         }
       }, "dir", null, null)
