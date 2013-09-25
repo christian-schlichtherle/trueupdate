@@ -9,11 +9,12 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.jms.*;
 import net.java.trueupdate.message.UpdateMessageListener;
 import static net.java.trueupdate.util.Objects.requireNonNull;
+import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * Receives JMS messages in a loop and forwards them to the given
  * {@link MessageListener}.
- * This {@link Runnable} may be run by a daemon {@link Thread} in environments
+ * This {@link Runnable} should be run by a {@link Thread} in environments
  * where it's not possible to use
  * {@link Session#setMessageListener(MessageListener)}, e.g. in a web&#160;app
  * or an enterprise&#160;app, and it's not desirable to use a message driven
@@ -43,7 +44,7 @@ public final class JmsReceiver implements Runnable {
         this.connectionFactory = requireNonNull(b.connectionFactory);
     }
 
-    /** Returns a new builder for JMS message loops. */
+    /** Returns a new builder for JMS receivers. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
     @Override public void run() {
@@ -99,8 +100,13 @@ public final class JmsReceiver implements Runnable {
         }
     }
 
+    /**
+     * A builder for a JMS receiver.
+     *
+     * @param <P> The type of the parent builder, if defined.
+     */
     @SuppressWarnings("PackageVisibleField")
-    public static class Builder<T> {
+    public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull ConnectionFactory connectionFactory;
         @CheckForNull Destination destination;
@@ -109,32 +115,37 @@ public final class JmsReceiver implements Runnable {
 
         protected Builder() { }
 
-        public Builder<T> connectionFactory(final @Nullable ConnectionFactory connectionFactory) {
+        public final Builder<P> connectionFactory(
+                final @Nullable ConnectionFactory connectionFactory) {
             this.connectionFactory = connectionFactory;
             return this;
         }
 
-        public Builder<T> destination(final @Nullable Destination destination) {
+        public final Builder<P> destination(
+                final @Nullable Destination destination) {
             this.destination = destination;
             return this;
         }
 
-        public Builder<T> subscriptionName(final @Nullable String subscriptionName) {
+        public final Builder<P> subscriptionName(
+                final @Nullable String subscriptionName) {
             this.subscriptionName = subscriptionName;
             return this;
         }
 
-        public Builder<T> messageSelector(final @Nullable String messageSelector) {
+        public final Builder<P> messageSelector(
+                final @Nullable String messageSelector) {
             this.messageSelector = messageSelector;
             return this;
         }
 
-        public Builder<T> messageListener(final @Nullable MessageListener messageListener) {
+        public final Builder<P> messageListener(
+                final @Nullable MessageListener messageListener) {
             this.messageListener = messageListener;
             return this;
         }
 
-        public Builder<T> updateMessageListener(
+        public final Builder<P> updateMessageListener(
                 final @CheckForNull UpdateMessageListener updateMessageListener) {
             this.messageListener = null == updateMessageListener
                     ? null
@@ -142,12 +153,8 @@ public final class JmsReceiver implements Runnable {
             return this;
         }
 
-        public JmsReceiver build() {
+        @Override public final JmsReceiver build() {
             return new JmsReceiver(this);
-        }
-
-        public T inject() {
-            throw new java.lang.IllegalStateException("No target for injection.");
         }
     } // Builder
 }
