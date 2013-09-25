@@ -71,7 +71,8 @@ public final class MavenUpdateServerParameters {
 
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final MavenUpdateServerParametersDto ci) {
-            if (null != ci.repositories) MavenParameters.parse(ci.repositories);
+            if (null != ci.repositories)
+                mavenParameters = MavenParameters.parse(ci.repositories);
             return this;
         }
 
