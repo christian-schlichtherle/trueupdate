@@ -6,6 +6,7 @@ package net.java.trueupdate.util.builder;
 
 import java.util.*;
 import static java.util.Collections.*;
+import javax.annotation.Nullable;
 
 /**
  * A builder for immutable lists.
@@ -26,7 +27,7 @@ public class ImmutableListBuilder<I, P> extends AbstractBuilder<P> {
         return this;
     }
 
-    public final ImmutableListBuilder<I, P> add(final I item) {
+    public final ImmutableListBuilder<I, P> add(final @Nullable I item) {
         items.add(item);
         return this;
     }
@@ -37,7 +38,7 @@ public class ImmutableListBuilder<I, P> extends AbstractBuilder<P> {
         return this;
     }
 
-    public final ImmutableListBuilder<I, P> set(I item) {
+    public final ImmutableListBuilder<I, P> set(@Nullable I item) {
         return clear().add(item);
     }
 

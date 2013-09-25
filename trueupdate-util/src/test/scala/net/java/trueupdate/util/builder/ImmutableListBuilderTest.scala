@@ -1,4 +1,8 @@
-package net.java.trueupdate.util
+/*
+ * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+ * All rights reserved. Use is subject to license terms.
+ */
+package net.java.trueupdate.util.builder
 
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
