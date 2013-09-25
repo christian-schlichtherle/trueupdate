@@ -14,7 +14,7 @@ final class FileAccount {
     private File file = new File("");
     private int usages;
 
-    boolean fileResolved() { return file().isFile(); }
+    boolean fileResolved() { return !file.getPath().isEmpty(); }
 
     File file() { return file; }
 

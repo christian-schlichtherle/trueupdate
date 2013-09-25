@@ -7,6 +7,7 @@ package net.java.trueupdate.manager.core;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.logging.*;
 import javax.annotation.concurrent.ThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
@@ -63,39 +64,80 @@ extends UpdateMessageListener implements UpdateManager {
     protected abstract URI updateServiceBaseUri();
 
     @Override public void checkForUpdates() throws Exception {
-        final Collection<UpdateMessage>
-                subscriptions = subscriptionManager.get();
-        if (subscriptions.isEmpty()) return;
-        final UpdateClient updateClient = updateClient();
+
+        // Cache subscriptions to allow concurrency.
+        final Collection<UpdateMessage> ums = subscriptionManager.get();
+        if (ums.isEmpty()) return;
         logger.log(Level.INFO, "Checking for artifact updates from {0} .",
-                updateClient.baseUri());
-        final Map<ArtifactDescriptor, String>
-                updateVersions = new HashMap<ArtifactDescriptor, String>();
-        synchronized (updateResolver) {
-            updateResolver.restart();
-            for (final UpdateMessage subscription : subscriptions) {
-                final ArtifactDescriptor artifactDescriptor =
-                        subscription.artifactDescriptor();
-                String updateVersion = updateVersions.get(artifactDescriptor);
-                if (null == updateVersion)
-                    updateVersions.put(artifactDescriptor, updateVersion =
-                            updateClient.version(artifactDescriptor));
-                if (!updateVersion.equals(artifactDescriptor.version())) {
-                    final UpdateMessage
-                            un = updateNotice(subscription, updateVersion);
-                    updateResolver.allocate(un.updateDescriptor());
-                    sendAndLog(un);
+                updateClient().baseUri());
+
+        // Process the update notices in several steps in order to use minimal
+        // locking and account for possible exceptions.
+        final class Reactor implements Callable<Void> {
+
+            final Map<ArtifactDescriptor, UpdateDescriptor>
+                    uds = new HashMap<ArtifactDescriptor, UpdateDescriptor>();
+
+            Reactor() throws Exception { downloadUpdateVersionsFromServer(); }
+
+            void downloadUpdateVersionsFromServer() throws Exception {
+                for (final UpdateMessage um : ums) {
+                    final ArtifactDescriptor ad = um.artifactDescriptor();
+                    final UpdateDescriptor ud = uds.get(ad);
+                    if (null == ud)
+                        uds.put(ad, newUpdateDescriptor(ad,
+                                updateClient().version(ad)));
                 }
             }
-        }
-    }
 
-    private static UpdateMessage updateNotice(UpdateMessage subscription,
-                                              String updateVersion) {
-        return responseFor(subscription)
-                .type(UPDATE_NOTICE)
-                .updateVersion(updateVersion)
-                .build();
+            UpdateDescriptor newUpdateDescriptor(ArtifactDescriptor ad,
+                                                 String uv) {
+                return UpdateDescriptor
+                        .builder()
+                        .artifactDescriptor(ad)
+                        .updateVersion(uv)
+                        .build();
+            }
+
+            @Override public Void call() throws Exception {
+                tellUpdateResolver();
+                notifySubscribers();
+                return null;
+            }
+
+            void tellUpdateResolver() throws Exception {
+                synchronized (updateResolver) {
+                    updateResolver.restart();
+                    for (UpdateMessage um : ums)
+                        for (UpdateDescriptor ud : availableUpdate(um))
+                            updateResolver.allocate(ud);
+                }
+            }
+
+            void notifySubscribers() throws Exception {
+                for (UpdateMessage um : ums)
+                    for (UpdateDescriptor ud : availableUpdate(um))
+                        sendAndLog(updateNotice(um, ud.updateVersion()));
+            }
+
+            @SuppressWarnings("unchecked")
+            List<UpdateDescriptor> availableUpdate(UpdateMessage um) {
+                final ArtifactDescriptor ad = um.artifactDescriptor();
+                final UpdateDescriptor ud = uds.get(ad);
+                return ud.updateVersion().equals(ad.version())
+                        ? Collections.EMPTY_LIST
+                        : Collections.singletonList(ud);
+            }
+
+            UpdateMessage updateNotice(UpdateMessage um, String uv) {
+                return responseFor(um)
+                        .type(UPDATE_NOTICE)
+                        .updateVersion(uv)
+                        .build();
+            }
+        } // Reactor
+
+        new Reactor().call();
     }
 
     @Override protected void onSubscriptionRequest(final UpdateMessage message)
@@ -128,9 +170,12 @@ extends UpdateMessageListener implements UpdateManager {
 
     private void install(final UpdateMessage message) throws Exception {
         final UpdateDescriptor descriptor = message.updateDescriptor();
+        final File diffZip;
         synchronized (updateResolver) {
-            final File diffZip = updateResolver.resolveDiffZip(descriptor);
-            updateInstaller.install(message, diffZip);
+            diffZip = updateResolver.resolveDiffZip(descriptor);
+        }
+        updateInstaller.install(message, diffZip);
+        synchronized (updateResolver) {
             updateResolver.release(descriptor);
         }
     }
