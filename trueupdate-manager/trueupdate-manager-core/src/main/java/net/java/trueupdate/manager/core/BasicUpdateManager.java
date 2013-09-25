@@ -206,12 +206,12 @@ extends UpdateMessageListener implements UpdateManager {
         subscriptionManager.close();
     }
 
-    private void subscribe(UpdateMessage message) {
-        subscriptionManager.add(message);
+    private void subscribe(UpdateMessage subscription) {
+        subscriptionManager.add(subscription);
     }
 
-    private void unsubscribe(UpdateMessage message) {
-        subscriptionManager.remove(message);
+    private void unsubscribe(UpdateMessage subscription) {
+        subscriptionManager.remove(subscription);
     }
 
     private class SubscriptionManager {
