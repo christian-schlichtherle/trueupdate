@@ -252,12 +252,12 @@ extends UpdateMessageListener implements UpdateManager {
             @Override public void commitUndeployment() throws Exception { }
 
             // TODO: Consider conversation with the update agent about this.
-            @Override public boolean isLoggable(LogMessage.Level level) {
+            @Override public boolean isLoggable(Level level) {
                 return true;
             }
 
             @Override public void log(
-                    final LogMessage.Level level,
+                    final Level level,
                     final String code,
                     final Object... args) {
                 final LogMessage lm = LogMessage.create(level, code, args);
@@ -328,7 +328,7 @@ extends UpdateMessageListener implements UpdateManager {
             final Exception ex) {
         final LogMessage lm = LogMessage
                 .builder()
-                .level(LogMessage.Level.WARNING)
+                .level(Level.WARNING)
                 .code("exception")
                 .args(ex.toString())
                 .build();

@@ -5,6 +5,7 @@
 package net.java.trueupdate.message;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import static net.java.trueupdate.util.Objects.requireNonNull;
@@ -118,13 +119,4 @@ public final class LogMessage {
             return new LogMessage(this);
         }
     } // Builder
-
-    /**
-     * Logging levels.
-     * These resemble the predefined levels in {@link java.util.logging.Level}
-     * in order to enable a simple adapter.
-     */
-    public enum Level {
-        FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE
-    } // Level
 }

@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.manager.spec;
 
-import net.java.trueupdate.message.LogMessage.Level;
+import java.util.logging.Level;
 
 /**
  * An update logger.

@@ -4,18 +4,17 @@
  */
 package net.java.trueupdate.installer.core.tx
 
+import java.util.logging.Level
+import net.java.trueupdate.manager.spec.UpdateLogger
 import org.junit.runner.RunWith
 import org.mockito._
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
 import net.java.trueupdate.installer.core.tx.Transactions._
 import org.mockito.internal.matchers.VarargMatcher
-import net.java.trueupdate.message.LogMessage.Level
-import net.java.trueupdate.manager.spec.UpdateLogger
 
 /**
  * @author Christian Schlichtherle

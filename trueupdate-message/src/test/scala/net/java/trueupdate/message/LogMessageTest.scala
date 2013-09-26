@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.message
 
-import net.java.trueupdate.message.LogMessage.Level
+import java.util.logging.Level
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner

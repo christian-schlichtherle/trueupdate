@@ -5,11 +5,11 @@
 package net.java.trueupdate.jms;
 
 import java.util.*;
+import java.util.logging.Level;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import net.java.trueupdate.message.LogMessage;
-import net.java.trueupdate.message.LogMessage.Level;
 
 /**
  * Marshals a list of log messages to its DTO and vice versa.
@@ -30,7 +30,7 @@ extends XmlAdapter<CompactLogMessageDto[], List<LogMessage>> {
             final CompactLogMessageDto clm = clms[i];
             lms.add(LogMessage
                     .builder()
-                    .level(Level.values()[clm.level])
+                    .level(Level.parse(clm.level))
                     .code(clm.code)
                     .args(clm.args)
                     .build());
@@ -48,7 +48,7 @@ extends XmlAdapter<CompactLogMessageDto[], List<LogMessage>> {
             int i = 0;
             for (final LogMessage lm : lms) {
                 final CompactLogMessageDto clm = new CompactLogMessageDto();
-                clm.level = lm.level().ordinal();
+                clm.level = lm.level().getName();
                 clm.code = lm.code();
                 final Object[] p = lm.args();
                 clm.args = 0 == p.length ? null : p;

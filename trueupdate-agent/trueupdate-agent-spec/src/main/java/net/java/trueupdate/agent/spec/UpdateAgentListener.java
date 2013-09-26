@@ -5,7 +5,6 @@
 package net.java.trueupdate.agent.spec;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.java.trueupdate.message.*;
@@ -117,7 +116,6 @@ public class UpdateAgentListener {
      * for the class {@link LogMessage}.
      */
     protected void log(LogMessage message) {
-        logger.log(Level.parse(message.level().name()),
-                message.code(), message.args());
+        logger.log(message.level(), message.code(), message.args());
     }
 }

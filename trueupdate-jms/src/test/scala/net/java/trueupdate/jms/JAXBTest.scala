@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.jms
 
-import java.util.logging.Logger
+import java.util.logging._
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
@@ -53,7 +53,7 @@ class JAXBTest extends WordSpec {
       .logMessages
         .add(LogMessage
           .builder
-          .level(LogMessage.Level.INFO)
+          .level(Level.INFO)
           .code("code")
           .args(1: Int, 2: Int, 3: Int)
           .build)
@@ -66,7 +66,7 @@ class JAXBTest extends WordSpec {
         forAll(subjects) { builder =>
           val original = builder.build
           val originalEncoding = JAXB.encode(original)
-          JAXBTest.logger log (java.util.logging.Level.FINE, "\n{0}", originalEncoding)
+          JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
           val clone = JAXB.decode(originalEncoding)
           clone should equal (original)
         }

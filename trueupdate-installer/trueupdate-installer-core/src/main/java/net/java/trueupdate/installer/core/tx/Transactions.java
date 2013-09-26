@@ -5,7 +5,7 @@
 package net.java.trueupdate.installer.core.tx;
 
 import java.util.concurrent.Callable;
-import net.java.trueupdate.message.LogMessage.Level;
+import java.util.logging.Level;
 import net.java.trueupdate.manager.spec.UpdateLogger;
 
 /**
