@@ -9,6 +9,7 @@ import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
 import net.java.trueupdate.installer.core.tx.Transaction;
+import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
@@ -21,14 +22,14 @@ import net.java.trueupdate.message.UpdateMessage;
 public final class CargoUpdateInstaller extends LocalUpdateInstaller {
 
     @Override
-    protected Context resolveContext(final UpdateMessage message,
-                                     final String location)
+    protected LocationContext locationContext(final UpdateContext _,
+                                              final String location)
     throws Exception {
 
         final CargoContext context = new CargoContext(new URI(location));
         final File path = context.deployablePath();
 
-        class ResolvedContext implements Context {
+        class ResolvedLocationContext implements LocationContext {
 
             @Override public File path() { return path; }
 
@@ -39,8 +40,8 @@ public final class CargoUpdateInstaller extends LocalUpdateInstaller {
             @Override public Transaction deploymentTransaction() {
                 return context.deploymentTransaction();
             }
-        } // ResolvedContext
+        } // ResolvedLocationContext
 
-        return new ResolvedContext();
+        return new ResolvedLocationContext();
     }
 }

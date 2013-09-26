@@ -5,7 +5,6 @@
 package net.java.trueupdate.installer.core;
 
 import java.io.*;
-import java.util.logging.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.zip.io.JarFileStore;
@@ -15,7 +14,7 @@ import net.java.trueupdate.installer.core.io.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
 import net.java.trueupdate.installer.core.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.manager.spec.*;
-import net.java.trueupdate.message.UpdateMessage;
+import net.java.trueupdate.message.UpdateLogger;
 
 /**
  * A local update installer.
@@ -32,13 +31,6 @@ import net.java.trueupdate.message.UpdateMessage;
 @Immutable
 public abstract class LocalUpdateInstaller implements UpdateInstaller {
 
-    private static final Logger logger =
-            Logger.getLogger(LocalUpdateInstaller.class.getName());
-
-    private static final LoggerConfig loggerConfig = new LoggerConfig() {
-        @Override public Logger logger() { return logger; }
-    };
-
     /**
      * Returns the nullable temporary directory.
      * The implementation in the class {@link LocalUpdateInstaller} always
@@ -48,28 +40,29 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     protected @Nullable File tempDir() { return null; }
 
     /**
-     * Resolves the context for the given update message and location.
+     * Resolves the location context for the given update context and location.
      *
-     * @param location either {@code message.}{@link net.java.trueupdate.message.UpdateMessage#currentLocation currentLocation}
-     *                 or {@code message.}{@link net.java.trueupdate.message.UpdateMessage#updateLocation updateLocation}.
-     * @param message the update message as provided to the {@link #install}
-     *                method.
+     * @param context the update context.
+     * @param location either {@code context.}{@link UpdateContext#currentLocation currentLocation}
+     *                 or {@code context.}{@link UpdateContext#updateLocation updateLocation}.
      */
-    protected abstract Context resolveContext(UpdateMessage message,
-                                              String location)
+    protected abstract LocationContext locationContext(UpdateContext context,
+                                                       String location)
     throws Exception;
 
-    @Override public final void install(final UpdateMessage message,
-                                        final File diffZip,
-                                        final ProgressMonitor monitor)
-    throws Exception {
+    @Override
+    public final void install(final UpdateContext context) throws Exception {
 
         class PatchTask implements PathTask<Void, Exception> {
 
             final ZipPatch patch;
 
             PatchTask(final File deployedZip) {
-                this.patch = ZipPatch.builder().input(deployedZip).diff(diffZip).build();
+                this.patch = ZipPatch
+                        .builder()
+                        .input(deployedZip)
+                        .diff(context.diffZip())
+                        .build();
             }
 
             @Override public Void execute(final @WillNotClose File updatedJar)
@@ -79,76 +72,104 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
-        class HandshakeTransaction extends Transaction {
-            @Override public void perform() throws Exception {
-                monitor.aboutToRedeploy();
-            }
-
-            @Override public void rollback() throws Exception { }
-        } // HandshakeTransaction
-
-        final Context current = resolveContext(message, message.currentLocation());
-        final Context update = resolveContext(message, message.updateLocation());
+        final LocationContext current =
+                locationContext(context, context.currentLocation());
+        final LocationContext update =
+                locationContext(context, context.updateLocation());
 
         loanTempDir(new PathTask<Void, Exception>() {
+
+            final LoggerConfig loggerConfig = new LoggerConfig() {
+                @Override public UpdateLogger logger() { return context; }
+            };
+
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updateJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
                 if (current.path().isFile()) {
                     Transactions.execute(new CompositeTransaction(
-                            timed("patching of the current application file",
-                                    new PathTaskTransaction(updateJar, new PatchTask(current.path()))),
-                            timed("handshaking with the update agent",
-                                    new HandshakeTransaction()),
-                            timed("undeployment of the current application",
-                                    undeploymentTransaction(update)),
-                            timed("swapping-out of the current application file",
-                                    new RenamePathTransaction(update.path(), backup)),
-                            timed("swapping-in of the updated application file",
-                                    new RenamePathTransaction(updateJar, update.path())),
-                            timed("deployment of the updated application",
+                            timed("tx.patch",
+                                    new PathTaskTransaction(updateJar,
+                                            new PatchTask(current.path()))),
+                            timed("tx.undeploy",
+                                    undeploymentTransaction(current, context)),
+                            timed("tx.swap.out.file",
+                                    new RenamePathTransaction(
+                                            update.path(), backup)),
+                            timed("tx.swap.in.file",
+                                    new RenamePathTransaction(updateJar,
+                                            update.path())),
+                            timed("tx.deploy",
                                     deploymentTransaction(update))));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updateDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
-                            timed("zipping of the current application directory",
-                                    new ZipTransaction(currentZip, current.path(), "")),
-                            timed("patching of the current application file",
-                                    new PathTaskTransaction(updateJar, new PatchTask(currentZip))),
-                            timed("unzipping of the updated application file",
+                            timed("tx.zip",
+                                    new ZipTransaction(currentZip,
+                                            current.path(), "")),
+                            timed("tx.patch",
+                                    new PathTaskTransaction(updateJar,
+                                            new PatchTask(currentZip))),
+                            timed("tx.unzip",
                                     new UnzipTransaction(updateJar, updateDir)),
-                            timed("handshaking with the update agent",
-                                    new HandshakeTransaction()),
-                            timed("undeployment of the current application",
-                                    undeploymentTransaction(update)),
-                            timed("swapping-out of the current application directory",
-                                    new RenamePathTransaction(update.path(), backup)),
-                            timed("swapping-in of the updated application directory",
-                                    new RenamePathTransaction(updateDir, update.path())),
-                            timed("deployment of the updated application", deploymentTransaction(update))));
+                            timed("tx.undeploy",
+                                    undeploymentTransaction(current, context)),
+                            timed("tx.swap.out.dir",
+                                    new RenamePathTransaction(
+                                            update.path(), backup)),
+                            timed("tx.swap.in.dir",
+                                    new RenamePathTransaction(updateDir,
+                                            update.path())),
+                            timed("tx.deploy",
+                                    deploymentTransaction(update))));
                 }
                 return null;
+            }
+
+            Transaction timed(String name, Transaction tx) {
+                return Transactions.timed(name, tx, loggerConfig);
             }
         }, "dir", null, tempDir());
     }
 
-    private static Transaction undeploymentTransaction(Context context) {
-        return context.path().exists()
-                ? context.undeploymentTransaction()
-                : Transactions.noOp();
+    static Transaction undeploymentTransaction(
+            final LocationContext location,
+            final UpdateContext update) {
+
+        class Handshake extends Transaction {
+            final Transaction tx = location.undeploymentTransaction();
+
+            @Override public void prepare() throws Exception {
+                tx.prepare();
+                update.prepareUndeployment();
+            }
+
+            @Override public void perform() throws Exception {
+                tx.perform();
+                update.performUndeployment();
+            }
+
+            @Override public void rollback() throws Exception {
+                tx.rollback();
+                update.rollbackUndeployment();
+            }
+
+            @Override public void commit() throws Exception {
+                tx.commit();
+                update.commitUndeployment();
+            }
+        } // Handshake
+
+        return location.path().exists() ? new Handshake() : Transactions.noOp();
     }
 
-    private static Transaction deploymentTransaction(Context context) {
+    static Transaction deploymentTransaction(LocationContext context) {
         return context.deploymentTransaction();
     }
 
-    private static Transaction timed(String name, Transaction tx) {
-        return Transactions.timed(name, tx, loggerConfig);
-    }
-
     /** The context for a location provided to the update installer. */
-    public interface Context {
+    public interface LocationContext {
 
         /** Returns the path of the application. */
         File path();

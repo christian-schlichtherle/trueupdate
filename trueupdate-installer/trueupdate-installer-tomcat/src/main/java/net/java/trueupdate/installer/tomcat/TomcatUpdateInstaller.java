@@ -10,6 +10,7 @@ import javax.management.*;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.installer.core.tx.*;
+import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.message.UpdateMessage;
 import org.apache.catalina.*;
 import org.apache.catalina.startup.HostConfig;
@@ -56,11 +57,11 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
     }
 
     @Override
-    protected Context resolveContext(final UpdateMessage message,
-                                     final String location)
+    protected LocationContext locationContext(final UpdateContext _,
+                                              final String location)
     throws Exception {
 
-        class ResolvedContext implements Context {
+        class ResolvedLocationContext implements LocationContext {
 
             final ContextName cn = new ContextName(location);
             final String name = cn.getName();
@@ -128,11 +129,11 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
             void cleanupUnwantedSideEffectsOfDeployment() throws IOException {
                 if (path == war) Files.deletePath(dir);
             }
-        } // ResolvedContext
+        } // ResolvedLocationContext
 
         if (null == host || null == config)
             throw new Exception("This application is not running in Tomcat.");
-        return new ResolvedContext();
+        return new ResolvedLocationContext();
     }
 
     File appBase() {

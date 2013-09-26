@@ -14,6 +14,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
 import net.java.trueupdate.installer.core.tx.Transactions._
+import org.mockito.internal.matchers.VarargMatcher
+import net.java.trueupdate.message.UpdateLogger
 
 /**
  * @author Christian Schlichtherle
@@ -32,7 +34,7 @@ class TransactionsTest extends WordSpec {
   }
 
   def fixture = new { fixture =>
-    val logger = mock[Logger]
+    val logger = mock[UpdateLogger]
     val tx = spy(new SlowTransaction)
     val ttx = timed("slow transaction", tx,
       new LoggerConfig { def logger = fixture.logger })
@@ -41,18 +43,24 @@ class TransactionsTest extends WordSpec {
 
     def verifyLogger(io: InOrder, method: Method, succeeded: Boolean) {
       val level = if (succeeded) method.succeeded else method.failed
-      val parameters = ArgumentCaptor.forClass(classOf[Array[AnyRef]])
+      val matches = new ArgumentMatcher[Array[AnyRef]] with VarargMatcher {
+        def matches(argument: AnyRef) = {
+          val args = argument.asInstanceOf[Array[AnyRef]]
+          args.length == 6
+          args(0) == (if (succeeded) 0 else 1) &&
+          args(1) == method.ordinal &&
+          args(2).asInstanceOf[java.lang.Long] >= 0 &&
+          args(3).asInstanceOf[java.lang.Long] >= 0 &&
+          args(4).asInstanceOf[java.lang.Long] >= 0 &&
+          args(5).asInstanceOf[java.lang.Long] >= 0
+        }
+      }
       io verify logger isLoggable level
-      io verify logger log (Matchers.eq(level), any, parameters.capture)
-      parameters.getValue()(0) should be (method.name)
-      parameters.getValue()(1) should be ("slow transaction")
-      parameters.getValue()(2).asInstanceOf[java.lang.Float].floatValue() should
-        be >= (.0f)
+      io verify logger log (Matchers.eq(level), anyString, argThat(matches))
     }
   }
 
   "The timed function" when {
-
     "called" should {
       "return a wrapper transaction" which {
         "logs the duration of its methods" when {

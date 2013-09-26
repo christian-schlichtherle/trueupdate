@@ -6,6 +6,7 @@ package net.java.trueupdate.installer.core.tx;
 
 import java.util.concurrent.Callable;
 import java.util.logging.*;
+import net.java.trueupdate.message.UpdateLogger;
 
 /**
  * Provides functions for {@link Transaction}s.
@@ -69,7 +70,7 @@ public class Transactions {
      *
      * @return the logging transaction.
      */
-    public static Transaction timed(final String name,
+    public static Transaction timed(final String key,
                                     final Transaction tx,
                                     final LoggerConfig config) {
 
@@ -117,13 +118,17 @@ public class Transactions {
                 final long started = System.currentTimeMillis();
                 try { task.call(); } catch (Exception ex2) { ex = ex2; }
                 final long finished = System.currentTimeMillis();
-                final Logger logger = config.logger();
+                final UpdateLogger logger = config.logger();
                 final boolean succeeded = null == ex;
                 final Level level = config.level(method, succeeded);
                 if (logger.isLoggable(level)) {
-                    final float duration = (finished - started) / 1000.0f;
-                    logger.log(level, config.pattern(succeeded),
-                            new Object[]{ config.verb(method), name, duration });
+                    final long duration = finished - started;
+                    final long millis = duration % 1000;
+                    final long seconds = duration / 1000 % 60;
+                    final long minutes = duration / 1000 / 60 % 60;
+                    final long hours = duration / 1000 / 60 / 60;
+                    logger.log(level, key, succeeded ? 0 : 1, method.ordinal(),
+                            hours, minutes, seconds, millis);
                 }
                 if (!succeeded) throw ex;
             }
@@ -152,15 +157,7 @@ public class Transactions {
 
     public static abstract class LoggerConfig {
 
-        public abstract Logger logger();
-
-        public String pattern(boolean succeeded) {
-            return succeeded
-                    ? "Succeeded to {0} the {1} in {2} seconds."
-                    : "Failed to {0} the {1} in {2} seconds.";
-        }
-
-        public String verb(Method method) { return method.name(); }
+        public abstract UpdateLogger logger();
 
         public Level level(Method method, boolean succeeded) {
             return succeeded ? method.succeeded() : method.failed();

@@ -4,6 +4,9 @@
  */
 package net.java.trueupdate.agent.jms;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
@@ -26,6 +29,13 @@ public final class JmsUpdateAgentContext {
     public JmsUpdateAgentContext(final JmsUpdateAgentParameters parameters) {
         agent = new JmsUpdateAgent(parameters);
         final MessagingParameters mp = parameters.messagingParameters();
+        // The maximum pool size is one in order to prevent messages to be
+        // processed out of their sequence order.
+        final ExecutorService executorService = new ThreadPoolExecutor(
+                0, 1,
+                60, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                JmsReceiver.LISTENER_THREAD_FACTORY);
         receiver = JmsReceiver
                 .builder()
                 .connectionFactory(mp.connectionFactory())
@@ -33,6 +43,7 @@ public final class JmsUpdateAgentContext {
                 .subscriptionName(mp.fromName())
                 .messageSelector("manager = false")
                 .updateMessageListener(agent)
+                .executorService(executorService)
                 .build();
     }
 

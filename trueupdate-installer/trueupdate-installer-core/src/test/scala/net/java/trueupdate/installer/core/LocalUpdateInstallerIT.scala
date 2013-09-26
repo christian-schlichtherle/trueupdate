@@ -6,8 +6,6 @@ package net.java.trueupdate.installer.core
 
 import java.io._
 import org.junit.runner.RunWith
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
@@ -15,7 +13,7 @@ import org.scalatest.mock.MockitoSugar.mock
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
-import net.java.trueupdate.installer.core.LocalUpdateInstaller.Context
+import net.java.trueupdate.installer.core.LocalUpdateInstaller.LocationContext
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.installer.core.tx.Transaction
@@ -42,23 +40,34 @@ class LocalUpdateInstallerIT extends WordSpec {
     .version("1")
     .inject
     .updateVersion("2")
-    .currentLocation(deployedPath.getPath())
-    .updateLocation(deployedPath.getPath())
+    .currentLocation(deployedPath.getPath)
+    .updateLocation(deployedPath.getPath)
     .build
 
   def updateInstaller: UpdateInstaller = new LocalUpdateInstaller {
-    def resolveContext(message: UpdateMessage, location: String) = new Context {
-      def path() = new File(location)
-      def deploymentTransaction() = mock[Transaction]
-      def undeploymentTransaction() = mock[Transaction]
-    }
+    def locationContext(context: UpdateContext, location: String) =
+      new LocationContext {
+        def path = new File(location)
+        def deploymentTransaction() = mock[Transaction]
+        def undeploymentTransaction() = mock[Transaction]
+      }
   }
 
-  def progressMonitor = {
-    val m = mock[ProgressMonitor]
-    when(m.isLoggable(any.asInstanceOf[Level])) thenReturn true
-    m
-  }
+  def updateContext(deployedPath: File, diffZipFile: File): UpdateContext =
+    new UpdateContext {
+      val um = updateMessage(deployedPath)
+
+      def updateDescriptor = um.updateDescriptor
+      def currentLocation = um.currentLocation
+      def updateLocation = um.updateLocation
+      def diffZip = diffZipFile
+      def isLoggable(level: Level) = true
+      def log(level: Level, key: String, parameters: AnyRef*) { }
+      def prepareUndeployment() { }
+      def performUndeployment() { }
+      def rollbackUndeployment() { }
+      def commitUndeployment() { }
+    }
 
   "A local update installer" should {
     "install the update" in {
@@ -78,22 +87,21 @@ class LocalUpdateInstallerIT extends WordSpec {
           val input2Jar = new File(tempDir, "input2.jar")
 
           zip(new JarFileStore(input2Jar), content, content.getName)
-          input1Jar.length should not be (input2Jar.length)
+          input1Jar.length should not be input2Jar.length
 
-          val diffZip = new File(tempDir, "diff.zip")
+          val diffZipFile = new File(tempDir, "diff.zip")
           ZipDiff
             .builder
             .input1(input1Jar)
             .input2(input2Jar)
             .build
-            .output(diffZip)
+            .output(diffZipFile)
 
           val deployedZip = new File(tempDir, "deployed.zip")
           copyFile(input1Jar, deployedZip)
           deployedZip.length should be (input1Jar.length)
 
-          updateInstaller install (updateMessage(deployedZip), diffZip,
-                                   progressMonitor)
+          updateInstaller install updateContext(deployedZip, diffZipFile)
           deployedZip.length should be (input2Jar.length)
 
           val deployedDir = new File(tempDir, "deployed.dir")
@@ -102,8 +110,7 @@ class LocalUpdateInstallerIT extends WordSpec {
 
           val deployedContent = new File(deployedDir, content.getName)
           deployedContent.length should be (1)
-          updateInstaller install (updateMessage(deployedDir), diffZip,
-                                   progressMonitor)
+          updateInstaller install updateContext(deployedDir, diffZipFile)
           deployedContent.length should be (2)
         }
       }, "dir", null, null)

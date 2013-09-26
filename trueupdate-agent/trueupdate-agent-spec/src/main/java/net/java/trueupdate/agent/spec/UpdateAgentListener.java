@@ -18,7 +18,7 @@ public class UpdateAgentListener {
 
     private static final Logger logger = Logger.getLogger(
             UpdateAgentListener.class.getName(),
-            UpdateMessage.class.getName());
+            LogMessage.class.getName());
 
     /**
      * Responds to a subscription response.

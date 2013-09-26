@@ -2,14 +2,12 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec;
+package net.java.trueupdate.message;
 
-import java.text.MessageFormat;
 import java.util.logging.Level;
-import net.java.trueupdate.message.UpdateMessage;
 
 /**
- * A progress monitor.
+ * An update logger.
  * <p>
  * Implementations must be thread-safe.
  * <p>
@@ -18,7 +16,7 @@ import net.java.trueupdate.message.UpdateMessage;
  *
  * @author Christian Schlichtherle
  */
-public interface ProgressMonitor {
+public interface UpdateLogger {
 
     /**
      * Returns {@code true} if and only if the given logging level is enabled.
@@ -26,23 +24,14 @@ public interface ProgressMonitor {
     boolean isLoggable(Level level);
 
     /**
-     * Sends a progress notice to the update agent.
+     * Logs a message with some parameters.
      *
      * @param level the logging level.
      * @param key the message format key.
-     *            This is a key in the resource bundle for the
-     *            {@link UpdateMessage} class which is used to look up the
-     *            message format pattern.
+     *            This must refer to an entry in the resource bundle for the
+     *            {@link LogMessage} class with the message format pattern.
      * @param parameters the parameters to the message format pattern.
-     * @see   MessageFormat
+     * @see   java.text.MessageFormat
      */
     void log(Level level, String key, Object... parameters);
-
-    /**
-     * Sends a redeployment request to the update agent and waits for a
-     * response.
-     * This handshake ensures that the update agent has processed all progress
-     * notices before the redeployment is happening.
-     */
-    void aboutToRedeploy() throws Exception;
 }

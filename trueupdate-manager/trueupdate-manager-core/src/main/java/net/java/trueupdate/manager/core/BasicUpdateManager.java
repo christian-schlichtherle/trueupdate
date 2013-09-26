@@ -76,12 +76,12 @@ extends UpdateMessageListener implements UpdateManager {
 
         // Process the update notices in several steps in order to use minimal
         // locking and account for possible exceptions.
-        final class Reactor implements Callable<Void> {
+        final class CheckForUpdates implements Callable<Void> {
 
             final Map<ArtifactDescriptor, UpdateDescriptor>
                     uds = new HashMap<ArtifactDescriptor, UpdateDescriptor>();
 
-            Reactor() throws Exception { downloadUpdateVersionsFromServer(); }
+            CheckForUpdates() throws Exception { downloadUpdateVersionsFromServer(); }
 
             void downloadUpdateVersionsFromServer() throws Exception {
                 for (final UpdateMessage um : subscriptions) {
@@ -140,7 +140,7 @@ extends UpdateMessageListener implements UpdateManager {
             }
         } // Reactor
 
-        new Reactor().call();
+        new CheckForUpdates().call();
     }
 
     @Override
@@ -177,34 +177,38 @@ extends UpdateMessageListener implements UpdateManager {
 
     private void install(final UpdateMessage request) throws Exception {
 
-        class UpdateMonitor implements ProgressMonitor {
+        class Install implements Callable<Void>, UpdateContext {
 
+            ArtifactDescriptor artifactDescriptor = request.artifactDescriptor();
+            String currentLocation = request.currentLocation();
+            String updateLocation = request.updateLocation();
+
+            File diffZip;
             Exception ex;
 
-            // TODO: Consider conversation with the update agent about this.
-            @Override public boolean isLoggable(Level level) { return true; }
-
-            @Override public void log(
-                    final Level level,
-                    final String key,
-                    final Object... parameters) {
-                final LogMessage lm = LogMessage.create(level, key, parameters);
-                final UpdateMessage um = responseFor(request)
-                        .type(PROGRESS_NOTICE)
-                        .logMessages()
-                            .add(lm)
-                            .inject()
-                        .build();
-                try {
-                    send(um);
-                } catch (final Exception ex2) {
-                    if (null == ex)
-                        logger.log(Level.WARNING, "Cannot send progress notice to update agent:", ex2);
-                    ex = ex2;
-                }
+            @Override public String currentLocation() {
+                return currentLocation;
             }
 
-            @Override public void aboutToRedeploy() throws Exception {
+            @Override public String updateLocation() {
+                return updateLocation;
+            }
+
+            @Override public File diffZip() { return diffZip; }
+
+            @Override public Void call() throws Exception {
+                final UpdateDescriptor ud = request.updateDescriptor();
+                synchronized (updateResolver) {
+                    diffZip = updateResolver.resolveDiffZip(ud);
+                }
+                updateInstaller.install(this);
+                synchronized (updateResolver) {
+                    updateResolver.release(ud);
+                }
+                return null;
+            }
+
+            @Override public void prepareUndeployment() throws Exception {
                 sendRedeploymentRequest();
                 final long stop = System.currentTimeMillis()
                         + HANDSHAKE_TIMEOUT_MILLIS;
@@ -227,20 +231,52 @@ extends UpdateMessageListener implements UpdateManager {
             void sendRedeploymentRequest() throws Exception {
                 final UpdateMessage redeploymentRequest = responseFor(request)
                         .type(REDEPLOYMENT_REQUEST)
+                        .artifactDescriptor(artifactDescriptor)
                         .build();
                 sendAndLog(redeploymentRequest);
             }
-        } // UpdateMonitor
 
-        final UpdateDescriptor ud = request.updateDescriptor();
-        final File diffZip;
-        synchronized (updateResolver) {
-            diffZip = updateResolver.resolveDiffZip(ud);
-        }
-        updateInstaller.install(request, diffZip, new UpdateMonitor());
-        synchronized (updateResolver) {
-            updateResolver.release(ud);
-        }
+            @Override public void performUndeployment() throws Exception {
+                artifactDescriptor = request.artifactDescriptor()
+                        .update()
+                        .version(request.updateVersion())
+                        .build();
+                currentLocation = request.updateLocation();
+            }
+
+            @Override public void rollbackUndeployment() throws Exception {
+                artifactDescriptor = request.artifactDescriptor();
+                currentLocation = request.currentLocation();
+            }
+
+            @Override public void commitUndeployment() throws Exception { }
+
+            // TODO: Consider conversation with the update agent about this.
+            @Override public boolean isLoggable(Level level) { return true; }
+
+            @Override public void log(
+                    final Level level,
+                    final String key,
+                    final Object... parameters) {
+                final LogMessage lm = LogMessage.create(level, key, parameters);
+                final UpdateMessage um = responseFor(request)
+                        .type(PROGRESS_NOTICE)
+                        .artifactDescriptor(artifactDescriptor)
+                        .logMessages()
+                            .add(lm)
+                            .inject()
+                        .build();
+                try {
+                    send(um);
+                } catch (final Exception ex2) {
+                    if (null == ex)
+                        logger.log(Level.WARNING, "Cannot send progress notice to update agent:", ex2);
+                    ex = ex2;
+                }
+            }
+        } // Install
+
+        new Install().call();
     }
 
     @Override
@@ -344,8 +380,12 @@ extends UpdateMessageListener implements UpdateManager {
         final Map<ApplicationDescriptor, UpdateMessage>
                 map = new HashMap<ApplicationDescriptor, UpdateMessage>();
 
-        synchronized UpdateMessage get(UpdateMessage subscription) {
-            return map.get(subscription.applicationDescriptor());
+        UpdateMessage get(UpdateMessage subscription) {
+            return get(subscription.applicationDescriptor());
+        }
+
+        synchronized UpdateMessage get(ApplicationDescriptor applicationDescriptor) {
+            return map.get(applicationDescriptor);
         }
 
         synchronized void put(UpdateMessage subscription) {
@@ -353,8 +393,12 @@ extends UpdateMessageListener implements UpdateManager {
             notifyAll();
         }
 
-        synchronized void remove(UpdateMessage subscription) {
-            map.remove(subscription.applicationDescriptor());
+        void remove(UpdateMessage subscription) {
+            remove(subscription.applicationDescriptor());
+        }
+
+        synchronized void remove(ApplicationDescriptor applicationDescriptor) {
+            map.remove(applicationDescriptor);
             notifyAll();
         }
 

@@ -10,6 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.ejb.EJB;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
 import net.java.trueupdate.installer.core.tx.*;
+import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.message.UpdateMessage;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
@@ -25,15 +26,15 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
     private @EJB Deployer deployer;
 
     @Override
-    protected Context resolveContext(final UpdateMessage message,
-                                     final String location)
+    protected LocationContext locationContext(final UpdateContext context,
+                                              final String location)
     throws Exception {
 
-        final File path = location.equals(message.currentLocation())
+        final File path = location.equals(context.currentLocation())
                 ? resolveDeployedPath(new URI(location))
                 : new File(location);
 
-        class ResolvedContext implements Context {
+        class ResolvedLocationContext implements LocationContext {
 
             @Override public File path() { return path; }
 
@@ -68,9 +69,9 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedContext
+        } // ResolvedLocationContext
 
-        return new ResolvedContext();
+        return new ResolvedLocationContext();
     }
 
     private File resolveDeployedPath(final URI location) throws Exception {

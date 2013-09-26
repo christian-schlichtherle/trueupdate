@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.manager.jms;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -19,6 +20,9 @@ import net.java.trueupdate.manager.core.CheckForUpdates;
  */
 @Immutable
 public final class JmsUpdateManagerContext {
+
+    private static final ExecutorService executorService =
+            Executors.newCachedThreadPool(JmsReceiver.LISTENER_THREAD_FACTORY);
 
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
@@ -41,6 +45,7 @@ public final class JmsUpdateManagerContext {
                 .subscriptionName(mp.fromName())
                 .messageSelector("manager = true")
                 .updateMessageListener(manager)
+                .executorService(executorService)
                 .build();
         timer = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override public Thread newThread(Runnable r) {

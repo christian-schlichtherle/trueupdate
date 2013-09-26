@@ -26,12 +26,12 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @ThreadSafe
 public final class JmsReceiver implements Runnable {
 
-    private static final ExecutorService listeners =
-            Executors.newCachedThreadPool(new ThreadFactory() {
+    public static final ThreadFactory LISTENER_THREAD_FACTORY =
+            new ThreadFactory() {
                 @Override public Thread newThread(Runnable r) {
-                    return new Thread(r, "TrueUpdate JMS / Message Listener Thread");
+                    return new Thread(r, "TrueUpdate JMS / Listener Thread");
                 }
-            });
+            };
 
     private static final boolean NO_LOCAL = true;
 
@@ -41,6 +41,7 @@ public final class JmsReceiver implements Runnable {
     private final MessageListener messageListener;
     private final Destination destination;
     private final ConnectionFactory connectionFactory;
+    private final ExecutorService executorService;
 
     private MessageConsumer messageConsumer;
 
@@ -50,6 +51,7 @@ public final class JmsReceiver implements Runnable {
         this.messageListener = requireNonNull(b.messageListener);
         this.destination = requireNonNull(b.destination);
         this.connectionFactory = requireNonNull(b.connectionFactory);
+        this.executorService = requireNonNull(b.executorService);
     }
 
     /** Returns a new builder for JMS receivers. */
@@ -78,7 +80,7 @@ public final class JmsReceiver implements Runnable {
                     synchronized(lock) {
                         if (null == messageConsumer) break;
                         m.acknowledge();
-                        listeners.execute(new Runnable() {
+                        executorService.execute(new Runnable() {
                             @Override public void run() {
                                 messageListener.onMessage(m);
                             }
@@ -106,9 +108,9 @@ public final class JmsReceiver implements Runnable {
             if (null == messageConsumer) return;
             // HC SVNT DRACONIS
             messageConsumer.close();
-            if (0 != listeners.shutdownNow().size())
+            if (0 != executorService.shutdownNow().size())
                 throw new AssertionError();
-            listeners.awaitTermination(timeout, unit);
+            executorService.awaitTermination(timeout, unit);
             messageConsumer = null;
             lock.wait();
         }
@@ -126,6 +128,7 @@ public final class JmsReceiver implements Runnable {
         @CheckForNull Destination destination;
         @CheckForNull String messageSelector, subscriptionName;
         @CheckForNull MessageListener messageListener;
+        @CheckForNull ExecutorService executorService;
 
         protected Builder() { }
 
@@ -164,6 +167,12 @@ public final class JmsReceiver implements Runnable {
             this.messageListener = null == updateMessageListener
                     ? null
                     : JmsListener.create(updateMessageListener);
+            return this;
+        }
+
+        public final Builder<P> executorService(
+                final @Nullable ExecutorService executorService) {
+            this.executorService = executorService;
             return this;
         }
 
