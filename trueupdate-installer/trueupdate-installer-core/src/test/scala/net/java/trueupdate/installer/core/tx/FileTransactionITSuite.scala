@@ -11,6 +11,7 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar.mock
+import net.java.trueupdate.manager.spec.tx._
 
 /**
  * @author Christian Schlichtherle

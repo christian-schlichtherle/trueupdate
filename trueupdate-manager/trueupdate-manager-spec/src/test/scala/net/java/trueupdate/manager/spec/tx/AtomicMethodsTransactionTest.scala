@@ -2,13 +2,14 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core.tx
+package net.java.trueupdate.manager.spec.tx
 
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.mockito.Mockito._
 import org.scalatest.WordSpec
 import org.scalatest.mock.MockitoSugar.mock
+import scala._
 
 /**
  * @author Christian Schlichtherle

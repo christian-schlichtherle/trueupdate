@@ -4,6 +4,8 @@
  */
 package net.java.trueupdate.installer.core.tx;
 
+import net.java.trueupdate.manager.spec.tx.Transaction;
+
 import java.io.File;
 
 import static net.java.trueupdate.installer.core.io.Files.renamePath;

@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import static net.java.trueupdate.installer.core.io.Files.*;
 import net.java.trueupdate.installer.core.io.PathTask;
+import net.java.trueupdate.manager.spec.tx.Transaction;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**

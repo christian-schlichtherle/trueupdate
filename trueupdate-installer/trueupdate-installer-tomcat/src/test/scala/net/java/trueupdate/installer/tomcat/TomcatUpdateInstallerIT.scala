@@ -16,12 +16,12 @@ import org.jboss.shrinkwrap.api.spec.WebArchive
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.java.trueupdate.installer.core.io.Files._
-import net.java.trueupdate.installer.core.tx.Transactions
 import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
 import net.java.trueupdate.message.{UpdateDescriptor, UpdateMessage}
 import UpdateMessage.Type
 import net.java.trueupdate.manager.spec.UpdateContext
 import java.util.logging.Level
+import net.java.trueupdate.manager.spec.tx.Transactions
 
 /**
  * @author Christian Schlichtherle

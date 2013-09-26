@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core.tx;
+package net.java.trueupdate.manager.spec.tx;
 
 /**
  * Indicates a failure when {@linkplain Transaction#rollback() rolling back} or

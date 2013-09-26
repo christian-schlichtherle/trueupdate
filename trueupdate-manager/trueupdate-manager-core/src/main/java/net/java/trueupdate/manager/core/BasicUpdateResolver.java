@@ -10,7 +10,11 @@ import java.util.logging.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
+import net.java.trueupdate.manager.spec.tx.Transaction;
+import static net.java.trueupdate.manager.spec.tx.Transactions.*;
+import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.UpdateDescriptor;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * Resolves diff ZIP files for artifact updates and manages their life cycle.
@@ -19,8 +23,13 @@ import net.java.trueupdate.message.UpdateDescriptor;
  */
 abstract class BasicUpdateResolver {
 
-    private static final Logger
-            logger = Logger.getLogger(BasicUpdateResolver.class.getName());
+    private static final Logger logger = Logger.getLogger(
+            BasicUpdateResolver.class.getName(),
+            UpdateMessage.class.getName());
+
+    private static final LoggerConfig loggerConfig = new LoggerConfig() {
+        @Override public Logger logger() { return logger; }
+    };
 
     private final Map<UpdateDescriptor, FileAccount>
             accounts = new HashMap<UpdateDescriptor, FileAccount>();
@@ -62,23 +71,44 @@ abstract class BasicUpdateResolver {
      * @param descriptor the update descriptor.
      */
     final File resolveDiffZip(final UpdateDescriptor descriptor)
-    throws IOException {
+    throws Exception {
         final FileAccount account = account(descriptor);
-        if (account.fileResolved()) return account.file();
-        final ArtifactDescriptor ad = descriptor.artifactDescriptor();
-        final String uv = descriptor.updateVersion();
-        final File diffZip = File.createTempFile("diff", ".zip");
-        try {
-            Copy.copy(updateClient().diff(ad, uv), new FileStore(diffZip));
-        } catch (final IOException ex) {
-            diffZip.delete();
-            throw ex;
+        final File diffZip;
+        if (account.fileResolved()) diffZip = account.file();
+        else account.file(diffZip = download(descriptor));
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "bur.resolved", new Object[] {
+                diffZip, descriptor.artifactDescriptor(),
+                descriptor.updateVersion()
+            });
         }
-        logger.log(Level.INFO,
-                "Downloaded file {0} for artifact descriptor {1} and update version {2} .",
-                new Object[] { diffZip, ad, uv });
-        account.file(diffZip);
         return diffZip;
+    }
+
+    private File download(final UpdateDescriptor descriptor) throws Exception {
+
+        class DownloadTransaction extends Transaction {
+
+            File diffZip;
+
+            @Override public void prepare() throws Exception {
+                diffZip = File.createTempFile("diff", ".zip");
+            }
+
+            @Override public void perform() throws Exception {
+                final ArtifactDescriptor ad = descriptor.artifactDescriptor();
+                final String uv = descriptor.updateVersion();
+                Copy.copy(updateClient().diff(ad, uv), new FileStore(diffZip));
+            }
+
+            @Override public void rollback() throws Exception {
+                diffZip.delete();
+            }
+        } // DownloadTransaction
+
+        final DownloadTransaction tx = new DownloadTransaction();
+        execute(timed("bur.download", tx, loggerConfig));
+        return tx.diffZip;
     }
 
     /**
@@ -98,8 +128,8 @@ abstract class BasicUpdateResolver {
         assert 0 <= account.usages();
         final File file = account.file();
         if (file.delete())
-            logger.log(Level.INFO, "Deleted file {0} .", file);
+            logger.log(Level.INFO, "bur.delete.success", file);
         else
-            logger.log(Level.WARNING, "Could not delete file {0} .", file);
+            logger.log(Level.WARNING, "bur.delete.failure", file);
     }
 }

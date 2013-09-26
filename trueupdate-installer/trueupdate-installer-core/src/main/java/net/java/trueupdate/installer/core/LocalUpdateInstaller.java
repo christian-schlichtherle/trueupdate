@@ -13,8 +13,9 @@ import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.installer.core.io.Files.*;
 import net.java.trueupdate.installer.core.io.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
-import net.java.trueupdate.installer.core.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.manager.spec.tx.*;
+import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
@@ -93,40 +94,40 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 final File backup = new File(tempDir, "backup");
                 if (current.path().isFile()) {
                     Transactions.execute(new CompositeTransaction(
-                            timed("tx.patch",
+                            timed("lui.patch",
                                     new PathTaskTransaction(updateJar,
                                             new PatchTask(current.path()))),
-                            timed("tx.undeploy",
+                            timed("lui.undeploy",
                                     undeploymentTransaction(current, context)),
-                            timed("tx.swap.out.file",
+                            timed("lui.swap.out.file",
                                     new RenamePathTransaction(
                                             update.path(), backup)),
-                            timed("tx.swap.in.file",
+                            timed("lui.swap.in.file",
                                     new RenamePathTransaction(updateJar,
                                             update.path())),
-                            timed("tx.deploy",
+                            timed("lui.deploy",
                                     deploymentTransaction(update))));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updateDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
-                            timed("tx.zip",
+                            timed("lui.zip",
                                     new ZipTransaction(currentZip,
                                             current.path(), "")),
-                            timed("tx.patch",
+                            timed("lui.patch",
                                     new PathTaskTransaction(updateJar,
                                             new PatchTask(currentZip))),
-                            timed("tx.unzip",
+                            timed("lui.unzip",
                                     new UnzipTransaction(updateJar, updateDir)),
-                            timed("tx.undeploy",
+                            timed("lui.undeploy",
                                     undeploymentTransaction(current, context)),
-                            timed("tx.swap.out.dir",
+                            timed("lui.swap.out.dir",
                                     new RenamePathTransaction(
                                             update.path(), backup)),
-                            timed("tx.swap.in.dir",
+                            timed("lui.swap.in.dir",
                                     new RenamePathTransaction(updateDir,
                                             update.path())),
-                            timed("tx.deploy",
+                            timed("lui.deploy",
                                     deploymentTransaction(update))));
                 }
                 return null;

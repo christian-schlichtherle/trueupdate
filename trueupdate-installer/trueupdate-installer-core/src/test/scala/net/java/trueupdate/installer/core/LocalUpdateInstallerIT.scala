@@ -12,8 +12,8 @@ import net.java.trueupdate.core.zip.io.JarFileStore
 import net.java.trueupdate.installer.core.LocalUpdateInstaller.LocationContext
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.io.PathTask
-import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.manager.spec._
+import net.java.trueupdate.manager.spec.tx.Transaction
 import net.java.trueupdate.message._
 import UpdateMessage.Type
 import org.junit.runner.RunWith

@@ -9,6 +9,7 @@ import static net.java.trueupdate.installer.core.io.Files.*;
 
 import net.java.trueupdate.core.zip.io.ZipFileStore;
 import net.java.trueupdate.core.zip.io.ZipStore;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 
 import static net.java.trueupdate.util.Objects.requireNonNull;
 

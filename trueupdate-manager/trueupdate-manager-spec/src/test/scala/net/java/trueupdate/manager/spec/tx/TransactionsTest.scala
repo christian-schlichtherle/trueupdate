@@ -2,18 +2,19 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core.tx
+package net.java.trueupdate.manager.spec.tx
 
 import java.util.logging._
+import net.java.trueupdate.manager.spec.tx.Transactions._
 import org.junit.runner.RunWith
 import org.mockito._
 import org.mockito.Mockito._
 import org.mockito.Matchers._
+import org.mockito.internal.matchers.VarargMatcher
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar.mock
-import net.java.trueupdate.installer.core.tx.Transactions._
-import org.mockito.internal.matchers.VarargMatcher
+import scala._
 
 /**
  * @author Christian Schlichtherle

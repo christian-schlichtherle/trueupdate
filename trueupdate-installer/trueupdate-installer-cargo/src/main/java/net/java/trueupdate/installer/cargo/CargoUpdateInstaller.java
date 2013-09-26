@@ -8,9 +8,8 @@ import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
-import net.java.trueupdate.installer.core.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * Installs updates for applications running in a container which is supported
