@@ -25,6 +25,10 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @Immutable
 public final class LogMessage {
 
+    private static final Logger logger = Logger.getLogger(
+            LogMessage.class.getName(),
+            LogMessage.class.getName());
+
     private static final Object[] EMPTY = new Object[0];
 
     private final Level level;
@@ -64,10 +68,8 @@ public final class LogMessage {
     /** Returns the number of parameters. */
     public int numberOfParameters() { return parameters.length; }
 
-    /** Logs this message to the given logger. */
-    public void log(Logger logger) {
-        logger.log(level, message, parameters);
-    }
+    /** Logs this message. */
+    public void log() { logger.log(level, message, parameters); }
 
     /**
      * Returns {@code true} if and only if the given object is a

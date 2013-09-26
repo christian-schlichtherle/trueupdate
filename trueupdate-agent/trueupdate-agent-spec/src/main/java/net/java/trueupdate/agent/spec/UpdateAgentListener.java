@@ -5,9 +5,7 @@
 package net.java.trueupdate.agent.spec;
 
 import java.util.List;
-import java.util.logging.Logger;
-import net.java.trueupdate.message.LogMessage;
-import net.java.trueupdate.message.UpdateMessage;
+import net.java.trueupdate.message.*;
 
 /**
  * Listens to events from the update agent.
@@ -15,10 +13,6 @@ import net.java.trueupdate.message.UpdateMessage;
  * @author Christian Schlichtherle
  */
 public class UpdateAgentListener {
-
-    private static final Logger logger = Logger.getLogger(
-            UpdateAgentListener.class.getName(),
-            LogMessage.class.getName());
 
     /**
      * Responds to a subscription response.
@@ -99,6 +93,6 @@ public class UpdateAgentListener {
     }
 
     private static void log(List<LogMessage> messages) {
-        for (LogMessage lm : messages) lm.log(logger);
+        for (LogMessage lm : messages) lm.log();
     }
 }
