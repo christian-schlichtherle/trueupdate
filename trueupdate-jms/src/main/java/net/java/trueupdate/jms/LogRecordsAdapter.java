@@ -43,7 +43,8 @@ extends XmlAdapter<CompactLogRecordDto[], List<LogRecord>> {
             lr.setParameters(clr.parameters);
             lr.setThreadID(clr.threadId);
             lr.setMillis(clr.millis);
-            lr.setThrown(new Throwable(clr.thrown));
+            if (null != clr.thrown)
+                lr.setThrown(new Throwable(clr.thrown));
             lrs.add(lr);
         }
         return lrs;
@@ -66,15 +67,8 @@ extends XmlAdapter<CompactLogRecordDto[], List<LogRecord>> {
                 clr.sourceClassName = lr.getSourceClassName();
                 clr.sourceMethodName = lr.getSourceMethodName();
                 clr.message = lr.getMessage();
-                final Object[] ps = lr.getParameters();
-                if (null != ps) {
-                    final int psl = ps.length;
-                    clr.parameters = new String[psl];
-                    for (int j = 0; j < psl; j++) {
-                        final Object p = ps[j];
-                        clr.parameters[j] = null == p ? null : p.toString();
-                    }
-                }
+                clr.parameters = marshalAsXsiTypesForUseWithMessageFormat(
+                        lr.getParameters());
                 clr.threadId = lr.getThreadID();
                 clr.millis = lr.getMillis();
                 final Throwable t = lr.getThrown();
@@ -89,5 +83,19 @@ extends XmlAdapter<CompactLogRecordDto[], List<LogRecord>> {
             }
         }
         return clrs;
+    }
+
+    private static @Nullable Object[] marshalAsXsiTypesForUseWithMessageFormat(
+            final @CheckForNull Object[] in) {
+        if (null == in) return null;
+        final int l = in.length;
+        final Object[] out = new Object[l];
+        for (int i = 0; i < l; i++) {
+            final Object obj = in[i];
+            out[i] = (null == obj || obj instanceof Number
+                        || obj instanceof Boolean || obj instanceof Date)
+                    ? obj : obj.toString();
+        }
+        return out;
     }
 }

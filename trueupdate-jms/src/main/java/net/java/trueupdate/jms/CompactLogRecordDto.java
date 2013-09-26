@@ -40,7 +40,7 @@ final class CompactLogRecordDto {
     String message;
 
     @XmlElement(name = "h")
-    String[] parameters;
+    Object[] parameters;
 
     @XmlElement(name = "i")
     int threadId;
