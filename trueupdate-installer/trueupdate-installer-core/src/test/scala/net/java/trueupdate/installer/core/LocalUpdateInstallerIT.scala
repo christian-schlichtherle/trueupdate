@@ -18,9 +18,9 @@ import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.installer.core.tx.Transaction
 import net.java.trueupdate.manager.spec._
-import net.java.trueupdate.message.UpdateMessage
+import net.java.trueupdate.message._
+import LogMessage.Level
 import UpdateMessage.Type
-import java.util.logging.Level
 
 /**
  * @author Christian Schlichtherle
@@ -62,7 +62,7 @@ class LocalUpdateInstallerIT extends WordSpec {
       def updateLocation = um.updateLocation
       def diffZip = diffZipFile
       def isLoggable(level: Level) = true
-      def log(level: Level, key: String, parameters: AnyRef*) { }
+      def log(level: Level, code: String, args: AnyRef*) { }
       def prepareUndeployment() { }
       def performUndeployment() { }
       def rollbackUndeployment() { }

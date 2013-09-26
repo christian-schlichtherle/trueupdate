@@ -4,14 +4,12 @@
  */
 package net.java.trueupdate.jms;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import java.util.*;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import net.java.trueupdate.message.LogMessage;
+import net.java.trueupdate.message.LogMessage.Level;
 
 /**
  * Marshals a list of log messages to its DTO and vice versa.
@@ -32,9 +30,9 @@ extends XmlAdapter<CompactLogMessageDto[], List<LogMessage>> {
             final CompactLogMessageDto clm = clms[i];
             lms.add(LogMessage
                     .builder()
-                    .level(Level.parse(clm.level))
-                    .message(clm.message)
-                    .parameters(clm.parameters)
+                    .level(Level.values()[clm.level])
+                    .code(clm.code)
+                    .args(clm.args)
                     .build());
         }
         return lms;
@@ -50,10 +48,10 @@ extends XmlAdapter<CompactLogMessageDto[], List<LogMessage>> {
             int i = 0;
             for (final LogMessage lm : lms) {
                 final CompactLogMessageDto clm = new CompactLogMessageDto();
-                clm.level = lm.level().getName();
-                clm.message = lm.message();
-                final Object[] p = lm.parameters();
-                clm.parameters = 0 == p.length ? null : p;
+                clm.level = lm.level().ordinal();
+                clm.code = lm.code();
+                final Object[] p = lm.args();
+                clm.args = 0 == p.length ? null : p;
                 clms[i++] = clm;
             }
         }

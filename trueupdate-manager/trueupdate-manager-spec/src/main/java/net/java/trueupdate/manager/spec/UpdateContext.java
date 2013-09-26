@@ -5,7 +5,6 @@
 package net.java.trueupdate.manager.spec;
 
 import java.io.File;
-import net.java.trueupdate.message.UpdateLogger;
 
 /**
  * An update context.

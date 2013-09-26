@@ -19,11 +19,11 @@ import javax.xml.bind.annotation.*;
 final class CompactLogMessageDto {
 
     @XmlElement(name = "l")
-    String level;
+    int level;
 
-    @XmlElement(name = "m")
-    String message;
+    @XmlElement(name = "c")
+    String code;
 
-    @XmlElement(name = "p")
-    Object[] parameters;
+    @XmlElement(name = "a")
+    Object[] args;
 }

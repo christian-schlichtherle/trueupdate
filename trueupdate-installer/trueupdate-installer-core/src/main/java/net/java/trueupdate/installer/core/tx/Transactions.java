@@ -5,8 +5,8 @@
 package net.java.trueupdate.installer.core.tx;
 
 import java.util.concurrent.Callable;
-import java.util.logging.*;
-import net.java.trueupdate.message.UpdateLogger;
+import net.java.trueupdate.message.LogMessage.Level;
+import net.java.trueupdate.manager.spec.UpdateLogger;
 
 /**
  * Provides functions for {@link Transaction}s.

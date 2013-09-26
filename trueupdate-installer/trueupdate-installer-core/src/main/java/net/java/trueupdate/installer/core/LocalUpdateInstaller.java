@@ -14,7 +14,7 @@ import net.java.trueupdate.installer.core.io.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
 import net.java.trueupdate.installer.core.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.manager.spec.*;
-import net.java.trueupdate.message.UpdateLogger;
+import net.java.trueupdate.manager.spec.UpdateLogger;
 
 /**
  * A local update installer.

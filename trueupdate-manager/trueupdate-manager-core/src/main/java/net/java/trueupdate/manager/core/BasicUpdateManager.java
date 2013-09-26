@@ -46,7 +46,7 @@ extends UpdateMessageListener implements UpdateManager {
         final UpdateInstaller ui = ServiceLoader.load(UpdateInstaller.class,
                 Thread.currentThread().getContextClassLoader()
                 ).iterator().next();
-        logger.log(Level.CONFIG,
+        logger.log(java.util.logging.Level.CONFIG,
                 "The class name of the update installer is {0} .",
                 ui.getClass().getName());
         return ui;
@@ -71,7 +71,7 @@ extends UpdateMessageListener implements UpdateManager {
         final Collection<UpdateMessage>
                 subscriptions = stateManager.subscriptions();
         if (subscriptions.isEmpty()) return;
-        logger.log(Level.INFO, "Checking for artifact updates from {0} .",
+        logger.log(java.util.logging.Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient().baseUri());
 
         // Process the update notices in several steps in order to use minimal
@@ -252,10 +252,12 @@ extends UpdateMessageListener implements UpdateManager {
             @Override public void commitUndeployment() throws Exception { }
 
             // TODO: Consider conversation with the update agent about this.
-            @Override public boolean isLoggable(Level level) { return true; }
+            @Override public boolean isLoggable(LogMessage.Level level) {
+                return true;
+            }
 
             @Override public void log(
-                    final Level level,
+                    final LogMessage.Level level,
                     final String key,
                     final Object... parameters) {
                 final LogMessage lm = LogMessage.create(level, key, parameters);
@@ -270,7 +272,7 @@ extends UpdateMessageListener implements UpdateManager {
                     send(um);
                 } catch (final Exception ex2) {
                     if (null == ex)
-                        logger.log(Level.WARNING, "Cannot send progress notice to update agent:", ex2);
+                        logger.log(java.util.logging.Level.WARNING, "Cannot send progress notice to update agent:", ex2);
                     ex = ex2;
                 }
             }
@@ -326,9 +328,9 @@ extends UpdateMessageListener implements UpdateManager {
             final Exception ex) {
         final LogMessage lm = LogMessage
                 .builder()
-                .level(Level.WARNING)
-                .message("exception")
-                .parameters(ex.toString())
+                .level(LogMessage.Level.WARNING)
+                .code("exception")
+                .args(ex.toString())
                 .build();
         return responseFor(request)
                 .type(INSTALLATION_FAILURE_RESPONSE)
@@ -353,12 +355,12 @@ extends UpdateMessageListener implements UpdateManager {
     protected abstract void send(UpdateMessage message) throws Exception;
 
     private static void logReceived(UpdateMessage message) {
-        logger.log(Level.FINE,
+        logger.log(java.util.logging.Level.FINE,
                 "Received update message from update agent:\n{0}", message);
     }
 
     private static void logSent(UpdateMessage message) {
-        logger.log(Level.FINER,
+        logger.log(java.util.logging.Level.FINER,
                 "Sent update message to update agent:\n{0}", message);
     }
 

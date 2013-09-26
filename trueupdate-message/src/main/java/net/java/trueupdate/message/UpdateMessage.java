@@ -13,9 +13,9 @@ import static net.java.trueupdate.util.Strings.requireNonEmpty;
 import net.java.trueupdate.util.builder.*;
 
 /**
- * An update message gets exchanged between update agents and update managers
- * in order to establish a protocol for the automated installation of artifact
- * updates.
+ * An update message encapsulates the data which gets exchanged between update
+ * agents and update managers in order to establish a protocol for the
+ * automated installation of artifact updates.
  * This class implements an immutable value object, so you can easily share its
  * instances with anyone or use them as map keys.
  *

@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.message
 
-import java.util.logging.Level
+import net.java.trueupdate.message.LogMessage.Level
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
@@ -18,21 +18,21 @@ class LogMessageTest extends WordSpec {
   def builder = LogMessage.builder
 
   val subjects = Table(
-    ("builder", "level", "message", "parameters"),
-    (builder.level(Level.FINEST).message("message"),
-      Level.FINEST, "message", Array()),
-    (builder.level(Level.FINER).message("message").parameters("one", 2: java.lang.Integer),
-      Level.FINER, "message", Array("one", 2: java.lang.Integer))
+    ("builder", "level", "code", "args"),
+    (builder.level(Level.FINEST).code("code"),
+      Level.FINEST, "code", Array()),
+    (builder.level(Level.FINER).code("code").args("one", 2: java.lang.Integer),
+      Level.FINER, "code", Array("one", 2: java.lang.Integer))
   )
 
   "A log message" when {
     "build" should {
       "reflect the specified properties" in {
-        forAll (subjects) { (builder, level, message, parameters) =>
+        forAll (subjects) { (builder, level, code, args) =>
           val message1 = builder.build
           message1.level should equal (level)
-          message1.message should equal (message)
-          message1.parameters should equal (parameters)
+          message1.code should equal (code)
+          message1.args should equal (args)
 
           val message2 = builder.build
           message2 should not be theSameInstanceAs (message1)

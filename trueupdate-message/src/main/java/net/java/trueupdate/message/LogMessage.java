@@ -5,7 +5,6 @@
 package net.java.trueupdate.message;
 
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -15,8 +14,8 @@ import static net.java.trueupdate.util.Strings.requireNonEmpty;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
- * A log message encapsulates the parameters for the method
- * {@link Logger#log(Level, String, Object[])}.
+ * A log message encapsulates the data for the logging messages sent from
+ * update managers to update agents.
  * This class implements an immutable value object, so you can easily share its
  * instances with anyone or use them as map keys.
  *
@@ -25,51 +24,44 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @Immutable
 public final class LogMessage {
 
-    private static final Logger logger = Logger.getLogger(
-            LogMessage.class.getName(),
-            LogMessage.class.getName());
-
     private static final Object[] EMPTY = new Object[0];
 
     private final Level level;
-    private final String message;
-    private final Object[] parameters;
+    private final String code;
+    private final Object[] args;
 
     @SuppressWarnings("null")
     LogMessage(final Builder<?> b) {
         this.level = requireNonNull(b.level);
-        this.message = requireNonEmpty(b.message);
-        this.parameters = null == b.parameters ? EMPTY : b.parameters.clone();
+        this.code = requireNonEmpty(b.code);
+        this.args = null == b.args ? EMPTY : b.args.clone();
     }
 
     /** Returns a new log message which encapsulates the given parameters. */
     public static LogMessage create(Level level,
-                                    String message,
+                                    String code,
                                     Object... parameters) {
         return builder()
                 .level(level)
-                .message(message)
-                .parameters(parameters)
+                .code(code)
+                .args(parameters)
                 .build();
     }
 
     /** Returns a new builder for a log record. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    /** Returns the logging level. */
+    /** Returns the message level. */
     public Level level() { return level; }
 
-    /** Returns the message. */
-    public String message() { return message; }
+    /** Returns the message code, i.e. a key in the message catalog. */
+    public String code() { return code; }
 
-    /** Returns a protective copy of the parameters. */
-    public Object[] parameters() { return parameters.clone(); }
+    /** Returns a protective copy of the message arguments. */
+    public Object[] args() { return args.clone(); }
 
-    /** Returns the number of parameters. */
-    public int numberOfParameters() { return parameters.length; }
-
-    /** Logs this message. */
-    public void log() { logger.log(level, message, parameters); }
+    /** Returns the number of message arguments. */
+    public int argsCount() { return args.length; }
 
     /**
      * Returns {@code true} if and only if the given object is a
@@ -81,16 +73,16 @@ public final class LogMessage {
         if (!(obj instanceof LogMessage)) return false;
         final LogMessage that = (LogMessage) obj;
         return  this.level.equals(that.level) &&
-                this.message.equals(that.message) &&
-                Arrays.equals(this.parameters, that.parameters);
+                this.code.equals(that.code) &&
+                Arrays.equals(this.args, that.args);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
     @Override public int hashCode() {
         int hash = 17;
         hash = 31 * hash + level.hashCode();
-        hash = 31 * hash + message.hashCode();
-        hash = 31 * hash + Arrays.hashCode(parameters);
+        hash = 31 * hash + code.hashCode();
+        hash = 31 * hash + Arrays.hashCode(args);
         return hash;
     }
 
@@ -103,8 +95,8 @@ public final class LogMessage {
     public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull Level level;
-        @CheckForNull String message;
-        @CheckForNull Object[] parameters;
+        @CheckForNull String code;
+        @CheckForNull Object[] args;
 
         protected Builder() { }
 
@@ -113,15 +105,14 @@ public final class LogMessage {
             return this;
         }
 
-        public final Builder<P> message(final @Nullable String message) {
-            this.message = message;
+        public final Builder<P> code(final @Nullable String code) {
+            this.code = code;
             return this;
         }
 
         @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-        public final Builder<P> parameters(
-                final @Nullable Object... parameters) {
-            this.parameters = parameters;
+        public final Builder<P> args(final @Nullable Object... args) {
+            this.args = args;
             return this;
         }
 
@@ -129,4 +120,13 @@ public final class LogMessage {
             return new LogMessage(this);
         }
     } // Builder
+
+    /**
+     * Logging levels.
+     * These resemble the predefined levels in {@link java.util.logging.Level}
+     * in order to enable a simple adapter.
+     */
+    public enum Level {
+        FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE
+    } // Level
 }
