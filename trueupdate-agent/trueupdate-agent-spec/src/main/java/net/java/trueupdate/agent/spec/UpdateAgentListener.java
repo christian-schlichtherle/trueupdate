@@ -16,17 +16,18 @@ import net.java.trueupdate.message.*;
  */
 public class UpdateAgentListener {
 
-    private static final Logger logger = Logger.getLogger(
-            UpdateAgentListener.class.getName(),
-            UpdateMessage.class.getName());
+    // The update manager has already applied filtering and sends fully
+    // populated (but not formatted) LogRecord instances, so obtaining any
+    // other Logger may yield undesirable side effects.
+    private static final Logger
+            logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     /**
      * Responds to a subscription response.
-     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
-     * @see #log(LogMessage)
+     * @see #log(UpdateAgentEvent)
      */
     public void onSubscriptionResponse(UpdateAgentEvent event)
     throws Exception {
@@ -35,12 +36,11 @@ public class UpdateAgentListener {
 
     /**
      * Responds to an update available notice.
-     * <p>
      * The implementation in the class {@link UpdateAgentListener} logs any
      * enclosed messages and sends an
      * {@linkplain UpdateAgent#install installation request}.
      *
-     * @see #log(LogMessage)
+     * @see #log(UpdateAgentEvent)
      */
     public void onUpdateNotice(UpdateAgentEvent event)
     throws Exception {
@@ -50,11 +50,10 @@ public class UpdateAgentListener {
 
     /**
      * Responds to a progress notice.
-     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
-     * @see #log(LogMessage)
+     * @see #log(UpdateAgentEvent)
      */
     public void onProgressNotice(UpdateAgentEvent event)
     throws Exception {
@@ -63,12 +62,14 @@ public class UpdateAgentListener {
 
     /**
      * Responds to a redeployment request.
-     * <p>
      * The implementation in the class {@link UpdateAgentListener} logs any
      * enclosed messages and sends a
      * {@linkplain UpdateAgent#proceed positive response}.
+     * <p>
+     * This method must return quickly or otherwise a timeout may occur which
+     * would cause the update transaction to roll back!
      *
-     * @see #log(LogMessage)
+     * @see #log(UpdateAgentEvent)
      */
     public void onRedeploymentRequest(UpdateAgentEvent event)
     throws Exception {
@@ -78,11 +79,10 @@ public class UpdateAgentListener {
 
     /**
      * Responds to an installation success response.
-     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
-     * @see #log(LogMessage)
+     * @see #log(UpdateAgentEvent)
      */
     public void onInstallationSuccessResponse(UpdateAgentEvent event)
     throws Exception {
@@ -91,29 +91,41 @@ public class UpdateAgentListener {
 
     /**
      * Responds to an installation failure response.
-     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
-     * @see #log(LogMessage)
+     * @see #log(UpdateAgentEvent)
      */
     public void onInstallationFailureResponse(UpdateAgentEvent event)
     throws Exception {
         log(event);
     }
 
-    private void log(UpdateAgentEvent event) { log(event.updateMessage()); }
+    /**
+     * Logs the enclosed log records in the given event.
+     * This method forwards the call to {@link #log(LogRecord)} for each
+     * enclosed log record.
+     * <p>
+     * This method must return quickly or otherwise a timeout may occur which
+     * would cause the update transaction to roll back!
+     */
+    protected void log(UpdateAgentEvent event) {
+        log(event.updateMessage());
+    }
+
     private void log(UpdateMessage message) { log(message.attachedLogs()); }
+
     private void log(List<LogRecord> records) {
         for (LogRecord record : records) log(record);
     }
 
     /**
      * Logs the given record.
+     * Override this method in order to notify the user about the update
+     * progress.
      * <p>
-     * The implementation in the class {@link UpdateAgentListener} uses a
-     * {@link Logger} with the name of this class and the resource bundle
-     * for the class {@link LogMessage}.
+     * This method must return quickly or otherwise a timeout may occur which
+     * would cause the update transaction to roll back!
      */
     protected void log(LogRecord record) { logger.log(record); }
 }
