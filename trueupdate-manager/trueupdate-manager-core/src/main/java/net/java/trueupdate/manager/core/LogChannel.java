@@ -7,10 +7,12 @@ package net.java.trueupdate.manager.core;
 import java.util.logging.LogRecord;
 
 /**
- * A channel for transferring {@link LogRecord}s.
+ * A log channel transmits log records.
  *
  * @author Christian Schlichtherle
  */
-public interface LogChannel {
-    void transfer(LogRecord record) throws Exception;
+interface LogChannel {
+
+    /** Transmits the given log record. */
+    void transmit(LogRecord record) throws Exception;
 }

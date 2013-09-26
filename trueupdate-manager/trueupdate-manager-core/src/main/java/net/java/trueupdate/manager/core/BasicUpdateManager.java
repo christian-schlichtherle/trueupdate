@@ -31,7 +31,7 @@ extends UpdateMessageListener implements UpdateManager {
 
     private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
 
-    private final StateManager stateManager = new StateManager();
+    private final StateManager subscriptionManager = new StateManager();
 
     private final BasicUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
@@ -69,7 +69,7 @@ extends UpdateMessageListener implements UpdateManager {
 
         // Cache subscriptions to allow concurrency.
         final Collection<UpdateMessage>
-                subscriptions = stateManager.subscriptions();
+                subscriptions = subscriptionManager.subscriptions();
         if (subscriptions.isEmpty()) return;
         logger.log(java.util.logging.Level.INFO, "Checking for artifact updates from {0} .",
                 updateClient().baseUri());
@@ -177,7 +177,7 @@ extends UpdateMessageListener implements UpdateManager {
 
     private void install(final UpdateMessage request) throws Exception {
 
-        class Install implements Callable<Void>, UpdateContext {
+        class Install implements Callable<Void>, UpdateContext, LogChannel {
 
             ArtifactDescriptor artifactDescriptor = request.artifactDescriptor();
             String currentLocation = request.currentLocation();
@@ -197,13 +197,18 @@ extends UpdateMessageListener implements UpdateManager {
             @Override public File diffZip() { return diffZip; }
 
             @Override public Void call() throws Exception {
-                final UpdateDescriptor ud = request.updateDescriptor();
-                synchronized (updateResolver) {
-                    diffZip = updateResolver.resolveDiffZip(ud);
-                }
-                updateInstaller.install(this);
-                synchronized (updateResolver) {
-                    updateResolver.release(ud);
+                LogContext.setChannel(this);
+                try {
+                    final UpdateDescriptor ud = request.updateDescriptor();
+                    synchronized (updateResolver) {
+                        diffZip = updateResolver.resolveDiffZip(ud);
+                    }
+                    updateInstaller.install(Install.this);
+                    synchronized (updateResolver) {
+                        updateResolver.release(ud);
+                    }
+                } finally {
+                    LogContext.removeChannel();
                 }
                 return null;
             }
@@ -212,9 +217,9 @@ extends UpdateMessageListener implements UpdateManager {
                 sendRedeploymentRequest();
                 final long stop = System.currentTimeMillis()
                         + HANDSHAKE_TIMEOUT_MILLIS;
-                synchronized (stateManager) {
+                synchronized (subscriptionManager) {
                     while (true) {
-                        final UpdateMessage um = stateManager.get(request);
+                        final UpdateMessage um = subscriptionManager.get(request);
                         final Type type = um.type();
                         if (PROCEED_REDEPLOYMENT_RESPONSE.equals(type))
                             break;
@@ -223,7 +228,7 @@ extends UpdateMessageListener implements UpdateManager {
                         final long remaining = stop - System.currentTimeMillis();
                         if (0 >= remaining)
                             throw new Exception("Timeout while waiting for redeployment response from update agent.");
-                        stateManager.wait(remaining);
+                        subscriptionManager.wait(remaining);
                     }
                 }
             }
@@ -250,6 +255,17 @@ extends UpdateMessageListener implements UpdateManager {
             }
 
             @Override public void commitUndeployment() throws Exception { }
+
+            @Override
+            public void transmit(final LogRecord record) throws Exception {
+                final UpdateMessage um = responseFor(request)
+                        .type(PROGRESS_NOTICE)
+                        .artifactDescriptor(artifactDescriptor)
+                        .currentLocation(currentLocation)
+                        .build();
+                um.attachedLogs().add(record);
+                send(um);
+            }
         } // Install
 
         new Install().call();
@@ -329,16 +345,16 @@ extends UpdateMessageListener implements UpdateManager {
     }
 
     private void subscribe(UpdateMessage subscription) {
-        stateManager.put(subscription);
+        subscriptionManager.put(subscription);
     }
 
     private void unsubscribe(UpdateMessage subscription) {
-        stateManager.remove(subscription);
+        subscriptionManager.remove(subscription);
     }
 
     @Override public void close() throws Exception {
         synchronized (updateResolver) { updateResolver.close(); }
-        stateManager.close();
+        subscriptionManager.close();
     }
 
     private class StateManager {
@@ -379,7 +395,7 @@ extends UpdateMessageListener implements UpdateManager {
                 it.remove();
             }
         }
-    } // SubscriptionManager
+    } // StateManager
 
     private class ConfiguredUpdateResolver extends BasicUpdateResolver {
         @Override protected UpdateClient updateClient() {
