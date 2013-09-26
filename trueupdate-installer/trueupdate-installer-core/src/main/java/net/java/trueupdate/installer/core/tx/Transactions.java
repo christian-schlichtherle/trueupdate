@@ -6,7 +6,7 @@ package net.java.trueupdate.installer.core.tx;
 
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
-import net.java.trueupdate.manager.spec.UpdateLogger;
+import java.util.logging.Logger;
 
 /**
  * Provides functions for {@link Transaction}s.
@@ -70,7 +70,7 @@ public class Transactions {
      *
      * @return the logging transaction.
      */
-    public static Transaction timed(final String key,
+    public static Transaction timed(final String message,
                                     final Transaction tx,
                                     final LoggerConfig config) {
 
@@ -118,7 +118,7 @@ public class Transactions {
                 final long started = System.currentTimeMillis();
                 try { task.call(); } catch (Exception ex2) { ex = ex2; }
                 final long finished = System.currentTimeMillis();
-                final UpdateLogger logger = config.logger();
+                final Logger logger = config.logger();
                 final boolean succeeded = null == ex;
                 final Level level = config.level(method, succeeded);
                 if (logger.isLoggable(level)) {
@@ -127,8 +127,9 @@ public class Transactions {
                     final long seconds = duration / 1000 % 60;
                     final long minutes = duration / 1000 / 60 % 60;
                     final long hours = duration / 1000 / 60 / 60;
-                    logger.log(level, key, succeeded ? 0 : 1, method.ordinal(),
-                            hours, minutes, seconds, millis);
+                    logger.log(level, message, new Object[] {
+                        succeeded ? 0 : 1, method.ordinal(),
+                        hours, minutes, seconds, millis });
                 }
                 if (!succeeded) throw ex;
             }
@@ -142,22 +143,22 @@ public class Transactions {
 
     public enum Method {
         prepare {
-            @Override Level succeeded() { return Level.FINEST; }
+            @Override Level succeeded() { return Level.FINE; }
         },
 
         perform, rollback,
 
         commit {
-            @Override Level succeeded() { return Level.FINER; }
+            @Override Level succeeded() { return Level.FINE; }
         };
 
-        Level succeeded() { return Level.FINE; }
+        Level succeeded() { return Level.INFO; }
         Level failed() { return Level.WARNING; }
     }
 
     public static abstract class LoggerConfig {
 
-        public abstract UpdateLogger logger();
+        public abstract Logger logger();
 
         public Level level(Method method, boolean succeeded) {
             return succeeded ? method.succeeded() : method.failed();

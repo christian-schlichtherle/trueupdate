@@ -5,8 +5,8 @@
 package net.java.trueupdate.agent.spec;
 
 import java.util.List;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-
 import net.java.trueupdate.message.*;
 
 /**
@@ -18,7 +18,7 @@ public class UpdateAgentListener {
 
     private static final Logger logger = Logger.getLogger(
             UpdateAgentListener.class.getName(),
-            LogMessage.class.getName());
+            UpdateMessage.class.getName());
 
     /**
      * Responds to a subscription response.
@@ -103,19 +103,17 @@ public class UpdateAgentListener {
     }
 
     private void log(UpdateAgentEvent event) { log(event.updateMessage()); }
-    private void log(UpdateMessage message) { log(message.logMessages()); }
-    private void log(List<LogMessage> messages) {
-        for (LogMessage message : messages) log(message);
+    private void log(UpdateMessage message) { log(message.attachedLogs()); }
+    private void log(List<LogRecord> records) {
+        for (LogRecord record : records) log(record);
     }
 
     /**
-     * Logs the given message.
+     * Logs the given record.
      * <p>
      * The implementation in the class {@link UpdateAgentListener} uses a
      * {@link Logger} with the name of this class and the resource bundle
      * for the class {@link LogMessage}.
      */
-    protected void log(LogMessage message) {
-        logger.log(message.level(), message.code(), message.args());
-    }
+    protected void log(LogRecord record) { logger.log(record); }
 }

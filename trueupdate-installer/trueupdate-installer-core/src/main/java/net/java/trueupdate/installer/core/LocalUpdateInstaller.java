@@ -5,6 +5,7 @@
 package net.java.trueupdate.installer.core;
 
 import java.io.*;
+import java.util.logging.Logger;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.zip.io.JarFileStore;
@@ -14,7 +15,7 @@ import net.java.trueupdate.installer.core.io.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
 import net.java.trueupdate.installer.core.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.manager.spec.*;
-import net.java.trueupdate.manager.spec.UpdateLogger;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * A local update installer.
@@ -30,6 +31,14 @@ import net.java.trueupdate.manager.spec.UpdateLogger;
  */
 @Immutable
 public abstract class LocalUpdateInstaller implements UpdateInstaller {
+
+    private static final Logger logger = Logger.getLogger(
+            LocalUpdateInstaller.class.getName(),
+            UpdateMessage.class.getName());
+
+    private static final LoggerConfig loggerConfig = new LoggerConfig() {
+        @Override public Logger logger() { return logger; }
+    };
 
     /**
      * Returns the nullable temporary directory.
@@ -78,10 +87,6 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 locationContext(context, context.updateLocation());
 
         loanTempDir(new PathTask<Void, Exception>() {
-
-            final LoggerConfig loggerConfig = new LoggerConfig() {
-                @Override public UpdateLogger logger() { return context; }
-            };
 
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updateJar = new File(tempDir, "updated.jar");

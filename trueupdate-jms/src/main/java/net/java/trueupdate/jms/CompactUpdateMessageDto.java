@@ -13,36 +13,36 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schlichtherle
  */
 @SuppressWarnings("PackageVisibleField")
-@XmlRootElement(name = "u")
+@XmlRootElement(name = "a")
 @XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
 @Nullable
 final class CompactUpdateMessageDto {
 
-    @XmlElement(name = "d")
+    @XmlElement(name = "a")
     long timestamp;
 
-    @XmlElement(name = "f")
+    @XmlElement(name = "b")
     String from;
 
-    @XmlElement(name = "t")
+    @XmlElement(name = "c")
     String to;
 
-    @XmlElement(name = "s")
+    @XmlElement(name = "d")
     int type;
 
-    @XmlElement(name = "a")
+    @XmlElement(name = "e")
     CompactArtifactDescriptorDto artifactDescriptor;
 
-    @XmlElement(name = "v")
+    @XmlElement(name = "f")
     String updateVersion;
 
-    @XmlElement(name = "c")
+    @XmlElement(name = "g")
     String currentLocation;
 
-    @XmlElement(name = "u")
+    @XmlElement(name = "h")
     String updateLocation;
 
-    @XmlElement(name = "l")
-    CompactLogMessageDto[] logMessages;
+    @XmlElement(name = "i")
+    CompactLogRecordDto[] logRecords;
 }

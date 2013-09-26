@@ -5,8 +5,8 @@
 package net.java.trueupdate.message;
 
 import java.util.*;
+import java.util.logging.LogRecord;
 import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.*;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
@@ -18,11 +18,16 @@ import net.java.trueupdate.util.builder.*;
  * automated installation of artifact updates.
  * This class implements an immutable value object, so you can easily share its
  * instances with anyone or use them as map keys.
+ * There is one exception though: Each update message has a mutable list of
+ * attached, mutable {@link LogRecord}s - see {@link #attachedLogs()}.
+ * This list is not considered to be a property and thus it does not
+ * participate in {@link #equals} nor {@link #hashCode}.
+ * Furthermore, any transformer method will return a new update message with a
+ * new, empty list of attached log records.
  *
  * @see Type
  * @author Christian Schlichtherle
  */
-@Immutable
 public final class UpdateMessage {
 
     private final long timestamp;
@@ -31,7 +36,8 @@ public final class UpdateMessage {
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion;
     private final String currentLocation, updateLocation;
-    private final List<LogMessage> logMessages;
+
+    private final List<LogRecord> attachedLogs = new LinkedList<LogRecord>();
 
     @SuppressWarnings("unchecked")
     UpdateMessage(final Builder<?> b) {
@@ -43,7 +49,6 @@ public final class UpdateMessage {
         this.updateVersion = nonNullOr(b.updateVersion, "");
         this.currentLocation = requireNonEmpty(b.currentLocation);
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
-        this.logMessages = b.logMessages.build();
     }
 
     private static long nonNullOrNow(Long timestamp) {
@@ -60,8 +65,7 @@ public final class UpdateMessage {
                 .artifactDescriptor(artifactDescriptor)
                 .updateVersion(updateVersion)
                 .currentLocation(currentLocation)
-                .updateLocation(updateLocation)
-                .logMessages(logMessages);
+                .updateLocation(updateLocation);
     }
 
     /**
@@ -161,16 +165,14 @@ public final class UpdateMessage {
                 : update().updateLocation(updateLocation).build();
     }
 
-    /** Returns an immutable list of the log messages. */
+    /**
+     * Returns the mutable list of the attached, mutable log records.
+     * Note that the returned list is shared with this instance.
+     * Furthermore, each transformer method in this class returns a new update
+     * message with a new, empty list.
+     */
     @SuppressWarnings("ReturnOfCollectionOrArrayField")
-    public List<LogMessage> logMessages() { return logMessages; }
-
-    /** Returns an update message with the given nullable log message. */
-    public UpdateMessage logMessages(List<LogMessage> logMessages) {
-        return logMessages.equals(this.logMessages)
-                ? this
-                : update().logMessages(logMessages).build();
-    }
+    public List<LogRecord> attachedLogs() { return attachedLogs; }
 
     /** Vends an application descriptor from this update message. */
     public ApplicationDescriptor applicationDescriptor() {
@@ -214,8 +216,7 @@ public final class UpdateMessage {
                 this.artifactDescriptor.equals(that.artifactDescriptor) &&
                 this.updateVersion.equals(that.updateVersion) &&
                 this.currentLocation.equals(that.currentLocation) &&
-                this.updateLocation.equals(that.updateLocation) &&
-                this.logMessages.equals(that.logMessages);
+                this.updateLocation.equals(that.updateLocation);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
@@ -229,7 +230,6 @@ public final class UpdateMessage {
         hash = 31 * hash + updateVersion.hashCode();
         hash = 31 * hash + currentLocation.hashCode();
         hash = 31 * hash + updateLocation.hashCode();
-        hash = 31 * hash + logMessages.hashCode();
         return hash;
     }
 
@@ -251,7 +251,7 @@ public final class UpdateMessage {
             sb.append("Current-location: ").append(currentLocation).append('\n');
         if (!updateLocation.isEmpty())
             sb.append("Update-location: ").append(updateLocation).append('\n');
-        sb.append("Log-messages-count: ").append(logMessages.size());
+        sb.append("Attached-log-records: ").append(attachedLogs.size());
         return sb.toString();
     }
 
@@ -391,8 +391,6 @@ public final class UpdateMessage {
         @CheckForNull ArtifactDescriptor artifactDescriptor;
         @CheckForNull String updateVersion;
         @CheckForNull String currentLocation, updateLocation;
-        final ImmutableListBuilder<LogMessage, Void>
-                logMessages = ImmutableListBuilder.create();
 
         protected Builder() { }
 
@@ -445,19 +443,6 @@ public final class UpdateMessage {
         public final Builder<P> updateLocation(
                 final @Nullable String updateLocation) {
             this.updateLocation = updateLocation;
-            return this;
-        }
-
-        public final ImmutableListBuilder<LogMessage, Builder<P>> logMessages() {
-            return new ImmutableListBuilder<LogMessage, Builder<P>>() {
-                @Override public Builder<P> inject() {
-                    return logMessages(build());
-                }
-            };
-        }
-
-        public final Builder<P> logMessages(final List<LogMessage> logMessages) {
-            this.logMessages.setAll(logMessages);
             return this;
         }
 

@@ -5,12 +5,12 @@
 package net.java.trueupdate.jms;
 
 import java.util.List;
+import java.util.logging.LogRecord;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.message.LogMessage;
 import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
 import static net.java.trueupdate.util.Objects.nonDefaultOrNull;
@@ -31,9 +31,9 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
         if (null == cum) return null;
         final ArtifactDescriptor ad = new ArtifactDescriptorAdapter()
                 .unmarshal(cum.artifactDescriptor);
-        final List<LogMessage> lms = new LogMessagesAdapter()
-                .unmarshal(cum.logMessages);
-        return UpdateMessage
+        final List<LogRecord> lrs = new LogRecordsAdapter()
+                .unmarshal(cum.logRecords);
+        final UpdateMessage um = UpdateMessage
                 .builder()
                 .timestamp(cum.timestamp)
                 .from(cum.from)
@@ -43,8 +43,9 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
                 .updateVersion(cum.updateVersion)
                 .currentLocation(cum.currentLocation)
                 .updateLocation(cum.updateLocation)
-                .logMessages(lms)
                 .build();
+        um.attachedLogs().addAll(lrs);
+        return um;
     }
 
     @Override
@@ -54,8 +55,8 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
         if (null == um) return null;
         final CompactArtifactDescriptorDto cad = new ArtifactDescriptorAdapter()
                 .marshal(um.artifactDescriptor());
-        final CompactLogMessageDto[] clms = new LogMessagesAdapter()
-                .marshal(um.logMessages());
+        final CompactLogRecordDto[] clrs = new LogRecordsAdapter()
+                .marshal(um.attachedLogs());
         final CompactUpdateMessageDto cum = new CompactUpdateMessageDto();
         cum.timestamp = um.timestamp();
         cum.from = um.from();
@@ -65,7 +66,7 @@ extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
         cum.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
         cum.currentLocation = um.currentLocation();
         cum.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
-        cum.logMessages = clms;
+        cum.logRecords = clrs;
         return cum;
     }
 }

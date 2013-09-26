@@ -10,7 +10,6 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
-import net.java.trueupdate.message.LogMessage
 import net.java.trueupdate.message.UpdateMessage
 import net.java.trueupdate.message.UpdateMessage._
 
@@ -24,6 +23,23 @@ class JAXBTest extends WordSpec {
 
   def builder = UpdateMessage.builder
 
+  def addLogRecord(message: UpdateMessage) = {
+    val lr = new LogRecord(Level.INFO, "message")
+    import lr._
+    setLoggerName("loggerName")
+    setResourceBundleName(classOf[UpdateMessage].getName)
+    setSequenceNumber(Long.MaxValue)
+    setSourceClassName(classOf[JAXBTest].getName)
+    setSourceMethodName("logRecord")
+    setMessage("exception")
+    setParameters(Array(1: Int, 2: Int, 3: Int))
+    setThreadID(Int.MinValue)
+    setMillis(System.currentTimeMillis)
+    setThrown(new Throwable)
+    message.attachedLogs.add(lr)
+    message
+  }
+
   val subjects = Table(
     ("original"),
     (builder
@@ -35,8 +51,9 @@ class JAXBTest extends WordSpec {
         .artifactId("artifactId")
         .version("version")
         .inject)
-      .currentLocation("currentLocation"),
-    (builder
+      .currentLocation("currentLocation")
+      .build,
+    (addLogRecord(builder
       .from("from")
       .to("to")
       .`type`(Type.UPDATE_NOTICE)
@@ -50,21 +67,13 @@ class JAXBTest extends WordSpec {
       .updateVersion("updateVersion")
       .currentLocation("currentLocation")
       .updateLocation("updateLocation")
-      .logMessages
-        .add(LogMessage
-          .builder
-          .level(Level.INFO)
-          .code("code")
-          .args(1: Int, 2: Int, 3: Int)
-          .build)
-        .inject)
+      .build))
   )
 
   "An update message" when {
     "constructed" should {
       "be round-trip XML-serializable" in {
-        forAll(subjects) { builder =>
-          val original = builder.build
+        forAll(subjects) { original =>
           val originalEncoding = JAXB.encode(original)
           JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
           val clone = JAXB.decode(originalEncoding)

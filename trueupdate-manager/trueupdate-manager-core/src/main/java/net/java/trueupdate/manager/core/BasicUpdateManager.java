@@ -250,32 +250,6 @@ extends UpdateMessageListener implements UpdateManager {
             }
 
             @Override public void commitUndeployment() throws Exception { }
-
-            // TODO: Consider conversation with the update agent about this.
-            @Override public boolean isLoggable(Level level) {
-                return true;
-            }
-
-            @Override public void log(
-                    final Level level,
-                    final String code,
-                    final Object... args) {
-                final LogMessage lm = LogMessage.create(level, code, args);
-                final UpdateMessage um = responseFor(request)
-                        .type(PROGRESS_NOTICE)
-                        .artifactDescriptor(artifactDescriptor)
-                        .logMessages()
-                            .add(lm)
-                            .inject()
-                        .build();
-                try {
-                    send(um);
-                } catch (final Exception ex2) {
-                    if (null == ex)
-                        logger.log(java.util.logging.Level.WARNING, "Cannot send progress notice to update agent:", ex2);
-                    ex = ex2;
-                }
-            }
         } // Install
 
         new Install().call();
@@ -326,17 +300,8 @@ extends UpdateMessageListener implements UpdateManager {
     private static UpdateMessage installationFailureResponse(
             final UpdateMessage request,
             final Exception ex) {
-        final LogMessage lm = LogMessage
-                .builder()
-                .level(Level.WARNING)
-                .code("exception")
-                .args(ex.toString())
-                .build();
         return responseFor(request)
                 .type(INSTALLATION_FAILURE_RESPONSE)
-                .logMessages()
-                    .add(lm)
-                    .inject()
                 .build();
     }
 
@@ -347,8 +312,7 @@ extends UpdateMessageListener implements UpdateManager {
                 .timestamp(null)
                 .from(message.to())
                 .to(message.from())
-                .type(null)
-                .logMessages().inject();
+                .type(null);
     }
 
     /** Sends the given update message. */

@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import javax.xml.bind.annotation.*;
 
 /**
- * Represents an {@link net.java.trueupdate.artifact.spec.ArtifactDescriptor}.
+ * Represents a {@link java.util.logging.LogRecord}.
  *
  * @author Christian Schlichtherle
  */
@@ -16,20 +16,38 @@ import javax.xml.bind.annotation.*;
 @XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
 @Nullable
-final class CompactArtifactDescriptorDto {
+final class CompactLogRecordDto {
 
     @XmlElement(name = "a")
-    String groupId;
+    String loggerName;
 
     @XmlElement(name = "b")
-    String artifactId;
+    String resourceBundleName;
 
     @XmlElement(name = "c")
-    String version;
+    String level;
 
     @XmlElement(name = "d")
-    String classifier;
+    long sequenceNumber;
 
     @XmlElement(name = "e")
-    String extension;
+    String sourceClassName;
+
+    @XmlElement(name = "f")
+    String sourceMethodName;
+
+    @XmlElement(name = "g")
+    String message;
+
+    @XmlElement(name = "h")
+    String[] parameters;
+
+    @XmlElement(name = "i")
+    int threadId;
+
+    @XmlElement(name = "j")
+    long millis;
+
+    @XmlElement(name = "k")
+    String thrown;
 }

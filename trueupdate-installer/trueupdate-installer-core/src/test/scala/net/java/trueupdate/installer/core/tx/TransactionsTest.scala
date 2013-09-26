@@ -4,8 +4,7 @@
  */
 package net.java.trueupdate.installer.core.tx
 
-import java.util.logging.Level
-import net.java.trueupdate.manager.spec.UpdateLogger
+import java.util.logging._
 import org.junit.runner.RunWith
 import org.mockito._
 import org.mockito.Mockito._
@@ -33,7 +32,7 @@ class TransactionsTest extends WordSpec {
   }
 
   def fixture = new { fixture =>
-    val logger = mock[UpdateLogger]
+    val logger = mock[Logger]
     val tx = spy(new SlowTransaction)
     val ttx = timed("slow transaction", tx,
       new LoggerConfig { def logger = fixture.logger })

@@ -16,7 +16,7 @@ import java.io.File;
  *
  * @author Christian Schlichtherle
  */
-public interface UpdateContext extends UpdateLogger {
+public interface UpdateContext {
 
     /** Returns the current location. */
     String currentLocation();
