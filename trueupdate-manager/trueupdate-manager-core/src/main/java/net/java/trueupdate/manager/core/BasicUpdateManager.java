@@ -221,7 +221,7 @@ extends UpdateMessageListener implements UpdateManager {
                         if (CANCEL_REDEPLOYMENT_RESPONSE.equals(type))
                             throw new Exception("The update agent has cancelled the redeployment.");
                         final long remaining = stop - System.currentTimeMillis();
-                        if (0 > remaining)
+                        if (0 >= remaining)
                             throw new Exception("Timeout while waiting for redeployment response from update agent.");
                         stateManager.wait(remaining);
                     }
