@@ -26,14 +26,24 @@ public interface UpdateLogger {
     /**
      * Logs a message with some parameters.
      *
-     * @param level the logging level.
-     * @param key the message format key.
+     * @param level the message level.
+     * @param code the message code, which is a key for the message catalog.
      *            This must refer to an entry in the resource bundle for the
-     *            {@link net.java.trueupdate.message.LogMessage} class with the message format pattern.
-     * @param parameters the parameters to the message format pattern.
-     * @see   java.text.MessageFormat
+     *            {@link net.java.trueupdate.message.LogMessage} class with the
+     *            message format pattern to use.
+     * @param args the message parameters.
      */
-    void log(Level level, String key, Object... parameters);
+    void log(Level level, String code, Object... args);
 
-    //void log(Level level, String key, Throwable throwable);
+    /**
+     * Logs a message with an exception parameter.
+     *
+     * @param level the message level.
+     * @param code the message code, which is a key for the message catalog.
+     *            This must refer to an entry in the resource bundle for the
+     *            {@link net.java.trueupdate.message.LogMessage} class with the
+     *            message format pattern to use.
+     * @param throwable the exception parameter.
+     */
+    //void log(Level level, String code, Throwable throwable);
 }

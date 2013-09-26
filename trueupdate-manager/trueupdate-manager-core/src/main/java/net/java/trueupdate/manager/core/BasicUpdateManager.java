@@ -258,9 +258,9 @@ extends UpdateMessageListener implements UpdateManager {
 
             @Override public void log(
                     final LogMessage.Level level,
-                    final String key,
-                    final Object... parameters) {
-                final LogMessage lm = LogMessage.create(level, key, parameters);
+                    final String code,
+                    final Object... args) {
+                final LogMessage lm = LogMessage.create(level, code, args);
                 final UpdateMessage um = responseFor(request)
                         .type(PROGRESS_NOTICE)
                         .artifactDescriptor(artifactDescriptor)

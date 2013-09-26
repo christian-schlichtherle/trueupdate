@@ -5,9 +5,7 @@
 package net.java.trueupdate.message;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
@@ -54,13 +52,13 @@ public final class LogMessage {
     /** Returns the message level. */
     public Level level() { return level; }
 
-    /** Returns the message code, i.e. a key in the message catalog. */
+    /** Returns the message code, which is a key for the message catalog. */
     public String code() { return code; }
 
-    /** Returns a protective copy of the message arguments. */
+    /** Returns a protective copy of the message parameters. */
     public Object[] args() { return args.clone(); }
 
-    /** Returns the number of message arguments. */
+    /** Returns the number of message parameters. */
     public int argsCount() { return args.length; }
 
     /**
