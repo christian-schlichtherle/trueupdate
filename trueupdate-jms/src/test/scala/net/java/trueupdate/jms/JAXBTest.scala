@@ -10,6 +10,7 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import net.java.trueupdate.message.UpdateMessage
 import net.java.trueupdate.message.UpdateMessage._
 
@@ -24,6 +25,14 @@ class JAXBTest extends WordSpec {
   def builder = UpdateMessage.builder
 
   def addLogRecord(message: UpdateMessage) = {
+    val ad = ArtifactDescriptor
+      .builder
+      .groupId("groupId")
+      .artifactId("artifactId")
+      .version("version")
+      .classifier("classifier")
+      .extension("extension")
+      .build
     val lr = new LogRecord(Level.INFO, "message")
     import lr._
     setLoggerName("loggerName")
@@ -31,8 +40,8 @@ class JAXBTest extends WordSpec {
     setSequenceNumber(Long.MaxValue)
     setSourceClassName(classOf[JAXBTest].getName)
     setSourceMethodName("logRecord")
-    setMessage("exception")
-    setParameters(Array(1: Int, 2: Int, 3: Int))
+    setMessage("test")
+    setParameters(Array(1: Int, 2: Int, 3: Int, ad))
     setThreadID(Int.MinValue)
     setMillis(System.currentTimeMillis)
     setThrown(new Throwable)
