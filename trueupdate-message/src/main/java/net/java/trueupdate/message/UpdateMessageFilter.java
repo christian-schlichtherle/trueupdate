@@ -11,6 +11,7 @@ package net.java.trueupdate.message;
  */
 public interface UpdateMessageFilter {
 
+    /** This filter accepts all update messages. */
     UpdateMessageFilter ACCEPT_ALL = new UpdateMessageFilter() {
         @Override public boolean accept(UpdateMessage message) {
             return true;
