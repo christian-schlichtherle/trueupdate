@@ -81,6 +81,36 @@
         <xs:attribute name="version" type="xs:string" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="TimerParameters">
+        <xs:all>
+            <xs:element default="0" minOccurs="0" name="delay" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The initial delay of the timer.
+                        The default value is 0.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element default="0" minOccurs="0" name="period" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The period of the timer.
+                        The default value is 0.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element default="minutes" minOccurs="0" name="unit" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The time unit.
+                        Valid values are seconds, minutes, hours or days.
+                        The default value is "minutes".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
     <xs:complexType name="Messaging">
         <xs:all>
             <xs:element minOccurs="0" name="naming" type="Naming">

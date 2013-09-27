@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.CheckForUpdates;
+import net.java.trueupdate.manager.spec.TimerParameters;
 
 /**
  * A context for the JMS Update Manager.
@@ -58,8 +59,8 @@ public final class JmsUpdateManagerContext {
 
     public void start() throws Exception {
         new Thread(receiver, "TrueUpdate Manager JMS / Receiver Thread").start();
-        final int period = parameters.checkUpdatesIntervalMinutes();
-        timer.scheduleAtFixedRate(new CheckForUpdates(manager), period, period, TimeUnit.MINUTES);
+        final TimerParameters tp = parameters.checkForUpdates();
+        timer.scheduleAtFixedRate(new CheckForUpdates(manager), tp.delay(), tp.period(), tp.unit());
     }
 
     public void stop(final long timeout, final TimeUnit unit) throws Exception {

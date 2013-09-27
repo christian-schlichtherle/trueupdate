@@ -6,6 +6,7 @@ package net.java.trueupdate.manager.jms.dto;
 
 import javax.xml.bind.annotation.*;
 import net.java.trueupdate.jms.dto.MessagingDto;
+import net.java.trueupdate.manager.spec.dto.TimerParametersDto;
 
 /**
  * Configures an update manager.
@@ -21,7 +22,10 @@ public final class JmsUpdateManagerParametersDto {
     public String version;
 
     @XmlElement(required = true)
-    public String updateServiceBaseUri, checkUpdatesIntervalMinutes;
+    public String updateServiceBaseUri;
+
+    @XmlElement(required = true)
+    public TimerParametersDto checkForUpdates;
 
     @XmlElement(required = true)
     public MessagingDto messaging;

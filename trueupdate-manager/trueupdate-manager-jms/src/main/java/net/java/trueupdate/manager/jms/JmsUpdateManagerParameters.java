@@ -11,6 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.jms.MessagingParameters;
 import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
+import net.java.trueupdate.manager.spec.TimerParameters;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
@@ -26,19 +27,13 @@ public final class JmsUpdateManagerParameters {
     private static final String CONFIGURATION = "META-INF/update/manager.xml";
 
     private final URI updateServiceBaseUri;
-    private final int checkUpdatesIntervalMinutes;
+    private final TimerParameters checkForUpdates;
     private final MessagingParameters messagingParameters;
 
     JmsUpdateManagerParameters(final Builder<?> b) {
         this.updateServiceBaseUri = requireNonNull(b.updateServiceBaseUri);
-        this.checkUpdatesIntervalMinutes =
-                requirePositive(b.checkUpdatesIntervalMinutes);
+        this.checkForUpdates = requireNonNull(b.checkForUpdates);
         this.messagingParameters = requireNonNull(b.messagingParameters);
-    }
-
-    private static int requirePositive(final int i) {
-        if (0 >= i) throw new IllegalArgumentException();
-        return i;
     }
 
     /**
@@ -72,9 +67,9 @@ public final class JmsUpdateManagerParameters {
     /** Returns the base URI of the update server. */
     public URI updateServiceBaseUri() { return updateServiceBaseUri; }
 
-    /** Returns the interval for checking for artifact updates in minutes. */
-    public int checkUpdatesIntervalMinutes() {
-        return checkUpdatesIntervalMinutes;
+    /** Returns the timer parameters for checking for artifact updates. */
+    public TimerParameters checkForUpdates() {
+        return checkForUpdates;
     }
 
     /** Returns the messagingParameters parameters. */
@@ -91,17 +86,18 @@ public final class JmsUpdateManagerParameters {
     public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull URI updateServiceBaseUri;
-        int checkUpdatesIntervalMinutes;
+        TimerParameters checkForUpdates;
         @CheckForNull MessagingParameters messagingParameters;
+
+        protected Builder() { }
 
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final JmsUpdateManagerParametersDto ci) {
             if (null != ci.updateServiceBaseUri)
                 updateServiceBaseUri = URI.create(ensureEndsWithSlash(resolve(
                         ci.updateServiceBaseUri)));
-            if (null != ci.checkUpdatesIntervalMinutes)
-                checkUpdatesIntervalMinutes = Integer.parseInt(resolve(
-                        ci.checkUpdatesIntervalMinutes));
+            if (null != ci.checkForUpdates)
+                checkForUpdates = TimerParameters.parse(ci.checkForUpdates);
             if (null != ci.messaging)
                 messagingParameters = MessagingParameters.parse(ci.messaging);
             return this;
@@ -117,9 +113,9 @@ public final class JmsUpdateManagerParameters {
             return this;
         }
 
-        public final Builder<P> checkUpdatesIntervalMinutes(
-                final int checkUpdatesIntervalMinutes) {
-            this.checkUpdatesIntervalMinutes = checkUpdatesIntervalMinutes;
+        public final Builder<P> checkForUpdates(
+                final @Nullable TimerParameters checkForUpdates) {
+            this.checkForUpdates = checkForUpdates;
             return this;
         }
 
