@@ -81,6 +81,71 @@
         <xs:attribute name="version" type="xs:string" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="Messaging">
+        <xs:all>
+            <xs:element minOccurs="0" name="naming" type="Naming">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Configures optional naming parameters for use with JNDI.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="connectionFactory" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS connection factory.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="from" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS destination for the sender.
+                        When configuring the update agent, this property refers
+                        to the JMS destination for the update agent, e.g.
+                        "AutoUpdate/Agent".
+                        Likewise, when configuring the update manager, this
+                        property refers to the JMS destination for the update
+                        manager, e.g. "AutoUpdate/Manager".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="to" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS destination for the recipient.
+                        When configuring the update agent, this property refers
+                        to the JMS destination for the update manager, e.g.
+                        "AutoUpdate/Manager".
+                        When configuring the update manager, this property is
+                        optional and ignored.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Naming">
+        <xs:all>
+            <xs:element default="javax.naming.InitialContext" minOccurs="0" name="initialContextClass" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The class name of the initial context.
+                        The default value is "javax.naming.InitialContext".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element default="java:comp/env" minOccurs="0" name="relativePath" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The JNDI name of the JMS connection factory.
+                        The default value is "java:comp/env".
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
     <xs:complexType name="MavenUpdateServerParameters">
         <xs:sequence>
             <xs:element name="repositories" type="MavenParameters">
@@ -268,71 +333,6 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         The optional repository type.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:all>
-    </xs:complexType>
-
-    <xs:complexType name="Messaging">
-        <xs:all>
-            <xs:element minOccurs="0" name="naming" type="Naming">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        Configures optional naming parameters for use with JNDI.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="connectionFactory" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        The JNDI name of the JMS connection factory.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="from" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        The JNDI name of the JMS destination for the sender.
-                        When configuring the update agent, this property refers
-                        to the JMS destination for the update agent, e.g.
-                        "AutoUpdate/Agent".
-                        Likewise, when configuring the update manager, this
-                        property refers to the JMS destination for the update
-                        manager, e.g. "AutoUpdate/Manager".
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="to" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        The JNDI name of the JMS destination for the recipient.
-                        When configuring the update agent, this property refers
-                        to the JMS destination for the update manager, e.g.
-                        "AutoUpdate/Manager".
-                        When configuring the update manager, this property is
-                        optional and ignored.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:all>
-    </xs:complexType>
-
-    <xs:complexType name="Naming">
-        <xs:all>
-            <xs:element default="javax.naming.InitialContext" minOccurs="0" name="initialContextClass" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        The class name of the initial context.
-                        The default value is "javax.naming.InitialContext".
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element default="java:comp/env" minOccurs="0" name="relativePath" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        The JNDI name of the JMS connection factory.
-                        The default value is "java:comp/env".
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
