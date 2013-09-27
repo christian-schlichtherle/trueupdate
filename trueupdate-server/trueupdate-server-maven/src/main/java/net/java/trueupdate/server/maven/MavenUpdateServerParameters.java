@@ -69,6 +69,8 @@ public final class MavenUpdateServerParameters {
 
         @CheckForNull MavenParameters mavenParameters;
 
+        protected Builder() { }
+
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final MavenUpdateServerParametersDto ci) {
             if (null != ci.repositories)

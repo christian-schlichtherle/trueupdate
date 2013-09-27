@@ -80,6 +80,8 @@ public final class JmsUpdateAgentParameters {
         @CheckForNull ApplicationParameters applicationParameters;
         @CheckForNull MessagingParameters messagingParameters;
 
+        protected Builder() { }
+
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final JmsUpdateAgentParametersDto ci) {
             if (null != ci.application)
