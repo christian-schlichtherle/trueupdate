@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.java.trueupdate</groupId>
+        <artifactId>trueupdate-archetype</artifactId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>trueupdate-archetype-tomcat</artifactId>
+    <packaging>maven-archetype</packaging>
+
+    <name>TrueUpdate Archetype Tomcat</name>
+    <description>
+        An archetype for a TrueUpdate application running in Apache Tomcat.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-agent-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-installer-tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-manager-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-server-maven</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>2.2</version>
+            </extension>
+        </extensions>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>integration-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!-- TODO: The purpose here is to work around a bug
+                            in the failsafe-plugin which causes it to try
+                            to run the integration tests of the generated
+                            test project!
+                            This would fail because the class path isn't
+                            set up correctly, besides the fact that it
+                            makes no sense to run the integration tests of
+                            the generated test project from outside. -->
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

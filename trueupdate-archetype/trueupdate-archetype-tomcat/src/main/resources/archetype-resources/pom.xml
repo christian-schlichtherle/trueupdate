@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.java.truecommons</groupId>
+        <artifactId>truecommons-parent</artifactId>
+        <version>62</version>
+    </parent>
+
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>A TrueUpdate application running in Apache Tomcat.</description>
+    <url>FIXME</url>
+    <organization>
+        <name>FIXME</name>
+        <url>FIXME</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>Foo Bar</name>
+            <email>foo.bar@acme.com</email>
+            <organization>Acme Inc.</organization>
+            <roles>
+                <role>author</role>
+            </roles>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:FIXME:</connection>
+        <developerConnection>scm:FIXME:</developerConnection>
+        <url>FIXME</url>
+    </scm>
+
+    <properties>
+        <!--
+          - The initial delay for the subscription to the update manager in
+          - seconds.
+          - A positive value may help to avoid an illegal state in the client
+          - application at startup if there is an update available immediately.
+          -->
+        <agent.subscriptionTimer.delay>${agent-subscriptionTimer-delay}</agent.subscriptionTimer.delay>
+
+        <!--
+          - The base URI of the AutoUpdate Server application, ending with a
+          - forward slash character.
+          - If the string contains references of the form ${key}, then they
+          - get replaced with the value of the system property with the
+          - specified key, e.g. ${user.home}.
+          - Mind you that the substitution is done by Maven at build time, not
+          - by the app server at deployment time (no, you can't escape it).
+          -->
+        <manager.updateService.uri>http://localhost:8080/${rootArtifactId}-server/</manager.updateService.uri>
+
+        <!--
+          - The timer period for checking for artifact updates in minutes.
+          - This should not be shorter because this would most likely only
+          - result in higher server load.
+          -->
+        <manager.updateTimer.period>${manager-updateTimer-period}</manager.updateTimer.period>
+
+        <!--
+          - The directory path for the local maven repository
+          - If the string contains references of the form ${key}, then they
+          - get replaced with the value of the system property with the
+          - specified key, e.g. ${user.home}.
+          - Mind you that the substitution is done by Maven at build time, not
+          - by the app server at deployment time (no, you can't escape it).
+          -->
+        <server.repositories.local.directory>${server-repositories-local-directory}</server.repositories.local.directory>
+
+        <!-- The remaining properties usually don't need to be edited: -->
+
+        <javase.version>${javase-version}</javase.version>
+        <javaee.version>${javase-version}</javaee.version>
+
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+        <netbeans.hint.jdkPlatform>JDK_1.${javase.version}</netbeans.hint.jdkPlatform>
+        <netbeans.hint.j2eeVersion>1.${javaee.version}-web</netbeans.hint.j2eeVersion>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.java.trueupdate</groupId>
+                <artifactId>trueupdate</artifactId>
+                <version>${trueupdate-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

@@ -533,6 +533,7 @@
 
     <modules>
         <module>trueupdate-agent</module>
+        <module>trueupdate-archetype</module>
         <module>trueupdate-artifact</module>
         <module>trueupdate-core</module>
         <module>trueupdate-installer</module>
