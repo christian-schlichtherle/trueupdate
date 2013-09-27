@@ -10,9 +10,9 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.agent.jms.dto.JmsUpdateAgentParametersDto;
-import net.java.trueupdate.agent.spec.ApplicationParameters;
+import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.jms.MessagingParameters;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.*;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
@@ -26,10 +26,13 @@ public final class JmsUpdateAgentParameters {
     private static final String CONFIGURATION = "META-INF/update/agent.xml";
 
     private final ApplicationParameters application;
+    private final TimerParameters subscriptionTimer;
     private final MessagingParameters messaging;
 
     JmsUpdateAgentParameters(final Builder<?> b) {
         this.application = requireNonNull(b.application);
+        this.subscriptionTimer = null != b.subscriptionTimer
+                ? b.subscriptionTimer : TimerParameters.builder().build();
         this.messaging = requireNonNull(b.messaging);
     }
 
@@ -63,6 +66,12 @@ public final class JmsUpdateAgentParameters {
     /** Returns the application parameters. */
     public ApplicationParameters application() { return application; }
 
+    /**
+     * Returns the timer parameters for the initial delay for the subscription
+     * to the update manager.
+     */
+    public TimerParameters subscriptionTimer() { return subscriptionTimer; }
+
     /** Returns the messaging parameters. */
     public MessagingParameters messaging() { return messaging; }
 
@@ -75,6 +84,7 @@ public final class JmsUpdateAgentParameters {
     public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull ApplicationParameters application;
+        @CheckForNull TimerParameters subscriptionTimer;
         @CheckForNull MessagingParameters messaging;
 
         protected Builder() { }
@@ -83,6 +93,8 @@ public final class JmsUpdateAgentParameters {
         public final Builder<P> parse(final JmsUpdateAgentParametersDto ci) {
             if (null != ci.application)
                 application = ApplicationParameters.parse(ci.application);
+            if (null != ci.subscriptionTimer)
+                subscriptionTimer = TimerParameters.parse(ci.subscriptionTimer);
             if (null != ci.messaging)
                 messaging = MessagingParameters.parse(ci.messaging);
             return this;
@@ -91,6 +103,12 @@ public final class JmsUpdateAgentParameters {
         public final Builder<P> application(
                 final @Nullable ApplicationParameters applicationParameters) {
             this.application = applicationParameters;
+            return this;
+        }
+
+        public final Builder<P> subscriptionTimer(
+                final @Nullable TimerParameters subscriptionDelay) {
+            this.subscriptionTimer = subscriptionDelay;
             return this;
         }
 

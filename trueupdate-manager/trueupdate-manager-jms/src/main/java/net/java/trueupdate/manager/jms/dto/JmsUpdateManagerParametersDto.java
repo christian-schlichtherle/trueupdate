@@ -25,7 +25,7 @@ public final class JmsUpdateManagerParametersDto {
     public UpdateServiceParametersDto updateService;
 
     @XmlElement(required = true)
-    public TimerParametersDto checkForUpdates;
+    public TimerParametersDto updateTimer;
 
     @XmlElement(required = true)
     public MessagingParametersDto messaging;

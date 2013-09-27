@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.agent.jms;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.agent.spec.TimerParameters;
 import net.java.trueupdate.jms.*;
 
 /**
@@ -19,6 +19,7 @@ import net.java.trueupdate.jms.*;
 @Immutable
 public final class JmsUpdateAgentContext {
 
+    private final TimerParameters subscriptionDelay;
     private final JmsUpdateAgent agent;
     private final JmsReceiver receiver;
 
@@ -27,6 +28,7 @@ public final class JmsUpdateAgentContext {
     }
 
     public JmsUpdateAgentContext(final JmsUpdateAgentParameters parameters) {
+        subscriptionDelay = parameters.subscriptionTimer();
         agent = new JmsUpdateAgent(parameters);
         final MessagingParameters mp = parameters.messaging();
         // The maximum pool size is one in order to prevent messages to be
@@ -49,7 +51,25 @@ public final class JmsUpdateAgentContext {
 
     public void start() throws Exception {
         new Thread(receiver, "TrueUpdate Agent JMS / Receiver Thread").start();
-        agent.subscribe();
+        final long delay = subscriptionDelay.unit()
+                .toMillis(subscriptionDelay.delay());
+        if (0 < delay) {
+            final Timer timer = new Timer(
+                    "TrueUpdate Agent JMS / Subscription Timer Thread", true);
+            timer.schedule(new TimerTask() {
+                @Override public void run() {
+                    try {
+                        agent.subscribe();
+                    } catch (Exception ex) {
+                        Logger  .getLogger(JmsUpdateAgentContext.class.getName())
+                                .log(Level.WARNING,
+                                    "Could not subscribe to update agent:", ex);
+                    }
+                }
+            }, delay);
+        } else {
+            agent.subscribe();
+        }
     }
 
     public void stop(final long timeout, final TimeUnit unit) throws Exception {

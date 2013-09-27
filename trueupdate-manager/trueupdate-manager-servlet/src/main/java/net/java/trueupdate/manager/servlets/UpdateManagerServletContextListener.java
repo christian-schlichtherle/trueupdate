@@ -33,7 +33,7 @@ implements ServletContextListener {
         final UpdateServiceParameters usp = ump.updateService();
         logger.log(Level.CONFIG,
                 "The base URI of the update service is {0} .", usp.uri());
-        final TimerParameters tp = ump.checkForUpdates();
+        final TimerParameters tp = ump.updateTimer();
         logger.log(Level.CONFIG,
                 "The delay / period for checking for artifact updates is {0} / {1} {2}.",
                 new Object[] { tp.delay(), tp.period(),

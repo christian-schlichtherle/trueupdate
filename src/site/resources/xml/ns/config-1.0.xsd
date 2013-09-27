@@ -42,6 +42,19 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element minOccurs="0" name="subscriptionTimer" type="TimerParameters">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        The optional timer parameters for the initial delay for
+                        the subscription to the update manager.
+                        Configuring this delay may help to avoid an illegal
+                        state in the client application at startup if there is
+                        an update available immediately.
+                        Note that the period child element will be ignored in
+                        this context.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="messaging" type="MessagingParameters">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
@@ -62,7 +75,7 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="checkForUpdates" type="TimerParameters">
+            <xs:element name="updateTimer" type="TimerParameters">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         The timer parameters for checking for artifact updates.
@@ -110,12 +123,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element default="minutes" minOccurs="0" name="unit" type="xs:string">
+            <xs:element minOccurs="0" name="unit" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         The time unit.
+                        This element is optional if and only if the values of
+                        the delay and the period elements are zero.
                         Valid values are seconds, minutes, hours or days.
-                        The default value is "minutes".
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

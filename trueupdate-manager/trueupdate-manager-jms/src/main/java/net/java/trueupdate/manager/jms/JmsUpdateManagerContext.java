@@ -55,7 +55,7 @@ public final class JmsUpdateManagerContext {
 
     public void start() throws Exception {
         new Thread(receiver, "TrueUpdate Manager JMS / Receiver Thread").start();
-        final TimerParameters tp = parameters.checkForUpdates();
+        final TimerParameters tp = parameters.updateTimer();
         timer.scheduleAtFixedRate(new CheckForUpdates(manager), tp.delay(), tp.period(), tp.unit());
     }
 

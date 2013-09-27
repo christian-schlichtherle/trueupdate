@@ -26,12 +26,12 @@ public final class JmsUpdateManagerParameters {
     private static final String CONFIGURATION = "META-INF/update/manager.xml";
 
     private final UpdateServiceParameters updateService;
-    private final TimerParameters checkForUpdates;
+    private final TimerParameters updateTimer;
     private final MessagingParameters messaging;
 
     JmsUpdateManagerParameters(final Builder<?> b) {
         this.updateService = requireNonNull(b.updateService);
-        this.checkForUpdates = requireNonNull(b.checkForUpdates);
+        this.updateTimer = requireNonNull(b.updateTimer);
         this.messaging = requireNonNull(b.messaging);
     }
 
@@ -67,9 +67,7 @@ public final class JmsUpdateManagerParameters {
     public UpdateServiceParameters updateService() { return updateService; }
 
     /** Returns the timer parameters for checking for artifact updates. */
-    public TimerParameters checkForUpdates() {
-        return checkForUpdates;
-    }
+    public TimerParameters updateTimer() { return updateTimer; }
 
     /** Returns the messaging parameters. */
     public MessagingParameters messaging() { return messaging; }
@@ -83,7 +81,7 @@ public final class JmsUpdateManagerParameters {
     public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull UpdateServiceParameters updateService;
-        @CheckForNull TimerParameters checkForUpdates;
+        @CheckForNull TimerParameters updateTimer;
         @CheckForNull MessagingParameters messaging;
 
         protected Builder() { }
@@ -92,8 +90,8 @@ public final class JmsUpdateManagerParameters {
         public final Builder<P> parse(final JmsUpdateManagerParametersDto ci) {
             if (null != ci.updateService)
                 updateService = UpdateServiceParameters.parse(ci.updateService);
-            if (null != ci.checkForUpdates)
-                checkForUpdates = TimerParameters.parse(ci.checkForUpdates);
+            if (null != ci.updateTimer)
+                updateTimer = TimerParameters.parse(ci.updateTimer);
             if (null != ci.messaging)
                 messaging = MessagingParameters.parse(ci.messaging);
             return this;
@@ -105,9 +103,9 @@ public final class JmsUpdateManagerParameters {
             return this;
         }
 
-        public final Builder<P> checkForUpdates(
-                final @Nullable TimerParameters checkForUpdates) {
-            this.checkForUpdates = checkForUpdates;
+        public final Builder<P> updateTimer(
+                final @Nullable TimerParameters updateTimer) {
+            this.updateTimer = updateTimer;
             return this;
         }
 

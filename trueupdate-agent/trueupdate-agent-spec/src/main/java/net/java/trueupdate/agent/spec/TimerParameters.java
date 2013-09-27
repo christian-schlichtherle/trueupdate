@@ -2,13 +2,13 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec;
+package net.java.trueupdate.agent.spec;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.manager.spec.dto.TimerParametersDto;
+import net.java.trueupdate.agent.spec.dto.TimerParametersDto;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -20,28 +20,21 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @Immutable
 public final class TimerParameters {
 
-    private final long delay, period;
+    private final long delay;
     private final TimeUnit unit;
 
     TimerParameters(final Builder<?> b) {
         this.delay = requireNonNegative(b.delay);
-        this.period = requirePositive(b.period);
         if (null != b.unit) {
             this.unit = b.unit;
         } else {
-            if (0 != this.delay || 0 != this.period)
-                throw new IllegalArgumentException();
+            if (0 != this.delay) throw new IllegalArgumentException();
             this.unit = TimeUnit.MILLISECONDS;
         }
     }
 
     private static long requireNonNegative(final long l) {
         if (0 > l) throw new IllegalArgumentException();
-        return l;
-    }
-
-    private static long requirePositive(final long l) {
-        if (0 >= l) throw new IllegalArgumentException();
         return l;
     }
 
@@ -56,9 +49,6 @@ public final class TimerParameters {
     /** Returns the initial delay of the timer. */
     public long delay() { return delay; }
 
-    /** Returns the period of the timer. */
-    public long period() { return period; }
-
     /** Returns the time unit. */
     public TimeUnit unit() { return unit; }
 
@@ -70,7 +60,7 @@ public final class TimerParameters {
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> extends AbstractBuilder<P> {
 
-        long delay, period;
+        long delay;
         @CheckForNull TimeUnit unit;
 
         protected Builder() { }
@@ -79,8 +69,6 @@ public final class TimerParameters {
         public final Builder<P> parse(final TimerParametersDto ci) {
             if (null != ci.delay)
                 this.delay = Long.parseLong(resolve(ci.delay, "0"));
-            if (null != ci.period)
-                this.period = Long.parseLong(resolve(ci.period));
             if (null != ci.unit)
                 this.unit = TimeUnit.valueOf(
                         resolve(ci.unit).toUpperCase(Locale.ENGLISH));
@@ -89,11 +77,6 @@ public final class TimerParameters {
 
         public final Builder<P> delay(final long delay) {
             this.delay = delay;
-            return this;
-        }
-
-        public final Builder<P> period(final long period) {
-            this.period = period;
             return this;
         }
 

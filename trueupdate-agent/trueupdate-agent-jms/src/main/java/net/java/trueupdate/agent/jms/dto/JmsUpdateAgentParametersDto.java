@@ -5,7 +5,7 @@
 package net.java.trueupdate.agent.jms.dto;
 
 import javax.xml.bind.annotation.*;
-import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
+import net.java.trueupdate.agent.spec.dto.*;
 import net.java.trueupdate.jms.dto.MessagingParametersDto;
 
 /**
@@ -23,6 +23,8 @@ public final class JmsUpdateAgentParametersDto {
 
     @XmlElement(required = true)
     public ApplicationParametersDto application;
+
+    public TimerParametersDto subscriptionTimer;
 
     @XmlElement(required = true)
     public MessagingParametersDto messaging;
