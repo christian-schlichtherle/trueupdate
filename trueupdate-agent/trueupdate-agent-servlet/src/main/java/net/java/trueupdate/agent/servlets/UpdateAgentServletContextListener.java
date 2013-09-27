@@ -34,7 +34,7 @@ implements ServletContextListener {
     @Override public void contextDestroyed(ServletContextEvent sce) {
         if (null == context) return;
         try {
-            context.stop(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+            context.stop(10, TimeUnit.SECONDS);
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update agent.", ex);
