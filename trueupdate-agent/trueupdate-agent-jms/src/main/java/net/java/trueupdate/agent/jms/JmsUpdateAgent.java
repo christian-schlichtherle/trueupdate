@@ -24,8 +24,8 @@ final class JmsUpdateAgent extends CoreUpdateAgent {
     private final MessagingParameters messagingParameters;
 
     JmsUpdateAgent(final JmsUpdateAgentParameters parameters) {
-        this.applicationParameters = parameters.applicationParameters();
-        this.messagingParameters = parameters.messagingParameters();
+        this.applicationParameters = parameters.application();
+        this.messagingParameters = parameters.messaging();
     }
 
     @Override

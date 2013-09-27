@@ -11,6 +11,7 @@ import javax.jms.*;
 import javax.naming.Context;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.*;
+import net.java.trueupdate.manager.spec.UpdateServiceParameters;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
@@ -32,14 +33,15 @@ final class JmsUpdateManager extends CoreUpdateManager {
     private volatile @WillCloseWhenClosed Connection connection;
 
     JmsUpdateManager(final JmsUpdateManagerParameters parameters) {
-        updateServiceBaseUri = parameters.updateServiceBaseUri();
-        final MessagingParameters mp = parameters.messagingParameters();
+        final UpdateServiceParameters usp = parameters.updateService();
+        updateServiceBaseUri = usp.uri();
+        final MessagingParameters mp = parameters.messaging();
         namingContext = mp.namingContext();
         connectionFactory = mp.connectionFactory();
     }
 
     @Override
-    protected URI updateServiceBaseUri() { return updateServiceBaseUri; }
+    protected URI updateServiceUri() { return updateServiceBaseUri; }
 
     @Override protected void send(UpdateMessage message) throws Exception {
         JmsSender.create(namingContext, connection()).send(message);

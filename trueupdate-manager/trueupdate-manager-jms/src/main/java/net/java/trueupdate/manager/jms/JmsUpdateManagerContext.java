@@ -4,11 +4,7 @@
  */
 package net.java.trueupdate.manager.jms;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.CheckForUpdates;
@@ -38,7 +34,7 @@ public final class JmsUpdateManagerContext {
         // HC SVNT DRACONIS
         this.parameters = parameters;
         manager = new JmsUpdateManager(parameters);
-        final MessagingParameters mp = parameters.messagingParameters();
+        final MessagingParameters mp = parameters.messaging();
         receiver = JmsReceiver
                 .builder()
                 .connectionFactory(mp.connectionFactory())

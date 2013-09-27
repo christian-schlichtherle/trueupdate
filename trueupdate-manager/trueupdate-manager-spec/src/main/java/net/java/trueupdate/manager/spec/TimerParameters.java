@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.manager.spec.dto.TimerParametersDto;
-import net.java.trueupdate.util.Objects;
+import static net.java.trueupdate.util.Objects.nonNullOr;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -25,9 +25,14 @@ public final class TimerParameters {
     private final TimeUnit unit;
 
     TimerParameters(final Builder<?> b) {
-        this.delay = requirePositive(b.delay);
+        this.delay = requireNonNegative(b.delay);
         this.period = requirePositive(b.period);
-        this.unit = Objects.nonNullOr(b.unit, TimeUnit.MINUTES);
+        this.unit = nonNullOr(b.unit, TimeUnit.MINUTES);
+    }
+
+    private static long requireNonNegative(final long l) {
+        if (0 > l) throw new IllegalArgumentException();
+        return l;
     }
 
     private static long requirePositive(final long l) {
@@ -67,8 +72,10 @@ public final class TimerParameters {
 
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final TimerParametersDto ci) {
-            this.delay = Long.parseLong(resolve(ci.delay));
-            this.period = Long.parseLong(resolve(ci.period));
+            if (null != ci.delay)
+                this.delay = Long.parseLong(resolve(ci.delay, "0"));
+            if (null != ci.period)
+                this.period = Long.parseLong(resolve(ci.period));
             if (null != ci.unit)
                 this.unit = TimeUnit.valueOf(
                         resolve(ci.unit).toUpperCase(Locale.ENGLISH));

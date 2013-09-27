@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schlichtherle
  */
-@XmlType(name = "Naming", propOrder = { })
+@XmlType(name = "NamingParameters", propOrder = { })
 @SuppressWarnings("PublicField")
-public final class NamingDto {
+public final class NamingParametersDto {
 
     @XmlElement(defaultValue = "javax.naming.InitialContext")
     public String initialContextClass;

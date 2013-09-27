@@ -26,32 +26,32 @@ import static net.java.trueupdate.util.Objects.*;
 @Immutable
 public final class UpdateClient {
 
-    private final URI baseUri;
+    private final URI uri;
     private final Client client;
 
     /**
-     * Constructs an artifact update client.
+     * Constructs an update client.
      *
-     * @param baseUri the base URI of the web service.
+     * @param uri the base URI of the web service.
      */
-    public UpdateClient(URI baseUri) {
-        this(baseUri, null);
+    public UpdateClient(URI uri) {
+        this(uri, null);
     }
 
     /**
      * Constructs an artifact update client.
      *
-     * @param baseUri the base URI of the web service.
+     * @param uri the base URI of the web service.
      * @param client the nullable client.
      */
     public UpdateClient(final URI baseUri,
                         final @CheckForNull Client client) {
-        this.baseUri = requireNonNull(baseUri);
+        this.uri = requireNonNull(baseUri);
         this.client = null != client ? client : Client.create();
     }
 
-    /** Returns the base URI of the web service. */
-    public URI baseUri() { return baseUri; }
+    /** Returns the base URI of the update service. */
+    public URI uri() { return uri; }
 
     /**
      * Returns the update version for the described artifact.
@@ -100,7 +100,7 @@ public final class UpdateClient {
 
     private WebResource path(String path) { return resource().path(path); }
 
-    private WebResource resource() { return client.resource(baseUri()); }
+    private WebResource resource() { return client.resource(uri()); }
 
     private static ClientResponse get(WebResource.Builder builder)
     throws UpdateServiceException {

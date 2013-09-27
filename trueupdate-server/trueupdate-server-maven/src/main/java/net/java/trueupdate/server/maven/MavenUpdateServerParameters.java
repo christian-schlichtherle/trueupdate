@@ -15,7 +15,7 @@ import net.java.trueupdate.server.maven.dto.MavenUpdateServerParametersDto;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
- * Maven Update Server Parameters.
+ * Maven update server parameters.
  *
  * @author Christian Schlichtherle
  */
@@ -31,7 +31,7 @@ public final class MavenUpdateServerParameters {
     }
 
     /**
-     * Loads Maevn Update Server Parameters from the configuration resource
+     * Loads Maven update server parameters from the configuration resource
      * file with the name {@code META-INF/update/server.xml}.
      */
     public static MavenUpdateServerParameters load() {
@@ -54,13 +54,14 @@ public final class MavenUpdateServerParameters {
         return builder().parse(ci).build();
     }
 
-    /** Returns a new builder for update server parameters. */
+    /** Returns a new builder for maven update server parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
+    /** Returns the artifact resolver. */
     public ArtifactResolver artifactResolver() { return artifactResolver; }
 
     /**
-     * A builder for update server parameters.
+     * A builder for maven update server parameters.
      *
      * @param <P> The type of the parent builder, if defined.
      */

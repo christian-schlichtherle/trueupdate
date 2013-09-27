@@ -12,11 +12,11 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schlichtherle
  */
-@XmlType(name = "Messaging", propOrder = { })
+@XmlType(name = "MessagingParameters", propOrder = { })
 @SuppressWarnings("PublicField")
-public final class MessagingDto {
+public final class MessagingParametersDto {
 
-    public NamingDto naming;
+    public NamingParametersDto naming;
 
     @XmlElement(required = true)
     public String connectionFactory, from;

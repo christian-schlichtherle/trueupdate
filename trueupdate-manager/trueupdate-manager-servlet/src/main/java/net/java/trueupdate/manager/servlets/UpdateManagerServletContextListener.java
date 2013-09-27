@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import net.java.trueupdate.manager.jms.JmsUpdateManagerContext;
-import net.java.trueupdate.manager.jms.JmsUpdateManagerParameters;
-import net.java.trueupdate.manager.spec.TimerParameters;
+import net.java.trueupdate.manager.jms.*;
+import net.java.trueupdate.manager.spec.*;
 
 /**
  * Starts and stops the update manager.
@@ -30,11 +29,11 @@ implements ServletContextListener {
     @Override public void contextInitialized(final ServletContextEvent sce) {
         if (null != context) return;
         context = new JmsUpdateManagerContext();
-        final JmsUpdateManagerParameters p = context.parameters();
+        final JmsUpdateManagerParameters ump = context.parameters();
+        final UpdateServiceParameters usp = ump.updateService();
         logger.log(Level.CONFIG,
-                "The base URI of the update service is {0} .",
-                p.updateServiceBaseUri());
-        final TimerParameters tp = p.checkForUpdates();
+                "The base URI of the update service is {0} .", usp.uri());
+        final TimerParameters tp = ump.checkForUpdates();
         logger.log(Level.CONFIG,
                 "The delay / period for checking for artifact updates is {0} / {1} {2}.",
                 new Object[] { tp.delay(), tp.period(),

@@ -16,7 +16,7 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
- * JMS Update Agent Parameters.
+ * JMS update agent parameters.
  *
  * @author Christian Schlichtherle
  */
@@ -25,16 +25,16 @@ public final class JmsUpdateAgentParameters {
 
     private static final String CONFIGURATION = "META-INF/update/agent.xml";
 
-    private final ApplicationParameters applicationParameters;
-    private final MessagingParameters messagingParameters;
+    private final ApplicationParameters application;
+    private final MessagingParameters messaging;
 
     JmsUpdateAgentParameters(final Builder<?> b) {
-        this.applicationParameters = requireNonNull(b.applicationParameters);
-        this.messagingParameters = requireNonNull(b.messagingParameters);
+        this.application = requireNonNull(b.application);
+        this.messaging = requireNonNull(b.messaging);
     }
 
     /**
-     * Loads JMS Update Agent Parameters from the configuration resource
+     * Loads JMS update agent parameters from the configuration resource
      * file with the name {@code META-INF/update/agent.xml}.
      */
     public static JmsUpdateAgentParameters load() {
@@ -53,55 +53,50 @@ public final class JmsUpdateAgentParameters {
     }
 
     /** Parses the given configuration item. */
-    public static JmsUpdateAgentParameters parse(
-            JmsUpdateAgentParametersDto ci) {
+    public static JmsUpdateAgentParameters parse(JmsUpdateAgentParametersDto ci) {
         return builder().parse(ci).build();
     }
 
-    /** Returns a new builder for update agent parameters. */
+    /** Returns a new builder for JMS update agent parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    public ApplicationParameters applicationParameters() {
-        return applicationParameters;
-    }
+    /** Returns the application parameters. */
+    public ApplicationParameters application() { return application; }
 
-    public MessagingParameters messagingParameters() {
-        return messagingParameters;
-    }
+    /** Returns the messaging parameters. */
+    public MessagingParameters messaging() { return messaging; }
 
     /**
-     * A builder for update agent parameters.
+     * A builder for JMS update agent parameters.
      *
      * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> extends AbstractBuilder<P> {
 
-        @CheckForNull ApplicationParameters applicationParameters;
-        @CheckForNull MessagingParameters messagingParameters;
+        @CheckForNull ApplicationParameters application;
+        @CheckForNull MessagingParameters messaging;
 
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final JmsUpdateAgentParametersDto ci) {
             if (null != ci.application)
-                applicationParameters =
-                        ApplicationParameters.parse(ci.application);
+                application = ApplicationParameters.parse(ci.application);
             if (null != ci.messaging)
-                messagingParameters =
-                        MessagingParameters.parse(ci.messaging);
+                messaging = MessagingParameters.parse(ci.messaging);
             return this;
         }
 
-        public final Builder<P> applicationParameters(
+        public final Builder<P> application(
                 final @Nullable ApplicationParameters applicationParameters) {
-            this.applicationParameters = applicationParameters;
+            this.application = applicationParameters;
             return this;
         }
 
-        public final Builder<P> messagingParameters(
+        public final Builder<P> messaging(
                 final @Nullable MessagingParameters messagingParameters) {
-            this.messagingParameters = messagingParameters;
+            this.messaging = messagingParameters;
             return this;
         }
 

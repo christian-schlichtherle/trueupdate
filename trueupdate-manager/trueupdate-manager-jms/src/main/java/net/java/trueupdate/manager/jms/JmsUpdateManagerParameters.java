@@ -11,13 +11,12 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.jms.MessagingParameters;
 import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
-import net.java.trueupdate.manager.spec.TimerParameters;
+import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.util.Objects.requireNonNull;
-import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
- * JMS Update Manager Parameters.
+ * JMS update manager parameters.
  *
  * @author Christian Schlichtherle
  */
@@ -26,18 +25,18 @@ public final class JmsUpdateManagerParameters {
 
     private static final String CONFIGURATION = "META-INF/update/manager.xml";
 
-    private final URI updateServiceBaseUri;
+    private final UpdateServiceParameters updateService;
     private final TimerParameters checkForUpdates;
-    private final MessagingParameters messagingParameters;
+    private final MessagingParameters messaging;
 
     JmsUpdateManagerParameters(final Builder<?> b) {
-        this.updateServiceBaseUri = requireNonNull(b.updateServiceBaseUri);
+        this.updateService = requireNonNull(b.updateService);
         this.checkForUpdates = requireNonNull(b.checkForUpdates);
-        this.messagingParameters = requireNonNull(b.messagingParameters);
+        this.messaging = requireNonNull(b.messaging);
     }
 
     /**
-     * Loads JMS Update Manager Parameters from the configuration resource
+     * Loads JMS update manager parameters from the configuration resource
      * file with the name {@code META-INF/update/manager.xml}.
      */
     public static JmsUpdateManagerParameters load() {
@@ -61,55 +60,48 @@ public final class JmsUpdateManagerParameters {
         return builder().parse(ci).build();
     }
 
-    /** Returns a new builder for update manager parameters. */
+    /** Returns a new builder for JMS update manager parameters. */
     public static Builder<Void> builder() { return new Builder<Void>(); }
 
-    /** Returns the base URI of the update server. */
-    public URI updateServiceBaseUri() { return updateServiceBaseUri; }
+    /** Returns the update service parameters. */
+    public UpdateServiceParameters updateService() { return updateService; }
 
     /** Returns the timer parameters for checking for artifact updates. */
     public TimerParameters checkForUpdates() {
         return checkForUpdates;
     }
 
-    /** Returns the messagingParameters parameters. */
-    public MessagingParameters messagingParameters() {
-        return messagingParameters;
-    }
+    /** Returns the messaging parameters. */
+    public MessagingParameters messaging() { return messaging; }
 
     /**
-     * A builder for update manager parameters.
+     * A builder for JMS update manager parameters.
      *
      * @param <P> The type of the parent builder, if defined.
      */
     @SuppressWarnings("PackageVisibleField")
     public static class Builder<P> extends AbstractBuilder<P> {
 
-        @CheckForNull URI updateServiceBaseUri;
-        TimerParameters checkForUpdates;
-        @CheckForNull MessagingParameters messagingParameters;
+        @CheckForNull UpdateServiceParameters updateService;
+        @CheckForNull TimerParameters checkForUpdates;
+        @CheckForNull MessagingParameters messaging;
 
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
         public final Builder<P> parse(final JmsUpdateManagerParametersDto ci) {
-            if (null != ci.updateServiceBaseUri)
-                updateServiceBaseUri = URI.create(ensureEndsWithSlash(resolve(
-                        ci.updateServiceBaseUri)));
+            if (null != ci.updateService)
+                updateService = UpdateServiceParameters.parse(ci.updateService);
             if (null != ci.checkForUpdates)
                 checkForUpdates = TimerParameters.parse(ci.checkForUpdates);
             if (null != ci.messaging)
-                messagingParameters = MessagingParameters.parse(ci.messaging);
+                messaging = MessagingParameters.parse(ci.messaging);
             return this;
         }
 
-        private static String ensureEndsWithSlash(String string) {
-            return string.endsWith("/") ? string : string + "/";
-        }
-
-        public final Builder<P> updateServiceBaseUri(
-                final @Nullable URI updateServiceBaseUri) {
-            this.updateServiceBaseUri = updateServiceBaseUri;
+        public final Builder<P> updateService(
+                final @Nullable UpdateServiceParameters updateService) {
+            this.updateService = updateService;
             return this;
         }
 
@@ -119,9 +111,9 @@ public final class JmsUpdateManagerParameters {
             return this;
         }
 
-        public final Builder<P> messagingParameters(
-                final @Nullable MessagingParameters messagingParameters) {
-            this.messagingParameters = messagingParameters;
+        public final Builder<P> messaging(
+                final @Nullable MessagingParameters messaging) {
+            this.messaging = messaging;
             return this;
         }
 

@@ -6,7 +6,7 @@ package net.java.trueupdate.agent.jms.dto;
 
 import javax.xml.bind.annotation.*;
 import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
-import net.java.trueupdate.jms.dto.MessagingDto;
+import net.java.trueupdate.jms.dto.MessagingParametersDto;
 
 /**
  * Configures an update agent.
@@ -25,5 +25,5 @@ public final class JmsUpdateAgentParametersDto {
     public ApplicationParametersDto application;
 
     @XmlElement(required = true)
-    public MessagingDto messaging;
+    public MessagingParametersDto messaging;
 }

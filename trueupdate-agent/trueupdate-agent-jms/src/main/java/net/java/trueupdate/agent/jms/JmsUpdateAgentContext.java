@@ -28,7 +28,7 @@ public final class JmsUpdateAgentContext {
 
     public JmsUpdateAgentContext(final JmsUpdateAgentParameters parameters) {
         agent = new JmsUpdateAgent(parameters);
-        final MessagingParameters mp = parameters.messagingParameters();
+        final MessagingParameters mp = parameters.messaging();
         // The maximum pool size is one in order to prevent messages to be
         // processed out of their sequence order.
         final ExecutorService executorService = new ThreadPoolExecutor(

@@ -59,11 +59,11 @@ extends UpdateMessageListener implements UpdateManager {
     }
 
     private UpdateClient newUpdateClient() {
-        return new UpdateClient(updateServiceBaseUri());
+        return new UpdateClient(updateServiceUri());
     }
 
-    /** Returns the update service base URI. */
-    protected abstract URI updateServiceBaseUri();
+    /** Returns the base URI of the update service. */
+    protected abstract URI updateServiceUri();
 
     @Override public void checkForUpdates() throws Exception {
 
@@ -72,7 +72,7 @@ extends UpdateMessageListener implements UpdateManager {
                 subscriptions = subscriptionManager.subscriptions();
         if (subscriptions.isEmpty()) return;
         logger.log(java.util.logging.Level.INFO, "Checking for artifact updates from {0} .",
-                updateClient().baseUri());
+                updateClient().uri());
 
         // Process the update notices in several steps in order to use minimal
         // locking and account for possible exceptions.
