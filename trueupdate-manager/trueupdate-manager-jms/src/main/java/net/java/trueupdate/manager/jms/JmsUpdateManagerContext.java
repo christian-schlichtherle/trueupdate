@@ -46,7 +46,7 @@ public final class JmsUpdateManagerContext {
                 .build();
         timer = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override public Thread newThread(Runnable r) {
-                return new Thread(r, "TrueUpdate Manager JMS / Timer Thread");
+                return new Thread(r, "TrueUpdate Manager JMS / Update Timer Thread");
             }
         });
     }
