@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a basic implementation of an application update installer.
+ * Provides a basic implementation of an update installer.
  *
  * @author Christian Schlichtherle
  */

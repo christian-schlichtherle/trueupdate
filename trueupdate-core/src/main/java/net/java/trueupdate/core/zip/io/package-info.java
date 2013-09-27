@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Specifies ZIP I/O services.
+ * Provides ZIP I/O services.
  *
  * @author Christian Schlichtherle
  */

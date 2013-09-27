@@ -16,7 +16,7 @@
 
     <name>TrueUpdate Installer Core</name>
     <description>
-        Provides a basic implementation of an application update installer.
+        Provides a basic implementation of an update installer.
     </description>
 
     <dependencies>

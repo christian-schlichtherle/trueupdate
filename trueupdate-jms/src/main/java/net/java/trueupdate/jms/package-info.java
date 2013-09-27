@@ -3,8 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides services to transmit and receive
- * {@link net.java.trueupdate.message.UpdateMessage}s via JMS.
+ * Provides services to transmit and receive update messages via JMS.
  *
  * @author Christian Schlichtherle
  */

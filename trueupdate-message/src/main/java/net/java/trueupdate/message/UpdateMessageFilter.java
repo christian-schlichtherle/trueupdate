@@ -5,6 +5,8 @@
 package net.java.trueupdate.message;
 
 /**
+ * An update message filter.
+ *
  * @author Christian Schlichtherle
  */
 public interface UpdateMessageFilter {
