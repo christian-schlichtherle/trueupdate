@@ -44,9 +44,9 @@ public final class UpdateClient {
      * @param uri the base URI of the web service.
      * @param client the nullable client.
      */
-    public UpdateClient(final URI baseUri,
+    public UpdateClient(final URI uri,
                         final @CheckForNull Client client) {
-        this.uri = requireNonNull(baseUri);
+        this.uri = requireNonNull(uri);
         this.client = null != client ? client : Client.create();
     }
 
