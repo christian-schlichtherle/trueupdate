@@ -23,24 +23,24 @@ import static net.java.trueupdate.message.UpdateMessage.Type.*;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-public abstract class BasicUpdateManager
+public abstract class CoreUpdateManager
 extends UpdateMessageListener implements UpdateManager {
 
     private static final Logger
-            logger = Logger.getLogger(BasicUpdateManager.class.getName());
+            logger = Logger.getLogger(CoreUpdateManager.class.getName());
 
     private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
 
     private final StateManager subscriptionManager = new StateManager();
 
-    private final BasicUpdateResolver
+    private final CoreUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
 
     private final UpdateInstaller updateInstaller;
 
     private volatile UpdateClient updateClient;
 
-    protected BasicUpdateManager() { updateInstaller = newUpdateInstaller(); }
+    protected CoreUpdateManager() { updateInstaller = newUpdateInstaller(); }
 
     private static UpdateInstaller newUpdateInstaller() {
         final UpdateInstaller ui = ServiceLoader.load(UpdateInstaller.class,
@@ -397,9 +397,9 @@ extends UpdateMessageListener implements UpdateManager {
         }
     } // StateManager
 
-    private class ConfiguredUpdateResolver extends BasicUpdateResolver {
+    private class ConfiguredUpdateResolver extends CoreUpdateResolver {
         @Override protected UpdateClient updateClient() {
-            return BasicUpdateManager.this.updateClient();
+            return CoreUpdateManager.this.updateClient();
         }
     } // ConfiguredUpdateResolver
 }

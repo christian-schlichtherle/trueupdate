@@ -17,7 +17,7 @@ import net.java.trueupdate.jaxrs.util.UpdateServiceException;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class BasicUpdateServer {
+public abstract class AbstractUpdateServer {
 
     /** Returns the artifact resolver. */
     protected abstract ArtifactResolver artifactResolver();

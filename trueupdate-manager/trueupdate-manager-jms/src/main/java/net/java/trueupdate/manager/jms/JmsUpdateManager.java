@@ -21,7 +21,7 @@ import net.java.trueupdate.message.UpdateMessage;
  * @author Christian Schlichtherle
  */
 @ThreadSafe
-final class JmsUpdateManager extends BasicUpdateManager {
+final class JmsUpdateManager extends CoreUpdateManager {
 
     private final Object lock = new Object();
 

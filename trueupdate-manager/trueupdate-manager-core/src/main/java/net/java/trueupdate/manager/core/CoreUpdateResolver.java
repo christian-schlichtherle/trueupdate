@@ -21,10 +21,10 @@ import net.java.trueupdate.message.UpdateMessage;
  *
  * @author Christian Schlichtherle
  */
-abstract class BasicUpdateResolver {
+abstract class CoreUpdateResolver {
 
     private static final Logger logger = Logger.getLogger(
-            BasicUpdateResolver.class.getName(),
+            CoreUpdateResolver.class.getName(),
             UpdateMessage.class.getName());
 
     private static final LoggerConfig loggerConfig = new LoggerConfig() {
@@ -77,7 +77,7 @@ abstract class BasicUpdateResolver {
         if (account.fileResolved()) diffZip = account.file();
         else account.file(diffZip = download(descriptor));
         if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "bur.resolved", new Object[] {
+            logger.log(Level.INFO, "cur.resolved", new Object[] {
                 diffZip, descriptor.artifactDescriptor(),
                 descriptor.updateVersion()
             });
@@ -107,7 +107,7 @@ abstract class BasicUpdateResolver {
         } // DownloadTransaction
 
         final DownloadTransaction tx = new DownloadTransaction();
-        execute(timed("bur.download", tx, loggerConfig));
+        execute(timed("cur.download", tx, loggerConfig));
         return tx.diffZip;
     }
 
@@ -128,8 +128,8 @@ abstract class BasicUpdateResolver {
         assert 0 <= account.usages();
         final File file = account.file();
         if (file.delete())
-            logger.log(Level.INFO, "bur.delete.success", file);
+            logger.log(Level.INFO, "cur.delete.success", file);
         else
-            logger.log(Level.WARNING, "bur.delete.failure", file);
+            logger.log(Level.WARNING, "cur.delete.failure", file);
     }
 }

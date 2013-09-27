@@ -7,7 +7,7 @@ package net.java.trueupdate.agent.jms;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import javax.naming.*;
-import net.java.trueupdate.agent.core.BasicUpdateAgent;
+import net.java.trueupdate.agent.core.CoreUpdateAgent;
 import net.java.trueupdate.agent.spec.*;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.message.UpdateMessage;
@@ -18,7 +18,7 @@ import net.java.trueupdate.message.UpdateMessage;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class JmsUpdateAgent extends BasicUpdateAgent {
+final class JmsUpdateAgent extends CoreUpdateAgent {
 
     private final ApplicationParameters applicationParameters;
     private final MessagingParameters messagingParameters;

@@ -7,7 +7,7 @@ package net.java.trueupdate.server.maven;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.Path;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
+import net.java.trueupdate.jaxrs.server.AbstractUpdateServer;
 
 /**
  * An artifact update server which uses a maven artifact resolver.
@@ -18,7 +18,7 @@ import net.java.trueupdate.jaxrs.server.BasicUpdateServer;
  */
 @Path("/")
 @Immutable
-public final class MavenUpdateServer extends BasicUpdateServer {
+public final class MavenUpdateServer extends AbstractUpdateServer {
 
     private final ArtifactResolver artifactResolver;
 

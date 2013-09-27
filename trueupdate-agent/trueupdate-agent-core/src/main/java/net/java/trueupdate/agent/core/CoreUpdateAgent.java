@@ -16,7 +16,7 @@ import static net.java.trueupdate.message.UpdateMessage.Type.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class BasicUpdateAgent
+public abstract class CoreUpdateAgent
 extends UpdateMessageListener implements UpdateAgent {
 
     private volatile UpdateMessageFilter filter;
@@ -126,7 +126,7 @@ extends UpdateMessageListener implements UpdateAgent {
     private UpdateAgentEvent event(final UpdateMessage message) {
         return new UpdateAgentEvent() {
             @Override public UpdateAgent updateAgent() {
-                return BasicUpdateAgent.this;
+                return CoreUpdateAgent.this;
             }
 
             @Override public UpdateMessage updateMessage() { return message; }

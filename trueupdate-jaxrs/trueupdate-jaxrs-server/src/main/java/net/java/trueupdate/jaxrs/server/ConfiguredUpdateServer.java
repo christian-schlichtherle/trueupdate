@@ -27,7 +27,7 @@ import net.java.trueupdate.jaxrs.util.UpdateServiceException;
  * The configured server-side implementation of a RESTful service for
  * artifact updates.
  * Instances of this class can only get obtained by calling the method
- * {@link BasicUpdateServer#artifact}.
+ * {@link AbstractUpdateServer#artifact}.
  *
  * @author Christian Schlichtherle
  */

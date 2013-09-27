@@ -10,7 +10,7 @@ import net.java.trueupdate.jaxrs.util.UpdateServiceException;
 /**
  * Utility functions for update servers.
  *
- * @see BasicUpdateServer
+ * @see AbstractUpdateServer
  * @see ConfiguredUpdateServer
  * @author Christian Schlichtherle
  */
