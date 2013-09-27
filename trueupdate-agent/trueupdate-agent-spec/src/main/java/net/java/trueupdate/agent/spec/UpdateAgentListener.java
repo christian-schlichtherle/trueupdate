@@ -6,7 +6,6 @@ package net.java.trueupdate.agent.spec;
 
 import java.util.List;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import net.java.trueupdate.message.*;
 
 /**
@@ -16,14 +15,9 @@ import net.java.trueupdate.message.*;
  */
 public class UpdateAgentListener {
 
-    // The update manager has already applied filtering and sends fully
-    // populated (but not formatted) LogRecord instances, so obtaining any
-    // other Logger may yield undesirable side effects.
-    private static final Logger
-            logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
     /**
-     * Responds to a subscription response.
+     * Processes a subscription response.
+     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
@@ -36,6 +30,7 @@ public class UpdateAgentListener {
 
     /**
      * Responds to an update available notice.
+     * <p>
      * The implementation in the class {@link UpdateAgentListener} logs any
      * enclosed messages and sends an
      * {@linkplain UpdateAgent#install installation request}.
@@ -49,7 +44,8 @@ public class UpdateAgentListener {
     }
 
     /**
-     * Responds to a progress notice.
+     * Processes a progress notice.
+     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
@@ -62,12 +58,12 @@ public class UpdateAgentListener {
 
     /**
      * Responds to a redeployment request.
+     * This method must quickly respond to the update manager or otherwise a
+     * timeout may occur which would cause the update transaction to roll back!
+     * <p>
      * The implementation in the class {@link UpdateAgentListener} logs any
      * enclosed messages and sends a
      * {@linkplain UpdateAgent#proceed positive response}.
-     * <p>
-     * This method must return quickly or otherwise a timeout may occur which
-     * would cause the update transaction to roll back!
      *
      * @see #log(UpdateAgentEvent)
      */
@@ -78,7 +74,8 @@ public class UpdateAgentListener {
     }
 
     /**
-     * Responds to an installation success response.
+     * Processes an installation success response.
+     * <p>
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
@@ -90,7 +87,7 @@ public class UpdateAgentListener {
     }
 
     /**
-     * Responds to an installation failure response.
+     * Processes an installation failure response.
      * The implementation in the class {@link UpdateAgentListener} just logs
      * any enclosed messages.
      *
@@ -121,11 +118,12 @@ public class UpdateAgentListener {
 
     /**
      * Logs the given record.
+     * The implementation in the class {@link UpdateAgentListener} does nothing.
      * Override this method in order to notify the user about the update
      * progress.
      * <p>
      * This method must return quickly or otherwise a timeout may occur which
      * would cause the update transaction to roll back!
      */
-    protected void log(LogRecord record) { logger.log(record); }
+    protected void log(LogRecord record) { }
 }
