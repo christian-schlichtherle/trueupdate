@@ -174,19 +174,6 @@ public final class UpdateMessage {
     @SuppressWarnings("ReturnOfCollectionOrArrayField")
     public List<LogRecord> attachedLogs() { return attachedLogs; }
 
-    /** Vends an application descriptor from this update message. */
-    public ApplicationDescriptor applicationDescriptor() {
-        try {
-            return ApplicationDescriptor
-                    .builder()
-                    .artifactDescriptor(artifactDescriptor)
-                    .currentLocation(currentLocation)
-                    .build();
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
     /** Vends an update descriptor from this update message. */
     public UpdateDescriptor updateDescriptor() {
         try {

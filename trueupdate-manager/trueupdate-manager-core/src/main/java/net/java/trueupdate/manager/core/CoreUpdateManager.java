@@ -359,28 +359,28 @@ extends UpdateMessageListener implements UpdateManager {
 
     private class StateManager {
 
-        final Map<ApplicationDescriptor, UpdateMessage>
-                map = new HashMap<ApplicationDescriptor, UpdateMessage>();
+        final Map<String, UpdateMessage>
+                map = new HashMap<String, UpdateMessage>();
 
         UpdateMessage get(UpdateMessage subscription) {
-            return get(subscription.applicationDescriptor());
+            return get(subscription.currentLocation());
         }
 
-        synchronized UpdateMessage get(ApplicationDescriptor applicationDescriptor) {
-            return map.get(applicationDescriptor);
+        synchronized UpdateMessage get(String currentLocation) {
+            return map.get(currentLocation);
         }
 
         synchronized void put(UpdateMessage subscription) {
-            map.put(subscription.applicationDescriptor(), subscription);
+            map.put(subscription.currentLocation(), subscription);
             notifyAll();
         }
 
         void remove(UpdateMessage subscription) {
-            remove(subscription.applicationDescriptor());
+            remove(subscription.currentLocation());
         }
 
-        synchronized void remove(ApplicationDescriptor applicationDescriptor) {
-            map.remove(applicationDescriptor);
+        synchronized void remove(String currentLocation) {
+            map.remove(currentLocation);
             notifyAll();
         }
 

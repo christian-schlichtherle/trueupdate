@@ -73,12 +73,11 @@ extends UpdateMessageListener implements UpdateAgent {
 
     private UpdateMessageFilter newFilter() {
         return new UpdateMessageFilter() {
-            final ApplicationDescriptor applicationDescriptor =
-                    applicationParameters().applicationDescriptor();
+            final String currentLocation =
+                    applicationParameters().currentLocation();
 
             @Override public boolean accept(UpdateMessage message) {
-                return applicationDescriptor.equals(
-                        message.applicationDescriptor());
+                return currentLocation.equals(message.currentLocation());
             }
         };
     }

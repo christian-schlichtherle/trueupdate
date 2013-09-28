@@ -8,7 +8,6 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import net.java.trueupdate.message.ApplicationDescriptor;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
@@ -75,15 +74,6 @@ public final class ApplicationParameters {
 
     /** Returns the update location. */
     public String updateLocation() { return updateLocation; }
-
-    /** Vends an application descriptor from these application parameters. */
-    public ApplicationDescriptor applicationDescriptor() {
-        return ApplicationDescriptor
-                .builder()
-                .artifactDescriptor(artifactDescriptor)
-                .currentLocation(currentLocation)
-                .build();
-    }
 
     /**
      * A builder for application parameters.
