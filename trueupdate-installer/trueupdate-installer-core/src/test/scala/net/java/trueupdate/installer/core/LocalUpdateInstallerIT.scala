@@ -57,7 +57,6 @@ class LocalUpdateInstallerIT extends WordSpec {
     new UpdateContext {
       val um = updateMessage(deployedPath)
 
-      def updateDescriptor = um.updateDescriptor
       def currentLocation = um.currentLocation
       def updateLocation = um.updateLocation
       def diffZip = diffZipFile
