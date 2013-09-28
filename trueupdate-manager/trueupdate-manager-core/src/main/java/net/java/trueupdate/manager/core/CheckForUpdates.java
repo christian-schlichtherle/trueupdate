@@ -32,7 +32,7 @@ public final class CheckForUpdates implements Runnable {
         try {
             manager.checkForUpdates();
         } catch (Exception ex) {
-            logger.log(Level.WARNING, "Checking for updates failed.", ex);
+            logger.log(Level.WARNING, "Could not check for updates.", ex);
         }
     }
 }
