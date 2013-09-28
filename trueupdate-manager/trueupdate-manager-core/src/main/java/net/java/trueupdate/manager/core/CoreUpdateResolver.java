@@ -10,8 +10,8 @@ import java.util.logging.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.manager.spec.tx.Transaction;
-import static net.java.trueupdate.manager.spec.tx.Transactions.*;
+import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.manager.spec.tx.*;
 import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.UpdateMessage;
 
@@ -64,25 +64,27 @@ abstract class CoreUpdateResolver {
     }
 
     /**
-     * Resolves the diff ZIP file for the given update descriptor.
+     * Resolves the diff ZIP file for the given update context.
      * Clients must not modify or delete the returned file.
      *
-     * @param descriptor the update descriptor.
+     * @param context the update context.
      */
-    final File resolveDiffZip(final UpdateDescriptor descriptor)
+    final File resolve(final UpdateDescriptor descriptor,
+                       final UpdateContext context)
     throws Exception {
         final FileAccount account = account(descriptor);
         final File diffZip;
         if (account.fileResolved()) diffZip = account.file();
-        else account.file(diffZip = download(descriptor));
-        logger.log(Level.INFO, "cur.resolved", new Object[] {
+        else account.file(diffZip = download(descriptor, context));
+        logger.log(Level.INFO, "resolver.resolved", new Object[] {
             diffZip, descriptor.artifactDescriptor(),
             descriptor.updateVersion()
         });
         return diffZip;
     }
 
-    private File download(final UpdateDescriptor descriptor) throws Exception {
+    private File download(final UpdateDescriptor descriptor,
+                          final UpdateContext context) throws Exception {
 
         class DownloadTransaction extends Transaction {
 
@@ -104,7 +106,7 @@ abstract class CoreUpdateResolver {
         } // DownloadTransaction
 
         final DownloadTransaction tx = new DownloadTransaction();
-        execute(timed("cur.download", tx, loggerConfig));
+        Transactions.execute(context.decorate(Action.DOWNLOAD, tx));
         return tx.diffZip;
     }
 
@@ -125,8 +127,8 @@ abstract class CoreUpdateResolver {
         assert 0 <= account.usages();
         final File file = account.file();
         if (file.delete())
-            logger.log(Level.INFO, "cur.delete.success", file);
+            logger.log(Level.INFO, "resolver.delete.success", file);
         else
-            logger.log(Level.WARNING, "cur.delete.failure", file);
+            logger.log(Level.WARNING, "resolver.delete.failure", file);
     }
 }

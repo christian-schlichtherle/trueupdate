@@ -20,7 +20,7 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
  * @author Christian Schlichtherle
  */
 @Immutable
-final class UpdateDescriptor {
+public final class UpdateDescriptor {
 
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion;

@@ -13,6 +13,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
+import net.java.trueupdate.manager.spec.tx.*;
+import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.*;
 import net.java.trueupdate.message.UpdateMessage.Type;
 import static net.java.trueupdate.message.UpdateMessage.Type.*;
@@ -26,8 +28,13 @@ import static net.java.trueupdate.message.UpdateMessage.Type.*;
 public abstract class CoreUpdateManager
 extends UpdateMessageListener implements UpdateManager {
 
-    private static final Logger
-            logger = Logger.getLogger(CoreUpdateManager.class.getName());
+    private static final Logger logger = Logger.getLogger(
+            CoreUpdateManager.class.getName(),
+            UpdateMessage.class.getName());
+
+    private static final LoggerConfig loggerConfig = new LoggerConfig() {
+        @Override public Logger logger() { return logger; }
+    };
 
     private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
 
@@ -46,9 +53,7 @@ extends UpdateMessageListener implements UpdateManager {
         final UpdateInstaller ui = ServiceLoader.load(UpdateInstaller.class,
                 Thread.currentThread().getContextClassLoader()
                 ).iterator().next();
-        logger.log(java.util.logging.Level.CONFIG,
-                "The class name of the update installer is {0} .",
-                ui.getClass().getName());
+        logger.log(Level.CONFIG, "manager.installer.class", ui.getClass().getName());
         return ui;
     }
 
@@ -71,8 +76,7 @@ extends UpdateMessageListener implements UpdateManager {
         final Collection<UpdateMessage>
                 subscriptions = subscriptionManager.subscriptions();
         if (subscriptions.isEmpty()) return;
-        logger.log(java.util.logging.Level.INFO, "Checking for artifact updates from {0} .",
-                updateClient().uri());
+        logger.log(Level.INFO, "manager.check", updateClient().uri());
 
         // Process the update notices in several steps in order to use minimal
         // locking and account for possible exceptions.
@@ -172,19 +176,22 @@ extends UpdateMessageListener implements UpdateManager {
 
         class Install implements Callable<Void>, UpdateContext, LogChannel {
 
-            ArtifactDescriptor artifactDescriptor = request.artifactDescriptor();
-            String currentLocation = request.currentLocation();
-            String updateLocation = request.updateLocation();
+            ArtifactDescriptor anticipatedDescriptor = request.artifactDescriptor();
+            String anticipatedLocation = request.currentLocation();
 
             File diffZip;
             Exception ex;
 
+            private ArtifactDescriptor artifactDescriptor() {
+                return request.artifactDescriptor();
+            }
+
             @Override public String currentLocation() {
-                return currentLocation;
+                return request.currentLocation();
             }
 
             @Override public String updateLocation() {
-                return updateLocation;
+                return request.updateLocation();
             }
 
             @Override public File diffZip() { return diffZip; }
@@ -194,11 +201,11 @@ extends UpdateMessageListener implements UpdateManager {
                 try {
                     final UpdateDescriptor ud = updateDescriptor(
                             request.artifactDescriptor(),
-                            request.currentLocation());
+                            request.updateVersion());
                     synchronized (updateResolver) {
-                        diffZip = updateResolver.resolveDiffZip(ud);
+                        diffZip = updateResolver.resolve(ud, this);
                     }
-                    updateInstaller.install(Install.this);
+                    updateInstaller.install(this);
                     synchronized (updateResolver) {
                         updateResolver.release(ud);
                     }
@@ -208,7 +215,46 @@ extends UpdateMessageListener implements UpdateManager {
                 return null;
             }
 
-            @Override public void prepareUndeployment() throws Exception {
+            @Override public Transaction decorate(
+                    final Action id,
+                    final Transaction tx) {
+                final Transaction ttx = timed(id, tx);
+                return Action.UNDEPLOY == id ? undeploy(ttx) : checked(ttx);
+            }
+
+            Transaction timed(Action id, Transaction tx) {
+                return Transactions.timed(id.key(), tx, loggerConfig);
+            }
+
+            Transaction undeploy(final Transaction tx) {
+
+                class Undeploy extends Transaction {
+
+                    @Override public void prepare() throws Exception {
+                        tx.prepare();
+                        onPrepareUndeployment();
+                    }
+
+                    @Override public void perform() throws Exception {
+                        tx.perform();
+                        onPerformUndeployment();
+                    }
+
+                    @Override public void rollback() throws Exception {
+                        tx.rollback();
+                        onRollbackUndeployment();
+                    }
+
+                    @Override public void commit() throws Exception {
+                        tx.commit();
+                        onCommitUndeployment();
+                    }
+                } // Undeploy
+
+                return new Undeploy();
+            }
+
+            void onPrepareUndeployment() throws Exception {
                 sendRedeploymentRequest();
                 final long stop = System.currentTimeMillis()
                         + HANDSHAKE_TIMEOUT_MILLIS;
@@ -216,13 +262,13 @@ extends UpdateMessageListener implements UpdateManager {
                     while (true) {
                         final UpdateMessage um = subscriptionManager.get(request);
                         final Type type = um.type();
+                        checkCancelled(type);
                         if (PROCEED_REDEPLOYMENT_RESPONSE.equals(type))
                             break;
-                        if (CANCEL_REDEPLOYMENT_RESPONSE.equals(type))
-                            throw new Exception("The update agent has cancelled the redeployment.");
                         final long remaining = stop - System.currentTimeMillis();
                         if (0 >= remaining)
-                            throw new Exception("Timeout while waiting for redeployment response from update agent.");
+                            throw new Exception(
+                                    "Timeout while waiting for a redeployment response from the update agent.");
                         subscriptionManager.wait(remaining);
                     }
                 }
@@ -231,32 +277,68 @@ extends UpdateMessageListener implements UpdateManager {
             void sendRedeploymentRequest() throws Exception {
                 final UpdateMessage redeploymentRequest = responseFor(request)
                         .type(REDEPLOYMENT_REQUEST)
-                        .artifactDescriptor(artifactDescriptor)
+                        .artifactDescriptor(artifactDescriptor())
                         .build();
                 sendAndLog(redeploymentRequest);
             }
 
-            @Override public void performUndeployment() throws Exception {
-                artifactDescriptor = request.artifactDescriptor()
+            void checkCancelled(final Type type) throws Exception {
+                if (CANCEL_REDEPLOYMENT_RESPONSE.equals(type))
+                    throw new Exception(
+                            "The update agent has cancelled the update installation.");
+            }
+
+            void onPerformUndeployment() throws Exception {
+                anticipatedDescriptor = request
+                        .artifactDescriptor()
                         .update()
                         .version(request.updateVersion())
                         .build();
-                currentLocation = request.updateLocation();
+                anticipatedLocation = request.updateLocation();
             }
 
-            @Override public void rollbackUndeployment() throws Exception {
-                artifactDescriptor = request.artifactDescriptor();
-                currentLocation = request.currentLocation();
+            void onRollbackUndeployment() throws Exception {
+                anticipatedDescriptor = request.artifactDescriptor();
+                anticipatedLocation = request.currentLocation();
             }
 
-            @Override public void commitUndeployment() throws Exception { }
+            void onCommitUndeployment() throws Exception { }
+
+            Transaction checked(final Transaction tx) {
+
+                class Checked extends Transaction {
+
+                    @Override public void prepare() throws Exception {
+                        tx.prepare();
+                    }
+
+                    @Override public void perform() throws Exception {
+                        // Throw an InterruptedException if requested.
+                        Thread.sleep(0);
+                        // May be undeployed, so check for null.
+                        final UpdateMessage um = subscriptionManager.get(request);
+                        if (null != um) checkCancelled(um.type());
+                        tx.perform();
+                    }
+
+                    @Override public void rollback() throws Exception {
+                        tx.rollback();
+                    }
+
+                    @Override public void commit() throws Exception {
+                        tx.commit();
+                    }
+                } // Checked
+
+                return new Checked();
+            }
 
             @Override
             public void transmit(final LogRecord record) throws Exception {
                 final UpdateMessage um = responseFor(request)
                         .type(PROGRESS_NOTICE)
-                        .artifactDescriptor(artifactDescriptor)
-                        .currentLocation(currentLocation)
+                        .artifactDescriptor(anticipatedDescriptor)
+                        .currentLocation(anticipatedLocation)
                         .build();
                 um.attachedLogs().add(record);
                 send(um);
@@ -330,13 +412,11 @@ extends UpdateMessageListener implements UpdateManager {
     protected abstract void send(UpdateMessage message) throws Exception;
 
     private static void logReceived(UpdateMessage message) {
-        logger.log(java.util.logging.Level.FINE,
-                "Received update message from update agent:\n{0}", message);
+        logger.log(Level.FINE, "manager.received", message);
     }
 
     private static void logSent(UpdateMessage message) {
-        logger.log(java.util.logging.Level.FINER,
-                "Sent update message to update agent:\n{0}", message);
+        logger.log(Level.FINER, "manager.sent", message);
     }
 
     private void subscribe(UpdateMessage subscription) {

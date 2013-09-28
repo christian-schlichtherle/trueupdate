@@ -60,12 +60,8 @@ class LocalUpdateInstallerIT extends WordSpec {
       def currentLocation = um.currentLocation
       def updateLocation = um.updateLocation
       def diffZip = diffZipFile
-      def isLoggable(level: Level) = true
-      def log(level: Level, code: String, args: AnyRef*) { }
-      def prepareUndeployment() { }
-      def performUndeployment() { }
-      def rollbackUndeployment() { }
-      def commitUndeployment() { }
+
+      def decorate(id: Action, tx: Transaction) = tx
     }
 
   "A local update installer" should {

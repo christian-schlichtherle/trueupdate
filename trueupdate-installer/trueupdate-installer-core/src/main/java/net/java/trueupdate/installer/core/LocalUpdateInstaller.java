@@ -5,7 +5,6 @@
 package net.java.trueupdate.installer.core;
 
 import java.io.*;
-import java.util.logging.Logger;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.zip.io.JarFileStore;
@@ -14,9 +13,8 @@ import static net.java.trueupdate.installer.core.io.Files.*;
 import net.java.trueupdate.installer.core.io.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
 import net.java.trueupdate.manager.spec.*;
+import static net.java.trueupdate.manager.spec.Action.*;
 import net.java.trueupdate.manager.spec.tx.*;
-import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
-import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * A local update installer.
@@ -32,14 +30,6 @@ import net.java.trueupdate.message.UpdateMessage;
  */
 @Immutable
 public abstract class LocalUpdateInstaller implements UpdateInstaller {
-
-    private static final Logger logger = Logger.getLogger(
-            LocalUpdateInstaller.class.getName(),
-            UpdateMessage.class.getName());
-
-    private static final LoggerConfig loggerConfig = new LoggerConfig() {
-        @Override public Logger logger() { return logger; }
-    };
 
     /**
      * Returns the nullable temporary directory.
@@ -94,84 +84,49 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 final File backup = new File(tempDir, "backup");
                 if (current.path().isFile()) {
                     Transactions.execute(new CompositeTransaction(
-                            timed("lui.patch",
+                            decorate(PATCH,
                                     new PathTaskTransaction(updateJar,
                                             new PatchTask(current.path()))),
-                            timed("lui.undeploy",
-                                    undeploymentTransaction(current, context)),
-                            timed("lui.swap.out.file",
+                            decorate(UNDEPLOY,
+                                    current.undeploymentTransaction()),
+                            decorate(SWAP_OUT_FILE,
                                     new RenamePathTransaction(
-                                            update.path(), backup)),
-                            timed("lui.swap.in.file",
+                                            current.path(), backup)),
+                            decorate(SWAP_IN_FILE,
                                     new RenamePathTransaction(updateJar,
                                             update.path())),
-                            timed("lui.deploy",
-                                    deploymentTransaction(update))));
+                            decorate(DEPLOY,
+                                    update.deploymentTransaction())));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updateDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
-                            timed("lui.zip",
+                            decorate(ZIP,
                                     new ZipTransaction(currentZip,
                                             current.path(), "")),
-                            timed("lui.patch",
+                            decorate(PATCH,
                                     new PathTaskTransaction(updateJar,
                                             new PatchTask(currentZip))),
-                            timed("lui.unzip",
+                            decorate(UNZIP,
                                     new UnzipTransaction(updateJar, updateDir)),
-                            timed("lui.undeploy",
-                                    undeploymentTransaction(current, context)),
-                            timed("lui.swap.out.dir",
+                            decorate(UNDEPLOY,
+                                    current.undeploymentTransaction()),
+                            decorate(SWAP_OUT_DIR,
                                     new RenamePathTransaction(
-                                            update.path(), backup)),
-                            timed("lui.swap.in.dir",
+                                            current.path(), backup)),
+                            decorate(SWAP_IN_DIR,
                                     new RenamePathTransaction(updateDir,
                                             update.path())),
-                            timed("lui.deploy",
-                                    deploymentTransaction(update))));
+                            decorate(DEPLOY,
+                                    update.deploymentTransaction())));
                 }
                 return null;
             }
 
-            Transaction timed(String name, Transaction tx) {
-                return Transactions.timed(name, tx, loggerConfig);
+            Transaction decorate(Action id, Transaction tx) {
+                return context.decorate(id, tx);
             }
         }, "dir", null, tempDir());
-    }
-
-    static Transaction undeploymentTransaction(
-            final LocationContext location,
-            final UpdateContext update) {
-
-        class Handshake extends Transaction {
-            final Transaction tx = location.undeploymentTransaction();
-
-            @Override public void prepare() throws Exception {
-                tx.prepare();
-                update.prepareUndeployment();
-            }
-
-            @Override public void perform() throws Exception {
-                tx.perform();
-                update.performUndeployment();
-            }
-
-            @Override public void rollback() throws Exception {
-                tx.rollback();
-                update.rollbackUndeployment();
-            }
-
-            @Override public void commit() throws Exception {
-                tx.commit();
-                update.commitUndeployment();
-            }
-        } // Handshake
-
-        return location.path().exists() ? new Handshake() : Transactions.noOp();
-    }
-
-    static Transaction deploymentTransaction(LocationContext context) {
-        return context.deploymentTransaction();
     }
 
     /** The context for a location provided to the update installer. */

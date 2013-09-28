@@ -5,6 +5,7 @@
 package net.java.trueupdate.manager.spec;
 
 import java.io.File;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 
 /**
  * An update context.
@@ -30,17 +31,6 @@ public interface UpdateContext {
      */
     File diffZip();
 
-    /**
-     * Sends a redeployment request to the update agent and waits for a
-     * response.
-     * This handshake ensures that the update agent has processed all progress
-     * notices before the redeployment is happening.
-     */
-    void prepareUndeployment() throws Exception;
-
-    void performUndeployment() throws Exception;
-
-    void rollbackUndeployment() throws Exception;
-
-    void commitUndeployment() throws Exception;
+    /** Decorates the given update transaction with the given identifier. */
+    Transaction decorate(Action id, Transaction tx);
 }
