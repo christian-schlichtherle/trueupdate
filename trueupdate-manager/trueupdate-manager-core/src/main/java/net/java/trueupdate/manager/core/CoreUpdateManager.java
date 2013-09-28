@@ -81,25 +81,18 @@ extends UpdateMessageListener implements UpdateManager {
             final Map<ArtifactDescriptor, UpdateDescriptor>
                     uds = new HashMap<ArtifactDescriptor, UpdateDescriptor>();
 
-            CheckForUpdates() throws Exception { downloadUpdateVersionsFromServer(); }
+            CheckForUpdates() throws Exception {
+                downloadUpdateVersionsFromServer();
+            }
 
             void downloadUpdateVersionsFromServer() throws Exception {
                 for (final UpdateMessage um : subscriptions) {
                     final ArtifactDescriptor ad = um.artifactDescriptor();
                     final UpdateDescriptor ud = uds.get(ad);
                     if (null == ud)
-                        uds.put(ad, newUpdateDescriptor(ad,
+                        uds.put(ad, updateDescriptor(ad,
                                 updateClient().version(ad)));
                 }
-            }
-
-            UpdateDescriptor newUpdateDescriptor(ArtifactDescriptor ad,
-                                                 String uv) {
-                return UpdateDescriptor
-                        .builder()
-                        .artifactDescriptor(ad)
-                        .updateVersion(uv)
-                        .build();
             }
 
             @Override public Void call() throws Exception {
@@ -199,7 +192,9 @@ extends UpdateMessageListener implements UpdateManager {
             @Override public Void call() throws Exception {
                 LogContext.setChannel(this);
                 try {
-                    final UpdateDescriptor ud = request.updateDescriptor();
+                    final UpdateDescriptor ud = updateDescriptor(
+                            request.artifactDescriptor(),
+                            request.currentLocation());
                     synchronized (updateResolver) {
                         diffZip = updateResolver.resolveDiffZip(ud);
                     }
@@ -355,6 +350,14 @@ extends UpdateMessageListener implements UpdateManager {
     @Override public void close() throws Exception {
         synchronized (updateResolver) { updateResolver.close(); }
         subscriptionManager.close();
+    }
+
+    static UpdateDescriptor updateDescriptor(ArtifactDescriptor ad, String uv) {
+        return UpdateDescriptor
+                .builder()
+                .artifactDescriptor(ad)
+                .updateVersion(uv)
+                .build();
     }
 
     private class StateManager {

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message;
+package net.java.trueupdate.manager.core;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
@@ -20,7 +20,7 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class UpdateDescriptor {
+final class UpdateDescriptor {
 
     private final ArtifactDescriptor artifactDescriptor;
     private final String updateVersion;

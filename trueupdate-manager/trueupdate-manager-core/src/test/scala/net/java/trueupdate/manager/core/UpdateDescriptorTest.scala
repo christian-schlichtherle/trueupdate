@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.message
+package net.java.trueupdate.manager.core
 
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import org.junit.runner.RunWith

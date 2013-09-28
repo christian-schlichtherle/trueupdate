@@ -13,7 +13,6 @@ import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.manager.spec.tx.Transactions.*;
 import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
-import net.java.trueupdate.message.UpdateDescriptor;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**

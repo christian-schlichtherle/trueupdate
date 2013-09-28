@@ -174,19 +174,6 @@ public final class UpdateMessage {
     @SuppressWarnings("ReturnOfCollectionOrArrayField")
     public List<LogRecord> attachedLogs() { return attachedLogs; }
 
-    /** Vends an update descriptor from this update message. */
-    public UpdateDescriptor updateDescriptor() {
-        try {
-            return UpdateDescriptor
-                    .builder()
-                    .artifactDescriptor(artifactDescriptor)
-                    .updateVersion(updateVersion)
-                    .build();
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
     /**
      * Returns {@code true} if and only if the given object is an
      * {@code UpdateMessage} with equal properties.
