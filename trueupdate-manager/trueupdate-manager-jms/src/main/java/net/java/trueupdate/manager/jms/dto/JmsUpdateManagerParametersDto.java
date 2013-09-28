@@ -6,7 +6,7 @@ package net.java.trueupdate.manager.jms.dto;
 
 import javax.xml.bind.annotation.*;
 import net.java.trueupdate.jms.dto.MessagingParametersDto;
-import net.java.trueupdate.manager.spec.dto.*;
+import net.java.trueupdate.manager.core.dto.*;
 
 /**
  * Configures an update manager.

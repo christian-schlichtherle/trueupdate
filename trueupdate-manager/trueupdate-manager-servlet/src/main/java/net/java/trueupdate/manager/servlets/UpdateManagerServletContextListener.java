@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
+import net.java.trueupdate.manager.core.*;
 import net.java.trueupdate.manager.jms.*;
-import net.java.trueupdate.manager.spec.*;
 
 /**
  * Starts and stops the update manager.

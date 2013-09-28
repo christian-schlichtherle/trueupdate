@@ -11,7 +11,6 @@ import javax.jms.*;
 import javax.naming.Context;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.manager.core.*;
-import net.java.trueupdate.manager.spec.UpdateServiceParameters;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**

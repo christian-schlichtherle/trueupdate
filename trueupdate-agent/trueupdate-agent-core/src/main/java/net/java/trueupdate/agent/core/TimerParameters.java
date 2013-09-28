@@ -2,13 +2,13 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.spec;
+package net.java.trueupdate.agent.core;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.agent.spec.dto.TimerParametersDto;
+import net.java.trueupdate.agent.core.dto.TimerParametersDto;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 

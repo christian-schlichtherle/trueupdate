@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.spec.dto;
+package net.java.trueupdate.manager.core.dto;
 
 import javax.xml.bind.annotation.*;
 
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.*;
 public final class TimerParametersDto {
 
     @XmlElement(defaultValue = "0")
-    public String delay;
+    public String delay, period;
 
     public String unit;
 }

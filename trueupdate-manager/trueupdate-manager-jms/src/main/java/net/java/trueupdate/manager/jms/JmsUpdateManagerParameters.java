@@ -10,8 +10,8 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.jms.MessagingParameters;
+import net.java.trueupdate.manager.core.*;
 import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
-import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 

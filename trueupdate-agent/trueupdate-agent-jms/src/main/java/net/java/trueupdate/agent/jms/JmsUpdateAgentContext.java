@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.agent.spec.TimerParameters;
+import net.java.trueupdate.agent.core.TimerParameters;
 import net.java.trueupdate.jms.*;
 
 /**

@@ -5,7 +5,7 @@
 package net.java.trueupdate.agent.jms.dto;
 
 import javax.xml.bind.annotation.*;
-import net.java.trueupdate.agent.spec.dto.*;
+import net.java.trueupdate.agent.core.dto.*;
 import net.java.trueupdate.jms.dto.MessagingParametersDto;
 
 /**

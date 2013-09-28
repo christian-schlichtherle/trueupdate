@@ -2,12 +2,12 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec;
+package net.java.trueupdate.manager.core;
 
 import java.net.URI;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.manager.spec.dto.UpdateServiceParametersDto;
+import net.java.trueupdate.manager.core.dto.UpdateServiceParametersDto;
 import net.java.trueupdate.util.Objects;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;

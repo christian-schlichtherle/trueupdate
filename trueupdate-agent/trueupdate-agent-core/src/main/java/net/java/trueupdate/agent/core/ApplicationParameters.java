@@ -2,11 +2,12 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.agent.spec;
+package net.java.trueupdate.agent.core;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.agent.spec.dto.ApplicationParametersDto;
+import net.java.trueupdate.agent.spec.UpdateAgentListener;
+import net.java.trueupdate.agent.core.dto.ApplicationParametersDto;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;

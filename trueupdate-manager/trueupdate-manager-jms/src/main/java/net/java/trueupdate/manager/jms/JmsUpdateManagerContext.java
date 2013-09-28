@@ -7,8 +7,7 @@ package net.java.trueupdate.manager.jms;
 import java.util.concurrent.*;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.jms.*;
-import net.java.trueupdate.manager.core.CheckForUpdates;
-import net.java.trueupdate.manager.spec.TimerParameters;
+import net.java.trueupdate.manager.core.*;
 
 /**
  * A context for the JMS Update Manager.
