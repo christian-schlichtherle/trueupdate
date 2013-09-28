@@ -75,12 +75,10 @@ abstract class CoreUpdateResolver {
         final File diffZip;
         if (account.fileResolved()) diffZip = account.file();
         else account.file(diffZip = download(descriptor));
-        if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "cur.resolved", new Object[] {
-                diffZip, descriptor.artifactDescriptor(),
-                descriptor.updateVersion()
-            });
-        }
+        logger.log(Level.INFO, "cur.resolved", new Object[] {
+            diffZip, descriptor.artifactDescriptor(),
+            descriptor.updateVersion()
+        });
         return diffZip;
     }
 
