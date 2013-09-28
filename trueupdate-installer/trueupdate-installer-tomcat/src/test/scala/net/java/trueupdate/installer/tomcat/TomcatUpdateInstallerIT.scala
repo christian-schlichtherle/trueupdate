@@ -5,22 +5,16 @@
 package net.java.trueupdate.installer.tomcat
 
 import java.io.File
-import java.net.URI
 import org.apache.catalina.util.ContextName
 import org.jboss.arquillian.container.test.api.Deployment
 import org.jboss.arquillian.junit.Arquillian
 import org.jboss.shrinkwrap.api.ShrinkWrap
-import org.jboss.shrinkwrap.api.asset.EmptyAsset
 import org.jboss.shrinkwrap.api.exporter.ZipExporter
 import org.jboss.shrinkwrap.api.spec.WebArchive
 import org.junit.Test
 import org.junit.runner.RunWith
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
-import net.java.trueupdate.message.{UpdateDescriptor, UpdateMessage}
-import UpdateMessage.Type
-import net.java.trueupdate.manager.spec.UpdateContext
-import java.util.logging.Level
 import net.java.trueupdate.manager.spec.tx.Transactions
 
 /**
