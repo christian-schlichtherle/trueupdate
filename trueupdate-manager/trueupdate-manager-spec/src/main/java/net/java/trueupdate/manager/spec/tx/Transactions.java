@@ -74,7 +74,7 @@ public class Transactions {
                                     final Transaction tx,
                                     final LoggerConfig config) {
 
-        class TimedTransaction extends Transaction {
+        class Timed extends Transaction {
 
             @Override public void prepare() throws Exception {
                 time(Method.prepare, new Callable<Void>() {
@@ -134,9 +134,9 @@ public class Transactions {
                 if (!succeeded) throw ex;
             }
 
-        } // TimedTransaction
+        } // Timed
 
-        return new TimedTransaction();
+        return new Timed();
     }
 
     private Transactions() { }
@@ -153,7 +153,7 @@ public class Transactions {
         };
 
         Level succeeded() { return Level.INFO; }
-        Level failed() { return Level.WARNING; }
+        Level failed() { return Level.SEVERE; }
     }
 
     public static abstract class LoggerConfig {
