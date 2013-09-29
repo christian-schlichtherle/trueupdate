@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
-  - All rights reserved. Use is subject to license terms.
-  -->
+- Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+- All rights reserved. Use is subject to license terms.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>net.java.trueupdate</groupId>
-        <artifactId>trueupdate-agent</artifactId>
+        <artifactId>trueupdate-manager</artifactId>
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent-servlet</artifactId>
+    <artifactId>trueupdate-manager-ejb</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate Agent Servlet</name>
+    <name>TrueUpdate Manager EJB</name>
     <description>
-        Provides an update agent for use within Servlet environments.
-        This module depends on the Servlet and JMS APIs.
+        Provides an update manager for use within EJB environments.
+        This module depends on the EJB and JMS APIs.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-agent-jms</artifactId>
+            <artifactId>trueupdate-manager-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
         </dependency>
     </dependencies>
 </project>

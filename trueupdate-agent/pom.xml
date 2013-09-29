@@ -22,6 +22,7 @@
 
     <modules>
         <module>trueupdate-agent-core</module>
+        <module>trueupdate-agent-ejb</module>
         <module>trueupdate-agent-jms</module>
         <module>trueupdate-agent-servlet</module>
         <module>trueupdate-agent-spec</module>

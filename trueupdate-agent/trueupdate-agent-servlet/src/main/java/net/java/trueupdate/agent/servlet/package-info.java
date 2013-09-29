@@ -4,9 +4,9 @@
  */
 /**
  * Provides an update agent for use within Servlet environments.
- * It depends on the Servlet and JMS APIs.
+ * This package depends on the Servlet and JMS APIs.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.agent.servlets;
+package net.java.trueupdate.agent.servlet;

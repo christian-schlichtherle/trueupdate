@@ -22,6 +22,7 @@
 
     <modules>
         <module>trueupdate-manager-core</module>
+        <module>trueupdate-manager-ejb</module>
         <module>trueupdate-manager-jms</module>
         <module>trueupdate-manager-servlet</module>
         <module>trueupdate-manager-spec</module>

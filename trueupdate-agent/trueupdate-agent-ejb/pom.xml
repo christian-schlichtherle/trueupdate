@@ -12,12 +12,13 @@
         <version>0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-agent-servlet</artifactId>
+    <artifactId>trueupdate-agent-ejb</artifactId>
+    <packaging>ejb</packaging>
 
-    <name>TrueUpdate Agent Servlet</name>
+    <name>TrueUpdate Agent EJB</name>
     <description>
-        Provides an update agent for use within Servlet environments.
-        This module depends on the Servlet and JMS APIs.
+        Provides an update agent for use within EJB environments.
+        This module depends on the EJB and JMS APIs.
     </description>
 
     <dependencies>
@@ -26,8 +27,8 @@
             <artifactId>trueupdate-agent-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
         </dependency>
     </dependencies>
 </project>
