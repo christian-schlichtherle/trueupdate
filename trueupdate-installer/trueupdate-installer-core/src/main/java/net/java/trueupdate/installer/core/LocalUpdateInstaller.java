@@ -39,19 +39,12 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
      */
     protected @Nullable File tempDir() { return null; }
 
-    /**
-     * Resolves the location context for the given update context and location.
-     *
-     * @param context the update context.
-     * @param location either {@code context.}{@link UpdateContext#currentLocation currentLocation}
-     *                 or {@code context.}{@link UpdateContext#updateLocation updateLocation}.
-     */
-    protected abstract LocationContext locationContext(UpdateContext context,
-                                                       String location)
+    /** Derives the location context from the given update context. */
+    protected abstract LocationContext locationContext(UpdateContext context)
     throws Exception;
 
     @Override
-    public final void install(final UpdateContext context) throws Exception {
+    public final void install(final UpdateContext uc) throws Exception {
 
         class PatchTask implements PathTask<Void, Exception> {
 
@@ -61,7 +54,7 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 this.patch = ZipPatch
                         .builder()
                         .input(deployedZip)
-                        .diff(context.diffZip())
+                        .diff(uc.diffZip())
                         .build();
             }
 
@@ -72,59 +65,56 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
-        final LocationContext current =
-                locationContext(context, context.currentLocation());
-        final LocationContext update =
-                locationContext(context, context.updateLocation());
+        final LocationContext lc = locationContext(uc);
 
         loanTempDir(new PathTask<Void, Exception>() {
 
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updateJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
-                if (current.path().isFile()) {
+                if (lc.currentPath().isFile()) {
                     Transactions.execute(new CompositeTransaction(
                             decorate(PATCH,
                                     new PathTaskTransaction(updateJar,
-                                            new PatchTask(current.path()))),
+                                            new PatchTask(lc.currentPath()))),
                             decorate(UNDEPLOY,
-                                    current.undeploymentTransaction()),
+                                    lc.undeploymentTransaction()),
                             decorate(SWAP_OUT_FILE,
                                     new RenamePathTransaction(
-                                            current.path(), backup)),
+                                            lc.currentPath(), backup)),
                             decorate(SWAP_IN_FILE,
                                     new RenamePathTransaction(updateJar,
-                                            update.path())),
+                                            lc.updatePath())),
                             decorate(DEPLOY,
-                                    update.deploymentTransaction())));
+                                    lc.deploymentTransaction())));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updateDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
                             decorate(ZIP,
                                     new ZipTransaction(currentZip,
-                                            current.path(), "")),
+                                            lc.currentPath(), "")),
                             decorate(PATCH,
                                     new PathTaskTransaction(updateJar,
                                             new PatchTask(currentZip))),
                             decorate(UNZIP,
                                     new UnzipTransaction(updateJar, updateDir)),
                             decorate(UNDEPLOY,
-                                    current.undeploymentTransaction()),
+                                    lc.undeploymentTransaction()),
                             decorate(SWAP_OUT_DIR,
                                     new RenamePathTransaction(
-                                            current.path(), backup)),
+                                            lc.currentPath(), backup)),
                             decorate(SWAP_IN_DIR,
                                     new RenamePathTransaction(updateDir,
-                                            update.path())),
+                                            lc.updatePath())),
                             decorate(DEPLOY,
-                                    update.deploymentTransaction())));
+                                    lc.deploymentTransaction())));
                 }
                 return null;
             }
 
             Transaction decorate(Action id, Transaction tx) {
-                return context.decorate(id, tx);
+                return uc.decorate(id, tx);
             }
         }, "dir", null, tempDir());
     }
@@ -132,13 +122,22 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
     /** The context for a location provided to the update installer. */
     public interface LocationContext {
 
-        /** Returns the path of the application. */
-        File path();
+        /** Returns the current path of the application. */
+        File currentPath();
 
-        /** Returns the transaction for undeploying the application. */
+        /** Returns the update path of the application. */
+        File updatePath();
+
+        /**
+         * Returns the transaction for undeploying the application at the
+         * current path.
+         */
         Transaction undeploymentTransaction();
 
-        /** Returns the transaction for deploying the application. */
+        /**
+         * Returns the transaction for deploying the application at the
+         * update path.
+         */
         Transaction deploymentTransaction();
     }
 }

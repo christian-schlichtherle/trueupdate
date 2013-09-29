@@ -26,28 +26,29 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
     private @EJB Deployer deployer;
 
     @Override
-    protected LocationContext locationContext(final UpdateContext context,
-                                              final String location)
+    protected LocationContext locationContext(final UpdateContext uc)
     throws Exception {
 
-        final File path = location.equals(context.currentLocation())
-                ? resolveDeployedPath(new URI(location))
-                : new File(location);
+        final File cpath = resolveCurrentPath(new URI(uc.currentLocation()));
+        final File upath = uc.updateLocation().equals(uc.currentLocation())
+                ? cpath : new File(uc.updateLocation());
 
         class ResolvedLocationContext implements LocationContext {
 
-            @Override public File path() { return path; }
+            @Override public File currentPath() { return cpath; }
+
+            @Override public File updatePath() { return upath; }
 
             @Override public Transaction undeploymentTransaction() {
 
                 class UndeploymentTransaction extends AtomicMethodsTransaction {
 
                     @Override public void performAtomic() throws Exception {
-                        deployer.undeploy(path.getPath());
+                        deployer.undeploy(cpath.getPath());
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
-                        deployer.deploy(path.getPath());
+                        deployer.deploy(cpath.getPath());
                     }
                 } // UndeploymentTransaction
 
@@ -59,11 +60,11 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
                 class DeploymentTransaction extends AtomicMethodsTransaction {
 
                     @Override public void performAtomic() throws Exception {
-                        deployer.deploy(path.getPath());
+                        deployer.deploy(upath.getPath());
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
-                        deployer.undeploy(path.getPath());
+                        deployer.undeploy(upath.getPath());
                     }
                 } // DeploymentTransaction
 
@@ -74,7 +75,7 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
         return new ResolvedLocationContext();
     }
 
-    private File resolveDeployedPath(final URI location) throws Exception {
+    private File resolveCurrentPath(final URI location) throws Exception {
         final Scheme scheme = Scheme.valueOf(location.getScheme());
         for (final AppInfo info : deployer.getDeployedApps())
             if (scheme.matches(location, info))

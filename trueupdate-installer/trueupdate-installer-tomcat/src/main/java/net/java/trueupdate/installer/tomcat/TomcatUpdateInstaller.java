@@ -57,47 +57,60 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
     }
 
     @Override
-    protected LocationContext locationContext(final UpdateContext _,
-                                              final String location)
+    protected LocationContext locationContext(final UpdateContext uc)
     throws Exception {
 
         class ResolvedLocationContext implements LocationContext {
 
-            final ContextName cn = new ContextName(location);
-            final String name = cn.getName();
-            final File dir = new File(appBase(), cn.getBaseName());
-            final File war = new File(dir.getPath() + ".war");
-            final File path = war.isFile() ? war : dir;
+            final File appBase = appBase();
 
-            @Override public File path() { return path; }
+            final ContextName ccn = new ContextName(uc.currentLocation());
+            final String cname = ccn.getName();
+            final File cdir = new File(appBase, ccn.getBaseName());
+            final File cwar = new File(cdir.getPath() + ".war");
+
+            final boolean warDeployment = cwar.isFile();
+
+            final ContextName ucn = new ContextName(uc.updateLocation());
+            final String uname = ucn.getName();
+            final File udir = new File(appBase, ucn.getBaseName());
+            final File uwar = new File(udir.getPath() + ".war");
+
+            @Override public File currentPath() {
+                return warDeployment ? cwar : cdir;
+            }
+
+            @Override public File updatePath() {
+                return warDeployment ? uwar : udir;
+            }
 
             @Override public Transaction undeploymentTransaction() {
 
                 class UndeploymentTransaction extends AtomicMethodsTransaction {
 
                     @Override public void prepareAtomic() throws Exception {
-                        if (!config.isDeployed(name))
+                        if (!config.isDeployed(cname))
                             throw new Exception(String.format(
                                     "The application %s is not deployed.",
-                                    cn.getDisplayName()));
-                        config.addServiced(name);
+                                    ccn.getDisplayName()));
+                        config.addServiced(cname);
                     }
 
                     @Override public void performAtomic() throws Exception {
-                        config.unmanageApp(name);
-                        cleanupUnwantedSideEffectsOfDeployment();
+                        config.unmanageApp(cname);
+                        if (warDeployment) Files.deletePath(cdir);
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
                         try {
-                            config.check(name);
+                            config.check(cname);
                         } finally {
-                            config.removeServiced(name);
+                            config.removeServiced(cname);
                         }
                     }
 
                     @Override public void commitAtomic() throws Exception {
-                        config.removeServiced(name);
+                        config.removeServiced(cname);
                     }
                 } // UndeploymentTransaction
 
@@ -110,24 +123,20 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
                     @Override
                     public void prepareAtomic() throws Exception {
-                        assert !config.isDeployed(name);
+                        assert !config.isDeployed(uname);
                     }
 
                     @Override public void performAtomic() throws Exception {
-                        config.check(name);
+                        config.check(uname);
                     }
 
                     @Override public void rollbackAtomic() throws Exception {
-                        config.unmanageApp(name);
-                        cleanupUnwantedSideEffectsOfDeployment();
+                        config.unmanageApp(uname);
+                        if (warDeployment) Files.deletePath(udir);
                     }
                 } // DeploymentTransaction
 
                 return new DeploymentTransaction();
-            }
-
-            void cleanupUnwantedSideEffectsOfDeployment() throws IOException {
-                if (path == war) Files.deletePath(dir);
             }
         } // ResolvedLocationContext
 

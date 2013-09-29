@@ -15,7 +15,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
-import net.java.trueupdate.manager.spec.tx.Transactions
+import net.java.trueupdate.manager.spec._
+import net.java.trueupdate.manager.spec.tx._
 
 /**
  * @author Christian Schlichtherle
@@ -33,11 +34,16 @@ class TomcatUpdateInstallerIT {
                            new ContextName(location).getBaseName + ".war")
 
     testArchive as classOf[ZipExporter] exportTo testWar
-    val context = installer locationContext (null, location)
+    val context = installer locationContext (new UpdateContext {
+        override def currentLocation = location
+        override def updateLocation = location
+        override def diffZip = null
+        override def decorate(id: Action, tx: Transaction) = tx
+      })
     Transactions execute context.deploymentTransaction
 
     Transactions execute context.undeploymentTransaction
-    deletePath(context.path)
+    deletePath(context.currentPath)
 
     updateArchive as classOf[ZipExporter] exportTo testWar
     Transactions execute context.deploymentTransaction

@@ -8,8 +8,8 @@ import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.LocalUpdateInstaller;
-import net.java.trueupdate.manager.spec.tx.Transaction;
 import net.java.trueupdate.manager.spec.UpdateContext;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 
 /**
  * Installs updates for applications running in a container which is supported
@@ -21,23 +21,27 @@ import net.java.trueupdate.manager.spec.UpdateContext;
 public final class CargoUpdateInstaller extends LocalUpdateInstaller {
 
     @Override
-    protected LocationContext locationContext(final UpdateContext _,
-                                              final String location)
+    protected LocationContext locationContext(final UpdateContext uc)
     throws Exception {
 
-        final CargoContext context = new CargoContext(new URI(location));
-        final File path = context.deployablePath();
+        final CargoContext ccc = new CargoContext(new URI(uc.currentLocation()));
+        final File cpath = ccc.deployablePath();
+
+        final CargoContext ucc = new CargoContext(new URI(uc.updateLocation()));
+        final File upath = ucc.deployablePath();
 
         class ResolvedLocationContext implements LocationContext {
 
-            @Override public File path() { return path; }
+            @Override public File currentPath() { return cpath; }
+
+            @Override public File updatePath() { return upath; }
 
             @Override public Transaction undeploymentTransaction() {
-                return context.undeploymentTransaction();
+                return ccc.undeploymentTransaction();
             }
 
             @Override public Transaction deploymentTransaction() {
-                return context.deploymentTransaction();
+                return ucc.deploymentTransaction();
             }
         } // ResolvedLocationContext
 

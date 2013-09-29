@@ -5,7 +5,6 @@
 package net.java.trueupdate.installer.core
 
 import java.io._
-import java.util.logging.Level
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
@@ -45,11 +44,12 @@ class LocalUpdateInstallerIT extends WordSpec {
     .build
 
   def updateInstaller: UpdateInstaller = new LocalUpdateInstaller {
-    def locationContext(context: UpdateContext, location: String) =
+    def locationContext(context: UpdateContext) =
       new LocationContext {
-        def path = new File(location)
-        def deploymentTransaction() = mock[Transaction]
-        def undeploymentTransaction() = mock[Transaction]
+        override def currentPath = new File(context.currentLocation)
+        override def updatePath = new File(context.updateLocation)
+        override def deploymentTransaction() = mock[Transaction]
+        override def undeploymentTransaction() = mock[Transaction]
       }
   }
 

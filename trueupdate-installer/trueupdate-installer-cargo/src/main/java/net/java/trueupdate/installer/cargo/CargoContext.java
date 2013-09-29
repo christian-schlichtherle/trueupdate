@@ -9,11 +9,9 @@ import java.net.*;
 import java.util.*;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-
-import static net.java.trueupdate.util.Objects.nonNullOr;
-
 import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
 import net.java.trueupdate.manager.spec.tx.Transaction;
+import static net.java.trueupdate.util.Objects.nonNullOr;
 import org.codehaus.cargo.container.*;
 import org.codehaus.cargo.container.configuration.*;
 import org.codehaus.cargo.container.deployable.*;
