@@ -407,21 +407,9 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <artifactId>maven-ear-plugin</artifactId>
-                    <configuration>
-                        <applicationName>${project.artifactId}</applicationName>
-                        <description>${project.description}</description>
-                        <displayName>${project.name}</displayName>
-                        <filtering>true</filtering>
-                        <version>${javaee.version}</version>
-                        <defaultLibBundleDir>lib</defaultLibBundleDir>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <artifactId>maven-ejb-plugin</artifactId>
                     <configuration>
                         <ejbVersion>3.1</ejbVersion>
-                        <filterDeploymentDescriptor>true</filterDeploymentDescriptor>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -438,30 +426,6 @@
                         <systemPropertyVariables>
                             <java.awt.headless>true</java.awt.headless>
                         </systemPropertyVariables>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <configuration>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>jaxb2-maven-plugin</artifactId>
-                    <version>1.5</version>
-                    <executions>
-                        <execution>
-                            <id>schemagen</id>
-                            <goals>
-                                <goal>schemagen</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <includes>
-                            <include>**/dto/*.java</include>
-                        </includes>
                     </configuration>
                 </plugin>
             </plugins>
