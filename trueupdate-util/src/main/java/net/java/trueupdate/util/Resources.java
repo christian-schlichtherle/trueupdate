@@ -26,7 +26,7 @@ public final class Resources {
             url = en.nextElement();
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
-                    "Cannot locate resource %s on the class path.", name), ex);
+                    "Cannot locate the resource %s on the class path.", name), ex);
         }
         if (en.hasMoreElements())
             Logger  .getLogger(Resources.class.getName())
