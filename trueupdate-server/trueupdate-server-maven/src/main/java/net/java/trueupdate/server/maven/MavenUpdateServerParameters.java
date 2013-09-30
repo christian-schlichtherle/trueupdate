@@ -22,7 +22,7 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @Immutable
 public final class MavenUpdateServerParameters {
 
-    private static final String CONFIGURATION = "META-INF/update/server.xml";
+    private static final String CONFIGURATION = "update/server.xml";
 
     private final ArtifactResolver artifactResolver;
 
@@ -32,7 +32,7 @@ public final class MavenUpdateServerParameters {
 
     /**
      * Loads Maven update server parameters from the configuration resource
-     * file with the name {@code META-INF/update/server.xml}.
+     * file with the name {@code update/server.xml}.
      */
     public static MavenUpdateServerParameters load() {
         return load(net.java.trueupdate.util.Resources.locate(CONFIGURATION));

@@ -23,7 +23,7 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @Immutable
 public final class JmsUpdateManagerParameters {
 
-    private static final String CONFIGURATION = "META-INF/update/manager.xml";
+    private static final String CONFIGURATION = "update/manager.xml";
 
     private final UpdateServiceParameters updateService;
     private final TimerParameters updateTimer;
@@ -37,7 +37,7 @@ public final class JmsUpdateManagerParameters {
 
     /**
      * Loads JMS update manager parameters from the configuration resource
-     * file with the name {@code META-INF/update/manager.xml}.
+     * file with the name {@code update/manager.xml}.
      */
     public static JmsUpdateManagerParameters load() {
         return load(net.java.trueupdate.util.Resources.locate(CONFIGURATION));
