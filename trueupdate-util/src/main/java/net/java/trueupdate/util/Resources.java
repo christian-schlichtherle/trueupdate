@@ -29,9 +29,10 @@ public final class Resources {
                     "Cannot locate resource %s on the class path.", name), ex);
         }
         if (en.hasMoreElements())
-            Logger.getLogger(Resources.class.getName()).log(Level.WARNING,
-                    "There is more than one resource with the name {0} on the class path. Selecting {1} .",
-                    new Object[] { name, url });
+            Logger  .getLogger(Resources.class.getName())
+                    .log(Level.WARNING,
+                        "There is more than one resource with the name {0} on the class path. Selecting {1} .",
+                        new Object[] { name, url });
         return url;
     }
 
