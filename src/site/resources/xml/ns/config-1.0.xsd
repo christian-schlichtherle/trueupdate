@@ -63,7 +63,7 @@
                 </xs:annotation>
             </xs:element>
         </xs:all>
-        <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="required" fixed="1.0"/>
     </xs:complexType>
 
     <xs:complexType name="JmsUpdateManagerParameters">
@@ -90,7 +90,7 @@
                 </xs:annotation>
             </xs:element>
         </xs:all>
-        <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="required" fixed="1.0"/>
     </xs:complexType>
 
     <xs:complexType name="UpdateServiceParameters">
@@ -211,7 +211,7 @@
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
-        <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="required" fixed="1.0"/>
     </xs:complexType>
 
     <xs:complexType name="ApplicationParameters">
