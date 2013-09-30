@@ -16,9 +16,6 @@
         <unit>minutes</unit>
     </updateTimer>
     <messaging>
-        <naming>
-            <contextLookup>java:comp/env</contextLookup>
-        </naming>
         <connectionFactory>${parentArtifactId}/connection-factory</connectionFactory>
         <from>${parentArtifactId}/manager</from>
     </messaging>

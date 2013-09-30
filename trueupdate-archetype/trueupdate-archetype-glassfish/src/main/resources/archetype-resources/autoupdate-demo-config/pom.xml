@@ -9,22 +9,16 @@
     </parent>
 
     <artifactId>${artifactId}</artifactId>
-    <packaging>war</packaging>
 
     <name>${project.artifactId}</name>
     <description>
-        Bundles the TrueUpdate Manager and TrueUpdate Installer
-        components for deployment to an Apache Tomcat container.
+        Provides a sample update agent configuration.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-installer-tomcat</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-manager-servlet</artifactId>
+            <artifactId>trueupdate-agent-spec</artifactId>
         </dependency>
     </dependencies>
 </project>

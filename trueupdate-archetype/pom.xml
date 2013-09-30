@@ -20,7 +20,42 @@
         The parent POM for TrueUpdate Archetype modules.
     </description>
 
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>2.2</version>
+            </extension>
+        </extensions>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>integration-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!-- TODO: The purpose here is to work around a bug
+                            in the failsafe-plugin which causes it to try
+                            to run the integration tests of the generated
+                            test project!
+                            This would fail because the class path isn't
+                            set up correctly, besides the fact that it
+                            makes no sense to run the integration tests of
+                            the generated test project from outside. -->
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <modules>
+        <module>trueupdate-archetype-glassfish</module>
         <module>trueupdate-archetype-tomcat</module>
     </modules>
 </project>

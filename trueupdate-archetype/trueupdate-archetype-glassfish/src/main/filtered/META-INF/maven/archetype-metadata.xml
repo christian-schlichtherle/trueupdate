@@ -31,32 +31,37 @@
     </requiredProperties>
     <modules>
         <module id="${rootArtifactId}-demo-app" dir="autoupdate-demo-app" name="${rootArtifactId}-demo-app">
-            <fileSets>
-                <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src</directory>
-                </fileSet>
-            </fileSets>
+            <fileSet filtered="true" encoding="UTF-8">
+                <directory>src</directory>
+            </fileSet>
         </module>
-        <module id="${rootArtifactId}-demo-listener" dir="autoupdate-demo-listener" name="${rootArtifactId}-demo-listener">
+        <module id="${rootArtifactId}-demo-config" dir="autoupdate-demo-config" name="${rootArtifactId}-demo-config">
             <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                </fileSet>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src/main/filtered</directory>
                 </fileSet>
             </fileSets>
         </module>
         <module id="${rootArtifactId}-manager-app" dir="autoupdate-manager-app" name="${rootArtifactId}-manager-app">
-            <fileSets>
-                <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src</directory>
-                </fileSet>
-            </fileSets>
+            <fileSet filtered="true" encoding="UTF-8">
+                <directory>src</directory>
+            </fileSet>
+        </module>
+        <module id="${rootArtifactId}-manager-config" dir="autoupdate-manager-config" name="${rootArtifactId}-manager-config">
+            <fileSet filtered="true" encoding="UTF-8">
+                <directory>src</directory>
+            </fileSet>
         </module>
         <module id="${rootArtifactId}-server-app" dir="autoupdate-server-app" name="${rootArtifactId}-server-app">
-            <fileSets>
-                <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src</directory>
-                </fileSet>
-            </fileSets>
+            <fileSet filtered="true" encoding="UTF-8">
+                <directory>src</directory>
+            </fileSet>
         </module>
     </modules>
 </archetype-descriptor>

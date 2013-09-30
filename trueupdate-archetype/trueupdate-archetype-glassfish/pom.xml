@@ -12,26 +12,28 @@
         <version>0.5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>trueupdate-archetype-tomcat</artifactId>
+    <artifactId>trueupdate-archetype-glassfish</artifactId>
     <packaging>maven-archetype</packaging>
 
-    <name>TrueUpdate Archetype Tomcat</name>
+    <name>Trueupdate Archetype Glassfish</name>
     <description>
-        An archetype for a TrueUpdate application running in Apache Tomcat.
+        An archetype for a TrueUpdate application running in Oracle Glassfish.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-agent-servlet</artifactId>
+            <artifactId>trueupdate-agent-ejb</artifactId>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-installer-tomcat</artifactId>
+            <artifactId>trueupdate-installer-cargo</artifactId>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-manager-servlet</artifactId>
+            <artifactId>trueupdate-manager-ejb</artifactId>
+            <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>

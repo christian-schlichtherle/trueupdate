@@ -14,7 +14,7 @@
     <name>${project.artifactId}</name>
     <description>
         Bundles the application components with the TrueUpdate Agent components
-        for deployment to a Tomcat container.
+        for deployment to an Apache Tomcat container.
     </description>
 
     <dependencies>

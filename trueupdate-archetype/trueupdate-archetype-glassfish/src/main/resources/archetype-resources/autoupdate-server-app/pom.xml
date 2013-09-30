@@ -12,19 +12,19 @@
     <packaging>war</packaging>
 
     <name>${project.artifactId}</name>
-    <description>
-        Bundles the TrueUpdate Manager and TrueUpdate Installer
-        components for deployment to an Apache Tomcat container.
+    <description
+    >Bundles the TrueUpdate Server components
+        for deployment to an Oracle Glassfish container.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-installer-tomcat</artifactId>
+            <artifactId>trueupdate-server-maven</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-manager-servlet</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
         </dependency>
     </dependencies>
 </project>

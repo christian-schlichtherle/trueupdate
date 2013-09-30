@@ -9,22 +9,24 @@
     </parent>
 
     <artifactId>${artifactId}</artifactId>
-    <packaging>war</packaging>
+    <packaging>ear</packaging>
 
     <name>${project.artifactId}</name>
     <description>
-        Bundles the TrueUpdate Manager and TrueUpdate Installer
-        components for deployment to an Apache Tomcat container.
+        Bundles the application components with the TrueUpdate Agent components
+        for deployment to an Oracle Glassfish container.
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-installer-tomcat</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${rootArtifactId}-demo-config</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-manager-servlet</artifactId>
+            <artifactId>trueupdate-agent-ejb</artifactId>
+            <type>ejb</type>
         </dependency>
     </dependencies>
 </project>
