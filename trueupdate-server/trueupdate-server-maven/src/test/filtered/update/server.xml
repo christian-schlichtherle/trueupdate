@@ -3,17 +3,12 @@
   - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
   - All rights reserved. Use is subject to license terms.
   -->
-<!--
-  - Configures the server.
-  - Note that any references of the form ${key} in the value of an element
-  - get substituted with the value of the system property with the specified
-  - key, e.g. ${user.home} gets replaced with the path of the current user's
-  - home directory.
-  -->
-<server xmlns="https://trueupdate.java.net/xml/ns/config"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://trueupdate.java.net/xml/ns/config https://trueupdate.java.net/xml/ns/config/server-1.0.xsd"
-        version="1.0">
+<server
+    xmlns="https://trueupdate.java.net/xml/ns/config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://trueupdate.java.net/xml/ns/config
+                        https://trueupdate.java.net/xml/ns/config/server-1.0.xsd"
+    version="1.0">
     <repositories>
         <!-- Configures the mandatory local repository. -->
         <local>
