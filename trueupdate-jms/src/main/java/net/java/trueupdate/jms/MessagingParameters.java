@@ -49,8 +49,9 @@ public final class MessagingParameters {
                         .getContextClassLoader()
                         .loadClass(resolve(ci.initialContextClass))
                         .newInstance();
-            return (Context) context.lookup(resolve(ci.relativePath,
-                                                    "java:comp/env"));
+            return null == ci.contextLookup
+                    ? context
+                    : (Context) context.lookup(resolve(ci.contextLookup));
         } catch (Exception ex) {
             throw new IllegalArgumentException(ex);
         }

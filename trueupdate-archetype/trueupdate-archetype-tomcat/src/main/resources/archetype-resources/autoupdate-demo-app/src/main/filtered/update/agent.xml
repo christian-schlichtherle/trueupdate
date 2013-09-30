@@ -14,13 +14,16 @@
             <extension>${symbol_dollar}{project.packaging}</extension>
         </artifact>
         <location>/${parentArtifactId}-demo</location>
-        <listenerClass>${package}.agent.ApplicationListener</listenerClass>
+        <listenerClass>${package}.demo.ApplicationListener</listenerClass>
     </application>
     <subscriptionTimer>
         <delay>${symbol_dollar}{agent.subscriptionTimer.delay}</delay>
         <unit>seconds</unit>
     </subscriptionTimer>
     <messaging>
+        <naming>
+            <contextLookup>java:comp/env</contextLookup>
+        </naming>
         <connectionFactory>${parentArtifactId}/connection-factory</connectionFactory>
         <from>${parentArtifactId}/agent</from>
         <to>${parentArtifactId}/manager</to>

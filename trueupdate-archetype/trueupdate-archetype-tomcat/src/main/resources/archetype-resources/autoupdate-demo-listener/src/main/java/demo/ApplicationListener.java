@@ -1,7 +1,7 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${package}.agent;
+package ${package}.demo;
 
 import java.util.logging.*;
 import net.java.trueupdate.agent.spec.*;

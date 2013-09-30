@@ -28,31 +28,31 @@
         </requiredProperty>
     </requiredProperties>
     <modules>
-        <module id="${rootArtifactId}-agent" dir="autoupdate-agent" name="${rootArtifactId}-agent">
+        <module id="${rootArtifactId}-demo-app" dir="autoupdate-demo-app" name="${rootArtifactId}-demo-app">
+            <fileSets>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src</directory>
+                </fileSet>
+            </fileSets>
+        </module>
+        <module id="${rootArtifactId}-demo-listener" dir="autoupdate-demo-listener" name="${rootArtifactId}-demo-listener">
             <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>
                 </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-demo" dir="autoupdate-demo" name="${rootArtifactId}-demo">
+        <module id="${rootArtifactId}-manager-app" dir="autoupdate-manager-app" name="${rootArtifactId}-manager-app">
             <fileSets>
                 <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src/main</directory>
+                    <directory>src</directory>
                 </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-manager" dir="autoupdate-manager" name="${rootArtifactId}-manager">
+        <module id="${rootArtifactId}-server-app" dir="autoupdate-server-app" name="${rootArtifactId}-server-app">
             <fileSets>
                 <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src/main</directory>
-                </fileSet>
-            </fileSets>
-        </module>
-        <module id="${rootArtifactId}-server" dir="autoupdate-server" name="${rootArtifactId}-server">
-            <fileSets>
-                <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src/main</directory>
+                    <directory>src</directory>
                 </fileSet>
             </fileSets>
         </module>

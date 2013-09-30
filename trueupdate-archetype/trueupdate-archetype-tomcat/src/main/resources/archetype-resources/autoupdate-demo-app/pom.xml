@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>${rootArtifactId}-agent</artifactId>
+            <artifactId>${rootArtifactId}-demo-listener</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -190,11 +190,17 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element default="java:comp/env" minOccurs="0" name="relativePath" type="xs:string">
+            <xs:element minOccurs="0" name="contextLookup" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
-                        The JNDI name of the JMS connection factory.
-                        The default value is "java:comp/env".
+                        The optional JNDI name of a context to lookup.
+                        This should be specified if and only if the JMS
+                        administered objects (connection factory and
+                        destinations) need to get looked up from a context
+                        other than the initial context.
+                        The property value then needs to specify the JNDI name
+                        of the context to lookup from the initial context,
+                        e.g. "java:comp/env".
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

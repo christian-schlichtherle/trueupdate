@@ -20,6 +20,5 @@ public final class NamingParametersDto {
     @XmlElement(defaultValue = "javax.naming.InitialContext")
     public String initialContextClass;
 
-    @XmlElement(defaultValue = "java:comp/env")
-    public String relativePath;
+    public String contextLookup;
 }
