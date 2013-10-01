@@ -45,7 +45,7 @@ public final class JmsUpdateManagerContext {
                 .build();
         timer = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override public Thread newThread(Runnable r) {
-                return new Thread(r, "TrueUpdate Manager JMS / Update Timer Thread");
+                return new Thread(r, "TrueUpdate Manager JMS / Update Timer");
             }
         });
     }
@@ -53,7 +53,7 @@ public final class JmsUpdateManagerContext {
     public JmsUpdateManagerParameters parameters() { return parameters; }
 
     public void start() throws Exception {
-        new Thread(receiver, "TrueUpdate Manager JMS / Receiver Thread").start();
+        new Thread(receiver, "TrueUpdate Manager JMS / Receiver").start();
         final TimerParameters tp = parameters.updateTimer();
         timer.scheduleAtFixedRate(new CheckForUpdates(manager), tp.delay(), tp.period(), tp.unit());
     }

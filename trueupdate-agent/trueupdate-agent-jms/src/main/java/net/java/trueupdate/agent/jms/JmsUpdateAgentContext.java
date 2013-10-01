@@ -50,12 +50,12 @@ public final class JmsUpdateAgentContext {
     }
 
     public void start() throws Exception {
-        new Thread(receiver, "TrueUpdate Agent JMS / Receiver Thread").start();
+        new Thread(receiver, "TrueUpdate Agent JMS / Receiver").start();
         final long delay = subscriptionDelay.unit()
                 .toMillis(subscriptionDelay.delay());
         if (0 < delay) {
             final Timer timer = new Timer(
-                    "TrueUpdate Agent JMS / Subscription Timer Thread", true);
+                    "TrueUpdate Agent JMS / Subscription Timer", true);
             timer.schedule(new TimerTask() {
                 @Override public void run() {
                     try {

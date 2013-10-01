@@ -29,7 +29,7 @@ public final class JmsReceiver implements Runnable {
     public static final ThreadFactory LISTENER_THREAD_FACTORY =
             new ThreadFactory() {
                 @Override public Thread newThread(Runnable r) {
-                    return new Thread(r, "TrueUpdate JMS / Listener Thread");
+                    return new Thread(r, "TrueUpdate JMS / Listener");
                 }
             };
 
