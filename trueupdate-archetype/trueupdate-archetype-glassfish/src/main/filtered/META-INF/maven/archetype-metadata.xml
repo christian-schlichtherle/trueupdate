@@ -31,9 +31,11 @@
     </requiredProperties>
     <modules>
         <module id="${rootArtifactId}-demo-app" dir="autoupdate-demo-app" name="${rootArtifactId}-demo-app">
-            <fileSet filtered="true" encoding="UTF-8">
-                <directory>src</directory>
-            </fileSet>
+            <fileSets>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src</directory>
+                </fileSet>
+            </fileSets>
         </module>
         <module id="${rootArtifactId}-demo-config" dir="autoupdate-demo-config" name="${rootArtifactId}-demo-config">
             <fileSets>
@@ -49,19 +51,25 @@
             </fileSets>
         </module>
         <module id="${rootArtifactId}-manager-app" dir="autoupdate-manager-app" name="${rootArtifactId}-manager-app">
-            <fileSet filtered="true" encoding="UTF-8">
-                <directory>src</directory>
-            </fileSet>
+            <fileSets>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src</directory>
+                </fileSet>
+            </fileSets>
         </module>
         <module id="${rootArtifactId}-manager-config" dir="autoupdate-manager-config" name="${rootArtifactId}-manager-config">
-            <fileSet filtered="true" encoding="UTF-8">
-                <directory>src</directory>
-            </fileSet>
+            <fileSets>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src</directory>
+                </fileSet>
+            </fileSets>
         </module>
         <module id="${rootArtifactId}-server-app" dir="autoupdate-server-app" name="${rootArtifactId}-server-app">
-            <fileSet filtered="true" encoding="UTF-8">
-                <directory>src</directory>
-            </fileSet>
+            <fileSets>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src</directory>
+                </fileSet>
+            </fileSets>
         </module>
     </modules>
 </archetype-descriptor>
