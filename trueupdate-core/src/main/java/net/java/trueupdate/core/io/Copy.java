@@ -51,17 +51,23 @@ public final class Copy {
      */
     public static void copy(final Source source, final Sink sink)
     throws InputException, IOException {
+
         class SourceTask implements InputTask<Void, IOException> {
-            @Override public Void execute(final InputStream in) throws IOException {
+            @Override
+            public Void execute(final InputStream in) throws IOException {
+
                 class SinkTask implements OutputTask<Void, IOException> {
-                    @Override public Void execute(final OutputStream out) throws IOException {
+                    @Override
+                    public Void execute(final OutputStream out) throws IOException {
                         cat(in, out);
                         return null;
                     }
-                }
+                } // SinkTask
+
                 return Sinks.execute(new SinkTask()).on(sink);
             }
-        }
+        } // SourceTask
+
         Sources.execute(new SourceTask()).on(source);
     }
 

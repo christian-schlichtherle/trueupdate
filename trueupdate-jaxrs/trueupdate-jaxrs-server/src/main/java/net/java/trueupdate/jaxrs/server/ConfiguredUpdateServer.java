@@ -104,6 +104,7 @@ public final class ConfiguredUpdateServer {
         return new StreamingOutput() {
             @Override public void write(final @WillNotClose OutputStream out)
             throws IOException {
+
                 class DiffSink implements ZipSink {
                     @Override public ZipOutput output() throws IOException {
                         return new ZipOutputStreamAdapter(new ZipOutputStream(out) {
@@ -113,6 +114,7 @@ public final class ConfiguredUpdateServer {
                         });
                     }
                 } // DiffSink
+
                 ZipDiff .builder()
                         .input1(input1)
                         .input2(input2)
