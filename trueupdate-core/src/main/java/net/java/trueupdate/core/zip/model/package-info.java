@@ -5,7 +5,7 @@
 /**
  * Provides model classes for use within ZIP patch files.
  *
- * @see net.java.trueupdate.core.zip.model.DiffModel
+ * @see net.java.trueupdate.core.zip.model.DeltaModel
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull

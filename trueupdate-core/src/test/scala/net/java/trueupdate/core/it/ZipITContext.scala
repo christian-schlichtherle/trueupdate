@@ -12,7 +12,7 @@ import net.java.trueupdate.core.TestContext
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip._
 import net.java.trueupdate.core.zip.diff.RawZipDiff
-import net.java.trueupdate.core.zip.model.DiffModel
+import net.java.trueupdate.core.zip.model.DeltaModel
 import net.java.trueupdate.core.zip.patch._
 import net.java.trueupdate.core.zip.io.{ZipSources, ZipInputTask, ZipInput}
 
@@ -54,5 +54,5 @@ trait ZipITContext extends TestContext {
 
   def digest = MessageDigests.sha1
 
-  override lazy val jaxbContext = DiffModel.jaxbContext
+  override lazy val jaxbContext = DeltaModel.jaxbContext
 }

@@ -3,7 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides a class to generate and apply a ZIP patch file.
+ * Provides classes to apply a delta ZIP file to an input archive and generate
+ * an output archive.
+ * Archives may be ZIP, JAR, EAR or WAR files.
  *
  * @author Christian Schlichtherle
  */

@@ -20,7 +20,7 @@ import net.java.trueupdate.util.HashMaps;
 import net.java.trueupdate.util.Objects;
 
 /**
- * A Value Object which represents the meta data in a ZIP patch file.
+ * A Value Object which represents the meta data in a delta ZIP file.
  * It encapsulates unmodifiable collections of changed, unchanged, added and
  * removed entry names and message digests in canonical string notation,
  * attributed with the message digest algorithm name and byte length.
@@ -28,18 +28,18 @@ import net.java.trueupdate.util.Objects;
  * @author Christian Schlichtherle
  */
 @Immutable
-@XmlRootElement(name = "diff")
+@XmlRootElement(name = "delta")
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DiffModel implements Serializable {
+public final class DeltaModel implements Serializable {
 
     private static final long serialVersionUID = 0L;
 
     /**
-     * The name of the entry which contains the marshalled diff model in a
-     * ZIP patch file.
-     * This should be the first entry in the ZIP patch file.
+     * The name of the entry which contains the marshalled delta model in a
+     * delta ZIP file.
+     * This should be the first entry in the delta ZIP file.
      */
-    public static final String ENTRY_NAME = "META-INF/diff.xml";
+    public static final String ENTRY_NAME = "META-INF/delta.xml";
 
     @XmlAttribute(required = true)
     private final String algorithm;
@@ -55,14 +55,14 @@ public final class DiffModel implements Serializable {
             unchanged, added, removed;
 
     /** Required for JAXB. */
-    private DiffModel() {
+    private DeltaModel() {
         algorithm = "";
         numBytes = null;
         changed = emptyMap();
         unchanged = added = removed = emptyMap();
     }
 
-    DiffModel(final Builder b) {
+    DeltaModel(final Builder b) {
         this.algorithm = b.messageDigest.getAlgorithm();
         this.numBytes = lengthBytes(b.messageDigest);
         this.changed = changedMap(b.changed);
@@ -71,7 +71,7 @@ public final class DiffModel implements Serializable {
         this.removed = unchangedMap(b.removed);
     }
 
-    /** Returns a new builder for a diff model. */
+    /** Returns a new builder for a delta model. */
     public static Builder builder() { return new Builder(); }
 
     private static @Nullable Integer lengthBytes(final MessageDigest digest) {
@@ -115,7 +115,7 @@ public final class DiffModel implements Serializable {
     /**
      * Returns the message digest byte length.
      * This is {@code null} if and only if the byte length of the message
-     * digest used to build this diff model is the default value for the
+     * digest used to build this delta model is the default value for the
      * algorithm.
      */
     public @Nullable Integer digestByteLength() { return numBytes; }
@@ -175,8 +175,8 @@ public final class DiffModel implements Serializable {
     @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof DiffModel)) return false;
-        final DiffModel that = (DiffModel) obj;
+        if (!(obj instanceof DeltaModel)) return false;
+        final DeltaModel that = (DeltaModel) obj;
         return  this.algorithm.equals(that.algorithm) &&
                 Objects.equals(this.numBytes, that.numBytes) &&
                 this.changed.equals(that.changed) &&
@@ -197,7 +197,7 @@ public final class DiffModel implements Serializable {
     }
 
     /**
-     * Encodes this diff model to XML.
+     * Encodes this delta model to XML.
      *
      * @param sink the sink for writing the XML.
      * @throws Exception at the discretion of the JAXB codec, e.g. if the
@@ -207,7 +207,7 @@ public final class DiffModel implements Serializable {
 
         class EncodeTask implements OutputTask<Void, JAXBException> {
             @Override public Void execute(OutputStream out) throws JAXBException {
-                jaxbContext().createMarshaller().marshal(DiffModel.this, out);
+                jaxbContext().createMarshaller().marshal(DeltaModel.this, out);
                 return null;
             }
         } // EncodeTask
@@ -216,18 +216,18 @@ public final class DiffModel implements Serializable {
     }
 
     /**
-     * Decodes a diff model from XML.
+     * Decodes a delta model from XML.
      *
      * @param source the source for reading the XML.
-     * @return the decoded diff model.
+     * @return the decoded delta model.
      * @throws Exception at the discretion of the JAXB codec, e.g. if the
      *         source isn't readable.
      */
-    public static DiffModel decodeFromXml(Source source) throws Exception {
+    public static DeltaModel decodeFromXml(Source source) throws Exception {
 
-        class DecodeTask implements InputTask<DiffModel, JAXBException> {
-            @Override public DiffModel execute(InputStream in) throws JAXBException {
-                return (DiffModel) jaxbContext().createUnmarshaller().unmarshal(in);
+        class DecodeTask implements InputTask<DeltaModel, JAXBException> {
+            @Override public DeltaModel execute(InputStream in) throws JAXBException {
+                return (DeltaModel) jaxbContext().createUnmarshaller().unmarshal(in);
             }
         } // DecodeTask
 
@@ -242,13 +242,13 @@ public final class DiffModel implements Serializable {
         static final JAXBContext JAXB_CONTEXT;
 
         static {
-            try { JAXB_CONTEXT = JAXBContext.newInstance(DiffModel.class); }
+            try { JAXB_CONTEXT = JAXBContext.newInstance(DeltaModel.class); }
             catch (JAXBException ex) { throw new AssertionError(ex); }
         }
     }
 
     /**
-     * A builder for a diff model.
+     * A builder for a delta model.
      * The default value for the collection of <i>unchanged</i>, <i>changed</i>,
      * <i>added</i> and <i>removed</i> entry names and message digests is an
      * empty collection.
@@ -298,6 +298,6 @@ public final class DiffModel implements Serializable {
             return this;
         }
 
-        public DiffModel build() { return new DiffModel(this); }
+        public DeltaModel build() { return new DeltaModel(this); }
     } // Builder
 }

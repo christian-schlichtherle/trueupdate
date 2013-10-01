@@ -75,7 +75,7 @@ public final class UpdateClient {
     }
 
     /**
-     * Returns a source for reading the ZIP patch file for the described
+     * Returns a source for reading the delta ZIP file for the described
      * artifact and its update version.
      * The web service is contacted whenever {@link Source#input()} is called,
      * so that any I/O exception may only be thrown from there.

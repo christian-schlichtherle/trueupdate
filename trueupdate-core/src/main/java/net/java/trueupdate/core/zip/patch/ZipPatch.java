@@ -13,7 +13,7 @@ import net.java.trueupdate.core.zip.io.*;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
- * Applies a diff archive to an input archive and writes an output archive.
+ * Applies a delta ZIP file to an input archive and generates an output archive.
  * Archives may be ZIP, JAR, EAR or WAR files.
  *
  * @author Christian Schlichtherle
@@ -30,7 +30,7 @@ public abstract class ZipPatch {
     /** A builder for a ZIP patch. */
     public static class Builder {
 
-        private @CheckForNull ZipSource input, diff;
+        private @CheckForNull ZipSource input, delta;
 
         Builder() { }
 
@@ -38,27 +38,27 @@ public abstract class ZipPatch {
             return input(null == file ? null : new ZipFileStore(file));
         }
 
-        public Builder input(final @Nullable ZipSource input) {
-            this.input = input;
+        public Builder input(final @Nullable ZipSource archive) {
+            this.input = archive;
             return this;
         }
 
-        public Builder diff(final @Nullable File file) {
-            return diff(null == file ? null : new ZipFileStore(file));
+        public Builder delta(final @Nullable File file) {
+            return delta(null == file ? null : new ZipFileStore(file));
         }
 
-        public Builder diff(final @Nullable ZipSource diff) {
-            this.diff = diff;
+        public Builder delta(final @Nullable ZipSource archive) {
+            this.delta = archive;
             return this;
         }
 
-        public ZipPatch build() { return create(input, diff); }
+        public ZipPatch build() { return create(input, delta); }
 
         private static ZipPatch create(
                 final ZipSource input,
-                final ZipSource diff) {
+                final ZipSource delta) {
             requireNonNull(input);
-            requireNonNull(diff);
+            requireNonNull(delta);
 
             return new ZipPatch() {
 
@@ -71,21 +71,21 @@ public abstract class ZipPatch {
                 public void output(final ZipSink sink) throws IOException {
                     class InputTask implements ZipInputTask<Void, IOException> {
                         public Void execute(final @WillNotClose ZipInput input) throws IOException {
-                            class DiffTask implements ZipInputTask<Void, IOException> {
-                                public Void execute(final @WillNotClose ZipInput diff) throws IOException {
+                            class DeltaTask implements ZipInputTask<Void, IOException> {
+                                public Void execute(final @WillNotClose ZipInput delta) throws IOException {
                                     class OutputTask implements ZipOutputTask<Void, IOException> {
                                         public Void execute(final @WillNotClose ZipOutput output) throws IOException {
                                             new RawZipPatch() {
                                                 protected ZipInput input() { return input; }
-                                                protected ZipInput diff() { return diff; }
+                                                protected ZipInput delta() { return delta; }
                                             }.output(output);
                                             return null;
                                         }
                                     } // OutputTask
                                     return ZipSinks.execute(new OutputTask()).on(sink);
                                 }
-                            } // DiffTask
-                            return ZipSources.execute(new DiffTask()).on(diff);
+                            } // DeltaTask
+                            return ZipSources.execute(new DeltaTask()).on(delta);
                         }
                     } // InputTask
                     ZipSources.execute(new InputTask()).on(input);

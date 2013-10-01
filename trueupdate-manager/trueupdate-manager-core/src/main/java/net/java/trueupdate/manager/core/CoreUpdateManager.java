@@ -179,7 +179,7 @@ extends UpdateMessageListener implements UpdateManager {
             ArtifactDescriptor anticipatedDescriptor = request.artifactDescriptor();
             String anticipatedLocation = request.currentLocation();
 
-            File diffZip;
+            File deltaZip;
             Exception ex;
 
             private ArtifactDescriptor artifactDescriptor() {
@@ -194,7 +194,7 @@ extends UpdateMessageListener implements UpdateManager {
                 return request.updateLocation();
             }
 
-            @Override public File diffZip() { return diffZip; }
+            @Override public File deltaZip() { return deltaZip; }
 
             @Override public Void call() throws Exception {
                 LogContext.setChannel(this);
@@ -203,7 +203,7 @@ extends UpdateMessageListener implements UpdateManager {
                             request.artifactDescriptor(),
                             request.updateVersion());
                     synchronized (updateResolver) {
-                        diffZip = updateResolver.resolve(ud, this);
+                        deltaZip = updateResolver.resolve(ud, this);
                     }
                     updateInstaller.install(this);
                     synchronized (updateResolver) {

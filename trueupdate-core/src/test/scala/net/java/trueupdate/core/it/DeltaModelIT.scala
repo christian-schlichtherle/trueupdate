@@ -8,16 +8,16 @@ import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import net.java.trueupdate.core.io.MessageDigests.sha1
-import net.java.trueupdate.core.zip.model.DiffModel
+import net.java.trueupdate.core.zip.model.DeltaModel
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class DiffModelIT extends WordSpec with ZipITContext {
+class DeltaModelIT extends WordSpec with ZipITContext {
 
-  "A diff model" when {
+  "A delta model" when {
     "constructed with no data" should {
       "be round-trip XML-serializable" in {
-        assertRoundTripXmlSerializable(DiffModel.builder.messageDigest(sha1).build)
+        assertRoundTripXmlSerializable(DeltaModel.builder.messageDigest(sha1).build)
       }
     }
 

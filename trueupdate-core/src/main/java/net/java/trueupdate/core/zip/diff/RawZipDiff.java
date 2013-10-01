@@ -22,7 +22,7 @@ import net.java.trueupdate.core.zip.model.*;
  * Compares two archives entry by entry.
  * Archives may be ZIP, JAR, EAR or WAR files.
  * This class requires you to implement its {@link ZipFile} and
- * {@link MessageDigest} properties, but enables you to obtain the ZIP diff
+ * {@link MessageDigest} properties, but enables you to obtain the delta
  * {@linkplain #model model} besides {@linkplain #output diffing} the input
  * archives.
  *
@@ -44,16 +44,16 @@ public abstract class RawZipDiff {
     /** Returns the second input archive. */
     protected abstract @WillNotClose ZipInput input2();
 
-    /** Writes the diff archive. */
-    public void output(final @WillNotClose ZipOutput diff) throws IOException {
+    /** Writes the delta ZIP file. */
+    public void output(final @WillNotClose ZipOutput delta) throws IOException {
 
         final class Streamer {
 
-            final DiffModel model = model();
+            final DeltaModel model = model();
 
             Streamer() throws IOException {
                 try {
-                    model.encodeToXml(sink(entry(DiffModel.ENTRY_NAME)));
+                    model.encodeToXml(sink(entry(DeltaModel.ENTRY_NAME)));
                 } catch (RuntimeException ex) {
                     throw ex;
                 } catch (IOException ex) {
@@ -86,10 +86,10 @@ public abstract class RawZipDiff {
             }
 
             Sink sink(ZipEntry entry) {
-                return new ZipEntrySink(entry, diff);
+                return new ZipEntrySink(entry, delta);
             }
 
-            ZipEntry entry(String name) { return diff.entry(name); }
+            ZipEntry entry(String name) { return delta.entry(name); }
 
             boolean changedOrAdded(String name) {
                 return null != model.changed(name) || null != model.added(name);
@@ -99,8 +99,8 @@ public abstract class RawZipDiff {
         new Streamer().stream();
     }
 
-    /** Computes a diff model from the two input archives. */
-    public DiffModel model() throws IOException {
+    /** Computes a delta model from the two input archives. */
+    public DeltaModel model() throws IOException {
         return new Assembler().walkAndReturn(new Assembly()).buildZipDiffModel();
     }
 
@@ -148,8 +148,8 @@ public abstract class RawZipDiff {
                 added = new TreeMap<String, EntryNameAndDigest>(),
                 removed = new TreeMap<String, EntryNameAndDigest>();
 
-        DiffModel buildZipDiffModel() {
-            return DiffModel
+        DeltaModel buildZipDiffModel() {
+            return DeltaModel
                     .builder()
                     .messageDigest(digest())
                     .changedEntries(changed.values())

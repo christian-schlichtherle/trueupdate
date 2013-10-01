@@ -16,7 +16,7 @@ import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
- * Resolves diff ZIP files for artifact updates and manages their life cycle.
+ * Resolves delta ZIP files for artifact updates and manages their life cycle.
  *
  * @author Christian Schlichtherle
  */
@@ -64,7 +64,7 @@ abstract class CoreUpdateResolver {
     }
 
     /**
-     * Resolves the diff ZIP file for the given update context.
+     * Resolves the delta ZIP file for the given update context.
      * Clients must not modify or delete the returned file.
      *
      * @param context the update context.
@@ -73,14 +73,14 @@ abstract class CoreUpdateResolver {
                        final UpdateContext context)
     throws Exception {
         final FileAccount account = account(descriptor);
-        final File diffZip;
-        if (account.fileResolved()) diffZip = account.file();
-        else account.file(diffZip = download(descriptor, context));
+        final File deltaZip;
+        if (account.fileResolved()) deltaZip = account.file();
+        else account.file(deltaZip = download(descriptor, context));
         logger.log(Level.INFO, "resolver.resolved", new Object[] {
-            diffZip, descriptor.artifactDescriptor(),
+            deltaZip, descriptor.artifactDescriptor(),
             descriptor.updateVersion()
         });
-        return diffZip;
+        return deltaZip;
     }
 
     private File download(final UpdateDescriptor descriptor,
@@ -88,26 +88,26 @@ abstract class CoreUpdateResolver {
 
         class DownloadTransaction extends Transaction {
 
-            File diffZip;
+            File deltaZip;
 
             @Override public void prepare() throws Exception {
-                diffZip = File.createTempFile("diff", ".zip");
+                deltaZip = File.createTempFile("delta", ".zip");
             }
 
             @Override public void perform() throws Exception {
                 final ArtifactDescriptor ad = descriptor.artifactDescriptor();
                 final String uv = descriptor.updateVersion();
-                Copy.copy(updateClient().diff(ad, uv), new FileStore(diffZip));
+                Copy.copy(updateClient().diff(ad, uv), new FileStore(deltaZip));
             }
 
             @Override public void rollback() throws Exception {
-                diffZip.delete();
+                deltaZip.delete();
             }
         } // DownloadTransaction
 
         final DownloadTransaction tx = new DownloadTransaction();
         Transactions.execute(context.decorate(Action.DOWNLOAD, tx));
-        return tx.diffZip;
+        return tx.deltaZip;
     }
 
     /**

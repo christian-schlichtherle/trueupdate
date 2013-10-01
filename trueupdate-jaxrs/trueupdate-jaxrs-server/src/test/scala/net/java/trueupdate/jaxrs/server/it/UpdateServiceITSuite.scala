@@ -10,7 +10,7 @@ import java.util.zip.ZipInputStream
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MediaType._
 import net.java.trueupdate.core.io._
-import net.java.trueupdate.core.zip.model.DiffModel
+import net.java.trueupdate.core.zip.model.DeltaModel
 import net.java.trueupdate.jaxrs.client.UpdateClient
 import org.junit.Test
 import org.scalatest.matchers.ShouldMatchers._
@@ -50,7 +50,7 @@ abstract class UpdateServiceITSuite extends JerseyTest {
       override def execute(in: InputStream) {
         val zipIn = new ZipInputStream(in)
         val entry = zipIn getNextEntry ()
-        entry.getName should be (DiffModel.ENTRY_NAME)
+        entry.getName should be (DeltaModel.ENTRY_NAME)
         val source = new Source {
           def input() = new FilterInputStream(zipIn) {
             override def close() { zipIn closeEntry () }

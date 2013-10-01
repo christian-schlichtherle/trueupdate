@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import static net.java.trueupdate.core.zip.model.DiffModel.*;
+import static net.java.trueupdate.core.zip.model.DeltaModel.*;
 
 @Immutable
 final class EntryNameAndDigestMapAdapter

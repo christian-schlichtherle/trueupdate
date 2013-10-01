@@ -31,12 +31,12 @@ class ZipPatchIT extends WordSpec with ZipITContext {
     "generating and applying the ZIP patch file to the first test JAR file" should {
       "reconstitute the second test JAR file" in {
 
-        val diff = tempFile()
+        val deltaZip = tempFile()
         try {
           val patched = tempFile()
           try {
-            ZipDiff.builder.input1(testJar1).input2(testJar2).build.output(diff)
-            ZipPatch.builder.input(testJar1).diff(diff).build.output(patched)
+            ZipDiff.builder.input1(testJar1).input2(testJar2).build.output(deltaZip)
+            ZipPatch.builder.input(testJar1).delta(deltaZip).build.output(patched)
 
             class ComputeReferenceAndDiffTask extends ZipInputTask[Unit, Exception] {
               override def execute(archive1: ZipInput) {
@@ -68,7 +68,7 @@ class ZipPatchIT extends WordSpec with ZipITContext {
             patched delete ()
           }
         } finally {
-          diff delete ()
+          deltaZip delete ()
         }
       }
     }

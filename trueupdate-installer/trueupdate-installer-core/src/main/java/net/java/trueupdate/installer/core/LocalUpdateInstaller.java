@@ -54,7 +54,7 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                 this.patch = ZipPatch
                         .builder()
                         .input(deployedZip)
-                        .diff(uc.diffZip())
+                        .delta(uc.deltaZip())
                         .build();
             }
 

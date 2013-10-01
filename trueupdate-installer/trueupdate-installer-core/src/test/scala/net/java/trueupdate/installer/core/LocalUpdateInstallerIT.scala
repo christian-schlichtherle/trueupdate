@@ -53,13 +53,13 @@ class LocalUpdateInstallerIT extends WordSpec {
       }
   }
 
-  def updateContext(deployedPath: File, diffZipFile: File): UpdateContext =
+  def updateContext(deployedPath: File, _deltaZip: File): UpdateContext =
     new UpdateContext {
       val um = updateMessage(deployedPath)
 
       def currentLocation = um.currentLocation
       def updateLocation = um.updateLocation
-      def diffZip = diffZipFile
+      def deltaZip = _deltaZip
 
       def decorate(id: Action, tx: Transaction) = tx
     }

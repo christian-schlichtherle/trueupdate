@@ -26,10 +26,10 @@ public interface UpdateContext {
     String updateLocation();
 
     /**
-     * Returns the diff zip file for patching the current artifact.
+     * Returns the delta ZIP file for patching the current artifact.
      * The client must not modify or delete this file.
      */
-    File diffZip();
+    File deltaZip();
 
     /** Decorates the given update transaction with the given identifier. */
     Transaction decorate(Action id, Transaction tx);

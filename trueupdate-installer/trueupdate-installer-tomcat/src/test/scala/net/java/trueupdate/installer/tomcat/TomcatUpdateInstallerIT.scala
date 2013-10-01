@@ -37,7 +37,7 @@ class TomcatUpdateInstallerIT {
     val context = installer locationContext (new UpdateContext {
         override def currentLocation = location
         override def updateLocation = location
-        override def diffZip = null
+        override def deltaZip = null
         override def decorate(id: Action, tx: Transaction) = tx
       })
     Transactions execute context.deploymentTransaction

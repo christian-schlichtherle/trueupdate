@@ -17,7 +17,7 @@ import net.java.trueupdate.core.zip.io.ZipOutput;
 import net.java.trueupdate.core.zip.model.*;
 
 /**
- * Applies a ZIP patch file to an input ZIP file and writes an output ZIP file.
+ * Applies a delta ZIP file to an input archive and generates an output archive.
  * Archives may be ZIP, JAR, EAR or WAR files.
  * This class requires you to implement its {@link ZipFile} properties.
  *
@@ -26,17 +26,17 @@ import net.java.trueupdate.core.zip.model.*;
 @ThreadSafe
 public abstract class RawZipPatch {
 
-    private volatile DiffModel model;
+    private volatile DeltaModel model;
 
     /** Returns the input archive. */
     protected abstract @WillNotClose
     ZipInput input();
 
-    /** Returns the diff archive. */
-    protected abstract @WillNotClose ZipInput diff();
+    /** Returns the delta ZIP archive. */
+    protected abstract @WillNotClose ZipInput delta();
 
     /**
-     * Applies the configured diff archive.
+     * Applies the configured delta ZIP archive.
      */
     public void output(final @WillNotClose ZipOutput output)
     throws IOException {
@@ -57,7 +57,7 @@ public abstract class RawZipPatch {
             // The JarInputStream class assumes that the file entry
             // "META-INF/MANIFEST.MF" should either be the first or the second
             // entry (if preceded by the directory entry "META-INF/"), so we
-            // need to process the ZIP patch file in two passes with a
+            // need to process the delta ZIP file in two passes with a
             // corresponding filter to ensure this order.
             // Note that the directory entry "META-INF/" is always part of the
             // unchanged patch set because it's content is always empty.
@@ -162,7 +162,7 @@ public abstract class RawZipPatch {
 
         class PatchArchivePatchSet extends PatchSet {
 
-            @Override ZipInput archive() { return diff(); }
+            @Override ZipInput archive() { return delta(); }
 
             @Override IOException ioException(Throwable cause) {
                 return new InvalidDiffZipFileException(cause);
@@ -185,15 +185,15 @@ public abstract class RawZipPatch {
         return MessageDigests.create(model().digestAlgorithmName());
     }
 
-    private DiffModel model() throws IOException {
-        final DiffModel model = this.model;
+    private DeltaModel model() throws IOException {
+        final DeltaModel model = this.model;
         return null != model ? model : (this.model = loadModel());
     }
 
-    private DiffModel loadModel() throws IOException {
+    private DeltaModel loadModel() throws IOException {
         try {
-            return DiffModel.decodeFromXml(
-                    new ZipEntrySource(modelZipEntry(), diff()));
+            return DeltaModel.decodeFromXml(
+                    new ZipEntrySource(modelZipEntry(), delta()));
         } catch (RuntimeException ex) {
             throw ex;
         } catch (IOException ex) {
@@ -204,8 +204,8 @@ public abstract class RawZipPatch {
     }
 
     private ZipEntry modelZipEntry() throws IOException {
-        final String name = DiffModel.ENTRY_NAME;
-        final ZipEntry entry = diff().entry(name);
+        final String name = DeltaModel.ENTRY_NAME;
+        final ZipEntry entry = delta().entry(name);
         if (null == entry)
             throw new InvalidDiffZipFileException(
                     new MissingZipEntryException(name));
