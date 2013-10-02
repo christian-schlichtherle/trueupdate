@@ -44,6 +44,10 @@
           - seconds.
           - A positive value may help to avoid an illegal state in the client
           - application at startup if there is an update available immediately.
+          - It may also help if the agent, the manager and the server are all
+          - hosted on the same server (lets say for testing purposes) because
+          - it will avoid an exception if the server isn't yet ready to answer
+          - requests.
           -->
         <agent.subscriptionTimer.delay>${agent-subscriptionTimer-delay}</agent.subscriptionTimer.delay>
 
