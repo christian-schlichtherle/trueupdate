@@ -13,6 +13,7 @@ import net.java.trueupdate.message.UpdateMessage;
  * @author Christian Schlichtherle
  */
 public enum Action {
+
     DOWNLOAD, ZIP, PATCH, UNZIP, UNDEPLOY,
     SWAP_OUT_FILE, SWAP_OUT_DIR, SWAP_IN_FILE, SWAP_IN_DIR,
     DEPLOY;
