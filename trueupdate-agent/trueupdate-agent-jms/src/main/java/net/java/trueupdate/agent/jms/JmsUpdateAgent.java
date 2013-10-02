@@ -21,23 +21,19 @@ final class JmsUpdateAgent extends CoreUpdateAgent {
 
     private final ApplicationParameters applicationParameters;
     private final MessagingParameters messagingParameters;
+    private final JmsSender sender;
 
     JmsUpdateAgent(final JmsUpdateAgentParameters parameters) {
         this.applicationParameters = parameters.application();
         this.messagingParameters = parameters.messaging();
+        this.sender = JmsSender.create(
+                this.messagingParameters.namingContext(),
+                this.messagingParameters.connectionFactory());
     }
 
     @Override
     protected void send(UpdateMessage message) throws Exception {
-        JmsSender.create(namingContext(), connectionFactory()).send(message);
-    }
-
-    private Context namingContext() {
-        return messagingParameters.namingContext();
-    }
-
-    private ConnectionFactory connectionFactory() {
-        return messagingParameters.connectionFactory();
+        sender.send(message);
     }
 
     @Override protected String from() {
