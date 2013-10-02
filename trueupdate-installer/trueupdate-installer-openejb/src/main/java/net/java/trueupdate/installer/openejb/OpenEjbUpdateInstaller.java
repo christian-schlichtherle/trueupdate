@@ -33,7 +33,7 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
         final File upath = uc.updateLocation().equals(uc.currentLocation())
                 ? cpath : new File(uc.updateLocation());
 
-        class ResolvedLocationContext implements LocationContext {
+        class ResolvedContext implements LocationContext {
 
             @Override public File currentPath() { return cpath; }
 
@@ -70,9 +70,9 @@ public final class OpenEjbUpdateInstaller extends LocalUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedLocationContext
+        } // ResolvedContext
 
-        return new ResolvedLocationContext();
+        return new ResolvedContext();
     }
 
     private File resolveCurrentPath(final URI location) throws Exception {

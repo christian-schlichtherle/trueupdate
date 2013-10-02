@@ -60,7 +60,7 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
     protected LocationContext locationContext(final UpdateContext uc)
     throws Exception {
 
-        class ResolvedLocationContext implements LocationContext {
+        class ResolvedContext implements LocationContext {
 
             final File appBase = appBase();
 
@@ -138,11 +138,11 @@ public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedLocationContext
+        } // ResolvedContext
 
         if (null == host || null == config)
             throw new Exception("This application is not running in Tomcat.");
-        return new ResolvedLocationContext();
+        return new ResolvedContext();
     }
 
     File appBase() {

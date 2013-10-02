@@ -30,7 +30,7 @@ public final class CargoUpdateInstaller extends LocalUpdateInstaller {
         final CargoContext ucc = new CargoContext(new URI(uc.updateLocation()));
         final File upath = ucc.deployablePath();
 
-        class ResolvedLocationContext implements LocationContext {
+        class ResolvedContext implements LocationContext {
 
             @Override public File currentPath() { return cpath; }
 
@@ -43,8 +43,8 @@ public final class CargoUpdateInstaller extends LocalUpdateInstaller {
             @Override public Transaction deploymentTransaction() {
                 return ucc.deploymentTransaction();
             }
-        } // ResolvedLocationContext
+        } // ResolvedContext
 
-        return new ResolvedLocationContext();
+        return new ResolvedContext();
     }
 }
