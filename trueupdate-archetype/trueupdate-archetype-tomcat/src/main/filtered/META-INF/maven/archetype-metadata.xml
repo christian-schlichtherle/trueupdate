@@ -14,7 +14,7 @@
             <defaultValue>${project.version}</defaultValue>
         </requiredProperty>
         <requiredProperty key="agent-subscriptionTimer-delay">
-            <defaultValue>0</defaultValue>
+            <defaultValue>10</defaultValue>
         </requiredProperty>
         <requiredProperty key="manager-updateTimer-period">
             <defaultValue>720</defaultValue>
