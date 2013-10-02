@@ -10,11 +10,11 @@
     <application>
         <artifact>
             <groupId>${symbol_dollar}{project.groupId}</groupId>
-            <artifactId>${symbol_dollar}{project.artifactId}</artifactId>
+            <artifactId>${parentArtifactId}-demo-app</artifactId>
             <version>${symbol_dollar}{project.version}</version>
-            <extension>${symbol_dollar}{project.packaging}</extension>
+            <extension>ear</extension>
         </artifact>
-        <location>/${parentArtifactId}-demo</location>
+        <location>ear://${symbol_dollar}{basedir}/../${parentArtifactId}-demo-app/target/${parentArtifactId}-demo-app-${project.version}.ear?context.container.id=glassfish4x&amp;cargo.glassfish.admin.port=4848&amp;cargo.remote.username=admin&amp;cargo.remote.password=</location>
         <listenerClass>${package}.demo.ApplicationListener</listenerClass>
     </application>
     <subscriptionTimer>
