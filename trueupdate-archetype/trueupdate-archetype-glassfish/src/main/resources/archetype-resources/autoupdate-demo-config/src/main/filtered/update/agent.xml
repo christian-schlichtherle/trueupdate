@@ -15,7 +15,7 @@
             <extension>${symbol_dollar}{project.packaging}</extension>
         </artifact>
         <location>/${parentArtifactId}-demo</location>
-        <listenerClass>${package}.ApplicationListener</listenerClass>
+        <listenerClass>${package}.demo.ApplicationListener</listenerClass>
     </application>
     <subscriptionTimer>
         <delay>${symbol_dollar}{agent.subscriptionTimer.delay}</delay>
