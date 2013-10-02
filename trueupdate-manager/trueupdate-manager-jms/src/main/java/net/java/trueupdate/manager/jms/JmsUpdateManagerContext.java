@@ -58,15 +58,15 @@ public final class JmsUpdateManagerContext {
         timer.scheduleAtFixedRate(new CheckForUpdates(manager), tp.delay(), tp.period(), tp.unit());
     }
 
-    public void stop(final long timeout, final TimeUnit unit) throws Exception {
+    public void stop(long timeout, TimeUnit unit) throws Exception {
         // HC SVNT DRACONIS!
         final long stop = System.currentTimeMillis() + unit.toMillis(timeout);
-        long remaining;
+        unit = TimeUnit.MILLISECONDS;
         timer.shutdownNow();
-        remaining = stop - System.currentTimeMillis();
-        receiver.stop(remaining, TimeUnit.MILLISECONDS);
-        remaining = stop - System.currentTimeMillis();
-        timer.awaitTermination(remaining, TimeUnit.MILLISECONDS);
+        timeout = stop - System.currentTimeMillis();
+        receiver.stop(timeout, unit);
+        timeout = stop - System.currentTimeMillis();
+        timer.awaitTermination(timeout, unit);
         manager.close();
     }
 }
