@@ -5,8 +5,6 @@
 package net.java.trueupdate.agent.jms;
 
 import javax.annotation.concurrent.Immutable;
-import javax.jms.*;
-import javax.naming.*;
 import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.jms.*;
 import net.java.trueupdate.message.UpdateMessage;
