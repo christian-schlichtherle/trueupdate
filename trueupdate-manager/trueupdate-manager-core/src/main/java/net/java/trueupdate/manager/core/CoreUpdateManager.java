@@ -167,7 +167,7 @@ extends UpdateMessageListener implements UpdateManager {
             install(message);
             response = installationSuccessResponse(message);
         } catch (Exception ex) {
-            response = installationFailureResponse(message, ex);
+            response = installationFailureResponse(message);
         }
         sendAndLog(response);
     }
@@ -209,6 +209,9 @@ extends UpdateMessageListener implements UpdateManager {
                     synchronized (updateResolver) {
                         updateResolver.release(ud);
                     }
+                } catch (final Exception ex) {
+                    logger.log(Level.WARNING, "manager.install.exception", ex);
+                    throw ex;
                 } finally {
                     LogContext.removeChannel();
                 }
@@ -391,8 +394,7 @@ extends UpdateMessageListener implements UpdateManager {
     }
 
     private static UpdateMessage installationFailureResponse(
-            final UpdateMessage request,
-            final Exception ex) {
+            final UpdateMessage request) {
         return responseFor(request)
                 .type(INSTALLATION_FAILURE_RESPONSE)
                 .build();
