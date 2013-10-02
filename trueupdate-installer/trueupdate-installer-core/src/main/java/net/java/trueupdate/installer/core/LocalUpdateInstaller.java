@@ -50,10 +50,10 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
 
             final ZipPatch patch;
 
-            PatchTask(final File deployedZip) {
+            PatchTask(final File currentZip) {
                 this.patch = ZipPatch
                         .builder()
-                        .input(deployedZip)
+                        .input(currentZip)
                         .delta(uc.deltaZip())
                         .build();
             }
@@ -70,12 +70,12 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
         loanTempDir(new PathTask<Void, Exception>() {
 
             @Override public Void execute(final File tempDir) throws Exception {
-                final File updateJar = new File(tempDir, "updated.jar");
+                final File updatedJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
                 if (lc.currentPath().isFile()) {
                     Transactions.execute(new CompositeTransaction(
                             decorate(PATCH,
-                                    new PathTaskTransaction(updateJar,
+                                    new PathTaskTransaction(updatedJar,
                                             new PatchTask(lc.currentPath()))),
                             decorate(UNDEPLOY,
                                     lc.undeploymentTransaction()),
@@ -83,29 +83,29 @@ public abstract class LocalUpdateInstaller implements UpdateInstaller {
                                     new RenamePathTransaction(
                                             lc.currentPath(), backup)),
                             decorate(SWAP_IN_FILE,
-                                    new RenamePathTransaction(updateJar,
+                                    new RenamePathTransaction(updatedJar,
                                             lc.updatePath())),
                             decorate(DEPLOY,
                                     lc.deploymentTransaction())));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
-                    final File updateDir = new File(tempDir, "updated.dir");
+                    final File updatedDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
                             decorate(ZIP,
                                     new ZipTransaction(currentZip,
                                             lc.currentPath(), "")),
                             decorate(PATCH,
-                                    new PathTaskTransaction(updateJar,
+                                    new PathTaskTransaction(updatedJar,
                                             new PatchTask(currentZip))),
                             decorate(UNZIP,
-                                    new UnzipTransaction(updateJar, updateDir)),
+                                    new UnzipTransaction(updatedJar, updatedDir)),
                             decorate(UNDEPLOY,
                                     lc.undeploymentTransaction()),
                             decorate(SWAP_OUT_DIR,
                                     new RenamePathTransaction(
                                             lc.currentPath(), backup)),
                             decorate(SWAP_IN_DIR,
-                                    new RenamePathTransaction(updateDir,
+                                    new RenamePathTransaction(updatedDir,
                                             lc.updatePath())),
                             decorate(DEPLOY,
                                     lc.deploymentTransaction())));
