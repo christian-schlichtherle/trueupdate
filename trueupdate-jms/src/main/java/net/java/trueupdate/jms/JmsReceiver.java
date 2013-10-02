@@ -43,7 +43,10 @@ public final class JmsReceiver implements Runnable {
     private final ConnectionFactory connectionFactory;
     private final ExecutorService executorService;
 
-    private MessageConsumer messageConsumer;
+    private Connection connection;
+
+    // Work around https://java.net/jira/browse/GLASSFISH-20836 .
+    private volatile Thread thread;
 
     private JmsReceiver(final Builder<?> b) {
         this.subscriptionName = b.subscriptionName;
@@ -63,22 +66,24 @@ public final class JmsReceiver implements Runnable {
             try {
                 MessageConsumer mc;
                 synchronized (lock) {
-                    mc = messageConsumer;
-                    if (null != mc)
+                    c = connection;
+                    if (null != c)
                         throw new java.lang.IllegalStateException("Already running.");
                     c = connectionFactory.createConnection();
                     final Session s = c.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                     final Destination d = destination;
-                    messageConsumer = mc = d instanceof Topic
+                    mc = d instanceof Topic
                             ? s.createDurableSubscriber((Topic) d, subscriptionName, messageSelector, NO_LOCAL)
                             : s.createConsumer(d, messageSelector);
+                    thread = Thread.currentThread();
+                    connection = c;
                 }
                 c.start();
                 while (true) {
                     final Message m = mc.receive();
                     if (null == m) break;
                     synchronized(lock) {
-                        if (null == messageConsumer) break;
+                        if (null == connection) break;
                         m.acknowledge();
                         executorService.execute(new Runnable() {
                             @Override public void run() {
@@ -89,8 +94,11 @@ public final class JmsReceiver implements Runnable {
                 }
             } finally {
                 if (null != c) {
-                    c.close();
-                    synchronized (lock) { lock.notifyAll(); }
+                    // c.close(); // see https://issues.apache.org/jira/browse/AMQ-4769 .
+                    synchronized (lock) {
+                        thread = null;
+                        lock.notifyAll();
+                    }
                 }
             }
         } catch (JMSException ex) {
@@ -98,21 +106,44 @@ public final class JmsReceiver implements Runnable {
         }
     }
 
-    /**
-     * Stops this runnable from a different thread.
-     * When returning from this method, the client may safely assume that the
-     * other thread is not executing the {@link #run()} method anymore.
-     */
+    /** Stops this runnable from a different thread. */
     public void stop(long timeout, TimeUnit unit) throws Exception {
+        // HC SVNT DRACONIS
+        // The following code is a fucking mess, but that's just because the
+        // JMS implementations Apache ActiveMQ 5.8.0 and Open MQ 5.0 are
+        // riddled with bugs - SCNR!
+
+        final long stop = System.currentTimeMillis() + unit.toMillis(timeout);
+        unit = TimeUnit.MILLISECONDS;
+
         synchronized (lock) {
-            if (null == messageConsumer) return;
-            // HC SVNT DRACONIS
-            messageConsumer.close();
+            final Connection c = connection;
+            if (null == c) return;
+            connection = null;
+
+            // Work around https://java.net/jira/browse/GLASSFISH-20836 .
+            executorService.submit(new Runnable() {
+                @SuppressWarnings("SleepWhileInLoop")
+                @Override public void run() {
+                    for (Thread t; null != (t = thread); ) {
+                        // Wait first to give c.close() priority and avoid a
+                        // JMSException with a wrapped InterruptedException
+                        // when using ActiveMQ 5.8.0.
+                        try { Thread.sleep(100); }
+                        catch (InterruptedException stop) { }
+                        t.interrupt();
+                    }
+                }
+            });
+
+            c.close();
+            timeout = stop - System.currentTimeMillis();
+            lock.wait(timeout);
+            assert null == thread;
             if (0 != executorService.shutdownNow().size())
                 throw new AssertionError();
+            timeout = stop - System.currentTimeMillis();
             executorService.awaitTermination(timeout, unit);
-            messageConsumer = null;
-            lock.wait();
         }
     }
 
