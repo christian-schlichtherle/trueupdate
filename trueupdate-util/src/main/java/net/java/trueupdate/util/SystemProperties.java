@@ -47,20 +47,19 @@ public final class SystemProperties {
     public static String resolve(final String string) {
         final StringBuffer sb = new StringBuffer(string.length());
         final Matcher matcher = REFERENCE_PATTERN.matcher(string);
-        boolean found = false;
-        while (matcher.find()) {
-            found = true;
-            matcher.appendReplacement(sb, replacement(matcher));
-        }
-        return found ? matcher.appendTail(sb).toString() : string;
+        while (matcher.find())
+            matcher.appendReplacement(sb, escape(replacement(matcher)));
+        final String result = matcher.appendTail(sb).toString();
+        return string.equals(result) ? string : result;
+    }
+
+    private static String escape(String string) {
+        return string.replace("\\", "\\\\").replace("$", "\\$");
     }
 
     private static String replacement(final Matcher matcher) {
         final String key = matcher.group(1);
         final String value = System.getProperty(key);
-        if (null == value)
-            throw new IllegalArgumentException(
-                    "Unknown system property key \"" + key + "\".");
-        return value;
+        return null != value ? value : matcher.group(0);
     }
 }
