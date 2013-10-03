@@ -19,18 +19,21 @@ import net.java.trueupdate.manager.spec.tx.Transaction;
  */
 public interface UpdateContext {
 
-    /** Returns the current location. */
+    /** Returns the current location of the client application. */
     String currentLocation();
 
-    /** Returns the update location. */
+    /** Returns the update location of the client application. */
     String updateLocation();
 
     /**
-     * Returns the delta ZIP file for patching the current artifact.
+     * Returns the delta ZIP file for patching the artifact at the current
+     * location of the client application.
      * The client must not modify or delete this file.
      */
     File deltaZip();
 
-    /** Decorates the given update transaction with the given identifier. */
+    /**
+     * Decorates the given transaction with the given identifier for execution.
+     */
     Transaction decorate(Action id, Transaction tx);
 }
