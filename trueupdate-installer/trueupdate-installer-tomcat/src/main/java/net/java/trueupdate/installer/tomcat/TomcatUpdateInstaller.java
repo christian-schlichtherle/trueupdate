@@ -83,10 +83,6 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                 return warDeployment ? cwar : cdir;
             }
 
-            @Override public File updatePath() {
-                return warDeployment ? uwar : udir;
-            }
-
             @Override public Transaction undeploymentTransaction() {
 
                 class UndeploymentTransaction extends AtomicMethodsTransaction {
@@ -118,6 +114,10 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                 } // UndeploymentTransaction
 
                 return new UndeploymentTransaction();
+            }
+
+            @Override public File updatePath() {
+                return warDeployment ? uwar : udir;
             }
 
             @Override public Transaction deploymentTransaction() {

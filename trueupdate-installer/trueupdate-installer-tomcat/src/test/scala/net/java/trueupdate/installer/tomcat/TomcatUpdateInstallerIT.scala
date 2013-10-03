@@ -34,19 +34,19 @@ class TomcatUpdateInstallerIT {
                            new ContextName(location).getBaseName + ".war")
 
     testArchive as classOf[ZipExporter] exportTo testWar
-    val context = installer applicationDescriptor (new UpdateContext {
+    val ad = installer applicationDescriptor (new UpdateContext {
         override def currentLocation = location
         override def updateLocation = location
         override def deltaZip = null
         override def decorate(id: Action, tx: Transaction) = tx
       })
-    Transactions execute context.deploymentTransaction
+    Transactions execute ad.deploymentTransaction
 
-    Transactions execute context.undeploymentTransaction
-    deletePath(context.currentPath)
+    Transactions execute ad.undeploymentTransaction
+    deletePath(ad.currentPath)
 
     updateArchive as classOf[ZipExporter] exportTo testWar
-    Transactions execute context.deploymentTransaction
+    Transactions execute ad.deploymentTransaction
   }
 }
 

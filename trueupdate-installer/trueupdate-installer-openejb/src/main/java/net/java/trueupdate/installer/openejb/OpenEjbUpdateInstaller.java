@@ -40,8 +40,6 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cpath; }
 
-            @Override public File updatePath() { return upath; }
-
             @Override public Transaction undeploymentTransaction() {
 
                 class UndeploymentTransaction extends AtomicMethodsTransaction {
@@ -57,6 +55,8 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
                 return new UndeploymentTransaction();
             }
+
+            @Override public File updatePath() { return upath; }
 
             @Override public Transaction deploymentTransaction() {
 

@@ -46,9 +46,9 @@ class CoreUpdateInstallerIT extends WordSpec {
     def applicationDescriptor(context: UpdateContext) =
       new ApplicationDescriptor {
         override def currentPath = new File(context.currentLocation)
+        override def undeploymentTransaction() = mock[Transaction]
         override def updatePath = new File(context.updateLocation)
         override def deploymentTransaction() = mock[Transaction]
-        override def undeploymentTransaction() = mock[Transaction]
       }
   }
 

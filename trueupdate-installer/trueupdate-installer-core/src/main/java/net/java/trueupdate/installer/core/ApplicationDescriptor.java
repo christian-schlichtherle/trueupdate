@@ -22,18 +22,24 @@ public interface ApplicationDescriptor {
     /** Returns the current path of the application. */
     File currentPath();
 
+    /**
+     * Returns the transaction for the undeployment of the current application
+     * at the {@link #currentPath}.
+     * The transaction gets decorated with logging statements and composed
+     * into a {@link net.java.trueupdate.manager.spec.tx.CompositeTransaction}
+     * before execution.
+     */
+    Transaction undeploymentTransaction();
+
     /** Returns the update path of the application. */
     File updatePath();
 
     /**
-     * Returns the transaction for undeploying the application at the
-     * current path.
-     */
-    Transaction undeploymentTransaction();
-
-    /**
-     * Returns the transaction for deploying the application at the
-     * update path.
+     * Returns the transaction for the deployment of the updated application
+     * at the {@link #updatePath}.
+     * The transaction gets decorated with logging statements and composed
+     * into a {@link net.java.trueupdate.manager.spec.tx.CompositeTransaction}
+     * before execution.
      */
     Transaction deploymentTransaction();
 }

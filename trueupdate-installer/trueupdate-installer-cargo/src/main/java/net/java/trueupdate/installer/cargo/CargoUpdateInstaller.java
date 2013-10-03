@@ -37,11 +37,11 @@ public final class CargoUpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cpath; }
 
-            @Override public File updatePath() { return upath; }
-
             @Override public Transaction undeploymentTransaction() {
                 return ccc.undeploymentTransaction();
             }
+
+            @Override public File updatePath() { return upath; }
 
             @Override public Transaction deploymentTransaction() {
                 return ucc.deploymentTransaction();

@@ -73,44 +73,37 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updatedJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
+                final Transaction[] txs;
                 if (ad.currentPath().isFile()) {
-                    Transactions.execute(new CompositeTransaction(
-                            decorate(PATCH,
-                                    new PathTaskTransaction(updatedJar,
-                                            new PatchTask(ad.currentPath()))),
-                            decorate(UNDEPLOY,
-                                    ad.undeploymentTransaction()),
-                            decorate(SWAP_OUT_FILE,
-                                    new RenamePathTransaction(
-                                            ad.currentPath(), backup)),
-                            decorate(SWAP_IN_FILE,
-                                    new RenamePathTransaction(updatedJar,
-                                            ad.updatePath())),
-                            decorate(DEPLOY,
-                                    ad.deploymentTransaction())));
+                    txs = new Transaction[] {
+                            decorate(PATCH, new PathTaskTransaction(
+                                    updatedJar, new PatchTask(ad.currentPath()))),
+                            decorate(UNDEPLOY, ad.undeploymentTransaction()),
+                            decorate(SWAP_OUT_FILE, new RenamePathTransaction(
+                                    ad.currentPath(), backup)),
+                            decorate(SWAP_IN_FILE, new RenamePathTransaction(
+                                    updatedJar, ad.updatePath())),
+                            decorate(DEPLOY, ad.deploymentTransaction()),
+                    };
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updatedDir = new File(tempDir, "updated.dir");
-                    Transactions.execute(new CompositeTransaction(
-                            decorate(ZIP,
-                                    new ZipTransaction(currentZip,
-                                            ad.currentPath(), "")),
-                            decorate(PATCH,
-                                    new PathTaskTransaction(updatedJar,
-                                            new PatchTask(currentZip))),
-                            decorate(UNZIP,
-                                    new UnzipTransaction(updatedJar, updatedDir)),
-                            decorate(UNDEPLOY,
-                                    ad.undeploymentTransaction()),
-                            decorate(SWAP_OUT_DIR,
-                                    new RenamePathTransaction(
-                                            ad.currentPath(), backup)),
-                            decorate(SWAP_IN_DIR,
-                                    new RenamePathTransaction(updatedDir,
-                                            ad.updatePath())),
-                            decorate(DEPLOY,
-                                    ad.deploymentTransaction())));
+                    txs = new Transaction[] {
+                            decorate(ZIP, new ZipTransaction(
+                                    currentZip, ad.currentPath(), "")),
+                            decorate(PATCH, new PathTaskTransaction(
+                                    updatedJar, new PatchTask(currentZip))),
+                            decorate(UNZIP, new UnzipTransaction(
+                                    updatedJar, updatedDir)),
+                            decorate(UNDEPLOY, ad.undeploymentTransaction()),
+                            decorate(SWAP_OUT_DIR, new RenamePathTransaction(
+                                    ad.currentPath(), backup)),
+                            decorate(SWAP_IN_DIR, new RenamePathTransaction(
+                                    updatedDir, ad.updatePath())),
+                            decorate(DEPLOY, ad.deploymentTransaction()),
+                    };
                 }
+                Transactions.execute(new CompositeTransaction(txs));
                 return null;
             }
 
