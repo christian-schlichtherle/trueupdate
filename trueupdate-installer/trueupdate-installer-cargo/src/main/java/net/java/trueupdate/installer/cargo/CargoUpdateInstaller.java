@@ -7,7 +7,7 @@ package net.java.trueupdate.installer.cargo;
 import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.installer.core.LocalUpdateInstaller;
+import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 
@@ -18,7 +18,7 @@ import net.java.trueupdate.manager.spec.tx.Transaction;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class CargoUpdateInstaller extends LocalUpdateInstaller {
+public final class CargoUpdateInstaller extends CoreUpdateInstaller {
 
     @Override
     protected LocationContext locationContext(final UpdateContext uc)

@@ -17,8 +17,8 @@ import static net.java.trueupdate.manager.spec.Action.*;
 import net.java.trueupdate.manager.spec.tx.*;
 
 /**
- * A local update installer.
- * When updating, this class checks the file system path where the applicatin
+ * A basic update installer.
+ * When updating, this class checks the file system path where the application
  * is currently installed.
  * If the current path is a directory, it assumes that it has been unzipped
  * from the original artifact file (EAR, RAR, WAR etc) and updates the
@@ -29,11 +29,11 @@ import net.java.trueupdate.manager.spec.tx.*;
  * @author Christian Schlichtherle
  */
 @Immutable
-public abstract class LocalUpdateInstaller implements UpdateInstaller {
+public abstract class CoreUpdateInstaller implements UpdateInstaller {
 
     /**
      * Returns the nullable temporary directory.
-     * The implementation in the class {@link LocalUpdateInstaller} always
+     * The implementation in the class {@link CoreUpdateInstaller} always
      * returns {@code null} to indicate that the default temporary directory
      * should be used.
      */

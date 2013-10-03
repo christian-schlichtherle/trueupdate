@@ -8,7 +8,7 @@ import java.io._
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
-import net.java.trueupdate.installer.core.LocalUpdateInstaller.LocationContext
+import net.java.trueupdate.installer.core.CoreUpdateInstaller.LocationContext
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.manager.spec._
@@ -25,7 +25,7 @@ import org.scalatest.mock.MockitoSugar.mock
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class LocalUpdateInstallerIT extends WordSpec {
+class CoreUpdateInstallerIT extends WordSpec {
 
   def updateMessage(deployedPath: File) = UpdateMessage
     .builder
@@ -43,7 +43,7 @@ class LocalUpdateInstallerIT extends WordSpec {
     .updateLocation(deployedPath.getPath)
     .build
 
-  def updateInstaller: UpdateInstaller = new LocalUpdateInstaller {
+  def updateInstaller: UpdateInstaller = new CoreUpdateInstaller {
     def locationContext(context: UpdateContext) =
       new LocationContext {
         override def currentPath = new File(context.currentLocation)

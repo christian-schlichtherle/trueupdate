@@ -7,7 +7,7 @@ package net.java.trueupdate.installer.tomcat;
 import java.io.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
-import net.java.trueupdate.installer.core.LocalUpdateInstaller;
+import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
@@ -22,7 +22,7 @@ import org.apache.catalina.util.ContextName;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class TomcatUpdateInstaller extends LocalUpdateInstaller {
+public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
     private static final ObjectName pattern;
 
