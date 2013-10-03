@@ -20,13 +20,28 @@
     <name>TrueUpdate</name>
     <description>
         A framework for updating Java enterprise applications.
+
+        Note that this is commercial open source software covered by the
+        GNU Affero General Public License version 3 (AGPLv3) - see
+        http://www.gnu.org/licenses/agpl-3.0-standalone.html .
+        If you need a quote for using it with software which is not covered by
+        the AGPLv3, then please contact sales AT schlichtherle DOT de .
     </description>
     <url>https://trueupdate.java.net</url>
     <inceptionYear>2013</inceptionYear>
     <licenses>
         <license>
-            <name>Eclipse Public License, Version 1.0</name>
-            <url>http://www.eclipse.org/legal/epl-v10.html</url>
+            <name>Commercial License</name>
+            <distribution>manual</distribution>
+            <comments>
+                Commercial licensing for use with Closed Source Software is
+                available upon request.
+                Please contact sales AT schlichtherle DOT de .
+            </comments>
+        </license>
+        <license>
+            <name>GNU AFFERO GENERAL PUBLIC LICENSE, Version 3, 19 November 2007</name>
+            <url>http://www.gnu.org/licenses/agpl-3.0-standalone.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
