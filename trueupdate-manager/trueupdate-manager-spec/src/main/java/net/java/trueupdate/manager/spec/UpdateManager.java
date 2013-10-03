@@ -11,9 +11,6 @@ package net.java.trueupdate.manager.spec;
  * asynchronous.
  * <p>
  * Implementations must be thread-safe.
- * <p>
- * Applications have no need to implement this class and should not do so
- * because it may be subject to future expansion.
  *
  * @author Christian Schlichtherle
  */

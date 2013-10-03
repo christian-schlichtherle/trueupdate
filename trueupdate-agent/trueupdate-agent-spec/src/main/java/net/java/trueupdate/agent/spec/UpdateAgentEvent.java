@@ -9,13 +9,7 @@ import net.java.trueupdate.message.UpdateMessage;
 /**
  * An update agent event.
  * <p>
- * Applications have no need to implement this class and should not do so
- * because it may be subject to future expansion.
- * <p>
  * Implementations must be thread-safe.
- * <p>
- * Applications have no need to implement this class and should not do so
- * because it may be subject to future expansion.
  *
  * @author Christian Schlichtherle
  */

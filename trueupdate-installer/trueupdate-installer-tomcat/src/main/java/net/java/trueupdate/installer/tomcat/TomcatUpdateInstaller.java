@@ -7,6 +7,8 @@ package net.java.trueupdate.installer.tomcat;
 import java.io.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
+
+import net.java.trueupdate.installer.core.ApplicationDescriptor;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.manager.spec.UpdateContext;
@@ -57,10 +59,11 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
     }
 
     @Override
-    protected LocationContext locationContext(final UpdateContext uc)
+    protected ApplicationDescriptor applicationDescriptor(
+            final UpdateContext uc)
     throws Exception {
 
-        class ResolvedContext implements LocationContext {
+        class ResolvedDescriptor implements ApplicationDescriptor {
 
             final File appBase = appBase();
 
@@ -138,11 +141,11 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedContext
+        } // ResolvedDescriptor
 
         if (null == host || null == config)
-            throw new Exception("This application is not running in Tomcat.");
-        return new ResolvedContext();
+            throw new Exception("The application is not running in Tomcat.");
+        return new ResolvedDescriptor();
     }
 
     File appBase() {

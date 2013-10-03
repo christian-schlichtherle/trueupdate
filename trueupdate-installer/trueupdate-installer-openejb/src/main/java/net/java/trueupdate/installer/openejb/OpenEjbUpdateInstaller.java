@@ -8,6 +8,8 @@ import java.io.*;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import javax.ejb.EJB;
+
+import net.java.trueupdate.installer.core.ApplicationDescriptor;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
@@ -26,14 +28,15 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
     private @EJB Deployer deployer;
 
     @Override
-    protected LocationContext locationContext(final UpdateContext uc)
+    protected ApplicationDescriptor applicationDescriptor(
+            final UpdateContext uc)
     throws Exception {
 
         final File cpath = resolveCurrentPath(new URI(uc.currentLocation()));
         final File upath = uc.updateLocation().equals(uc.currentLocation())
                 ? cpath : new File(uc.updateLocation());
 
-        class ResolvedContext implements LocationContext {
+        class ResolvedDescriptor implements ApplicationDescriptor {
 
             @Override public File currentPath() { return cpath; }
 
@@ -70,9 +73,9 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedContext
+        } // ResolvedDescriptor
 
-        return new ResolvedContext();
+        return new ResolvedDescriptor();
     }
 
     private File resolveCurrentPath(final URI location) throws Exception {

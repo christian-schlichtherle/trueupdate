@@ -11,7 +11,7 @@ import net.java.trueupdate.message.*;
 import static net.java.trueupdate.message.UpdateMessage.Type.*;
 
 /**
- * A basic update agent.
+ * An abstract update agent.
  *
  * @author Christian Schlichtherle
  */

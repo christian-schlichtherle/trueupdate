@@ -6,9 +6,6 @@ package net.java.trueupdate.manager.spec;
 
 /**
  * Cooperates with an update resolver to install artifact updates.
- * <p>
- * Applications have no need to implement this class and should not do so
- * because it may be subject to future expansion.
  *
  * @author Christian Schlichtherle
  */

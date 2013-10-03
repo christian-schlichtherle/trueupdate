@@ -20,7 +20,7 @@ import net.java.trueupdate.message.UpdateMessage.Type;
 import static net.java.trueupdate.message.UpdateMessage.Type.*;
 
 /**
- * A basic update manager.
+ * An abstract update manager.
  *
  * @author Christian Schlichtherle
  */

@@ -8,12 +8,11 @@ import java.io.File;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 
 /**
- * An update context.
+ * An update context is provided by an {@link UpdateManager} to an
+ * {@link UpdateInstaller} while {@linkplain UpdateInstaller#install installing}
+ * an update.
  * <p>
  * Implementations must be thread-safe.
- * <p>
- * Applications have no need to implement this class and should not do so
- * because it may be subject to future expansion.
  *
  * @author Christian Schlichtherle
  */
@@ -28,7 +27,7 @@ public interface UpdateContext {
     /**
      * Returns the delta ZIP file for patching the artifact at the current
      * location of the client application.
-     * The client must not modify or delete this file.
+     * The caller must not modify or delete this file.
      */
     File deltaZip();
 

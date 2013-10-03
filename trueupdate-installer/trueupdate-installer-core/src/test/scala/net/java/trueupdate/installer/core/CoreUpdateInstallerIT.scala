@@ -8,7 +8,6 @@ import java.io._
 import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
-import net.java.trueupdate.installer.core.CoreUpdateInstaller.LocationContext
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.manager.spec._
@@ -44,8 +43,8 @@ class CoreUpdateInstallerIT extends WordSpec {
     .build
 
   def updateInstaller: UpdateInstaller = new CoreUpdateInstaller {
-    def locationContext(context: UpdateContext) =
-      new LocationContext {
+    def applicationDescriptor(context: UpdateContext) =
+      new ApplicationDescriptor {
         override def currentPath = new File(context.currentLocation)
         override def updatePath = new File(context.updateLocation)
         override def deploymentTransaction() = mock[Transaction]

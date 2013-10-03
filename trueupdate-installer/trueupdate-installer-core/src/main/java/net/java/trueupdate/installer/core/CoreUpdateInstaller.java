@@ -17,7 +17,7 @@ import static net.java.trueupdate.manager.spec.Action.*;
 import net.java.trueupdate.manager.spec.tx.*;
 
 /**
- * A basic update installer.
+ * An abstract update installer.
  * When updating, this class checks the file system path where the application
  * is currently installed.
  * If the current path is a directory, it assumes that it has been unzipped
@@ -39,8 +39,9 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
      */
     protected @Nullable File tempDir() { return null; }
 
-    /** Derives the location context from the given update context. */
-    protected abstract LocationContext locationContext(UpdateContext context)
+    /** Derives the application descriptor from the given update context. */
+    protected abstract ApplicationDescriptor applicationDescriptor(
+            UpdateContext context)
     throws Exception;
 
     @Override
@@ -65,50 +66,50 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
-        final LocationContext lc = locationContext(uc);
+        final ApplicationDescriptor ad = applicationDescriptor(uc);
 
         loanTempDir(new PathTask<Void, Exception>() {
 
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updatedJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
-                if (lc.currentPath().isFile()) {
+                if (ad.currentPath().isFile()) {
                     Transactions.execute(new CompositeTransaction(
                             decorate(PATCH,
                                     new PathTaskTransaction(updatedJar,
-                                            new PatchTask(lc.currentPath()))),
+                                            new PatchTask(ad.currentPath()))),
                             decorate(UNDEPLOY,
-                                    lc.undeploymentTransaction()),
+                                    ad.undeploymentTransaction()),
                             decorate(SWAP_OUT_FILE,
                                     new RenamePathTransaction(
-                                            lc.currentPath(), backup)),
+                                            ad.currentPath(), backup)),
                             decorate(SWAP_IN_FILE,
                                     new RenamePathTransaction(updatedJar,
-                                            lc.updatePath())),
+                                            ad.updatePath())),
                             decorate(DEPLOY,
-                                    lc.deploymentTransaction())));
+                                    ad.deploymentTransaction())));
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updatedDir = new File(tempDir, "updated.dir");
                     Transactions.execute(new CompositeTransaction(
                             decorate(ZIP,
                                     new ZipTransaction(currentZip,
-                                            lc.currentPath(), "")),
+                                            ad.currentPath(), "")),
                             decorate(PATCH,
                                     new PathTaskTransaction(updatedJar,
                                             new PatchTask(currentZip))),
                             decorate(UNZIP,
                                     new UnzipTransaction(updatedJar, updatedDir)),
                             decorate(UNDEPLOY,
-                                    lc.undeploymentTransaction()),
+                                    ad.undeploymentTransaction()),
                             decorate(SWAP_OUT_DIR,
                                     new RenamePathTransaction(
-                                            lc.currentPath(), backup)),
+                                            ad.currentPath(), backup)),
                             decorate(SWAP_IN_DIR,
                                     new RenamePathTransaction(updatedDir,
-                                            lc.updatePath())),
+                                            ad.updatePath())),
                             decorate(DEPLOY,
-                                    lc.deploymentTransaction())));
+                                    ad.deploymentTransaction())));
                 }
                 return null;
             }
@@ -117,27 +118,5 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                 return uc.decorate(id, tx);
             }
         }, "dir", null, tempDir());
-    }
-
-    /** The context for a location provided to the update installer. */
-    public interface LocationContext {
-
-        /** Returns the current path of the application. */
-        File currentPath();
-
-        /** Returns the update path of the application. */
-        File updatePath();
-
-        /**
-         * Returns the transaction for undeploying the application at the
-         * current path.
-         */
-        Transaction undeploymentTransaction();
-
-        /**
-         * Returns the transaction for deploying the application at the
-         * update path.
-         */
-        Transaction deploymentTransaction();
     }
 }
