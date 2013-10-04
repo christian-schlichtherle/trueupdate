@@ -9,15 +9,14 @@ import net.java.trueupdate.manager.spec.tx.Transaction;
 import java.io.File;
 
 /**
- * An application descriptor is provided by subclasses of
- * {@link CoreUpdateInstaller} while
- * {@linkplain CoreUpdateInstaller#install installing} an update.
+ * Update parameters are provided by subclasses of {@link CoreUpdateInstaller}
+ * while {@linkplain CoreUpdateInstaller#install installing} an update.
  * <p>
  * Implementations must be thread-safe.
  *
  * @author Christian Schlichtherle
  */
-public interface ApplicationDescriptor {
+public interface UpdateParameters {
 
     /** Returns the current path of the application. */
     File currentPath();

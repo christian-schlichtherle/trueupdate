@@ -39,9 +39,8 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
      */
     protected @Nullable File tempDir() { return null; }
 
-    /** Derives the application descriptor from the given update context. */
-    protected abstract ApplicationDescriptor applicationDescriptor(
-            UpdateContext context)
+    /** Derives the update parameters from the given update context. */
+    protected abstract UpdateParameters updateParameters(UpdateContext context)
     throws Exception;
 
     @Override
@@ -66,7 +65,7 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
             }
         } // PatchTask
 
-        final ApplicationDescriptor ad = applicationDescriptor(uc);
+        final UpdateParameters up = updateParameters(uc);
 
         loanTempDir(new PathTask<Void, Exception>() {
 
@@ -74,33 +73,33 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                 final File updatedJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
                 final Transaction[] txs;
-                if (ad.currentPath().isFile()) {
+                if (up.currentPath().isFile()) {
                     txs = new Transaction[] {
                             decorate(PATCH, new PathTaskTransaction(
-                                    updatedJar, new PatchTask(ad.currentPath()))),
-                            decorate(UNDEPLOY, ad.undeploymentTransaction()),
+                                    updatedJar, new PatchTask(up.currentPath()))),
+                            decorate(UNDEPLOY, up.undeploymentTransaction()),
                             decorate(SWAP_OUT_FILE, new RenamePathTransaction(
-                                    ad.currentPath(), backup)),
+                                    up.currentPath(), backup)),
                             decorate(SWAP_IN_FILE, new RenamePathTransaction(
-                                    updatedJar, ad.updatePath())),
-                            decorate(DEPLOY, ad.deploymentTransaction()),
+                                    updatedJar, up.updatePath())),
+                            decorate(DEPLOY, up.deploymentTransaction()),
                     };
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updatedDir = new File(tempDir, "updated.dir");
                     txs = new Transaction[] {
                             decorate(ZIP, new ZipTransaction(
-                                    currentZip, ad.currentPath(), "")),
+                                    currentZip, up.currentPath(), "")),
                             decorate(PATCH, new PathTaskTransaction(
                                     updatedJar, new PatchTask(currentZip))),
                             decorate(UNZIP, new UnzipTransaction(
                                     updatedJar, updatedDir)),
-                            decorate(UNDEPLOY, ad.undeploymentTransaction()),
+                            decorate(UNDEPLOY, up.undeploymentTransaction()),
                             decorate(SWAP_OUT_DIR, new RenamePathTransaction(
-                                    ad.currentPath(), backup)),
+                                    up.currentPath(), backup)),
                             decorate(SWAP_IN_DIR, new RenamePathTransaction(
-                                    updatedDir, ad.updatePath())),
-                            decorate(DEPLOY, ad.deploymentTransaction()),
+                                    updatedDir, up.updatePath())),
+                            decorate(DEPLOY, up.deploymentTransaction()),
                     };
                 }
                 Transactions.execute(new CompositeTransaction(txs));

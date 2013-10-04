@@ -34,7 +34,7 @@ class TomcatUpdateInstallerIT {
                            new ContextName(location).getBaseName + ".war")
 
     testArchive as classOf[ZipExporter] exportTo testWar
-    val ad = installer applicationDescriptor (new UpdateContext {
+    val ad = installer updateParameters (new UpdateContext {
         override def currentLocation = location
         override def updateLocation = location
         override def deltaZip = null

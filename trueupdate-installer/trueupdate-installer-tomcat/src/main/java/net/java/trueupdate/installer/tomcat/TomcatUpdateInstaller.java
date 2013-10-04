@@ -8,7 +8,7 @@ import java.io.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
 
-import net.java.trueupdate.installer.core.ApplicationDescriptor;
+import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.manager.spec.UpdateContext;
@@ -59,11 +59,10 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
     }
 
     @Override
-    protected ApplicationDescriptor applicationDescriptor(
-            final UpdateContext uc)
+    protected UpdateParameters updateParameters(final UpdateContext uc)
     throws Exception {
 
-        class ResolvedDescriptor implements ApplicationDescriptor {
+        class ResolvedDescriptor implements UpdateParameters {
 
             final File appBase = appBase();
 

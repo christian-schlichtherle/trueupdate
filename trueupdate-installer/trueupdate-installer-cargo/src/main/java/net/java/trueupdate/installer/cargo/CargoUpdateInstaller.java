@@ -8,7 +8,7 @@ import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 
-import net.java.trueupdate.installer.core.ApplicationDescriptor;
+import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.tx.Transaction;
@@ -23,8 +23,7 @@ import net.java.trueupdate.manager.spec.tx.Transaction;
 public final class CargoUpdateInstaller extends CoreUpdateInstaller {
 
     @Override
-    protected ApplicationDescriptor applicationDescriptor(
-            final UpdateContext uc)
+    protected UpdateParameters updateParameters(final UpdateContext uc)
     throws Exception {
 
         final CargoContext ccc = new CargoContext(new URI(uc.currentLocation()));
@@ -33,7 +32,7 @@ public final class CargoUpdateInstaller extends CoreUpdateInstaller {
         final CargoContext ucc = new CargoContext(new URI(uc.updateLocation()));
         final File upath = ucc.deployablePath();
 
-        class ResolvedDescriptor implements ApplicationDescriptor {
+        class ResolvedDescriptor implements UpdateParameters {
 
             @Override public File currentPath() { return cpath; }
 
