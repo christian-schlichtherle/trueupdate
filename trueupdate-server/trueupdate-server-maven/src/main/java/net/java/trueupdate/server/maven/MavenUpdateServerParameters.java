@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.artifact.maven.*;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
-import net.java.trueupdate.server.maven.dto.MavenUpdateServerParametersDto;
+import net.java.trueupdate.server.maven.ci.MavenUpdateServerParametersCi;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
@@ -41,7 +41,7 @@ public final class MavenUpdateServerParameters {
     static MavenUpdateServerParameters load(final URL source) {
         try {
             return parse(JAXB.unmarshal(source,
-                                        MavenUpdateServerParametersDto.class));
+                                        MavenUpdateServerParametersCi.class));
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
                     "Failed to load configuration from %s .", source),
@@ -50,7 +50,7 @@ public final class MavenUpdateServerParameters {
     }
 
     /** Parses the given configuration item. */
-    public static MavenUpdateServerParameters parse(MavenUpdateServerParametersDto ci) {
+    public static MavenUpdateServerParameters parse(MavenUpdateServerParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -73,7 +73,7 @@ public final class MavenUpdateServerParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final MavenUpdateServerParametersDto ci) {
+        public final Builder<P> parse(final MavenUpdateServerParametersCi ci) {
             if (null != ci.repositories)
                 mavenParameters = MavenParameters.parse(ci.repositories);
             return this;

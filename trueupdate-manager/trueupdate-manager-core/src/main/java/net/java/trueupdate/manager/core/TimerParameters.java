@@ -8,7 +8,9 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.manager.core.dto.TimerParametersDto;
+
+import net.java.trueupdate.manager.core.ci.TimerParametersCi;
+
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -46,7 +48,7 @@ public final class TimerParameters {
     }
 
     /** Parses the given configuration item. */
-    public static TimerParameters parse(TimerParametersDto ci) {
+    public static TimerParameters parse(TimerParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -76,7 +78,7 @@ public final class TimerParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final TimerParametersDto ci) {
+        public final Builder<P> parse(final TimerParametersCi ci) {
             if (null != ci.delay)
                 this.delay = Long.parseLong(resolve(ci.delay, "0"));
             if (null != ci.period)

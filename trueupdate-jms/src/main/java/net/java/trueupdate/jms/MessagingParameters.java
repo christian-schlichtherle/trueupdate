@@ -8,7 +8,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
 import javax.naming.*;
-import net.java.trueupdate.jms.dto.*;
+import net.java.trueupdate.jms.ci.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -31,7 +31,7 @@ public final class MessagingParameters {
             // HC SVNT DRACONIS
             this.namingContext = null != b.namingContext
                     ? b.namingContext
-                    : namingContext(new NamingParametersDto());
+                    : namingContext(new NamingParametersCi());
             this.connectionFactory = lookup(b.connectionFactory);
             this.fromDestination = lookup(this.fromName = b.from);
             this.toName = b.to;
@@ -40,7 +40,7 @@ public final class MessagingParameters {
         }
     }
 
-    static Context namingContext(final NamingParametersDto ci) {
+    static Context namingContext(final NamingParametersCi ci) {
         try {
             final Context context = null == ci.initialContextClass
                     ? new InitialContext()
@@ -63,7 +63,7 @@ public final class MessagingParameters {
     }
 
     /** Parses the given configuration item. */
-    public static MessagingParameters parse(MessagingParametersDto messaging) {
+    public static MessagingParameters parse(MessagingParametersCi messaging) {
         return builder().parse(messaging).build();
     }
 
@@ -99,7 +99,7 @@ public final class MessagingParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final MessagingParametersDto ci) {
+        public final Builder<P> parse(final MessagingParametersCi ci) {
             if (null != ci.naming) namingContext =
                     MessagingParameters.namingContext(ci.naming);
             connectionFactory = resolve(ci.connectionFactory, connectionFactory);

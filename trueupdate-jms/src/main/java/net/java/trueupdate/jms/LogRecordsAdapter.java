@@ -18,71 +18,71 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  */
 @Immutable
 final class LogRecordsAdapter
-extends XmlAdapter<CompactLogRecordDto[], List<LogRecord>> {
+extends XmlAdapter<LogRecordDto[], List<LogRecord>> {
 
     @Override
     public List<LogRecord> unmarshal(
-            final @CheckForNull CompactLogRecordDto[] clrs)
+            final @CheckForNull LogRecordDto[] dtos)
     throws Exception {
-        final int l = null == clrs ? 0 : clrs.length;
+        final int l = null == dtos ? 0 : dtos.length;
         final List<LogRecord> lrs = new ArrayList<LogRecord>(l);
         for (int i = 0; i < l; i++) {
-            final CompactLogRecordDto clr = clrs[i];
-            final LogRecord lr = new LogRecord(Level.parse(clr.level),
-                                               clr.message);
-            lr.setLoggerName(clr.loggerName);
-            final String rbn = clr.resourceBundleName;
+            final LogRecordDto dto = dtos[i];
+            final LogRecord lr = new LogRecord(Level.parse(dto.level),
+                                               dto.message);
+            lr.setLoggerName(dto.loggerName);
+            final String rbn = dto.resourceBundleName;
             lr.setResourceBundleName(rbn);
             if (null != rbn) {
                 try { lr.setResourceBundle(ResourceBundle.getBundle(rbn)); }
                 catch (MissingResourceException ignored) { }
             }
-            lr.setSequenceNumber(clr.sequenceNumber);
-            lr.setSourceClassName(clr.sourceClassName);
-            lr.setSourceMethodName(clr.sourceMethodName);
-            lr.setParameters(clr.parameters);
-            lr.setThreadID(clr.threadId);
-            lr.setMillis(clr.millis);
-            if (null != clr.thrown)
-                lr.setThrown(new Throwable(clr.thrown));
+            lr.setSequenceNumber(dto.sequenceNumber);
+            lr.setSourceClassName(dto.sourceClassName);
+            lr.setSourceMethodName(dto.sourceMethodName);
+            lr.setParameters(dto.parameters);
+            lr.setThreadID(dto.threadId);
+            lr.setMillis(dto.millis);
+            if (null != dto.thrown)
+                lr.setThrown(new Throwable(dto.thrown));
             lrs.add(lr);
         }
         return lrs;
     }
 
     @Override
-    public CompactLogRecordDto[] marshal(
+    public LogRecordDto[] marshal(
             final @CheckForNull List<LogRecord> lrs)
     throws Exception {
         final int lrss = null == lrs ? 0 : lrs.size();
-        final CompactLogRecordDto[] clrs = new CompactLogRecordDto[lrss];
+        final LogRecordDto[] dtos = new LogRecordDto[lrss];
         if (0 != lrss) {
             int i = 0;
             for (final LogRecord lr : lrs) {
-                final CompactLogRecordDto clr = new CompactLogRecordDto();
-                clr.loggerName = lr.getLoggerName();
-                clr.resourceBundleName = lr.getResourceBundleName();
-                clr.level = lr.getLevel().getName();
-                clr.sequenceNumber = lr.getSequenceNumber();
-                clr.sourceClassName = lr.getSourceClassName();
-                clr.sourceMethodName = lr.getSourceMethodName();
-                clr.message = lr.getMessage();
-                clr.parameters = marshalAsXsiTypesForUseWithMessageFormat(
+                final LogRecordDto dto = new LogRecordDto();
+                dto.loggerName = lr.getLoggerName();
+                dto.resourceBundleName = lr.getResourceBundleName();
+                dto.level = lr.getLevel().getName();
+                dto.sequenceNumber = lr.getSequenceNumber();
+                dto.sourceClassName = lr.getSourceClassName();
+                dto.sourceMethodName = lr.getSourceMethodName();
+                dto.message = lr.getMessage();
+                dto.parameters = marshalAsXsiTypesForUseWithMessageFormat(
                         lr.getParameters());
-                clr.threadId = lr.getThreadID();
-                clr.millis = lr.getMillis();
+                dto.threadId = lr.getThreadID();
+                dto.millis = lr.getMillis();
                 final Throwable t = lr.getThrown();
                 if (null != t) {
                     final StringWriter sw = new StringWriter(1024);
                     final PrintWriter pw = new PrintWriter(sw);
                     t.printStackTrace(pw);
                     pw.close();
-                    clr.thrown = sw.toString();
+                    dto.thrown = sw.toString();
                 }
-                clrs[i++] = clr;
+                dtos[i++] = dto;
             }
         }
-        return clrs;
+        return dtos;
     }
 
     private static @Nullable Object[] marshalAsXsiTypesForUseWithMessageFormat(

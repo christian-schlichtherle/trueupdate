@@ -18,7 +18,7 @@ final class JAXB {
     private static final JAXBContext CONTEXT;
     static {
         try {
-            CONTEXT = JAXBContext.newInstance(CompactUpdateMessageDto.class);
+            CONTEXT = JAXBContext.newInstance(UpdateMessageDto.class);
         } catch (JAXBException ex) {
             throw new IllegalStateException(ex);
         }
@@ -31,7 +31,7 @@ final class JAXB {
         try {
             if (!message.attachedLogs().isEmpty())
                 m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
-                              new CompactNamespaceMapper());
+                              new DtoNamespaceMapper());
         } catch(PropertyException aDifferentJaxbImplementationIsUsed) {
         }
         m.marshal(adapter().marshal(message), sw);
@@ -40,7 +40,7 @@ final class JAXB {
 
     static UpdateMessage decode(String string) throws Exception {
         return (UpdateMessage) adapter().unmarshal(
-                (CompactUpdateMessageDto) unmarshaller().unmarshal(
+                (UpdateMessageDto) unmarshaller().unmarshal(
                     new StringReader(string)));
     }
 

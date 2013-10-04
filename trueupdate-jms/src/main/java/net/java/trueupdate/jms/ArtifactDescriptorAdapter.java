@@ -17,34 +17,35 @@ import static net.java.trueupdate.util.Objects.nonDefaultOrNull;
  */
 @Immutable
 final class ArtifactDescriptorAdapter
-extends XmlAdapter<CompactArtifactDescriptorDto, ArtifactDescriptor> {
+extends XmlAdapter<ArtifactDescriptorDto, ArtifactDescriptor> {
 
     @Override
     public @Nullable ArtifactDescriptor unmarshal(
-            final @CheckForNull CompactArtifactDescriptorDto cad)
+            final @CheckForNull ArtifactDescriptorDto dto)
     throws Exception {
-        if (null == cad) return null;
+        if (null == dto) return null;
         return ArtifactDescriptor
                 .builder()
-                .groupId(cad.groupId)
-                .artifactId(cad.artifactId)
-                .version(cad.version)
-                .classifier(cad.classifier)
-                .extension(cad.extension)
+                .groupId(dto.groupId)
+                .artifactId(dto.artifactId)
+                .version(dto.version)
+                .classifier(dto.classifier)
+                .extension(dto.extension)
                 .build();
     }
 
     @Override
-    public @Nullable CompactArtifactDescriptorDto marshal(
+    public @Nullable
+    ArtifactDescriptorDto marshal(
             final @CheckForNull ArtifactDescriptor ad)
     throws Exception {
         if (null == ad) return null;
-        final CompactArtifactDescriptorDto cad = new CompactArtifactDescriptorDto();
-        cad.groupId = ad.groupId();
-        cad.artifactId = ad.artifactId();
-        cad.version = ad.version();
-        cad.classifier = nonDefaultOrNull(ad.classifier(), "");
-        cad.extension = nonDefaultOrNull(ad.extension(), "jar");
-        return cad;
+        final ArtifactDescriptorDto dto = new ArtifactDescriptorDto();
+        dto.groupId = ad.groupId();
+        dto.artifactId = ad.artifactId();
+        dto.version = ad.version();
+        dto.classifier = nonDefaultOrNull(ad.classifier(), "");
+        dto.extension = nonDefaultOrNull(ad.extension(), "jar");
+        return dto;
     }
 }

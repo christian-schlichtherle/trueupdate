@@ -6,7 +6,9 @@ package net.java.trueupdate.artifact.spec;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.spec.dto.ArtifactDescriptorDto;
+
+import net.java.trueupdate.artifact.spec.ci.ArtifactDescriptorCi;
+
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
@@ -49,7 +51,7 @@ public final class ArtifactDescriptor {
     }
 
     /** Parses the given configuration item. */
-    public static ArtifactDescriptor parse(ArtifactDescriptorDto ci) {
+    public static ArtifactDescriptor parse(ArtifactDescriptorCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -167,7 +169,7 @@ public final class ArtifactDescriptor {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final ArtifactDescriptorDto ci) {
+        public final Builder<P> parse(final ArtifactDescriptorCi ci) {
             groupId = resolve(ci.groupId, groupId);
             artifactId = resolve(ci.artifactId, artifactId);
             version = resolve(ci.version, version);

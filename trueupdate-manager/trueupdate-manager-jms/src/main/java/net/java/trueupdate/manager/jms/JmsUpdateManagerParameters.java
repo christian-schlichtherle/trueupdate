@@ -11,7 +11,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.jms.MessagingParameters;
 import net.java.trueupdate.manager.core.*;
-import net.java.trueupdate.manager.jms.dto.JmsUpdateManagerParametersDto;
+import net.java.trueupdate.manager.jms.ci.JmsUpdateManagerParametersCi;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -46,7 +47,7 @@ public final class JmsUpdateManagerParameters {
     static JmsUpdateManagerParameters load(final URL source) {
         try {
             return parse(JAXB.unmarshal(source,
-                                        JmsUpdateManagerParametersDto.class));
+                                        JmsUpdateManagerParametersCi.class));
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
                     "Failed to load configuration from %s .", source),
@@ -56,7 +57,7 @@ public final class JmsUpdateManagerParameters {
 
     /** Parses the given configuration item. */
     public static JmsUpdateManagerParameters parse(
-            JmsUpdateManagerParametersDto ci) {
+            JmsUpdateManagerParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -87,7 +88,7 @@ public final class JmsUpdateManagerParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final JmsUpdateManagerParametersDto ci) {
+        public final Builder<P> parse(final JmsUpdateManagerParametersCi ci) {
             if (null != ci.updateService)
                 updateService = UpdateServiceParameters.parse(ci.updateService);
             if (null != ci.updateTimer)

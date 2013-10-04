@@ -7,7 +7,8 @@ package net.java.trueupdate.manager.core;
 import java.net.URI;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.manager.core.dto.UpdateServiceParametersDto;
+
+import net.java.trueupdate.manager.core.ci.UpdateServiceParametersCi;
 import net.java.trueupdate.util.Objects;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
@@ -27,7 +28,7 @@ public final class UpdateServiceParameters {
     }
 
     /** Parses the given configuration item. */
-    public static UpdateServiceParameters parse(UpdateServiceParametersDto ci) {
+    public static UpdateServiceParameters parse(UpdateServiceParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -50,7 +51,7 @@ public final class UpdateServiceParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final UpdateServiceParametersDto ci) {
+        public final Builder<P> parse(final UpdateServiceParametersCi ci) {
             if (null != ci.uri)
                 this.uri = URI.create(ensureEndsWithSlash(resolve(ci.uri)));
             return this;

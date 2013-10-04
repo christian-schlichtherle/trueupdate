@@ -6,8 +6,9 @@ package net.java.trueupdate.agent.core;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
+
+import net.java.trueupdate.agent.core.ci.ApplicationParametersCi;
 import net.java.trueupdate.agent.spec.UpdateAgentListener;
-import net.java.trueupdate.agent.core.dto.ApplicationParametersDto;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
@@ -49,7 +50,7 @@ public final class ApplicationParameters {
     }
 
     /** Parses the given configuration item. */
-    public static ApplicationParameters parse(ApplicationParametersDto ci) {
+    public static ApplicationParameters parse(ApplicationParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -90,7 +91,7 @@ public final class ApplicationParameters {
         protected Builder() { }
 
         /** Parses the given configuration item. */
-        public final Builder<P> parse(final ApplicationParametersDto ci) {
+        public final Builder<P> parse(final ApplicationParametersCi ci) {
             if (null != ci.artifact)
                 artifactDescriptor = ArtifactDescriptor.parse(ci.artifact);
             currentLocation = resolve(ci.currentLocation, currentLocation);

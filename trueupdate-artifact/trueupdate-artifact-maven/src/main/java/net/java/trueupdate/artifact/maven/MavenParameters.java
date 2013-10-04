@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.*;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.maven.dto.*;
+import net.java.trueupdate.artifact.maven.ci.*;
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.*;
@@ -32,7 +32,7 @@ public final class MavenParameters {
     }
 
     /** Parses the given configuration item. */
-    public static MavenParameters parse(MavenParametersDto ci) {
+    public static MavenParameters parse(MavenParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -61,22 +61,22 @@ public final class MavenParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final MavenParametersDto ci) {
+        public final Builder<P> parse(final MavenParametersCi ci) {
             if (null != ci.local) local = local(ci.local);
             if (null != ci.remotes) addRemotes(ci.remotes);
             return this;
         }
 
-        private static LocalRepository local(final LocalRepositoryDto ci) {
+        private static LocalRepository local(final LocalRepositoryCi ci) {
             return new LocalRepository(
                     new File(resolve(nonNullOr(ci.directory, "${user.home}/.m2"))),
                     resolve(ci.type, null));
         }
 
-        private void addRemotes(final RemoteRepositoryDto[] cis) {
+        private void addRemotes(final RemoteRepositoryCi[] cis) {
             final int l = cis.length;
             for (int i = 0; i < l; i++) {
-                final RemoteRepositoryDto ci = cis[i];
+                final RemoteRepositoryCi ci = cis[i];
                 remotes.add(new RemoteRepository.Builder(
                         resolve(ci.id, null),
                         resolve(ci.type, null),

@@ -10,7 +10,7 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.agent.core.*;
-import net.java.trueupdate.agent.jms.dto.JmsUpdateAgentParametersDto;
+import net.java.trueupdate.agent.jms.ci.JmsUpdateAgentParametersCi;
 import net.java.trueupdate.jms.MessagingParameters;
 import static net.java.trueupdate.util.Objects.*;
 import net.java.trueupdate.util.builder.AbstractBuilder;
@@ -47,7 +47,7 @@ public final class JmsUpdateAgentParameters {
     static JmsUpdateAgentParameters load(final URL source) {
         try {
             return parse(JAXB.unmarshal(source,
-                                        JmsUpdateAgentParametersDto.class));
+                                        JmsUpdateAgentParametersCi.class));
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
                     "Failed to load configuration from %s .", source),
@@ -56,7 +56,7 @@ public final class JmsUpdateAgentParameters {
     }
 
     /** Parses the given configuration item. */
-    public static JmsUpdateAgentParameters parse(JmsUpdateAgentParametersDto ci) {
+    public static JmsUpdateAgentParameters parse(JmsUpdateAgentParametersCi ci) {
         return builder().parse(ci).build();
     }
 
@@ -90,7 +90,7 @@ public final class JmsUpdateAgentParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final JmsUpdateAgentParametersDto ci) {
+        public final Builder<P> parse(final JmsUpdateAgentParametersCi ci) {
             if (null != ci.application)
                 application = ApplicationParameters.parse(ci.application);
             if (null != ci.subscriptionTimer)

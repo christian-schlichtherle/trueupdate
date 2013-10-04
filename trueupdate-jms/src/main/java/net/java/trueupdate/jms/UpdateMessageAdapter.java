@@ -22,51 +22,52 @@ import static net.java.trueupdate.util.Objects.nonDefaultOrNull;
  */
 @Immutable
 final class UpdateMessageAdapter
-extends XmlAdapter<CompactUpdateMessageDto, UpdateMessage> {
+extends XmlAdapter<UpdateMessageDto, UpdateMessage> {
 
     @Override
     public @Nullable UpdateMessage unmarshal(
-            final @CheckForNull CompactUpdateMessageDto cum)
+            final @CheckForNull UpdateMessageDto dto)
     throws Exception {
-        if (null == cum) return null;
+        if (null == dto) return null;
         final ArtifactDescriptor ad = new ArtifactDescriptorAdapter()
-                .unmarshal(cum.artifactDescriptor);
+                .unmarshal(dto.artifactDescriptor);
         final List<LogRecord> lrs = new LogRecordsAdapter()
-                .unmarshal(cum.logRecords);
+                .unmarshal(dto.logRecords);
         final UpdateMessage um = UpdateMessage
                 .builder()
-                .timestamp(cum.timestamp)
-                .from(cum.from)
-                .to(cum.to)
-                .type(Type.values()[cum.type])
+                .timestamp(dto.timestamp)
+                .from(dto.from)
+                .to(dto.to)
+                .type(Type.values()[dto.type])
                 .artifactDescriptor(ad)
-                .updateVersion(cum.updateVersion)
-                .currentLocation(cum.currentLocation)
-                .updateLocation(cum.updateLocation)
+                .updateVersion(dto.updateVersion)
+                .currentLocation(dto.currentLocation)
+                .updateLocation(dto.updateLocation)
                 .build();
         um.attachedLogs().addAll(lrs);
         return um;
     }
 
     @Override
-    public @Nullable CompactUpdateMessageDto marshal(
+    public @Nullable
+    UpdateMessageDto marshal(
             final @CheckForNull UpdateMessage um)
     throws Exception {
         if (null == um) return null;
-        final CompactArtifactDescriptorDto cad = new ArtifactDescriptorAdapter()
+        final ArtifactDescriptorDto add = new ArtifactDescriptorAdapter()
                 .marshal(um.artifactDescriptor());
-        final CompactLogRecordDto[] clrs = new LogRecordsAdapter()
+        final LogRecordDto[] lrds = new LogRecordsAdapter()
                 .marshal(um.attachedLogs());
-        final CompactUpdateMessageDto cum = new CompactUpdateMessageDto();
-        cum.timestamp = um.timestamp();
-        cum.from = um.from();
-        cum.to = um.to();
-        cum.type = um.type().ordinal();
-        cum.artifactDescriptor = cad;
-        cum.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
-        cum.currentLocation = um.currentLocation();
-        cum.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
-        cum.logRecords = clrs;
-        return cum;
+        final UpdateMessageDto dto = new UpdateMessageDto();
+        dto.timestamp = um.timestamp();
+        dto.from = um.from();
+        dto.to = um.to();
+        dto.type = um.type().ordinal();
+        dto.artifactDescriptor = add;
+        dto.updateVersion = nonDefaultOrNull(um.updateVersion(), "");
+        dto.currentLocation = um.currentLocation();
+        dto.updateLocation = nonDefaultOrNull(um.updateLocation(), um.currentLocation());
+        dto.logRecords = lrds;
+        return dto;
     }
 }
