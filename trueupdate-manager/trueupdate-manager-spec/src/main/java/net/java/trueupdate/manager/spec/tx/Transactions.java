@@ -27,7 +27,8 @@ public class Transactions {
      */
     public static void execute(final Transaction tx) throws Exception {
         if (Boolean.TRUE.equals(inTx.get()))
-            throw new IllegalStateException("Nested transactions are not supported because they can't get rolled back once committed - refactor to CompositeTransaction instead.");
+            throw new IllegalStateException(
+                    "Nested transactions are not supported because they can't get rolled back once committed - refactor to CompositeTransaction instead.");
         inTx.set(Boolean.TRUE);
         try {
             tx.prepare();
