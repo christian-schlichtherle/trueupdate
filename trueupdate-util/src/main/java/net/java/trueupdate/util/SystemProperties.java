@@ -9,8 +9,8 @@ import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Replaces references to system properties of the form {@code ${key}} with
- * their values.
+ * Recursively replaces references to system properties of the form
+ * {@code ${key}} with their values.
  *
  * @author Christian Schlichtherle
  */
@@ -23,14 +23,16 @@ public final class SystemProperties {
     private SystemProperties() { }
 
     /**
-     * Replaces references to system properties of the form {@code ${key}} with
-     * their values.
+     * Recursively replaces references to system properties of the form
+     * {@code ${key}} with their values.
      *
      * @param string the nullable string to process.
      * @param defaultValue the nullable default value to return if and only if
      *        {@code string} is {@code null}.
      *        Note that this parameter does not get processed.
      * @return the resulting string
+     * @throws IllegalStateException if any referenced system property is
+     *         undefined.
      */
     public static @Nullable String resolve(@CheckForNull String string,
                                            @Nullable String defaultValue) {
@@ -38,11 +40,13 @@ public final class SystemProperties {
     }
 
     /**
-     * Replaces references to system properties of the form {@code ${key}} with
-     * their values.
+     * Recursively replaces references to system properties of the form
+     * {@code ${key}} with their values.
      *
      * @param string the string to process.
      * @return the resulting string
+     * @throws IllegalStateException if any referenced system property is
+     *         undefined.
      */
     public static String resolve(final String string) {
         final StringBuffer sb = new StringBuffer(string.length());
@@ -50,7 +54,7 @@ public final class SystemProperties {
         while (matcher.find())
             matcher.appendReplacement(sb, escape(replacement(matcher)));
         final String result = matcher.appendTail(sb).toString();
-        return string.equals(result) ? string : result;
+        return string.equals(result) ? string : resolve(result);
     }
 
     private static String escape(String string) {
@@ -60,6 +64,9 @@ public final class SystemProperties {
     private static String replacement(final Matcher matcher) {
         final String key = matcher.group(1);
         final String value = System.getProperty(key);
-        return null != value ? value : matcher.group(0);
+        if (null == value)
+            throw new IllegalStateException(
+                    "Undefined system property key \"" + key + "\".");
+        return value;
     }
 }
