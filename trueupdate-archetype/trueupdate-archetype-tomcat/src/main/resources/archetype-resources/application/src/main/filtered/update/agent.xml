@@ -15,7 +15,7 @@
             <version>${symbol_dollar}{project.version}</version>
             <extension>${symbol_dollar}{project.packaging}</extension>
         </artifact>
-        <location>/${parentArtifactId}-demo</location>
+        <location>/${application}</location>
         <listenerClass>${package}.ApplicationListener</listenerClass>
     </application>
     <subscriptionTimer>
