@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>${groupId}</groupId>
+        <artifactId>${rootArtifactId}</artifactId>
+        <version>${version}</version>
+    </parent>
+
+    <artifactId>${artifactId}</artifactId>
+    <packaging>ear</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        Bundles the TrueUpdate Manager and TrueUpdate Installer
+        components for deployment to an Oracle Glassfish container.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>update-manager-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-core-container-glassfish</artifactId>
+            <version>${cargo.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.deployment</groupId>
+            <artifactId>deployment-client</artifactId>
+            <version>${glassfish.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-installer-cargo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-manager-ejb</artifactId>
+            <type>ejb</type>
+        </dependency>
+    </dependencies>
+</project>

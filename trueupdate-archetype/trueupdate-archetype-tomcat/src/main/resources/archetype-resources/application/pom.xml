@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>${groupId}</groupId>
+        <artifactId>${rootArtifactId}</artifactId>
+        <version>${version}</version>
+    </parent>
+
+    <artifactId>${application}</artifactId>
+    <packaging>war</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        Provides a sample UpdateAgentListener sub-class and bundles the
+        application components with the TrueUpdate Agent components for
+        deployment to an Apache Tomcat container.
+        Customize the update agent listener class in order to check permissions
+        or display progress notices to users.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-agent-servlet</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-agent-spec</artifactId>
+        </dependency>
+    </dependencies>
+</project>

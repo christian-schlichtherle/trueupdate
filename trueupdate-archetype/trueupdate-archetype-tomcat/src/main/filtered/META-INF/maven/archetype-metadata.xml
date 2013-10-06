@@ -10,11 +10,17 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0
                         http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd">
     <requiredProperties>
-        <requiredProperty key="trueupdate-version">
-            <defaultValue>${project.version}</defaultValue>
-        </requiredProperty>
         <requiredProperty key="agent-subscriptionTimer-delay">
             <defaultValue>10</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="application">
+            <defaultValue>application</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="javaee-version">
+            <defaultValue>6</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="javase-version">
+            <defaultValue>6</defaultValue>
         </requiredProperty>
         <requiredProperty key="manager-updateTimer-period">
             <defaultValue>720</defaultValue>
@@ -22,36 +28,32 @@
         <requiredProperty key="server-repositories-local-directory">
             <defaultValue>${user.home}/.m2/repository</defaultValue>
         </requiredProperty>
-        <requiredProperty key="javase-version">
-            <defaultValue>6</defaultValue>
-        </requiredProperty>
-        <requiredProperty key="javaee-version">
-            <defaultValue>6</defaultValue>
+        <requiredProperty key="trueupdate-version">
+            <defaultValue>${project.version}</defaultValue>
         </requiredProperty>
     </requiredProperties>
     <modules>
-        <module id="${rootArtifactId}-demo-app" dir="autoupdate-demo-app" name="${rootArtifactId}-demo-app">
+        <module id="${application}" dir="application" name="${application}">
             <fileSets>
                 <fileSet filtered="true" encoding="UTF-8">
-                    <directory>src</directory>
+                    <directory>src/main/filtered</directory>
                 </fileSet>
-            </fileSets>
-        </module>
-        <module id="${rootArtifactId}-demo-listener" dir="autoupdate-demo-listener" name="${rootArtifactId}-demo-listener">
-            <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>
                 </fileSet>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src/main/webapp</directory>
+                </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-manager-app" dir="autoupdate-manager-app" name="${rootArtifactId}-manager-app">
+        <module id="update-manager" dir="update-manager" name="update-manager">
             <fileSets>
                 <fileSet filtered="true" encoding="UTF-8">
                     <directory>src</directory>
                 </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-server-app" dir="autoupdate-server-app" name="${rootArtifactId}-server-app">
+        <module id="update-server" dir="update-server" name="update-server">
             <fileSets>
                 <fileSet filtered="true" encoding="UTF-8">
                     <directory>src</directory>

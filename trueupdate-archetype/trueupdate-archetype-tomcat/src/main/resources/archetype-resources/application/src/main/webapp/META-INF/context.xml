@@ -1,0 +1,23 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/${application}">
+    <Resource auth="Container"
+              factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+              name="${parentArtifactId}/connection-factory"
+              brokerName="${parentArtifactId}-broker"
+              brokerURL="vm://localhost?broker.persistent=false"
+              description="JMS Connection Factory"
+              type="org.apache.activemq.ActiveMQConnectionFactory"/>
+    <Resource auth="Container"
+              factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+              name="${parentArtifactId}/agent"
+              physicalName="${parentArtifactId}-agent"
+              type="org.apache.activemq.command.ActiveMQQueue"/>
+    <Resource auth="Container"
+              factory="org.apache.activemq.jndi.JNDIReferenceFactory"
+              name="${parentArtifactId}/manager"
+              physicalName="${parentArtifactId}-manager"
+              type="org.apache.activemq.command.ActiveMQQueue"/>
+</Context>
