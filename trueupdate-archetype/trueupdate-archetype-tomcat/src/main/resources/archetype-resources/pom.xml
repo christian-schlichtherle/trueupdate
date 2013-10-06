@@ -61,7 +61,7 @@
           - Mind you that the substitution is done by Maven at build time, not
           - by the app server at deployment time (no, you can't escape it).
           -->
-        <manager.updateService.uri>http://localhost:8080/${rootArtifactId}-server/</manager.updateService.uri>
+        <manager.updateService.uri>http://localhost:8080/update-server/</manager.updateService.uri>
 
         <!--
           - The timer period for checking for artifact updates in minutes.
