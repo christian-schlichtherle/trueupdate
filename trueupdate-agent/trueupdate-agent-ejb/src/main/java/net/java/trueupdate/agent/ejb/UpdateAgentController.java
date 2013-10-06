@@ -17,7 +17,7 @@ import net.java.trueupdate.agent.jms.*;
  */
 @Startup
 @Singleton
-public class UpdateAgentControllerBean {
+public class UpdateAgentController {
 
     private JmsUpdateAgentContext context;
 

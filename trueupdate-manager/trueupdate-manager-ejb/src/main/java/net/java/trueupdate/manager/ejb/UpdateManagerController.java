@@ -19,10 +19,10 @@ import net.java.trueupdate.manager.jms.*;
  */
 @Startup
 @Singleton
-public class UpdateManagerControllerBean {
+public class UpdateManagerController {
 
     private static final Logger logger = Logger.getLogger(
-            UpdateManagerControllerBean.class.getName());
+            UpdateManagerController.class.getName());
 
     private JmsUpdateManagerContext context;
 

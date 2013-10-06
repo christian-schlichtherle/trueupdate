@@ -18,11 +18,11 @@ import net.java.trueupdate.manager.jms.*;
  * @author Christian Schlichtherle
  */
 @WebListener
-public final class UpdateManagerServletContextListener
+public final class UpdateManagerController
 implements ServletContextListener {
 
     private static final Logger logger = Logger.getLogger(
-            UpdateManagerServletContextListener.class.getName());
+            UpdateManagerController.class.getName());
 
     private JmsUpdateManagerContext context;
 

@@ -15,7 +15,7 @@ import net.java.trueupdate.agent.jms.*;
  * @author Christian Schlichtherle
  */
 @WebListener
-public final class UpdateAgentServletContextListener
+public final class UpdateAgentController
 implements ServletContextListener {
 
     private JmsUpdateAgentContext context;
