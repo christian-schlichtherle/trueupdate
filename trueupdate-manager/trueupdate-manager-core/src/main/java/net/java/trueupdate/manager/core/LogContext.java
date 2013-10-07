@@ -21,7 +21,7 @@ final class LogContext extends Handler {
 
     static void setChannel(LogChannel channel) { INSTANCE.set(channel); }
 
-    static void removeChannel() { INSTANCE.remove(); }
+    static void resetChannel() { INSTANCE.reset(); }
 
     private ThreadLocal<LogChannel>
             channels = new InheritableThreadLocal<LogChannel>();
@@ -41,7 +41,7 @@ final class LogContext extends Handler {
 
     void set(LogChannel channel) { channels.set(channel); }
 
-    void remove() { channels.remove(); }
+    void reset() { channels.remove(); }
 
     @Override public void flush() { }
 

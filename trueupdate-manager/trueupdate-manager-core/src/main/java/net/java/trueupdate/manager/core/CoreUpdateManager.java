@@ -213,7 +213,7 @@ extends UpdateMessageListener implements UpdateManager {
                     logger.log(Level.WARNING, "manager.install.exception", ex);
                     throw ex;
                 } finally {
-                    LogContext.removeChannel();
+                    LogContext.resetChannel();
                 }
                 return null;
             }
