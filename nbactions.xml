@@ -2,7 +2,8 @@
 <!--
   - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
   - All rights reserved. Use is subject to license terms.
-  --><actions>
+  -->
+<actions>
     <action>
         <actionName>CUSTOM-javadoc:aggregate</actionName>
         <displayName>javadoc:aggregate</displayName>
@@ -11,13 +12,13 @@
         </goals>
     </action>
     <action>
-            <actionName>CUSTOM-site:run</actionName>
-            <displayName>site:run</displayName>
-            <goals>
-                <goal>site:run</goal>
-            </goals>
-            <properties>
-                <port>7070</port>
-            </properties>
-        </action>
+        <actionName>CUSTOM-site:run</actionName>
+        <displayName>site:run</displayName>
+        <goals>
+            <goal>site:run</goal>
+        </goals>
+        <properties>
+            <port>7070</port>
+        </properties>
+    </action>
 </actions>
