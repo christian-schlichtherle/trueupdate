@@ -18,15 +18,15 @@ import net.java.trueupdate.message.UpdateMessage;
 final class JmsUpdateAgent extends CoreUpdateAgent {
 
     private final ApplicationParameters applicationParameters;
-    private final MessagingParameters messagingParameters;
+    private final JmsParameters jmsParameters;
     private final JmsSender sender;
 
     JmsUpdateAgent(final JmsUpdateAgentParameters parameters) {
         this.applicationParameters = parameters.application();
-        this.messagingParameters = parameters.messaging();
+        this.jmsParameters = parameters.messaging();
         this.sender = JmsSender.create(
-                this.messagingParameters.namingContext(),
-                this.messagingParameters.connectionFactory());
+                this.jmsParameters.namingContext(),
+                this.jmsParameters.connectionFactory());
     }
 
     @Override
@@ -35,11 +35,11 @@ final class JmsUpdateAgent extends CoreUpdateAgent {
     }
 
     @Override protected String from() {
-        return messagingParameters.fromName();
+        return jmsParameters.fromName();
     }
 
     @Override protected String to() {
-        return messagingParameters.toName();
+        return jmsParameters.toName();
     }
 
     @Override protected ApplicationParameters applicationParameters() {

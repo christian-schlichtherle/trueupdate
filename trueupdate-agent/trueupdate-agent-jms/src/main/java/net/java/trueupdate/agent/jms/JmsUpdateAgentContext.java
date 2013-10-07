@@ -30,22 +30,22 @@ public final class JmsUpdateAgentContext {
     public JmsUpdateAgentContext(final JmsUpdateAgentParameters parameters) {
         subscriptionDelay = parameters.subscriptionTimer();
         agent = new JmsUpdateAgent(parameters);
-        final MessagingParameters mp = parameters.messaging();
+        final JmsParameters jp = parameters.messaging();
         // The maximum pool size is one in order to prevent messages to be
         // processed out of their sequence order.
-        final ExecutorService executorService = new ThreadPoolExecutor(
+        final ExecutorService es = new ThreadPoolExecutor(
                 0, 1,
                 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(),
                 JmsReceiver.LISTENER_THREAD_FACTORY);
         receiver = JmsReceiver
                 .builder()
-                .connectionFactory(mp.connectionFactory())
-                .destination(mp.fromDestination())
-                .subscriptionName(mp.fromName())
+                .connectionFactory(jp.connectionFactory())
+                .destination(jp.fromDestination())
+                .subscriptionName(jp.fromName())
                 .messageSelector("manager = false")
                 .updateMessageListener(agent)
-                .executorService(executorService)
+                .executorService(es)
                 .build();
     }
 

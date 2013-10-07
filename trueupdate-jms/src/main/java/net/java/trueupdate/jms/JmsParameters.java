@@ -18,7 +18,7 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
  * @author Christian Schlichtherle
  */
 @Immutable
-public final class MessagingParameters {
+public final class JmsParameters {
 
     private final Context namingContext;
     private final ConnectionFactory connectionFactory;
@@ -26,12 +26,12 @@ public final class MessagingParameters {
     private final Destination fromDestination;
     private final @CheckForNull String toName;
 
-    MessagingParameters(final Builder<?> b) {
+    JmsParameters(final Builder<?> b) {
         try {
             // HC SVNT DRACONIS
             this.namingContext = null != b.namingContext
                     ? b.namingContext
-                    : namingContext(new NamingParametersCi());
+                    : namingContext(new JndiParametersCi());
             this.connectionFactory = lookup(b.connectionFactory);
             this.fromDestination = lookup(this.fromName = b.from);
             this.toName = b.to;
@@ -40,7 +40,7 @@ public final class MessagingParameters {
         }
     }
 
-    static Context namingContext(final NamingParametersCi ci) {
+    static Context namingContext(final JndiParametersCi ci) {
         try {
             final Context context = null == ci.initialContextClass
                     ? new InitialContext()
@@ -63,7 +63,7 @@ public final class MessagingParameters {
     }
 
     /** Parses the given configuration item. */
-    public static MessagingParameters parse(MessagingParametersCi messaging) {
+    public static JmsParameters parse(JmsParametersCi messaging) {
         return builder().parse(messaging).build();
     }
 
@@ -99,9 +99,9 @@ public final class MessagingParameters {
         protected Builder() { }
 
         /** Selectively parses the given configuration item. */
-        public final Builder<P> parse(final MessagingParametersCi ci) {
+        public final Builder<P> parse(final JmsParametersCi ci) {
             if (null != ci.naming) namingContext =
-                    MessagingParameters.namingContext(ci.naming);
+                    JmsParameters.namingContext(ci.naming);
             connectionFactory = resolve(ci.connectionFactory, connectionFactory);
             from = resolve(ci.from, from);
             to = resolve(ci.to, to);
@@ -130,8 +130,8 @@ public final class MessagingParameters {
             return this;
         }
 
-        @Override public final MessagingParameters build() {
-            return new MessagingParameters(this);
+        @Override public final JmsParameters build() {
+            return new JmsParameters(this);
         }
     } // Builder
 }

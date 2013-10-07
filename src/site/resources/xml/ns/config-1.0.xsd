@@ -55,7 +55,7 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="messaging" type="MessagingParameters">
+            <xs:element name="messaging" type="JmsParameters">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         Configures messaging parameters for use with JMS.
@@ -82,7 +82,7 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="messaging" type="MessagingParameters">
+            <xs:element name="messaging" type="JmsParameters">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         Configures messaging parameters for use with JMS.
@@ -136,9 +136,9 @@
         </xs:all>
     </xs:complexType>
 
-    <xs:complexType name="MessagingParameters">
+    <xs:complexType name="JmsParameters">
         <xs:all>
-            <xs:element minOccurs="0" name="naming" type="NamingParameters">
+            <xs:element minOccurs="0" name="naming" type="JndiParameters">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         Configures optional naming parameters for use with JNDI.
@@ -180,7 +180,7 @@
         </xs:all>
     </xs:complexType>
 
-    <xs:complexType name="NamingParameters">
+    <xs:complexType name="JndiParameters">
         <xs:all>
             <xs:element default="javax.naming.InitialContext" minOccurs="0" name="initialContextClass" type="xs:string">
                 <xs:annotation>

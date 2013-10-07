@@ -17,9 +17,6 @@ import net.java.trueupdate.manager.core.*;
 @Immutable
 public final class JmsUpdateManagerContext {
 
-    private static final ExecutorService executorService =
-            Executors.newCachedThreadPool(JmsReceiver.LISTENER_THREAD_FACTORY);
-
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
     private final ScheduledExecutorService timer;
@@ -33,15 +30,17 @@ public final class JmsUpdateManagerContext {
         // HC SVNT DRACONIS
         this.parameters = parameters;
         manager = new JmsUpdateManager(parameters);
-        final MessagingParameters mp = parameters.messaging();
+        final JmsParameters jp = parameters.messaging();
+        final ExecutorService es = Executors.newCachedThreadPool(
+                JmsReceiver.LISTENER_THREAD_FACTORY);
         receiver = JmsReceiver
                 .builder()
-                .connectionFactory(mp.connectionFactory())
-                .destination(mp.fromDestination())
-                .subscriptionName(mp.fromName())
+                .connectionFactory(jp.connectionFactory())
+                .destination(jp.fromDestination())
+                .subscriptionName(jp.fromName())
                 .messageSelector("manager = true")
                 .updateMessageListener(manager)
-                .executorService(executorService)
+                .executorService(es)
                 .build();
         timer = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override public Thread newThread(Runnable r) {

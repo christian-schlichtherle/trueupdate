@@ -6,7 +6,7 @@ package net.java.trueupdate.manager.jms.ci;
 
 import javax.xml.bind.annotation.*;
 
-import net.java.trueupdate.jms.ci.MessagingParametersCi;
+import net.java.trueupdate.jms.ci.JmsParametersCi;
 import net.java.trueupdate.manager.core.ci.*;
 
 /**
@@ -29,5 +29,5 @@ public final class JmsUpdateManagerParametersCi {
     public TimerParametersCi updateTimer;
 
     @XmlElement(required = true)
-    public MessagingParametersCi messaging;
+    public JmsParametersCi messaging;
 }

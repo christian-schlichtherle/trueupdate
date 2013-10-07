@@ -9,7 +9,8 @@ import java.util.ServiceConfigurationError;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
-import net.java.trueupdate.jms.MessagingParameters;
+
+import net.java.trueupdate.jms.JmsParameters;
 import net.java.trueupdate.manager.core.*;
 import net.java.trueupdate.manager.jms.ci.JmsUpdateManagerParametersCi;
 
@@ -28,7 +29,7 @@ public final class JmsUpdateManagerParameters {
 
     private final UpdateServiceParameters updateService;
     private final TimerParameters updateTimer;
-    private final MessagingParameters messaging;
+    private final JmsParameters messaging;
 
     JmsUpdateManagerParameters(final Builder<?> b) {
         this.updateService = requireNonNull(b.updateService);
@@ -71,7 +72,7 @@ public final class JmsUpdateManagerParameters {
     public TimerParameters updateTimer() { return updateTimer; }
 
     /** Returns the messaging parameters. */
-    public MessagingParameters messaging() { return messaging; }
+    public JmsParameters messaging() { return messaging; }
 
     /**
      * A builder for JMS update manager parameters.
@@ -83,7 +84,7 @@ public final class JmsUpdateManagerParameters {
 
         @CheckForNull UpdateServiceParameters updateService;
         @CheckForNull TimerParameters updateTimer;
-        @CheckForNull MessagingParameters messaging;
+        @CheckForNull JmsParameters messaging;
 
         protected Builder() { }
 
@@ -94,7 +95,7 @@ public final class JmsUpdateManagerParameters {
             if (null != ci.updateTimer)
                 updateTimer = TimerParameters.parse(ci.updateTimer);
             if (null != ci.messaging)
-                messaging = MessagingParameters.parse(ci.messaging);
+                messaging = JmsParameters.parse(ci.messaging);
             return this;
         }
 
@@ -111,7 +112,7 @@ public final class JmsUpdateManagerParameters {
         }
 
         public final Builder<P> messaging(
-                final @Nullable MessagingParameters messaging) {
+                final @Nullable JmsParameters messaging) {
             this.messaging = messaging;
             return this;
         }

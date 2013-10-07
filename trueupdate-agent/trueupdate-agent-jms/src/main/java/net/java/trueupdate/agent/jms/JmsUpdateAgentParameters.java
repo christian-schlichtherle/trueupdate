@@ -11,7 +11,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
 import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.agent.jms.ci.JmsUpdateAgentParametersCi;
-import net.java.trueupdate.jms.MessagingParameters;
+import net.java.trueupdate.jms.JmsParameters;
+
 import static net.java.trueupdate.util.Objects.*;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -27,7 +28,7 @@ public final class JmsUpdateAgentParameters {
 
     private final ApplicationParameters application;
     private final TimerParameters subscriptionTimer;
-    private final MessagingParameters messaging;
+    private final JmsParameters messaging;
 
     JmsUpdateAgentParameters(final Builder<?> b) {
         this.application = requireNonNull(b.application);
@@ -73,7 +74,7 @@ public final class JmsUpdateAgentParameters {
     public TimerParameters subscriptionTimer() { return subscriptionTimer; }
 
     /** Returns the messaging parameters. */
-    public MessagingParameters messaging() { return messaging; }
+    public JmsParameters messaging() { return messaging; }
 
     /**
      * A builder for JMS update agent parameters.
@@ -85,7 +86,7 @@ public final class JmsUpdateAgentParameters {
 
         @CheckForNull ApplicationParameters application;
         @CheckForNull TimerParameters subscriptionTimer;
-        @CheckForNull MessagingParameters messaging;
+        @CheckForNull JmsParameters messaging;
 
         protected Builder() { }
 
@@ -96,7 +97,7 @@ public final class JmsUpdateAgentParameters {
             if (null != ci.subscriptionTimer)
                 subscriptionTimer = TimerParameters.parse(ci.subscriptionTimer);
             if (null != ci.messaging)
-                messaging = MessagingParameters.parse(ci.messaging);
+                messaging = JmsParameters.parse(ci.messaging);
             return this;
         }
 
@@ -107,14 +108,14 @@ public final class JmsUpdateAgentParameters {
         }
 
         public final Builder<P> subscriptionTimer(
-                final @Nullable TimerParameters subscriptionDelay) {
-            this.subscriptionTimer = subscriptionDelay;
+                final @Nullable TimerParameters subscriptionTimer) {
+            this.subscriptionTimer = subscriptionTimer;
             return this;
         }
 
         public final Builder<P> messaging(
-                final @Nullable MessagingParameters messagingParameters) {
-            this.messaging = messagingParameters;
+                final @Nullable JmsParameters messaging) {
+            this.messaging = messaging;
             return this;
         }
 

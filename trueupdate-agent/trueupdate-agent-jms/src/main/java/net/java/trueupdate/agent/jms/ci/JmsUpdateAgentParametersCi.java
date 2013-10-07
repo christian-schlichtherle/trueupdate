@@ -6,7 +6,7 @@ package net.java.trueupdate.agent.jms.ci;
 
 import javax.xml.bind.annotation.*;
 import net.java.trueupdate.agent.core.ci.*;
-import net.java.trueupdate.jms.ci.MessagingParametersCi;
+import net.java.trueupdate.jms.ci.JmsParametersCi;
 
 /**
  * Represents JMS update agent parameters.
@@ -27,5 +27,5 @@ public final class JmsUpdateAgentParametersCi {
     public TimerParametersCi subscriptionTimer;
 
     @XmlElement(required = true)
-    public MessagingParametersCi messaging;
+    public JmsParametersCi messaging;
 }

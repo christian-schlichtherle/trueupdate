@@ -34,7 +34,7 @@ final class JmsUpdateManager extends CoreUpdateManager {
     JmsUpdateManager(final JmsUpdateManagerParameters parameters) {
         final UpdateServiceParameters usp = parameters.updateService();
         updateServiceBaseUri = usp.uri();
-        final MessagingParameters mp = parameters.messaging();
+        final JmsParameters mp = parameters.messaging();
         namingContext = mp.namingContext();
         connectionFactory = mp.connectionFactory();
     }
