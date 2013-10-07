@@ -12,7 +12,6 @@ import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
 import net.java.trueupdate.manager.spec.tx.*;
-import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
@@ -25,10 +24,6 @@ abstract class CoreUpdateResolver {
     private static final Logger logger = Logger.getLogger(
             CoreUpdateResolver.class.getName(),
             UpdateMessage.class.getName());
-
-    private static final LoggerConfig loggerConfig = new LoggerConfig() {
-        @Override public Logger logger() { return logger; }
-    };
 
     private final Map<UpdateDescriptor, FileAccount>
             accounts = new HashMap<UpdateDescriptor, FileAccount>();
