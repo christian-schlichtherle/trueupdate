@@ -50,9 +50,8 @@ extends UpdateMessageListener implements UpdateManager {
     protected CoreUpdateManager() { updateInstaller = newUpdateInstaller(); }
 
     private static UpdateInstaller newUpdateInstaller() {
-        final UpdateInstaller ui = ServiceLoader.load(UpdateInstaller.class,
-                Thread.currentThread().getContextClassLoader()
-                ).iterator().next();
+        final UpdateInstaller ui = ServiceLoader
+                .load(UpdateInstaller.class).iterator().next();
         logger.log(Level.CONFIG, "manager.installer.class", ui.getClass().getName());
         return ui;
     }
