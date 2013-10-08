@@ -18,6 +18,7 @@ import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
 import net.java.trueupdate.message.*;
 import net.java.trueupdate.message.UpdateMessage.Type;
 import static net.java.trueupdate.message.UpdateMessage.Type.*;
+import net.java.trueupdate.util.Services;
 
 /**
  * An abstract update manager.
@@ -50,8 +51,7 @@ extends UpdateMessageListener implements UpdateManager {
     protected CoreUpdateManager() { updateInstaller = newUpdateInstaller(); }
 
     private static UpdateInstaller newUpdateInstaller() {
-        final UpdateInstaller ui = ServiceLoader
-                .load(UpdateInstaller.class).iterator().next();
+        final UpdateInstaller ui = Services.load(UpdateInstaller.class);
         logger.log(Level.CONFIG, "manager.installer.class", ui.getClass().getName());
         return ui;
     }

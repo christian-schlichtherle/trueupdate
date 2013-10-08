@@ -3,8 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update manager for use within EJB environments.
- * This package depends on the EJB and JMS APIs.
+ * Loads, starts and stops an update manager controller
+ * in an EJB environment.
  *
  * @author Christian Schlichtherle
  */

@@ -3,8 +3,8 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update agent for use within Servlet environments.
- * This package depends on the Servlet and JMS APIs.
+ * Loads, starts and stops an update agent controller
+ * in a Servlet environment.
  *
  * @author Christian Schlichtherle
  */

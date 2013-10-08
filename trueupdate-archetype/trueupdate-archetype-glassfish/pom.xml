@@ -28,12 +28,20 @@
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-agent-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
             <artifactId>trueupdate-installer-cargo</artifactId>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
             <artifactId>trueupdate-manager-ejb</artifactId>
             <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>net.java.trueupdate</groupId>
+            <artifactId>trueupdate-manager-jms</artifactId>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>

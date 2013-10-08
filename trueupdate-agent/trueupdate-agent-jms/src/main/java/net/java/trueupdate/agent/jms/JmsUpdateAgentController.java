@@ -7,27 +7,29 @@ package net.java.trueupdate.agent.jms;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
-import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.agent.core.TimerParameters;
+import net.java.trueupdate.agent.core.*;
 import net.java.trueupdate.jms.*;
 
 /**
- * A context for the JMS Update Agent.
+ * Starts and stops a JMS based update agent.
  *
  * @author Christian Schlichtherle
  */
-@Immutable
-public final class JmsUpdateAgentContext {
+public final class JmsUpdateAgentController
+implements UpdateAgentController {
 
     private final TimerParameters subscriptionDelay;
     private final JmsUpdateAgent agent;
     private final JmsReceiver receiver;
+    private boolean started;
 
-    public JmsUpdateAgentContext() {
+    public JmsUpdateAgentController() {
         this(JmsUpdateAgentParameters.load());
     }
 
-    public JmsUpdateAgentContext(final JmsUpdateAgentParameters parameters) {
+    public JmsUpdateAgentController(
+            final JmsUpdateAgentParameters parameters) {
+        // HC SVNT DRACONIS
         subscriptionDelay = parameters.subscriptionTimer();
         agent = new JmsUpdateAgent(parameters);
         final JmsParameters jp = parameters.messaging();
@@ -49,7 +51,19 @@ public final class JmsUpdateAgentContext {
                 .build();
     }
 
-    public void start() throws Exception {
+    @Override public void start() {
+        if (started) return;
+        try {
+            start0();
+        } catch (Exception ex) {
+            throw new IllegalStateException(
+                    "Failed to start the update agent.", ex);
+        }
+        started = true;
+    }
+
+    private void start0() throws Exception {
+        // HC SVNT DRACONIS!
         new Thread(receiver, "TrueUpdate Agent JMS / Receiver").start();
         final long delay = subscriptionDelay.unit()
                 .toMillis(subscriptionDelay.delay());
@@ -61,9 +75,9 @@ public final class JmsUpdateAgentContext {
                     try {
                         agent.subscribe();
                     } catch (Exception ex) {
-                        Logger  .getLogger(JmsUpdateAgentContext.class.getName())
+                        Logger  .getLogger(JmsUpdateAgentController.class.getName())
                                 .log(Level.WARNING,
-                                    "Could not subscribe to update agent:", ex);
+                                        "Could not subscribe to update agent:", ex);
                     }
                 }
             }, delay);
@@ -72,9 +86,22 @@ public final class JmsUpdateAgentContext {
         }
     }
 
-    public void stop(final long timeout, final TimeUnit unit) throws Exception {
+    @Override public void stop(final long timeout, final TimeUnit unit) {
+        if (!started) return;
+        try {
+            stop0(10, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            throw new IllegalStateException(
+                    "Failed to stop the update agent.", ex);
+        }
+    }
+
+    private void stop0(final long timeout, final TimeUnit unit) throws Exception {
         // HC SVNT DRACONIS
-        receiver.stop(timeout, unit);
-        agent.unsubscribe();
+        try {
+            receiver.stop(timeout, unit);
+        } finally {
+            agent.unsubscribe();
+        }
     }
 }

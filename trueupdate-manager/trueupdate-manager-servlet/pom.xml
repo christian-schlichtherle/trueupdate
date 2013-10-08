@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-- Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
-- All rights reserved. Use is subject to license terms.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                        http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -16,14 +20,14 @@
 
     <name>TrueUpdate Manager Servlet</name>
     <description>
-        Provides an update manager for use within Servlet environments.
-        This module depends on the Servlet and JMS APIs.
+        Loads, starts and stops an update manager controller
+        in a Servlet environment.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>trueupdate-manager-jms</artifactId>
+            <artifactId>trueupdate-manager-core</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

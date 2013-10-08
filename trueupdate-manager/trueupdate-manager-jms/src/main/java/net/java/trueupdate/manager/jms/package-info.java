@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update manager which depends on the JMS API.
+ * Provides an update manager controller which depends on the JMS API.
  *
  * @author Christian Schlichtherle
  */

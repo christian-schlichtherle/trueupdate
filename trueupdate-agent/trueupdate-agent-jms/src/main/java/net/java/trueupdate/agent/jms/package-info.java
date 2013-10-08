@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update agent which depends on the JMS API.
+ * Provides an update agent controller which depends on the JMS API.
  *
  * @author Christian Schlichtherle
  */
