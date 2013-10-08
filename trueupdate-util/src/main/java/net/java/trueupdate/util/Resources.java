@@ -31,7 +31,7 @@ public final class Resources {
         if (en.hasMoreElements())
             Logger  .getLogger(Resources.class.getName())
                     .log(Level.WARNING,
-                        "There is more than one resource with the name {0} on the class path. Selecting {1} .",
+                        "There is more than one resource with the name {0} on the class path.\nSelecting {1} .",
                         new Object[] { name, url });
         return url;
     }
