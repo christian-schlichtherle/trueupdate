@@ -38,7 +38,7 @@ extends UpdateMessageListener implements UpdateManager {
 
     private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
 
-    private final StateManager subscriptionManager = new StateManager();
+    private final SessionManager sessionManager = new SessionManager();
 
     private final CoreUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
@@ -73,8 +73,8 @@ extends UpdateMessageListener implements UpdateManager {
 
         // Cache subscriptions to allow concurrency.
         final Collection<UpdateMessage>
-                subscriptions = subscriptionManager.subscriptions();
-        if (subscriptions.isEmpty()) return;
+                sessions = sessionManager.subscriptions();
+        if (sessions.isEmpty()) return;
         logger.log(Level.INFO, "manager.check", updateClient().uri());
 
         // Process the update notices in several steps in order to use minimal
@@ -89,7 +89,7 @@ extends UpdateMessageListener implements UpdateManager {
             }
 
             void downloadUpdateVersionsFromServer() throws Exception {
-                for (final UpdateMessage um : subscriptions) {
+                for (final UpdateMessage um : sessions) {
                     final ArtifactDescriptor ad = um.artifactDescriptor();
                     final UpdateDescriptor ud = uds.get(ad);
                     if (null == ud)
@@ -107,14 +107,14 @@ extends UpdateMessageListener implements UpdateManager {
             void tellUpdateResolver() throws Exception {
                 synchronized (updateResolver) {
                     updateResolver.restart();
-                    for (UpdateMessage um : subscriptions)
+                    for (UpdateMessage um : sessions)
                         for (UpdateDescriptor ud : availableUpdate(um))
                             updateResolver.allocate(ud);
                 }
             }
 
             void notifySubscribers() throws Exception {
-                for (UpdateMessage um : subscriptions)
+                for (UpdateMessage um : sessions)
                     for (UpdateDescriptor ud : availableUpdate(um))
                         sendAndLog(updateNotice(um, ud.updateVersion()));
             }
@@ -260,9 +260,9 @@ extends UpdateMessageListener implements UpdateManager {
                 sendRedeploymentRequest();
                 final long stop = System.currentTimeMillis()
                         + HANDSHAKE_TIMEOUT_MILLIS;
-                synchronized (subscriptionManager) {
+                synchronized (sessionManager) {
                     while (true) {
-                        final UpdateMessage um = subscriptionManager.get(request);
+                        final UpdateMessage um = sessionManager.get(request);
                         final Type type = um.type();
                         checkCancelled(type);
                         if (PROCEED_REDEPLOYMENT_RESPONSE.equals(type))
@@ -271,7 +271,7 @@ extends UpdateMessageListener implements UpdateManager {
                         if (0 >= remaining)
                             throw new Exception(
                                     "Timeout while waiting for a redeployment response from the update agent.");
-                        subscriptionManager.wait(remaining);
+                        sessionManager.wait(remaining);
                     }
                 }
             }
@@ -318,7 +318,7 @@ extends UpdateMessageListener implements UpdateManager {
                         // Throw an InterruptedException if requested.
                         Thread.sleep(0);
                         // May be undeployed, so check for null.
-                        final UpdateMessage um = subscriptionManager.get(request);
+                        final UpdateMessage um = sessionManager.get(request);
                         if (null != um) checkCancelled(um.type());
                         tx.perform();
                     }
@@ -421,16 +421,16 @@ extends UpdateMessageListener implements UpdateManager {
     }
 
     private void subscribe(UpdateMessage subscription) {
-        subscriptionManager.put(subscription);
+        sessionManager.put(subscription);
     }
 
     private void unsubscribe(UpdateMessage subscription) {
-        subscriptionManager.remove(subscription);
+        sessionManager.remove(subscription);
     }
 
     @Override public void close() throws Exception {
         synchronized (updateResolver) { updateResolver.close(); }
-        subscriptionManager.close();
+        sessionManager.close();
     }
 
     static UpdateDescriptor updateDescriptor(ArtifactDescriptor ad, String uv) {
@@ -441,7 +441,7 @@ extends UpdateMessageListener implements UpdateManager {
                 .build();
     }
 
-    private class StateManager {
+    private class SessionManager {
 
         final Map<String, UpdateMessage>
                 map = new HashMap<String, UpdateMessage>();
@@ -479,7 +479,7 @@ extends UpdateMessageListener implements UpdateManager {
                 it.remove();
             }
         }
-    } // StateManager
+    } // SessionManager
 
     private class ConfiguredUpdateResolver extends CoreUpdateResolver {
         @Override protected UpdateClient updateClient() {
