@@ -136,14 +136,22 @@ public final class JmsReceiver implements Runnable {
                 }
             });
 
-            c.close();
-            timeout = stop - System.currentTimeMillis();
-            lock.wait(timeout);
-            assert null == thread;
-            if (0 != executorService.shutdownNow().size())
-                throw new AssertionError();
-            timeout = stop - System.currentTimeMillis();
-            executorService.awaitTermination(timeout, unit);
+            try {
+                c.close();
+            } finally {
+                try {
+                    timeout = Math.max(1, stop - System.currentTimeMillis());
+                    lock.wait(timeout);
+                    if (null != thread)
+                        throw new TimeoutException();
+                } finally {
+                    if (0 != executorService.shutdownNow().size())
+                        throw new AssertionError();
+                    timeout = Math.max(1, stop - System.currentTimeMillis());
+                    if (!executorService.awaitTermination(timeout, unit))
+                        throw new TimeoutException();
+                }
+            }
         }
     }
 
