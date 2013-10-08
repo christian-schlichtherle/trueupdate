@@ -58,9 +58,12 @@ final class JmsUpdateManager extends CoreUpdateManager {
 
     @Override public void close() throws Exception {
         // HC SVNT DRACONIS!
-        super.close();
-        synchronized (lock) {
-            if (null != connection) connection.close();
+        try {
+            super.close();
+        } finally {
+            synchronized (lock) {
+                if (null != connection) connection.close();
+            }
         }
     }
 }
