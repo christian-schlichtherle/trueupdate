@@ -14,7 +14,7 @@
 
     <groupId>net.java.trueupdate</groupId>
     <artifactId>trueupdate</artifactId>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
     <packaging>pom</packaging>
 
     <name>TrueUpdate</name>
@@ -77,7 +77,7 @@
         <connection>scm:git:https://bitbucket.org/christian_schlichtherle/trueupdate.git</connection>
         <developerConnection>scm:git:git@bitbucket.org:christian_schlichtherle/trueupdate.git</developerConnection>
         <url>https://bitbucket.org/christian_schlichtherle/trueupdate</url>
-        <tag>HEAD</tag>
+        <tag>trueupdate-0.6</tag>
     </scm>
 
     <distributionManagement>
