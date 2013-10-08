@@ -17,8 +17,9 @@
 
     <name>${project.artifactId}</name>
     <description>
-        Bundles the TrueUpdate Server components
-        for deployment to a Tomcat container.
+        Bundles the TrueUpdate Server modules
+        for deployment to an Apache Tomcat container
+        and provides the runtime configuration for the update server component.
     </description>
 
     <dependencies>

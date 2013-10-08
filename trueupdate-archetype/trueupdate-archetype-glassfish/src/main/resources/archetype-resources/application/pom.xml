@@ -17,7 +17,7 @@
 
     <name>${project.artifactId}</name>
     <description>
-        Bundles the application components with the TrueUpdate Agent components
+        Bundles the application with the configured TrueUpdate Agent modules
         for deployment to an Oracle Glassfish container.
     </description>
 

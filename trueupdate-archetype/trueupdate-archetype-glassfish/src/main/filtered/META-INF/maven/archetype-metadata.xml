@@ -10,7 +10,7 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0
                         http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd">
     <requiredProperties>
-        <requiredProperty key="agent-subscriptionTimer-delay">
+        <requiredProperty key="agent-subscriptionTimer-delay-seconds">
             <defaultValue>10</defaultValue>
         </requiredProperty>
         <requiredProperty key="application">
@@ -22,7 +22,7 @@
         <requiredProperty key="javase-version">
             <defaultValue>6</defaultValue>
         </requiredProperty>
-        <requiredProperty key="manager-updateTimer-period">
+        <requiredProperty key="manager-updateTimer-period-minutes">
             <defaultValue>720</defaultValue>
         </requiredProperty>
         <requiredProperty key="server-repositories-local-directory">

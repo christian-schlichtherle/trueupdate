@@ -17,11 +17,12 @@
 
     <name>${project.artifactId}</name>
     <description>
-        Provides a sample UpdateAgentListener sub-class and bundles the
-        application components with the TrueUpdate Agent components for
-        deployment to an Apache Tomcat container.
-        Customize the update agent listener class in order to check permissions
-        or display progress notices to users.
+        Bundles the application modules with the TrueUpdate Agent modules
+        for deployment to an Apache Tomcat container
+        and provides the runtime configuration for the update agent component.
+        Also provides a sample UpdateAgentListener sub-class.
+        Customize this class in order to check permissions, delay or cancel
+        update installations or display progress notices to users.
     </description>
 
     <dependencies>

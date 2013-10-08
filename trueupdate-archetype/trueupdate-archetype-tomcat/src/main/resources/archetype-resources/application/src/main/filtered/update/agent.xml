@@ -19,7 +19,7 @@
         <listenerClass>${package}.ApplicationListener</listenerClass>
     </application>
     <subscriptionTimer>
-        <delay>${symbol_dollar}{agent.subscriptionTimer.delay}</delay>
+        <delay>${symbol_dollar}{agent.subscriptionTimer.delay.seconds}</delay>
         <unit>seconds</unit>
     </subscriptionTimer>
     <messaging>

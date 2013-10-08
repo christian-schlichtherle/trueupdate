@@ -12,7 +12,7 @@
         <uri>${symbol_dollar}{manager.updateService.uri}</uri>
     </updateService>
     <updateTimer>
-        <period>${symbol_dollar}{manager.updateTimer.period}</period>
+        <period>${symbol_dollar}{manager.updateTimer.period.minutes}</period>
         <unit>minutes</unit>
     </updateTimer>
     <messaging>

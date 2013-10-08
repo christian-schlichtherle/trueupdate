@@ -50,7 +50,7 @@
           - it will avoid an exception if the server isn't yet ready to answer
           - requests.
           -->
-        <agent.subscriptionTimer.delay>${agent-subscriptionTimer-delay}</agent.subscriptionTimer.delay>
+        <agent.subscriptionTimer.delay.seconds>${agent-subscriptionTimer-delay-seconds}</agent.subscriptionTimer.delay.seconds>
 
         <!--
           - The base URI of the AutoUpdate Server application, ending with a
@@ -68,7 +68,7 @@
           - This should not be shorter because this would most likely only
           - result in higher server load.
           -->
-        <manager.updateTimer.period>${manager-updateTimer-period}</manager.updateTimer.period>
+        <manager.updateTimer.period.minutes>${manager-updateTimer-period-minutes}</manager.updateTimer.period.minutes>
 
         <!--
           - The directory path for the local maven repository

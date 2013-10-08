@@ -17,8 +17,8 @@
 
     <name>${project.artifactId}</name>
     <description>
-        Bundles the TrueUpdate Manager and TrueUpdate Installer
-        components for deployment to an Oracle Glassfish container.
+        Bundles the configured TrueUpdate Manager modules
+        for deployment to an Oracle Glassfish container.
     </description>
 
     <dependencies>
