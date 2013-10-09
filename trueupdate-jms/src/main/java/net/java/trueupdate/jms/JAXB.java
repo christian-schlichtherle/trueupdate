@@ -27,12 +27,10 @@ final class JAXB {
     static String encode(final UpdateMessage message) throws Exception {
         final StringWriter sw = new StringWriter(1024);
         final Marshaller m = marshaller();
-        //m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        try {
-            if (!message.attachedLogs().isEmpty())
-                m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
-                              new DtoNamespaceMapper());
-        } catch(PropertyException aDifferentJaxbImplementationIsUsed) {
+        if (!message.attachedLogs().isEmpty()) try {
+            m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
+                    new DtoNamespaceMapper());
+        } catch(Exception anIncompatibleJaxbImplementationIsUsed) {
         }
         m.marshal(adapter().marshal(message), sw);
         return sw.toString();

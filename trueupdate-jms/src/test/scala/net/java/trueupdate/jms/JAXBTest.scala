@@ -85,6 +85,7 @@ class JAXBTest extends WordSpec {
         forAll(subjects) { original =>
           val originalEncoding = JAXB.encode(original)
           JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
+          originalEncoding contains "xsi:type" should not be (true)
           val clone = JAXB.decode(originalEncoding)
           clone should equal (original)
         }
