@@ -77,7 +77,7 @@ implements UpdateAgentController {
                     } catch (Exception ex) {
                         Logger  .getLogger(JmsUpdateAgentController.class.getName())
                                 .log(Level.WARNING,
-                                        "Could not subscribe to update agent:", ex);
+                                        "Could not subscribe to update manager:", ex);
                     }
                 }
             }, delay);
