@@ -242,12 +242,12 @@ extends UpdateMessageListener implements UpdateManager {
                         onPerformUndeployment();
                     }
 
-                    @Override public void rollback() throws Exception {
+                    @Override public void rollback() {
                         tx.rollback();
                         onRollbackUndeployment();
                     }
 
-                    @Override public void commit() throws Exception {
+                    @Override public void commit() {
                         tx.commit();
                         onCommitUndeployment();
                     }
@@ -299,12 +299,12 @@ extends UpdateMessageListener implements UpdateManager {
                 anticipatedLocation = request.updateLocation();
             }
 
-            void onRollbackUndeployment() throws Exception {
+            void onRollbackUndeployment() {
                 anticipatedDescriptor = request.artifactDescriptor();
                 anticipatedLocation = request.currentLocation();
             }
 
-            void onCommitUndeployment() throws Exception { }
+            void onCommitUndeployment() { }
 
             Transaction checked(final Transaction tx) {
 
@@ -323,13 +323,9 @@ extends UpdateMessageListener implements UpdateManager {
                         tx.perform();
                     }
 
-                    @Override public void rollback() throws Exception {
-                        tx.rollback();
-                    }
+                    @Override public void rollback() { tx.rollback(); }
 
-                    @Override public void commit() throws Exception {
-                        tx.commit();
-                    }
+                    @Override public void commit() { tx.commit(); }
                 } // Checked
 
                 return new Checked();

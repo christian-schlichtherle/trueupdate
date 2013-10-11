@@ -32,11 +32,11 @@ public final class CompositeTransaction extends Transaction {
         }
     }
 
-    @Override public void rollback() throws Exception {
+    @Override public void rollback() {
         while (0 < index) txs[--index].rollback();
     }
 
-    @Override public void commit() throws Exception {
+    @Override public void commit() {
         while (0 < index) txs[--index].commit();
     }
 }

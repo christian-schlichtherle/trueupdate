@@ -26,19 +26,23 @@ public abstract class Transaction {
 
     /**
      * Sets up this transaction for execution.
-     * If this method fails then this transaction gets aborted <em>without</em>
-     * calling {@link #rollback}, so it must not leave any visible side effects.
-     * If this method fails and this transaction is part of a composite
-     * transaction, then the previous transactions get properly rolled back.
+     * If this method throws an {@link Exception}, then this transaction gets
+     * aborted <em>without</em>  calling {@link #rollback}, so it must not
+     * leave any visible side effects.
+     * If this method throws an {@link Exception} and this transaction is part
+     * of a composite transaction, then the previous transactions get properly
+     * rolled back.
      */
     public void prepare() throws Exception { }
 
     /**
      * Executes the body of this transaction.
-     * If this method fails then this transaction gets aborted <em>with</em>
-     * calling {@link #rollback}, so it may leave some visible side effects.
-     * If this method fails and this transaction is part of a composite
-     * transaction, then the previous transactions get properly rolled back.
+     * If this method throws an {@link Exception}, then this transaction gets
+     * aborted <em>with</em> calling {@link #rollback}, so it may leave some
+     * visible side effects.
+     * If this method throws an {@link Exception} and this transaction is part
+     * of a composite transaction, then the previous transactions get properly
+     * rolled back.
      */
     public abstract void perform() throws Exception;
 
@@ -46,23 +50,25 @@ public abstract class Transaction {
      * Reverts any visible side effects of the body of this transaction.
      * If this method succeeds, it must revert any visible side effects of
      * {@link #perform}.
-     * If this method fails, the state of this transaction is undefined and may
+     * If this method throws a {@link RuntimeException}, then the state of this
+     * transaction is undefined and may be inconsistent.
+     * If this method throws a {@link RuntimeException} and this transaction is
+     * part of a composite transaction, then the previous transactions get
+     * neither committed nor rolled back and their state is undefined and may
      * be inconsistent.
-     * If this method fails and this transaction is part of a composite
-     * transaction, then the previous transactions get neither committed nor
-     * rolled back and their state is undefined and may be inconsistent.
      */
-    public abstract void rollback() throws Exception;
+    public abstract void rollback();
 
     /**
      * Commits the visible side effects of the body of this transaction.
      * If this method succeeds, any visible side effects of {@link #perform}
      * must be durable.
-     * If this method fails, the state of this transaction is undefined and may
+     * If this method throws a {@link RuntimeException}, then the state of this
+     * transaction is undefined and may be inconsistent.
+     * If this method throws a {@link RuntimeException} and this transaction is
+     * part of a composite transaction, then the previous transactions get
+     * neither committed nor rolled back and their state is undefined and may
      * be inconsistent.
-     * If this method fails and this transaction is part of a composite
-     * transaction, then the previous transactions get neither committed nor
-     * rolled back and their state is undefined and may be inconsistent.
      */
-    public void commit() throws Exception { }
+    public void commit() { }
 }

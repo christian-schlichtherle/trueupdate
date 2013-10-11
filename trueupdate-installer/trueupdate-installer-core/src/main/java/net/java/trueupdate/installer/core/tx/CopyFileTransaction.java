@@ -37,7 +37,8 @@ public final class CopyFileTransaction extends Transaction {
         copyFile(from, to);
     }
 
-    @Override public void rollback() throws IOException {
-        deletePath(to);
+    @Override public void rollback() {
+        try { deletePath(to); }
+        catch (IOException ex) { throw new IllegalStateException(ex); }
     }
 }

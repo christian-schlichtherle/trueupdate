@@ -95,7 +95,7 @@ abstract class CoreUpdateResolver {
                 Copy.copy(updateClient().diff(ad, uv), new FileStore(deltaZip));
             }
 
-            @Override public void rollback() throws Exception {
+            @Override public void rollback() {
                 deltaZip.delete();
             }
         } // DownloadTransaction

@@ -99,7 +99,7 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         if (warDeployment) Files.deletePath(cdir);
                     }
 
-                    @Override public void rollbackAtomic() throws Exception {
+                    @Override public void rollbackAtomic() {
                         try {
                             config.check(cname);
                         } finally {
@@ -107,7 +107,7 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         }
                     }
 
-                    @Override public void commitAtomic() throws Exception {
+                    @Override public void commitAtomic() {
                         config.removeServiced(cname);
                     }
                 } // UndeploymentTransaction
@@ -132,9 +132,13 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         config.check(uname);
                     }
 
-                    @Override public void rollbackAtomic() throws Exception {
+                    @Override public void rollbackAtomic() {
                         config.unmanageApp(uname);
-                        if (warDeployment) Files.deletePath(udir);
+                        if (warDeployment) try {
+                            Files.deletePath(udir);
+                        } catch (IOException ex) {
+                            throw new IllegalStateException(ex);
+                        }
                     }
                 } // DeploymentTransaction
 

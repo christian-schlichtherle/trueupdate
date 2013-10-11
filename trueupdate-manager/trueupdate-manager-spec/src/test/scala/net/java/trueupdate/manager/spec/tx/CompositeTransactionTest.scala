@@ -109,7 +109,7 @@ class CompositeTransactionTest extends WordSpec {
       val f = fixture
       import f._
       doThrow (new Exception) when tx2 perform ()
-      doThrow (new Exception) when tx2 rollback ()
+      doThrow (new RuntimeException) when tx2 rollback ()
       intercept[TransactionException] { Transactions execute ctx }
 
       "prepare, perform and rollback the transactions in order" in {
@@ -137,7 +137,7 @@ class CompositeTransactionTest extends WordSpec {
     "failing to commit the last transaction" should {
       val f = fixture
       import f._
-      doThrow (new Exception) when tx2 commit ()
+      doThrow (new RuntimeException) when tx2 commit ()
       intercept[TransactionException] { Transactions execute ctx }
 
       "prepare, perform and commit the transactions in order" in {

@@ -44,7 +44,8 @@ public final class UnzipTransaction extends Transaction {
         unzip(source, directory);
     }
 
-    @Override public void rollback() throws IOException {
-        deletePath(directory);
+    @Override public void rollback() {
+        try { deletePath(directory); }
+        catch (IOException ex) { throw new IllegalStateException(ex); }
     }
 }

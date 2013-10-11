@@ -207,11 +207,19 @@ final class CargoContext {
 
     private class DeploymentTransaction extends AtomicMethodsTransaction {
         @Override public void performAtomic() throws Exception { deploy(); }
-        @Override public void rollbackAtomic() throws Exception { undeploy(); }
+
+        @Override public void rollbackAtomic() {
+            try { undeploy(); }
+            catch (CargoException ex) { throw new IllegalStateException(ex); }
+        }
     } // DeploymentTransaction
 
     private class UndeploymentTransaction extends AtomicMethodsTransaction {
         @Override public void performAtomic() throws Exception { undeploy(); }
-        @Override public void rollbackAtomic() throws Exception { deploy(); }
+
+        @Override public void rollbackAtomic() {
+            try { deploy(); }
+            catch (Exception ex) { throw new IllegalStateException(ex); }
+        }
     } // UndeploymentTransaction
 }

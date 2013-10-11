@@ -30,14 +30,14 @@ public abstract class AtomicMethodsTransaction extends Transaction {
         performed = true;
     }
 
-    @Override public final void rollback() throws Exception {
+    @Override public final void rollback() {
         if (performed) {
             rollbackAtomic();
             performed = false;
         }
     }
 
-    @Override public final void commit() throws Exception {
+    @Override public final void commit() {
         commitAtomic();
         // performed = false; // don't be idempotent!
     }
@@ -58,11 +58,11 @@ public abstract class AtomicMethodsTransaction extends Transaction {
      * Semantically identical to {@link #rollback}, but has to be truly atomic,
      * that is it either completely succeeds or completely fails.
      */
-    public abstract void rollbackAtomic() throws Exception;
+    public abstract void rollbackAtomic();
 
     /**
      * Semantically identical to {@link #commit}, but has to be truly atomic,
      * that is it either completely succeeds or completely fails.
      */
-    public void commitAtomic() throws Exception { }
+    public void commitAtomic() { }
 }

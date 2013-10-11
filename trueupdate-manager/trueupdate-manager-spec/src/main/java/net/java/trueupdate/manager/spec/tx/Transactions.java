@@ -38,16 +38,14 @@ public class Transactions {
                 assert !(ex instanceof TransactionException);
                 try {
                     tx.rollback();
-                } catch (final Exception ex2) {
-                    assert !(ex2 instanceof TransactionException);
+                } catch (RuntimeException ex2) {
                     throw new TransactionException(ex2);
                 }
                 throw ex;
             }
             try {
                 tx.commit();
-            } catch (final Exception ex) {
-                assert !(ex instanceof TransactionException);
+            } catch (RuntimeException ex) {
                 throw new TransactionException(ex);
             }
         } finally {
@@ -62,7 +60,7 @@ public class Transactions {
 
     private static class NullTransaction extends Transaction {
         @Override public void perform() throws Exception { }
-        @Override public void rollback() throws Exception { }
+        @Override public void rollback() { }
     } // NullTransaction
 
     /**
@@ -78,8 +76,9 @@ public class Transactions {
         class Timed extends Transaction {
 
             @Override public void prepare() throws Exception {
-                time(Method.prepare, new Callable<Void>() {
-                    @Override public Void call() throws Exception {
+                timeChecked(Method.prepare, new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
                         tx.prepare();
                         return null;
                     }
@@ -87,33 +86,42 @@ public class Transactions {
             }
 
             @Override public void perform() throws Exception {
-                time(Method.perform, new Callable<Void>() {
-                    @Override public Void call() throws Exception {
+                timeChecked(Method.perform, new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
                         tx.perform();
                         return null;
                     }
                 });
             }
 
-            @Override public void rollback() throws Exception {
-                time(Method.rollback, new Callable<Void>() {
-                    @Override public Void call() throws Exception {
+            @Override public void rollback() {
+                timeUnchecked(Method.rollback, new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
                         tx.rollback();
                         return null;
                     }
                 });
             }
 
-            @Override public void commit() throws Exception {
-                time(Method.commit, new Callable<Void>() {
-                    @Override public Void call() throws Exception {
+            @Override public void commit() {
+                timeUnchecked(Method.commit, new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
                         tx.commit();
                         return null;
                     }
                 });
             }
 
-            void time(final Method method, final Callable<Void> task)
+            void timeUnchecked(final Method method, final Callable<Void> task) {
+                try { timeChecked(method, task); }
+                catch (RuntimeException ex) { throw ex; }
+                catch (Exception ex){ throw new AssertionError(ex); }
+            }
+
+            void timeChecked(final Method method, final Callable<Void> task)
             throws Exception {
                 Exception ex = null;
                 final long started = System.currentTimeMillis();
@@ -134,7 +142,6 @@ public class Transactions {
                 }
                 if (!succeeded) throw ex;
             }
-
         } // Timed
 
         return new Timed();

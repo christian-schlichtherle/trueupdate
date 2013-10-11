@@ -50,7 +50,8 @@ public final class ZipTransaction extends Transaction {
         zip(store, fileOrDirectory, entryName);
     }
 
-    @Override public void rollback() throws IOException {
-        store.delete();
+    @Override public void rollback() {
+        try { store.delete(); }
+        catch (IOException ex) { throw new IllegalStateException(ex); }
     }
 }

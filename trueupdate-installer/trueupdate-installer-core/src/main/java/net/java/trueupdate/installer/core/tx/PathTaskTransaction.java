@@ -47,6 +47,8 @@ public final class PathTaskTransaction extends Transaction {
                     path));
     }
 
-    @Override
-    public void rollback() throws IOException { deletePath(path); }
+    @Override public void rollback() {
+        try { deletePath(path); }
+        catch (IOException ex) { throw new IllegalStateException(ex); }
+    }
 }
