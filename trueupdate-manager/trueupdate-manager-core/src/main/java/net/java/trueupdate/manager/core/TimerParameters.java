@@ -8,9 +8,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-
 import net.java.trueupdate.manager.core.ci.TimerParametersCi;
-
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -99,7 +97,7 @@ public final class TimerParameters {
             return this;
         }
 
-        public final Builder<P> delay(final TimeUnit unit) {
+        public final Builder<P> unit(final TimeUnit unit) {
             this.unit = unit;
             return this;
         }

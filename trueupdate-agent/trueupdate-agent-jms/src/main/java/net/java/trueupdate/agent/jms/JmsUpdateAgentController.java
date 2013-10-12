@@ -18,7 +18,7 @@ import net.java.trueupdate.jms.*;
 public final class JmsUpdateAgentController
 implements UpdateAgentController {
 
-    private final TimerParameters subscriptionDelay;
+    private final JmsUpdateAgentParameters parameters;
     private final JmsUpdateAgent agent;
     private final JmsReceiver receiver;
     private boolean started;
@@ -30,7 +30,7 @@ implements UpdateAgentController {
     public JmsUpdateAgentController(
             final JmsUpdateAgentParameters parameters) {
         // HC SVNT DRACONIS
-        subscriptionDelay = parameters.subscriptionTimer();
+        this.parameters = parameters;
         agent = new JmsUpdateAgent(parameters);
         final JmsParameters jp = parameters.messaging();
         // The maximum pool size is one in order to prevent messages to be
@@ -65,8 +65,8 @@ implements UpdateAgentController {
     private void start0() throws Exception {
         // HC SVNT DRACONIS!
         new Thread(receiver, "TrueUpdate Agent JMS / Receiver").start();
-        final long delay = subscriptionDelay.unit()
-                .toMillis(subscriptionDelay.delay());
+        final TimerParameters tp = parameters.subscriptionTimer();
+        final long delay = tp.unit().toMillis(tp.delay());
         if (0 < delay) {
             final Timer timer = new Timer(
                     "TrueUpdate Agent JMS / Subscription Timer", true);

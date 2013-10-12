@@ -68,7 +68,7 @@ public final class JmsUpdateAgentParameters {
     public ApplicationParameters application() { return application; }
 
     /**
-     * Returns the timer parameters for the initial delay for the subscription
+     * Returns the timer parameters for the initial unit for the subscription
      * to the update manager.
      */
     public TimerParameters subscriptionTimer() { return subscriptionTimer; }
