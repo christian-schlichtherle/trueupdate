@@ -25,8 +25,8 @@ public interface UpdateContext {
     String updateLocation();
 
     /**
-     * Returns the delta ZIP file for patching the artifact at the current
-     * location of the client application.
+     * Returns the delta ZIP file for patching the client application's
+     * artifact file.
      * The caller must not modify or delete this file.
      */
     File deltaZip();
