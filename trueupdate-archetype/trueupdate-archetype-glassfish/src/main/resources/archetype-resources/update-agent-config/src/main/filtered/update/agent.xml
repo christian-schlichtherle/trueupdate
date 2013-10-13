@@ -23,8 +23,8 @@
         <unit>seconds</unit>
     </subscriptionTimer>
     <messaging>
-        <connectionFactory>${parentArtifactId}/connection-factory</connectionFactory>
-        <from>${parentArtifactId}/agent</from>
-        <to>${parentArtifactId}/manager</to>
+        <connectionFactory>update/connection-factory</connectionFactory>
+        <from>update/agent</from>
+        <to>update/manager</to>
     </messaging>
 </agent>

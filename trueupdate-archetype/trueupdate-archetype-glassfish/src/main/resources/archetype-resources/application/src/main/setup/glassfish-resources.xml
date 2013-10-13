@@ -8,25 +8,25 @@
 <resources>
     <admin-object-resource
         enabled="true"
-        jndi-name="${parentArtifactId}/agent"
+        jndi-name="update/agent"
         object-type="user"
         res-adapter="jmsra"
         res-type="javax.jms.Queue">
-        <property name="Name" value="${parentArtifactId}.agent"/>
+        <property name="Name" value="update.agent"/>
     </admin-object-resource>
     <admin-object-resource
         enabled="true"
-        jndi-name="${parentArtifactId}/manager"
+        jndi-name="update/manager"
         object-type="user"
         res-adapter="jmsra"
         res-type="javax.jms.Queue">
-        <property name="Name" value="${parentArtifactId}.manager"/>
+        <property name="Name" value="update.manager"/>
     </admin-object-resource>
     <connector-resource
         enabled="true"
-        jndi-name="${parentArtifactId}/connection-factory"
+        jndi-name="update/connection-factory"
         object-type="user"
-        pool-name="${parentArtifactId}/connection-factory-pool">
+        pool-name="update/connection-factory-pool">
         <description/>
     </connector-resource>
     <connector-connection-pool
@@ -44,7 +44,7 @@
         match-connections="true"
         max-connection-usage-count="0"
         max-pool-size="32" max-wait-time-in-millis="60000"
-        name="${parentArtifactId}/connection-factory-pool"
+        name="update/connection-factory-pool"
         ping="false"
         pool-resize-quantity="2"
         pooling="true"
