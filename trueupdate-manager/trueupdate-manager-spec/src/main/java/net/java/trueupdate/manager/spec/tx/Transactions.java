@@ -76,7 +76,7 @@ public class Transactions {
         class Timed extends Transaction {
 
             @Override public void prepare() throws Exception {
-                timeChecked(Method.prepare, new Callable<Void>() {
+                timed(Method.prepare, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.prepare();
@@ -86,7 +86,7 @@ public class Transactions {
             }
 
             @Override public void perform() throws Exception {
-                timeChecked(Method.perform, new Callable<Void>() {
+                timed(Method.perform, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.perform();
@@ -96,7 +96,7 @@ public class Transactions {
             }
 
             @Override public void rollback() {
-                timeUnchecked(Method.rollback, new Callable<Void>() {
+                timedUnchecked(Method.rollback, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.rollback();
@@ -106,7 +106,7 @@ public class Transactions {
             }
 
             @Override public void commit() {
-                timeUnchecked(Method.commit, new Callable<Void>() {
+                timedUnchecked(Method.commit, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.commit();
@@ -115,13 +115,13 @@ public class Transactions {
                 });
             }
 
-            void timeUnchecked(final Method method, final Callable<Void> task) {
-                try { timeChecked(method, task); }
+            void timedUnchecked(final Method method, final Callable<Void> task) {
+                try { timed(method, task); }
                 catch (RuntimeException ex) { throw ex; }
                 catch (Exception ex){ throw new AssertionError(ex); }
             }
 
-            void timeChecked(final Method method, final Callable<Void> task)
+            void timed(final Method method, final Callable<Void> task)
             throws Exception {
                 Exception ex = null;
                 final long started = System.currentTimeMillis();
