@@ -24,8 +24,7 @@ import net.java.trueupdate.manager.spec.tx._
 @RunWith(classOf[Arquillian])
 class TomcatUpdateInstallerIT {
 
-  @Test
-  def test() {
+  @Test def test() {
     val location = "/test"
 
     val installer = new TomcatUpdateInstaller
@@ -52,8 +51,7 @@ class TomcatUpdateInstallerIT {
 
 object TomcatUpdateInstallerIT {
 
-  @Deployment
-  def createDeployment = ShrinkWrap
+  @Deployment def createDeployment = ShrinkWrap
     .create(classOf[WebArchive])
     .addClass(classOf[TomcatUpdateInstaller])
 
