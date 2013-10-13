@@ -26,8 +26,8 @@
         <naming>
             <contextLookup>java:comp/env</contextLookup>
         </naming>
-        <connectionFactory>${parentArtifactId}/connection-factory</connectionFactory>
-        <from>${parentArtifactId}/agent</from>
-        <to>${parentArtifactId}/manager</to>
+        <connectionFactory>update/connection-factory</connectionFactory>
+        <from>update/agent</from>
+        <to>update/manager</to>
     </messaging>
 </agent>
