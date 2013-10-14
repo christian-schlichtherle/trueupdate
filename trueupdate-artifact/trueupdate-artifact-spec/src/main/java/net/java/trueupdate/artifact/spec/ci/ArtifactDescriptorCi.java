@@ -19,6 +19,7 @@ public final class ArtifactDescriptorCi {
     @XmlElement(required = true)
     public String groupId, artifactId, version;
 
+    @XmlElement(defaultValue = "")
     public String classifier;
 
     // Note the use of "extension" as the element name for backwards
