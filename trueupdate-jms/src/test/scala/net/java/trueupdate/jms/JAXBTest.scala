@@ -31,7 +31,7 @@ class JAXBTest extends WordSpec {
       .artifactId("artifactId")
       .version("version")
       .classifier("classifier")
-      .extension("extension")
+      .packaging("extension")
       .build
     val lr = new LogRecord(Level.INFO, "message")
     import lr._
@@ -71,7 +71,7 @@ class JAXBTest extends WordSpec {
         .artifactId("artifactId")
         .version("version")
         .classifier("classifier")
-        .extension("extension")
+        .packaging("extension")
         .inject
       .updateVersion("updateVersion")
       .currentLocation("currentLocation")

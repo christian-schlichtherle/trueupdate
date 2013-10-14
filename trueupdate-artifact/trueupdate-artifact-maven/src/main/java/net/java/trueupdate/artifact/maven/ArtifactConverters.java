@@ -42,7 +42,7 @@ final class ArtifactConverters {
                 descriptor.groupId(),
                 descriptor.artifactId(),
                 descriptor.classifier(),
-                descriptor.extension(),
+                descriptor.packaging(),
                 descriptor.version());
     }
 
@@ -58,7 +58,7 @@ final class ArtifactConverters {
                 .artifactId(artifact.getArtifactId())
                 .version(artifact.getVersion())
                 .classifier(artifact.getClassifier())
-                .extension(artifact.getExtension())
+                .packaging(artifact.getExtension())
                 .build();
     }
 }

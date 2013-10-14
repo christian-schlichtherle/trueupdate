@@ -6,9 +6,7 @@ package net.java.trueupdate.artifact.spec;
 
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
-
 import net.java.trueupdate.artifact.spec.ci.ArtifactDescriptorCi;
-
 import static net.java.trueupdate.util.Objects.*;
 import static net.java.trueupdate.util.Strings.*;
 import static net.java.trueupdate.util.SystemProperties.resolve;
@@ -16,7 +14,7 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 
 /**
  * An artifact descriptor comprises of a group ID, an artifact ID, a version,
- * an optional classifier and an optional extension.
+ * an optional classifier and an optional packaging.
  * This is effectively the same model as with Maven coordinates in order to
  * enable a Maven based implementation of an
  * {@linkplain ArtifactResolver artifact resolver} without actually depending
@@ -30,14 +28,14 @@ import net.java.trueupdate.util.builder.AbstractBuilder;
 @Immutable
 public final class ArtifactDescriptor {
 
-    private final String groupId, artifactId, version, classifier, extension;
+    private final String groupId, artifactId, version, classifier, packaging;
 
     ArtifactDescriptor(final Builder<?> b) {
         this.groupId = requireNonEmpty(b.groupId);
         this.artifactId = requireNonEmpty(b.artifactId);
         this.version = requireNonEmpty(b.version);
         this.classifier = nonNullOr(b.classifier, "");
-        this.extension = nonNullOr(b.extension, "jar");
+        this.packaging = nonNullOr(b.packaging, "jar");
     }
 
     /** Returns a new builder with all properties set from this instance. */
@@ -47,7 +45,7 @@ public final class ArtifactDescriptor {
                 .artifactId(artifactId)
                 .version(version)
                 .classifier(classifier)
-                .extension(extension);
+                .packaging(packaging);
     }
 
     /** Parses the given configuration item. */
@@ -102,18 +100,18 @@ public final class ArtifactDescriptor {
     }
 
     /**
-     * Returns the extension, e.g. {@code war}.
+     * Returns the packaging, e.g. {@code war}.
      * In the Maven realm, this may also be referred to as the artifact
      * <i>type</i> or <i>extension</i>.
      * The default value is {@code "jar"}.
      */
-    public String extension() { return extension; }
+    public String packaging() { return packaging; }
 
-    /** Returns an artifact descriptor with the given extension. */
-    public ArtifactDescriptor extension(String extension) {
-        return extension.equals(this.extension)
+    /** Returns an artifact descriptor with the given packaging. */
+    public ArtifactDescriptor packaging(String packaging) {
+        return packaging.equals(this.packaging)
                 ? this
-                : update().extension(extension).build();
+                : update().packaging(packaging).build();
     }
 
     /**
@@ -129,7 +127,7 @@ public final class ArtifactDescriptor {
                 this.artifactId.equals(that.artifactId) &&
                 this.version.equals(that.version) &&
                 this.classifier.equals(that.classifier) &&
-                this.extension.equals(that.extension);
+                this.packaging.equals(that.packaging);
     }
 
     /** Returns a hash code which is consistent with {@link #equals(Object)}. */
@@ -139,7 +137,7 @@ public final class ArtifactDescriptor {
         hash = 31 * hash + artifactId.hashCode();
         hash = 31 * hash + version.hashCode();
         hash = 31 * hash + classifier.hashCode();
-        hash = 31 * hash + extension.hashCode();
+        hash = 31 * hash + packaging.hashCode();
         return hash;
     }
 
@@ -148,7 +146,7 @@ public final class ArtifactDescriptor {
         StringBuilder sb = new StringBuilder(128);
         sb      .append(groupId())
                 .append(':').append(artifactId)
-                .append(':').append(extension);
+                .append(':').append(packaging);
         if (0 != classifier.length())
             sb.append(':').append(classifier);
         sb.append(':').append(version());
@@ -164,7 +162,7 @@ public final class ArtifactDescriptor {
     public static class Builder<P> extends AbstractBuilder<P> {
 
         @CheckForNull String groupId, artifactId, version, classifier,
-                             extension;
+                             packaging;
 
         protected Builder() { }
 
@@ -174,7 +172,7 @@ public final class ArtifactDescriptor {
             artifactId = resolve(ci.artifactId, artifactId);
             version = resolve(ci.version, version);
             classifier = resolve(ci.classifier, classifier);
-            extension = resolve(ci.extension, extension);
+            packaging = resolve(ci.packaging, packaging);
             return this;
         }
 
@@ -198,8 +196,8 @@ public final class ArtifactDescriptor {
             return this;
         }
 
-        public final Builder<P> extension(final @Nullable String extension) {
-            this.extension = extension;
+        public final Builder<P> packaging(final @Nullable String packaging) {
+            this.packaging = packaging;
             return this;
         }
 

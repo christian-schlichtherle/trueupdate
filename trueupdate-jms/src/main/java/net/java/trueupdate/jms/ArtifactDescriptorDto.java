@@ -32,5 +32,5 @@ final class ArtifactDescriptorDto {
     String classifier;
 
     @XmlElement(name = "e")
-    String extension;
+    String packaging;
 }

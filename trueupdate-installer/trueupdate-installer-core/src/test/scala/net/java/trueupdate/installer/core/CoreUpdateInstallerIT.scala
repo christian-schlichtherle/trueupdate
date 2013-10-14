@@ -34,7 +34,7 @@ class CoreUpdateInstallerIT extends WordSpec {
     .artifactDescriptor
     .groupId("groupId")
     .artifactId("artifactId")
-    .extension("jar")
+    .packaging("jar")
     .version("1")
     .inject
     .updateVersion("2")

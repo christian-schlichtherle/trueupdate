@@ -19,10 +19,10 @@ public final class ArtifactDescriptorCi {
     @XmlElement(required = true)
     public String groupId, artifactId, version;
 
-    /** The classifier. */
     public String classifier;
 
-    /** The extension. */
-    @XmlElement(defaultValue = "jar")
-    public String extension;
+    // Note the use of "extension" as the element name for backwards
+    // compatibility with TrueUpdate 0.6 and earlier versions.
+    @XmlElement(name = "extension", defaultValue = "jar")
+    public String packaging;
 }

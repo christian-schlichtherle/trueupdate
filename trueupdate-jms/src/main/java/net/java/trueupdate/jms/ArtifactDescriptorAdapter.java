@@ -30,7 +30,7 @@ extends XmlAdapter<ArtifactDescriptorDto, ArtifactDescriptor> {
                 .artifactId(dto.artifactId)
                 .version(dto.version)
                 .classifier(dto.classifier)
-                .extension(dto.extension)
+                .packaging(dto.packaging)
                 .build();
     }
 
@@ -45,7 +45,7 @@ extends XmlAdapter<ArtifactDescriptorDto, ArtifactDescriptor> {
         dto.artifactId = ad.artifactId();
         dto.version = ad.version();
         dto.classifier = nonDefaultOrNull(ad.classifier(), "");
-        dto.extension = nonDefaultOrNull(ad.extension(), "jar");
+        dto.packaging = nonDefaultOrNull(ad.packaging(), "jar");
         return dto;
     }
 }

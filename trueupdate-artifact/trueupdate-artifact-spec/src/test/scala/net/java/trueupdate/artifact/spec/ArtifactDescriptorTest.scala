@@ -30,7 +30,7 @@ class ArtifactDescriptorTest extends WordSpec {
           descriptor1.artifactId should be (artifactId)
           descriptor1.version should be (version)
           descriptor1.classifier should be (classifier)
-          descriptor1.extension should be (extension)
+          descriptor1.packaging should be (extension)
 
           val descriptor2 = builder.build
           descriptor2 should not be theSameInstanceAs (descriptor1)

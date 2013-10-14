@@ -20,7 +20,7 @@ private object MavenArtifactResolverIT {
       descriptor.artifactId,
       descriptor.version,
       dashify(descriptor.classifier),
-      descriptor.extension
+      descriptor.packaging
     )
 
   private def slashify(groupId: String) = groupId.replace('.', '/')

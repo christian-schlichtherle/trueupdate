@@ -38,7 +38,7 @@ final class ArtifactDescriptors {
                 put("artifactId", descriptor.artifactId());
                 put("version", descriptor.version());
                 put("classifier", descriptor.classifier());
-                put("extension", descriptor.extension());
+                put("extension", descriptor.packaging());
                 return map;
             }
 

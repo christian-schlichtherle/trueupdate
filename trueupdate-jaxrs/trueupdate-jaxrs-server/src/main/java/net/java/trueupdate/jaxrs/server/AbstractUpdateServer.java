@@ -22,14 +22,16 @@ public abstract class AbstractUpdateServer {
     /** Returns the artifact resolver. */
     protected abstract ArtifactResolver artifactResolver();
 
-    /** Returns a parameterized artifact update server. */
+    /** Returns a configured update server. */
     @Path("artifact")
     public ConfiguredUpdateServer artifact(
             final @QueryParam("groupId") String groupId,
             final @QueryParam("artifactId") String artifactId,
             final @QueryParam("version") String version,
             final @QueryParam("classifier") @DefaultValue("") String classifier,
-            final @QueryParam("extension") @DefaultValue("jar") String extension)
+            // Note the use of "extension" as the parameter name for backwards
+            // compatibility with TrueUpdate 0.6 and earlier versions.
+            final @QueryParam("extension") @DefaultValue("jar") String packaging)
     throws UpdateServiceException {
         return UpdateServers.wrap(new Callable<ConfiguredUpdateServer>() {
             @Override
@@ -40,7 +42,7 @@ public abstract class AbstractUpdateServer {
                                 .artifactId(artifactId)
                                 .version(version)
                                 .classifier(classifier)
-                                .extension(extension)
+                                .packaging(packaging)
                                 .build());
             }
         });

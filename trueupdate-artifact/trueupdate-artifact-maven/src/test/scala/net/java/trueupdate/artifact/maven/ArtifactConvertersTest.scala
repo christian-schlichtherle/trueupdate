@@ -26,7 +26,7 @@ class ArtifactConvertersTest extends WordSpec {
         .artifactId(artifactId)
         .version(version)
         .classifier(classifier)
-        .extension(extension)
+        .packaging(extension)
         .build
       val artifact = ArtifactConverters artifact descriptor
       val descriptor2 = ArtifactConverters descriptor artifact
@@ -41,7 +41,7 @@ class ArtifactConvertersTest extends WordSpec {
       artifact.getArtifactId should equal (descriptor.artifactId)
       artifact.getVersion should equal (descriptor.version)
       artifact.getClassifier should equal (descriptor.classifier)
-      artifact.getExtension should equal (descriptor.extension)
+      artifact.getExtension should equal (descriptor.packaging)
     }
   }
 }
