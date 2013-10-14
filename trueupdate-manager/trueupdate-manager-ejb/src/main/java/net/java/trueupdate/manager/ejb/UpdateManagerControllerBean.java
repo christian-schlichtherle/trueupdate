@@ -18,7 +18,7 @@ import net.java.trueupdate.util.Services;
  */
 @Startup
 @Singleton
-public class EjbUpdateManagerController {
+public class UpdateManagerControllerBean {
 
     private final UpdateManagerController
             controller = Services.load(UpdateManagerController.class);

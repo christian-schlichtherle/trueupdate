@@ -18,7 +18,7 @@ import net.java.trueupdate.util.Services;
  */
 @Startup
 @Singleton
-public class EjbUpdateAgentController {
+public class UpdateAgentControllerBean {
 
     private final UpdateAgentController
             controller = Services.load(UpdateAgentController.class);
