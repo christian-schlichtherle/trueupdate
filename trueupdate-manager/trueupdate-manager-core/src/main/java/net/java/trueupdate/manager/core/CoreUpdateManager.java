@@ -44,16 +44,14 @@ extends UpdateMessageListener implements UpdateManager {
     private final CoreUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
 
-    private final UpdateInstaller updateInstaller;
+    private final UpdateInstaller
+            updateInstaller = Services.load(UpdateInstaller.class);
 
     private volatile UpdateClient updateClient;
 
-    protected CoreUpdateManager() { updateInstaller = newUpdateInstaller(); }
-
-    private static UpdateInstaller newUpdateInstaller() {
-        final UpdateInstaller ui = Services.load(UpdateInstaller.class);
-        logger.log(Level.CONFIG, "manager.installer.class", ui.getClass().getName());
-        return ui;
+    protected CoreUpdateManager() {
+        logger.log(Level.CONFIG, "manager.installer.class",
+                updateInstaller.getClass().getName());
     }
 
     private UpdateClient updateClient() {
