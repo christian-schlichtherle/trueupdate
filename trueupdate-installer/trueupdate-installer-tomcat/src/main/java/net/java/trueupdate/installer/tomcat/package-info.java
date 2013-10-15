@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides an update installer for applications running in Tomcat.
+ * Provides an update installer for applications running in Apache Tomcat.
  *
  * @author Christian Schlichtherle
  */
