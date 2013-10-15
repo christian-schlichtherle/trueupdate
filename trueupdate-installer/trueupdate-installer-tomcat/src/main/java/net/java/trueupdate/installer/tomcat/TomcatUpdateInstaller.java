@@ -7,19 +7,16 @@ package net.java.trueupdate.installer.tomcat;
 import java.io.*;
 import javax.annotation.concurrent.Immutable;
 import javax.management.*;
-
-import net.java.trueupdate.installer.core.UpdateParameters;
-import net.java.trueupdate.installer.core.CoreUpdateInstaller;
+import net.java.trueupdate.installer.core.*;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.*;
 import org.apache.catalina.*;
 import org.apache.catalina.startup.HostConfig;
 import org.apache.catalina.util.ContextName;
 
 /**
- * Installs updates for applications running in OpenEJB.
+ * Installs updates for applications running in Apache Tomcat.
  *
  * @author Christian Schlichtherle
  */

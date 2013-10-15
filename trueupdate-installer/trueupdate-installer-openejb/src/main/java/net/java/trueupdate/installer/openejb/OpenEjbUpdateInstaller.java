@@ -8,17 +8,14 @@ import java.io.*;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import javax.ejb.EJB;
-
-import net.java.trueupdate.installer.core.UpdateParameters;
-import net.java.trueupdate.installer.core.CoreUpdateInstaller;
+import net.java.trueupdate.installer.core.*;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.*;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
 
 /**
- * Installs updates for applications running in OpenEJB.
+ * Installs updates for applications running in Apache OpenEJB.
  *
  * @author Christian Schlichtherle
  */
