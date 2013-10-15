@@ -5,8 +5,7 @@
 package net.java.trueupdate.installer.tomcat;
 
 import java.util.logging.Logger;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 
 /**

@@ -21,6 +21,21 @@ import net.java.trueupdate.manager.spec.tx._
 /**
  * @author Christian Schlichtherle
  */
+object TomcatUpdateInstallerIT {
+
+  @Deployment def createDeployment = ShrinkWrap
+    .create(classOf[WebArchive])
+    .addClass(classOf[TomcatUpdateInstaller])
+
+  def testArchive = ShrinkWrap
+    .create(classOf[WebArchive])
+    .addClass(classOf[GoodbyeWorld])
+
+  def updateArchive = ShrinkWrap
+    .create(classOf[WebArchive])
+    .addClass(classOf[HelloWorld])
+}
+
 @RunWith(classOf[Arquillian])
 class TomcatUpdateInstallerIT {
 
@@ -47,19 +62,4 @@ class TomcatUpdateInstallerIT {
     updateArchive as classOf[ZipExporter] exportTo testWar
     Transactions execute ad.deploymentTransaction
   }
-}
-
-object TomcatUpdateInstallerIT {
-
-  @Deployment def createDeployment = ShrinkWrap
-    .create(classOf[WebArchive])
-    .addClass(classOf[TomcatUpdateInstaller])
-
-  def testArchive = ShrinkWrap
-    .create(classOf[WebArchive])
-    .addClass(classOf[GoodbyeWorld])
-
-  def updateArchive = ShrinkWrap
-    .create(classOf[WebArchive])
-    .addClass(classOf[HelloWorld])
 }
