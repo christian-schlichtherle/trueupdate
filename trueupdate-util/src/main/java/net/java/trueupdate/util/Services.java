@@ -32,7 +32,7 @@ public final class Services {
             return ServiceLoader.load(service).iterator().next();
         } catch (NoSuchElementException ex) {
             throw new ServiceConfigurationError(String.format(
-                    "Cannot find an implementation of the service %s on the class path.",
+                    "Could not find an implementation of the service %s on the class path.",
                     service), ex);
         }
     }
