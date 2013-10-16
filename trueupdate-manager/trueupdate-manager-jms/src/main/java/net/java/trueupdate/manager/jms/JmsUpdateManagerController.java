@@ -18,9 +18,6 @@ import net.java.trueupdate.manager.core.*;
 public final class JmsUpdateManagerController
 implements UpdateManagerController {
 
-    private static final Logger logger = Logger.getLogger(
-            JmsUpdateManagerController.class.getName());
-
     private final JmsUpdateManagerParameters parameters;
     private final JmsUpdateManager manager;
     private final ScheduledExecutorService timer;
@@ -54,6 +51,9 @@ implements UpdateManagerController {
             }
         });
 
+        final Logger logger = Logger.getLogger(
+                JmsUpdateManagerController.class.getName());
+
         final UpdateServiceParameters usp = parameters.updateService();
         logger.log(Level.CONFIG,
                 "The base URI of the update service is {0} .", usp.uri());
@@ -66,16 +66,20 @@ implements UpdateManagerController {
 
     @Override public void start() {
         if (started) return;
+        startWrapped();
+        started = true;
+    }
+
+    private void startWrapped() {
         try {
-            start0();
+            startNow();
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to start the update manager.", ex);
         }
-        started = true;
     }
 
-    private void start0() throws Exception {
+    private void startNow() throws Exception {
         // HC SVNT DRACONIS!
         new Thread(receiver, "TrueUpdate Manager JMS / Receiver").start();
         final TimerParameters tp = parameters.updateTimer();
@@ -83,17 +87,20 @@ implements UpdateManagerController {
                 tp.period(), tp.unit());
     }
 
-    @Override public void stop(final long timeout, final TimeUnit unit) {
-        if (!started) return;
+    @Override public void stop(long timeout, TimeUnit unit) {
+        if (started) stopWrapped(timeout, unit);
+    }
+
+    private void stopWrapped(final long timeout, final TimeUnit unit) {
         try {
-            stop0(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+            stopNow(timeout, unit);
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update manager.", ex);
         }
     }
 
-    private void stop0(long timeout, TimeUnit unit) throws Exception {
+    private void stopNow(long timeout, TimeUnit unit) throws Exception {
         // HC SVNT DRACONIS!
         final long stop = System.currentTimeMillis() + unit.toMillis(timeout);
         unit = TimeUnit.MILLISECONDS;

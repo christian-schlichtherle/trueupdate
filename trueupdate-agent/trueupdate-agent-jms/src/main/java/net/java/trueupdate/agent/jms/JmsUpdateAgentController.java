@@ -53,50 +53,47 @@ implements UpdateAgentController {
 
     @Override public void start() {
         if (started) return;
-        try {
-            start0();
-        } catch (Exception ex) {
-            throw new IllegalStateException(
-                    "Failed to start the update agent.", ex);
+        final TimerParameters tp = parameters.subscriptionTimer();
+        final long delay = tp.unit().toMillis(tp.delay());
+        if (0 < delay) {
+            new Timer("TrueUpdate Agent JMS / Subscription Timer", true)
+                    .schedule(new Start(), delay);
+        } else {
+            startWrapped();
         }
         started = true;
     }
 
-    private void start0() throws Exception {
-        // HC SVNT DRACONIS!
-        new Thread(receiver, "TrueUpdate Agent JMS / Receiver").start();
-        final TimerParameters tp = parameters.subscriptionTimer();
-        final long delay = tp.unit().toMillis(tp.delay());
-        if (0 < delay) {
-            final Timer timer = new Timer(
-                    "TrueUpdate Agent JMS / Subscription Timer", true);
-            timer.schedule(new TimerTask() {
-                @Override public void run() {
-                    try {
-                        agent.subscribe();
-                    } catch (Exception ex) {
-                        Logger  .getLogger(JmsUpdateAgentController.class.getName())
-                                .log(Level.WARNING,
-                                        "Could not subscribe to update manager:", ex);
-                    }
-                }
-            }, delay);
-        } else {
-            agent.subscribe();
+    private void startWrapped() {
+        try {
+            startNow();
+        } catch (Exception ex) {
+            throw new IllegalStateException(
+                    "Failed to start the update agent.", ex);
         }
     }
 
-    @Override public void stop(final long timeout, final TimeUnit unit) {
-        if (!started) return;
+    private void startNow() throws Exception {
+        // HC SVNT DRACONIS!
+        new Thread(receiver, "TrueUpdate Agent JMS / Receiver").start();
+        agent.subscribe();
+    }
+
+    @Override public void stop(long timeout, TimeUnit unit) {
+        if (started) stopWrapped(timeout, unit);
+    }
+
+    private void stopWrapped(final long timeout, final TimeUnit unit) {
         try {
-            stop0(10, TimeUnit.SECONDS);
+            stopNow(timeout, unit);
         } catch (Exception ex) {
             throw new IllegalStateException(
                     "Failed to stop the update agent.", ex);
         }
     }
 
-    private void stop0(final long timeout, final TimeUnit unit) throws Exception {
+    private void stopNow(final long timeout, final TimeUnit unit)
+    throws Exception {
         // HC SVNT DRACONIS
         try {
             receiver.stop(timeout, unit);
@@ -104,4 +101,16 @@ implements UpdateAgentController {
             agent.unsubscribe();
         }
     }
+
+    private class Start extends TimerTask {
+        @Override public void run() {
+            try {
+                startNow();
+            } catch (Exception ex) {
+                Logger  .getLogger(JmsUpdateAgentController.class.getName())
+                        .log(Level.WARNING,
+                                "Failed to start the update agent.", ex);
+            }
+        }
+    } // Start
 }
