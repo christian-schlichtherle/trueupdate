@@ -191,6 +191,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-installer-jsr88</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-installer-openejb</artifactId>
                 <version>${project.version}</version>
             </dependency>

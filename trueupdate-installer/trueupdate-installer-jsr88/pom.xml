@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
+  - All rights reserved. Use is subject to license terms.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.java.trueupdate</groupId>
+        <artifactId>trueupdate-installer</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>trueupdate-installer-jsr88</artifactId>
+
+    <name>TrueUpdate Installer JSR 88</name>
+    <description>
+        Provides an update installer for applications running in a container
+        which supports JSR 88.
+    </description>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>2.0.6</version>
+            </dependency-->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-aether-provider</artifactId>
+                <!-- Revert back from 3.1.1 in TrueUpdate POM or otherwise it
+                     won't work because of duplicate Aether JARs with differing
+                     groupId: org.sonatype.maven (3.0.5-) vs.
+                              org.eclipse.aether (3.1.0+).
+                -->
+                <version>3.0.5</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>trueupdate-installer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.enterprise.deploy</groupId>
+            <artifactId>javax.enterprise.deploy-api</artifactId>
+            <version>1.${javaee.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
