@@ -23,55 +23,55 @@ import org.codehaus.cargo.generic.deployable.DefaultDeployableFactory;
 import org.codehaus.cargo.generic.deployer.DefaultDeployerFactory;
 
 /**
- * A context which decomposes a location configuration URI to determine the
- * parameters of the various Cargo objects it creates.
+ * A context which decomposes a location URI to configure various parameters
+ * and perform a redeployment using the Cargo Generic API.
  *
  * @author Christian Schlichtherle
  */
 @Immutable
 final class CargoContext {
 
-    private final URI configuration;
+    private final URI location;
     private final Map<String, List<String>> parameters;
 
-    CargoContext(final URI configuration) {
-        this.parameters = Uris.queryParameters(configuration);
-        this.configuration = configuration;
+    CargoContext(final URI location) {
+        this.parameters = Uris.queryParameters(location);
+        this.location = location;
     }
 
-    public Transaction deploymentTransaction() {
+    Transaction deploymentTransaction() {
         return new DeploymentTransaction();
     }
 
-    void deploy() throws CargoException {
+    private void deploy() throws CargoContextException {
         final Deployable deployable = deployable();
         final String monitorUrl = monitorUrl();
         try {
             if (monitorUrl.isEmpty()) deployer().deploy(deployable);
             else deployer().deploy(deployable, deployableMonitor());
         } catch (RuntimeException ex) {
-            throw new CargoException(
-                    String.format("Cannot deploy %s .", deployable), ex);
+            throw new CargoContextException(
+                    String.format("Could not deploy %s .", deployable), ex);
         }
     }
 
-    public Transaction undeploymentTransaction() {
+    Transaction undeploymentTransaction() {
         return new UndeploymentTransaction();
     }
 
-    void undeploy() throws CargoException {
+    private void undeploy() throws CargoContextException {
         final Deployable deployable = deployable();
         final String monitorUrl = monitorUrl();
         try {
             if (monitorUrl.isEmpty()) deployer().undeploy(deployable);
             else deployer().undeploy(deployable, deployableMonitor());
         } catch (RuntimeException ex) {
-            throw new CargoException(
-                    String.format("Cannot undeploy %s .", deployable), ex);
+            throw new CargoContextException(
+                    String.format("Could not undeploy %s .", deployable), ex);
         }
     }
 
-    public Deployer deployer() throws CargoContextException {
+    private Deployer deployer() throws CargoConfigurationException {
         try {
             return new DefaultDeployerFactory().createDeployer(container());
         } catch (RuntimeException ex) {
@@ -79,7 +79,7 @@ final class CargoContext {
         }
     }
 
-    public Container container() throws CargoContextException {
+    private Container container() throws CargoConfigurationException {
         try {
             final Container c = new DefaultContainerFactory().createContainer(
                     containerId(), containerType(), configuration());
@@ -91,7 +91,7 @@ final class CargoContext {
         }
     }
 
-    public Configuration configuration() throws CargoContextException {
+    private Configuration configuration() throws CargoConfigurationException {
         try {
             final Configuration c = new DefaultConfigurationFactory()
                     .createConfiguration(
@@ -106,11 +106,11 @@ final class CargoContext {
         }
     }
 
-    public File deployablePath() throws CargoContextException {
+    File deployablePath() throws CargoConfigurationException {
         return new File(deployable().getFile());
     }
 
-    public Deployable deployable() throws CargoContextException {
+    private Deployable deployable() throws CargoConfigurationException {
         try {
             return new DefaultDeployableFactory().createDeployable(
                     containerId(), deployableLocation(), deployableType());
@@ -119,7 +119,7 @@ final class CargoContext {
         }
     }
 
-    public DeployableMonitor deployableMonitor() throws CargoContextException {
+    private DeployableMonitor deployableMonitor() throws CargoConfigurationException {
         try {
             return new URLDeployableMonitor(new URL(monitorUrl()),
                     Long.parseLong(monitorTimeout()),
@@ -129,25 +129,25 @@ final class CargoContext {
         }
     }
 
-    DeployableType deployableType() {
+    private DeployableType deployableType() {
         return DeployableType.toType(
-                nonNullOr(configuration.getScheme(), "file"));
+                nonNullOr(location.getScheme(), "file"));
     }
 
-    String deployableLocation() {
-        return nonNullOr(configuration.getPath(), "");
+    private String deployableLocation() {
+        return nonNullOr(location.getPath(), "");
     }
 
-    String containerId() { return parameter("context.container.id"); }
+    private String containerId() { return parameter("context.container.id"); }
 
-    ContainerType containerType() {
+    private ContainerType containerType() {
         return ContainerType.toType(
                 parameter("context.container.type", "remote"));
     }
 
-    String containerHome() { return parameter("context.container.home"); }
+    private String containerHome() { return parameter("context.container.home"); }
 
-    ConfigurationType configurationType() {
+    private ConfigurationType configurationType() {
         return ConfigurationType.toType(parameter("context.configuration.type",
                 defaultConfigurationType()));
     }
@@ -164,7 +164,7 @@ final class CargoContext {
             return "";
     }
 
-    String configurationHome() {
+    private String configurationHome() {
         return parameter("context.configuration.home",
                 defaultConfigurationHome());
     }
@@ -174,15 +174,15 @@ final class CargoContext {
                 ? containerHome() : "";
     }
 
-    String monitorUrl() {
+    private String monitorUrl() {
         return parameter("context.monitor.url");
     }
 
-    String monitorTimeout() {
+    private String monitorTimeout() {
         return parameter("context.monitor.timeout", "20000");
     }
 
-    String monitorContains() {
+    private String monitorContains() {
         return parameter("context.monitor.contains");
     }
 
@@ -197,28 +197,36 @@ final class CargoContext {
         return nonNullOr(parameters.get(name), Collections.<String>emptyList());
     }
 
-    private CargoContextException newException(String componentName,
-                                               Throwable cause) {
-        return new CargoContextException(configuration, componentName, cause);
+    private CargoConfigurationException newException(String componentName,
+                                                     Throwable cause) {
+        return new CargoConfigurationException(location, componentName, cause);
     }
 
-    private class DeploymentTransaction extends AtomicMethodsTransaction {
+    private final class DeploymentTransaction
+    extends AtomicMethodsTransaction {
 
         @Override public void performAtomic() throws Exception { deploy(); }
 
         @Override public void rollbackAtomic() {
-            try { undeploy(); }
-            catch (CargoException ex) { throw new IllegalStateException(ex); }
+            try {
+                undeploy();
+            } catch (CargoContextException ex) {
+                throw new IllegalStateException(ex);
+            }
         }
     } // DeploymentTransaction
 
-    private class UndeploymentTransaction extends AtomicMethodsTransaction {
+    private final class UndeploymentTransaction
+    extends AtomicMethodsTransaction {
 
         @Override public void performAtomic() throws Exception { undeploy(); }
 
         @Override public void rollbackAtomic() {
-            try { deploy(); }
-            catch (Exception ex) { throw new IllegalStateException(ex); }
+            try {
+                deploy();
+            } catch (CargoContextException ex) {
+                throw new IllegalStateException(ex);
+            }
         }
     } // UndeploymentTransaction
 }
