@@ -7,12 +7,12 @@ package net.java.trueupdate.installer.cargo;
 import java.io.File;
 import java.net.*;
 import java.util.*;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.util.Uris;
 import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.nonNullOr;
+import static net.java.trueupdate.util.Strings.nonEmptyOr;
 import org.codehaus.cargo.container.*;
 import org.codehaus.cargo.container.configuration.*;
 import org.codehaus.cargo.container.deployable.*;
@@ -23,8 +23,8 @@ import org.codehaus.cargo.generic.deployable.DefaultDeployableFactory;
 import org.codehaus.cargo.generic.deployer.DefaultDeployerFactory;
 
 /**
- * A context which decomposes a configuration URI to determine the parameters
- * of the various Cargo objects it creates.
+ * A context which decomposes a location configuration URI to determine the
+ * parameters of the various Cargo objects it creates.
  *
  * @author Christian Schlichtherle
  */
@@ -96,7 +96,7 @@ final class CargoContext {
             final Configuration c = new DefaultConfigurationFactory()
                     .createConfiguration(
                             containerId(), containerType(), configurationType(),
-                            nonEmptyOrNull(configurationHome()));
+                            nonEmptyOr(configurationHome(), null));
             for (final String name : parameters.keySet())
                 if (!name.startsWith("context."))
                     c.setProperty(name, parameter(name));
@@ -123,7 +123,7 @@ final class CargoContext {
         try {
             return new URLDeployableMonitor(new URL(monitorUrl()),
                     Long.parseLong(monitorTimeout()),
-                    nonEmptyOrNull(monitorContains()));
+                    nonEmptyOr(monitorContains(), null));
         } catch (Exception ex) {
             throw newException("deployable monitor", ex);
         }
@@ -202,11 +202,8 @@ final class CargoContext {
         return new CargoContextException(configuration, componentName, cause);
     }
 
-    private static @Nullable String nonEmptyOrNull(String string) {
-        return string.isEmpty() ? null : string;
-    }
-
     private class DeploymentTransaction extends AtomicMethodsTransaction {
+
         @Override public void performAtomic() throws Exception { deploy(); }
 
         @Override public void rollbackAtomic() {
@@ -216,6 +213,7 @@ final class CargoContext {
     } // DeploymentTransaction
 
     private class UndeploymentTransaction extends AtomicMethodsTransaction {
+
         @Override public void performAtomic() throws Exception { undeploy(); }
 
         @Override public void rollbackAtomic() {
