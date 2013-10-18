@@ -30,7 +30,7 @@ public final class CargoUpdateInstaller extends CoreUpdateInstaller {
         final CargoContext ucc = new CargoContext(new URI(uc.updateLocation()));
         final File upath = ucc.deployablePath();
 
-        class ResolvedDescriptor implements UpdateParameters {
+        class ResolvedParameters implements UpdateParameters {
 
             @Override public File currentPath() { return cpath; }
 
@@ -43,8 +43,8 @@ public final class CargoUpdateInstaller extends CoreUpdateInstaller {
             @Override public Transaction deploymentTransaction() {
                 return ucc.deploymentTransaction();
             }
-        } // ResolvedDescriptor
+        } // ResolvedParameters
 
-        return new ResolvedDescriptor();
+        return new ResolvedParameters();
     }
 }

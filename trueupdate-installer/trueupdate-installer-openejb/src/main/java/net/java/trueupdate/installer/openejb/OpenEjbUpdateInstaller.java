@@ -32,7 +32,7 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
         final File upath = uc.updateLocation().equals(uc.currentLocation())
                 ? cpath : new File(uc.updateLocation());
 
-        class ResolvedDescriptor implements UpdateParameters {
+        class ResolvedParameters implements UpdateParameters {
 
             @Override public File currentPath() { return cpath; }
 
@@ -77,9 +77,9 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedDescriptor
+        } // ResolvedParameters
 
-        return new ResolvedDescriptor();
+        return new ResolvedParameters();
     }
 
     private File resolveCurrentPath(final URI location) throws Exception {

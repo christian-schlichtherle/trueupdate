@@ -59,7 +59,7 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
     protected UpdateParameters updateParameters(final UpdateContext uc)
     throws Exception {
 
-        class ResolvedDescriptor implements UpdateParameters {
+        class ResolvedParameters implements UpdateParameters {
 
             final File appBase = appBase();
 
@@ -141,11 +141,11 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
                 return new DeploymentTransaction();
             }
-        } // ResolvedDescriptor
+        } // ResolvedParameters
 
         if (null == host || null == config)
             throw new Exception("The application is not running in Tomcat.");
-        return new ResolvedDescriptor();
+        return new ResolvedParameters();
     }
 
     File appBase() {
