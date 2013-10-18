@@ -15,7 +15,7 @@
             <version>${symbol_dollar}{project.version}</version>
             <extension>ear</extension>
         </artifact>
-        <location>ear://${symbol_dollar}{basedir}/../application/target/${application}-${project.version}.ear?context.container.id=glassfish4x&amp;cargo.glassfish.admin.port=4848&amp;cargo.remote.username=admin&amp;cargo.remote.password=</location>
+        <location>ear://${symbol_dollar}{basedir}/../application/target/${application}-${project.version}.ear?moduleID=${application}&amp;username=admin&amp;uri=deployer:Sun:AppServer::localhost:4848</location>
         <listenerClass>${package}.ApplicationListener</listenerClass>
     </application>
     <subscriptionTimer>

@@ -82,9 +82,6 @@
 
         <!-- The remaining properties usually don't need to be edited: -->
 
-        <cargo.version>1.4.4</cargo.version>
-        <glassfish.version>4.0</glassfish.version>
-
         <javase.version>${javase-version}</javase.version>
         <javaee.version>${javase-version}</javaee.version>
 

@@ -23,20 +23,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-core-container-glassfish</artifactId>
-            <version>${cargo.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.deployment</groupId>
+            <groupId>de.schlichtherle.glassfish</groupId>
             <artifactId>deployment-client</artifactId>
-            <version>${glassfish.version}</version>
+            <version>4.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>net.java.trueupdate</groupId>
-            <artifactId>trueupdate-installer-cargo</artifactId>
+            <artifactId>trueupdate-installer-jsr88</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
