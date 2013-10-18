@@ -218,12 +218,12 @@ extends UpdateMessageListener implements UpdateManager {
             @Override public Transaction decorate(
                     final Action id,
                     final Transaction tx) {
-                final Transaction ttx = timed(id, tx);
+                final Transaction ttx = time(id, tx);
                 return Action.UNDEPLOY == id ? undeploy(ttx) : checked(ttx);
             }
 
-            Transaction timed(Action id, Transaction tx) {
-                return Transactions.timed(id.key(), tx, loggerConfig);
+            Transaction time(Action id, Transaction tx) {
+                return Transactions.time(id.key(), tx, loggerConfig);
             }
 
             Transaction undeploy(final Transaction tx) {

@@ -69,14 +69,14 @@ public class Transactions {
      *
      * @return the logging transaction.
      */
-    public static Transaction timed(final String message,
-                                    final Transaction tx,
-                                    final LoggerConfig config) {
+    public static Transaction time(final String message,
+                                   final Transaction tx,
+                                   final LoggerConfig config) {
 
-        class Timed extends Transaction {
+        class Time extends Transaction {
 
             @Override public void prepare() throws Exception {
-                timed(Method.prepare, new Callable<Void>() {
+                time(Method.prepare, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.prepare();
@@ -86,7 +86,7 @@ public class Transactions {
             }
 
             @Override public void perform() throws Exception {
-                timed(Method.perform, new Callable<Void>() {
+                time(Method.perform, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.perform();
@@ -96,7 +96,7 @@ public class Transactions {
             }
 
             @Override public void rollback() {
-                timedUnchecked(Method.rollback, new Callable<Void>() {
+                timeUnchecked(Method.rollback, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.rollback();
@@ -106,7 +106,7 @@ public class Transactions {
             }
 
             @Override public void commit() {
-                timedUnchecked(Method.commit, new Callable<Void>() {
+                timeUnchecked(Method.commit, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.commit();
@@ -115,13 +115,13 @@ public class Transactions {
                 });
             }
 
-            void timedUnchecked(final Method method, final Callable<Void> task) {
-                try { timed(method, task); }
+            void timeUnchecked(final Method method, final Callable<Void> task) {
+                try { time(method, task); }
                 catch (RuntimeException ex) { throw ex; }
                 catch (Exception ex){ throw new AssertionError(ex); }
             }
 
-            void timed(final Method method, final Callable<Void> task)
+            void time(final Method method, final Callable<Void> task)
             throws Exception {
                 Exception ex = null;
                 final long started = System.currentTimeMillis();
@@ -142,9 +142,9 @@ public class Transactions {
                 }
                 if (!succeeded) throw ex;
             }
-        } // Timed
+        } // Time
 
-        return new Timed();
+        return new Time();
     }
 
     private Transactions() { }
