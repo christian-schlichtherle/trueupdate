@@ -9,6 +9,7 @@ import java.net.*;
 import java.util.*;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import net.java.trueupdate.installer.core.util.Uris;
 import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.nonNullOr;

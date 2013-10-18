@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.cargo
+package net.java.trueupdate.installer.core.util
 
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
@@ -26,17 +26,18 @@ class UrisTest extends WordSpec {
     output
   }
 
+  private val subjects = Table(
+    ("uri", "map"),
+    ("?name", Map("name" -> List(""))),
+    ("?name=", Map("name" -> List(""))),
+    ("?name=value", Map("name" -> List("value"))),
+    ("?name=value1&name=value2", Map("name" -> List("value1", "value2"))),
+    ("?%26name=%26value1&%26name=%26value2", Map("&name" -> List("&value1", "&value2")))
+  )
+
   "The queryParameters function" should {
     "return correctly parsed multi-valued maps" in {
-      val table = Table(
-        ("uri", "map"),
-        ("?name", Map("name" -> List(""))),
-        ("?name=", Map("name" -> List(""))),
-        ("?name=value", Map("name" -> List("value"))),
-        ("?name=value1&name=value2", Map("name" -> List("value1", "value2"))),
-        ("?%26name=%26value1&%26name=%26value2", Map("&name" -> List("&value1", "&value2")))
-      )
-      forAll(table) { (uri, map) =>
+      forAll(subjects) { (uri, map) =>
         scala(Uris.queryParameters(new URI(uri))) should equal (map)
       }
     }

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.cargo;
+package net.java.trueupdate.installer.core.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,14 +13,14 @@ import java.util.*;
  *
  * @author Christian Schlichtherle
  */
-final class Uris {
+public final class Uris {
 
     /**
      * Returns the decoded query parameters of the given URI as a multi-valued
      * map.
      * Every list value has at least one element, which may be an empty string.
      */
-    static Map<String, List<String>> queryParameters(final URI uri) {
+    public static Map<String, List<String>> queryParameters(final URI uri) {
         final Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
         final String rawQuery = uri.getRawQuery();
         if (null != rawQuery) {
@@ -51,4 +51,6 @@ final class Uris {
             throw new AssertionError(ex);
         }
     }
+
+    private Uris() { }
 }
