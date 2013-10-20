@@ -8,7 +8,7 @@
     <parent>
         <groupId>net.java.truecommons</groupId>
         <artifactId>truecommons-parent</artifactId>
-        <version>64</version>
+        <version>67</version>
     </parent>
 
     <groupId>${groupId}</groupId>
