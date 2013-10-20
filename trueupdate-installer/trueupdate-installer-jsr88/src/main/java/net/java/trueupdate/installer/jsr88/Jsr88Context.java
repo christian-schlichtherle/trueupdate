@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.enterprise.deploy.shared.CommandType;
 import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.shared.StateType;
 import javax.enterprise.deploy.spi.*;
@@ -55,12 +56,14 @@ final class Jsr88Context {
     }
 
     private void deploy() throws Jsr88ContextException {
-        monitor(deploymentManager()
-                .distribute(targets(), moduleArchive(), deploymentPlan()));
+        monitor(CommandType.DISTRIBUTE,
+                deploymentManager()
+                    .distribute(targets(), moduleArchive(), deploymentPlan()));
     }
 
     private void start() throws Jsr88ContextException {
-        monitor(deploymentManager().start(targetModuleIDs()));
+        monitor(CommandType.START,
+                deploymentManager().start(targetModuleIDs()));
     }
 
     Transaction undeploymentTransaction() {
@@ -73,20 +76,21 @@ final class Jsr88Context {
     }
 
     private void stop() throws Jsr88ContextException {
-        monitor(deploymentManager().stop(targetModuleIDs()));
+        monitor(CommandType.STOP,
+                deploymentManager().stop(targetModuleIDs()));
     }
 
     private void undeploy() throws Jsr88ContextException {
-        monitor(deploymentManager().undeploy(targetModuleIDs()));
+        monitor(CommandType.UNDEPLOY,
+                deploymentManager().undeploy(targetModuleIDs()));
     }
 
-    private void monitor(final ProgressObject po) throws Jsr88ContextException {
+    private void monitor(final CommandType command, final ProgressObject po)
+    throws Jsr88ContextException {
 
         class Monitor implements ProgressListener, Callable<Void> {
 
             final Logger logger = Logger.getLogger(Jsr88Context.class.getName());
-
-            StateType state = StateType.RUNNING;
 
             @Override
             public void handleProgressEvent(final ProgressEvent event) {
@@ -95,24 +99,28 @@ final class Jsr88Context {
                 final Level level = ds.isFailed()
                         ? Level.WARNING
                         : ds.isCompleted() ? Level.FINE : Level.FINER;
-                logger.log(level, "{0} command {1,choice,0#is|0<has} {2} with message \"{3}\".",
+                // Note that ds.getCommand() returns null with
+                // org.glassfish.main.deploy:deployment-client:4.0, although it
+                // really shouldn't!
+                logger.log(level, "{0} command {1,choice,0#is|0<has} {2} with message \"{3}\" on target {4}.",
                         new Object[] {
                             ds.getCommand(),
                             ds.getState().getValue(),
-                            ds.getState().toString().toLowerCase(Locale.ENGLISH),
-                            ds.getMessage()
+                            ds.getState(),
+                            ds.getMessage(),
+                            tmid.getTarget().getName()
                         });
-                synchronized (this) {
-                    state = ds.getState();
-                    notifyAll();
-                }
+                synchronized (this) { notifyAll(); }
             }
 
             @Override public Void call() throws Jsr88ContextException {
                 po.addProgressListener(this);
                 try {
-                    synchronized (this) {
-                        while (StateType.RUNNING.equals(state)) wait();
+                    while (!command.equals(command())
+                            || StateType.RUNNING.equals(state())) {
+                        synchronized (this) {
+                            wait();
+                        }
                     }
                 } catch (InterruptedException ex) {
                     throw new Jsr88ContextException(String.format(
@@ -121,14 +129,22 @@ final class Jsr88Context {
                 } finally {
                     po.removeProgressListener(this);
                 }
-                if (!StateType.COMPLETED.equals(state))
+                if (!state().equals(StateType.COMPLETED))
                     throw new Jsr88ContextException(String.format("Could not complete %s command.", command()));
                 return null;
             }
 
-            String command() {
-                return po.getDeploymentStatus().getCommand().toString()
-                        .toLowerCase(Locale.ENGLISH);
+            // Note that this method returns null with
+            // org.glassfish.main.deploy:deployment-client:4.0, although it
+            // really shouldn't!
+            @Nullable CommandType command() {
+                return deploymentStatus().getCommand();
+            }
+
+            StateType state() { return deploymentStatus().getState(); }
+
+            DeploymentStatus deploymentStatus() {
+                return po.getDeploymentStatus();
             }
         } // Monitor
 
@@ -136,21 +152,22 @@ final class Jsr88Context {
     }
 
     private TargetModuleID[] targetModuleIDs() throws Jsr88ContextException {
-        return new TargetModuleID[] { targetModuleID() };
-    }
-
-    private TargetModuleID targetModuleID() throws Jsr88ContextException {
         final DeploymentManager dm = deploymentManager();
         final String mid = moduleID();
+        final Target[] targets = targets();
+        final Collection<TargetModuleID>
+                tmids = new ArrayList<TargetModuleID>(targets.length);
         try {
-            for (final TargetModuleID tmid : dm.getAvailableModules(moduleType(), targets()))
+            for (final TargetModuleID tmid : dm.getAvailableModules(moduleType(), targets))
                 if (mid.equals(tmid.getModuleID()))
-                    return tmid;
+                    tmids.add(tmid);
         } catch (TargetException ex) {
             throw new AssertionError(ex);
         }
-        throw new Jsr88ContextException(
-                String.format("The module %s is not deployed.", mid));
+        if (tmids.isEmpty())
+            throw new Jsr88ContextException(
+                    String.format("The module %s is not deployed.", mid));
+        return tmids.toArray(new TargetModuleID[tmids.size()]);
     }
 
     private Target[] targets() throws Jsr88ContextException {
@@ -235,7 +252,7 @@ final class Jsr88Context {
 
         @Override public void prepareAtomic() throws Exception {
             super.prepareAtomic();
-            targetModuleID(); // check deployed
+            targetModuleIDs(); // check deployed
         }
 
         @Override public void performAtomic() throws Exception {
