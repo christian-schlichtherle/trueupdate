@@ -110,6 +110,7 @@
                 <plugin>
                     <artifactId>maven-ear-plugin</artifactId>
                     <configuration>
+                        <applicationName>${project.artifactId}</applicationName>
                         <defaultLibBundleDir>lib</defaultLibBundleDir>
                         <version>${javaee.version}</version>
                     </configuration>
