@@ -17,7 +17,7 @@
     <name>TrueUpdate Installer Cargo</name>
     <description>
         Provides an update installer for applications running in a container
-        which is supported by Cargo.
+        which is supported by the generic Cargo API.
     </description>
 
     <dependencies>

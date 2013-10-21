@@ -5,18 +5,27 @@
 package net.java.trueupdate.installer.cargo;
 
 import java.io.File;
-import java.net.*;
-import java.util.*;
+import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.util.Uris;
 import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.nonNullOr;
 import static net.java.trueupdate.util.Strings.nonEmptyOr;
-import org.codehaus.cargo.container.*;
-import org.codehaus.cargo.container.configuration.*;
-import org.codehaus.cargo.container.deployable.*;
-import org.codehaus.cargo.container.deployer.*;
+import org.codehaus.cargo.container.Container;
+import org.codehaus.cargo.container.ContainerType;
+import org.codehaus.cargo.container.InstalledLocalContainer;
+import org.codehaus.cargo.container.configuration.Configuration;
+import org.codehaus.cargo.container.configuration.ConfigurationType;
+import org.codehaus.cargo.container.deployable.Deployable;
+import org.codehaus.cargo.container.deployable.DeployableType;
+import org.codehaus.cargo.container.deployer.DeployableMonitor;
+import org.codehaus.cargo.container.deployer.Deployer;
+import org.codehaus.cargo.container.deployer.URLDeployableMonitor;
 import org.codehaus.cargo.generic.DefaultContainerFactory;
 import org.codehaus.cargo.generic.configuration.DefaultConfigurationFactory;
 import org.codehaus.cargo.generic.deployable.DefaultDeployableFactory;
@@ -24,7 +33,7 @@ import org.codehaus.cargo.generic.deployer.DefaultDeployerFactory;
 
 /**
  * A context which decomposes a location URI to configure various parameters
- * and perform a redeployment using the Cargo Generic API.
+ * and perform a redeployment using the generic Cargo API.
  *
  * @author Christian Schlichtherle
  */
@@ -43,14 +52,14 @@ final class CargoContext {
         return new DeploymentTransaction();
     }
 
-    private void deploy() throws CargoContextException {
+    private void deploy() throws CargoException {
         final Deployable deployable = deployable();
         final String monitorUrl = monitorUrl();
         try {
             if (monitorUrl.isEmpty()) deployer().deploy(deployable);
             else deployer().deploy(deployable, deployableMonitor());
         } catch (RuntimeException ex) {
-            throw new CargoContextException(
+            throw new CargoException(
                     String.format("Could not deploy %s .", deployable), ex);
         }
     }
@@ -59,14 +68,14 @@ final class CargoContext {
         return new UndeploymentTransaction();
     }
 
-    private void undeploy() throws CargoContextException {
+    private void undeploy() throws CargoException {
         final Deployable deployable = deployable();
         final String monitorUrl = monitorUrl();
         try {
             if (monitorUrl.isEmpty()) deployer().undeploy(deployable);
             else deployer().undeploy(deployable, deployableMonitor());
         } catch (RuntimeException ex) {
-            throw new CargoContextException(
+            throw new CargoException(
                     String.format("Could not undeploy %s .", deployable), ex);
         }
     }
@@ -210,7 +219,7 @@ final class CargoContext {
         @Override public void rollbackAtomic() {
             try {
                 undeploy();
-            } catch (CargoContextException ex) {
+            } catch (CargoException ex) {
                 throw new IllegalStateException(ex);
             }
         }
@@ -224,7 +233,7 @@ final class CargoContext {
         @Override public void rollbackAtomic() {
             try {
                 deploy();
-            } catch (CargoContextException ex) {
+            } catch (CargoException ex) {
                 throw new IllegalStateException(ex);
             }
         }

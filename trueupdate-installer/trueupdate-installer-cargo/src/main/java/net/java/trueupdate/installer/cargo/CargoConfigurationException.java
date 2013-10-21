@@ -11,7 +11,7 @@ import java.net.URI;
  *
  * @author Christian Schlichtherle
  */
-public class CargoConfigurationException extends CargoContextException {
+public class CargoConfigurationException extends CargoException {
 
     private static final long serialVersionUID = 0L;
 

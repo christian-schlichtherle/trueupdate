@@ -4,7 +4,7 @@
  */
 /**
  * Provides an update installer for applications running in a container which
- * is supported by Cargo.
+ * is supported by the generic Cargo API.
  *
  * @author Christian Schlichtherle
  */

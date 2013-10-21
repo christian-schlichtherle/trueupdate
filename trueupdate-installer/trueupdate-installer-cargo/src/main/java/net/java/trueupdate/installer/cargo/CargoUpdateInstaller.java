@@ -7,7 +7,8 @@ package net.java.trueupdate.installer.cargo;
 import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.installer.core.*;
+import net.java.trueupdate.installer.core.CoreUpdateInstaller;
+import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 
@@ -24,24 +25,24 @@ public final class CargoUpdateInstaller extends CoreUpdateInstaller {
     protected UpdateParameters updateParameters(final UpdateContext uc)
     throws Exception {
 
-        final CargoContext ccc = new CargoContext(new URI(uc.currentLocation()));
-        final File cpath = ccc.deployablePath();
+        final CargoContext cctx = new CargoContext(new URI(uc.currentLocation()));
+        final File cpath = cctx.deployablePath();
 
-        final CargoContext ucc = new CargoContext(new URI(uc.updateLocation()));
-        final File upath = ucc.deployablePath();
+        final CargoContext uctx = new CargoContext(new URI(uc.updateLocation()));
+        final File upath = uctx.deployablePath();
 
         class ResolvedParameters implements UpdateParameters {
 
             @Override public File currentPath() { return cpath; }
 
             @Override public Transaction undeploymentTransaction() {
-                return ccc.undeploymentTransaction();
+                return cctx.undeploymentTransaction();
             }
 
             @Override public File updatePath() { return upath; }
 
             @Override public Transaction deploymentTransaction() {
-                return ucc.deploymentTransaction();
+                return uctx.deploymentTransaction();
             }
         } // ResolvedParameters
 
