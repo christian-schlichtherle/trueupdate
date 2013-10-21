@@ -158,10 +158,10 @@
                         The JNDI name of the JMS destination for the sender.
                         When configuring the update agent, this property refers
                         to the JMS destination for the update agent, e.g.
-                        "AutoUpdate/Agent".
+                        "update/agent".
                         Likewise, when configuring the update manager, this
                         property refers to the JMS destination for the update
-                        manager, e.g. "AutoUpdate/Manager".
+                        manager, e.g. "update/manager".
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -171,7 +171,7 @@
                         The JNDI name of the JMS destination for the recipient.
                         When configuring the update agent, this property refers
                         to the JMS destination for the update manager, e.g.
-                        "AutoUpdate/Manager".
+                        "update/manager".
                         When configuring the update manager, this property is
                         optional and ignored.
                     </xs:documentation>
