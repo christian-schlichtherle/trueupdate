@@ -98,6 +98,8 @@
 
         <netbeans.hint.jdkPlatform>JDK_1.${javase.version}</netbeans.hint.jdkPlatform>
         <netbeans.hint.j2eeVersion>1.${javaee.version}</netbeans.hint.j2eeVersion>
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>gfv3ee6</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>1.${javaee.version}</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>
 
         <!-- Set defaults of maven-compiler-plugin for NetBeans. -->
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
