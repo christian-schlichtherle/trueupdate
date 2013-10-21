@@ -15,7 +15,7 @@
     <artifactId>trueupdate-archetype-glassfish</artifactId>
     <packaging>maven-archetype</packaging>
 
-    <name>Trueupdate Archetype GlassFish</name>
+    <name>TrueUpdate Archetype GlassFish</name>
     <description>
         An archetype for a TrueUpdate application running in Oracle GlassFish.
     </description>
