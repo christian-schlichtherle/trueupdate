@@ -82,6 +82,11 @@
 
         <!-- The remaining properties usually don't need to be edited: -->
 
+        <!-- Default ActiveMQ broker URLs for the ${application} and the
+             update manager. -->
+        <agent.brokerURL>vm://localhost?broker.persistent=false</agent.brokerURL>
+        <manager.brokerURL>vm://localhost?broker.persistent=false</manager.brokerURL>
+
         <javase.version>${javase-version}</javase.version>
         <javaee.version>${javase-version}</javaee.version>
 
@@ -101,6 +106,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-all</artifactId>
+                <version>5.8.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -111,9 +121,25 @@
                     <artifactId>maven-war-plugin</artifactId>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <containerConfigXML>src/main/webapp/META-INF/context.xml</containerConfigXML>
+                        <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- Activate this profile if you want ActiveMQ bundled within the
+                 WAR file of the ${application} and the update-manager.
+                 If this profile is *not* active, then the activemq-*-all.jar
+                 needs to be present in ${CATALINA_HOME}/lib . -->
+            <id>bundle-activemq</id>
+            <properties>
+                <agent.brokerURL>failover:(tcp://localhost:61616,vm:broker:(tcp://localhost:61617)?persistent=false)?randomize=false</agent.brokerURL>
+                <manager.brokerURL>failover:(tcp://localhost:61617,vm:broker:(tcp://localhost:61616)?persistent=false)?randomize=false</manager.brokerURL>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -41,4 +41,16 @@
             <artifactId>trueupdate-agent-spec</artifactId>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>bundle-activemq</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>activemq-all</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

@@ -6,8 +6,7 @@
     <Resource auth="Container"
               factory="org.apache.activemq.jndi.JNDIReferenceFactory"
               name="update/connection-factory"
-              brokerName="update.broker"
-              brokerURL="vm://localhost?broker.persistent=false"
+              brokerURL="${symbol_dollar}{agent.brokerURL}"
               description="JMS Connection Factory"
               type="org.apache.activemq.ActiveMQConnectionFactory"/>
     <Resource auth="Container"
