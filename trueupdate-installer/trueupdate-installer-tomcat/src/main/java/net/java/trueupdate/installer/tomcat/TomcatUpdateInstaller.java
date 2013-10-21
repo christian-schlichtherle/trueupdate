@@ -4,14 +4,23 @@
  */
 package net.java.trueupdate.installer.tomcat;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import javax.annotation.concurrent.Immutable;
-import javax.management.*;
-import net.java.trueupdate.installer.core.*;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import net.java.trueupdate.installer.core.CoreUpdateInstaller;
+import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.*;
-import org.apache.catalina.*;
+import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
+import net.java.trueupdate.manager.spec.tx.Transaction;
+import org.apache.catalina.Engine;
+import org.apache.catalina.Globals;
+import org.apache.catalina.Host;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.startup.HostConfig;
 import org.apache.catalina.util.ContextName;
 
@@ -42,13 +51,15 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                 try {
                     final Engine engine = (Engine) mbs.getAttribute(on, "managedResource");
                     final Host host = (Host) engine.findChild(engine.getDefaultHost());
-                    if (null != host)
+                    if (null != host) {
                         this.host = host;
-                        for (final LifecycleListener listener : host.findLifecycleListeners())
+                        for (final LifecycleListener listener : host.findLifecycleListeners()) {
                             if (listener instanceof HostConfig) {
                                 this.config = (HostConfig) listener;
                                 return;
                             }
+                        }
+                    }
                 } catch (Exception ignored) {
                 }
             }
@@ -97,11 +108,8 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                     }
 
                     @Override public void rollbackAtomic() {
-                        try {
-                            config.check(cname);
-                        } finally {
-                            config.removeServiced(cname);
-                        }
+                        try { config.check(cname); }
+                        finally { config.removeServiced(cname); }
                     }
 
                     @Override public void commitAtomic() {
