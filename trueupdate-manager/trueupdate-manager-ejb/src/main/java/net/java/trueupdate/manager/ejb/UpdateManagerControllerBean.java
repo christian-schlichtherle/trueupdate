@@ -20,14 +20,17 @@ import net.java.trueupdate.util.Services;
 @Singleton
 public class UpdateManagerControllerBean {
 
-    private final UpdateManagerController
-            controller = Services.load(UpdateManagerController.class);
+    private UpdateManagerController controller;
 
     @PostConstruct void postConstruct() {
+        if (null != controller) return;
+        controller = Services.load(UpdateManagerController.class);
         controller.start();
     }
 
     @PreDestroy void preDestroy() {
+        if (null == controller) return;
         controller.stop(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        controller = null;
     }
 }

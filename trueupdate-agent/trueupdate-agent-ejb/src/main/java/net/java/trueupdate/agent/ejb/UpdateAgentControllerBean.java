@@ -20,14 +20,17 @@ import net.java.trueupdate.util.Services;
 @Singleton
 public class UpdateAgentControllerBean {
 
-    private final UpdateAgentController
-            controller = Services.load(UpdateAgentController.class);
+    private UpdateAgentController controller;
 
     @PostConstruct void postConstruct() {
+        if (null != controller) return;
+        controller = Services.load(UpdateAgentController.class);
         controller.start();
     }
 
     @PreDestroy void preDestroy() {
+        if (null == controller) return;
         controller.stop(10, TimeUnit.SECONDS);
+        controller = null;
     }
 }
