@@ -24,6 +24,7 @@ import javax.enterprise.deploy.spi.status.DeploymentStatus;
 import javax.enterprise.deploy.spi.status.ProgressEvent;
 import javax.enterprise.deploy.spi.status.ProgressListener;
 import javax.enterprise.deploy.spi.status.ProgressObject;
+import static net.java.trueupdate.util.Objects.nonNullOr;
 
 /**
  * A JSR 88 session is given a JSR 88 context and creates a connected
@@ -99,9 +100,10 @@ final class Jsr88Session implements Closeable {
                 // Note that ds.getCommand() returns null with
                 // org.glassfish.main.deploy:deployment-client:4.0, although it
                 // really shouldn't!
+                final CommandType command = nonNullOr(ds.getCommand(), command());
                 logger.log(level, "{0} command {1,choice,0#is|0<has} {2} with message \"{3}\" on target {4}.",
                         new Object[] {
-                            ds.getCommand(),
+                            command,
                             ds.getState().getValue(),
                             ds.getState(),
                             ds.getMessage(),
@@ -130,11 +132,10 @@ final class Jsr88Session implements Closeable {
             }
 
             CommandType command() {
-                // Note that this method returns null with
+                // Note that deploymentStatus().getCommand() returns null with
                 // org.glassfish.main.deploy:deployment-client:4.0, although it
                 // really shouldn't!
-                final CommandType cmd = deploymentStatus().getCommand();
-                return null != cmd ? cmd : command;
+                return nonNullOr(deploymentStatus().getCommand(), command);
             }
 
             StateType state() { return deploymentStatus().getState(); }
