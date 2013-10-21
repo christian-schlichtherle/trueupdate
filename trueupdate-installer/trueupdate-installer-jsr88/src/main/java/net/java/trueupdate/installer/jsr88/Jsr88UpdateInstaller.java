@@ -8,7 +8,8 @@ import java.io.File;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import javax.enterprise.deploy.spi.factories.DeploymentFactory;
-import net.java.trueupdate.installer.core.*;
+import net.java.trueupdate.installer.core.CoreUpdateInstaller;
+import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.tx.Transaction;
 import net.java.trueupdate.util.Services;
@@ -27,21 +28,21 @@ public final class Jsr88UpdateInstaller extends CoreUpdateInstaller {
     throws Exception {
 
         final DeploymentFactory df = Services.load(DeploymentFactory.class);
-        final Jsr88Context cjc = new Jsr88Context(df, new URI(uc.currentLocation()));
-        final Jsr88Context ujc = new Jsr88Context(df, new URI(uc.updateLocation()));
+        final Jsr88Context cctx = new Jsr88Context(new URI(uc.currentLocation()), df);
+        final Jsr88Context uctx = new Jsr88Context(new URI(uc.updateLocation()), df);
 
         class ResolvedParameters implements UpdateParameters {
 
-            @Override public File currentPath() { return cjc.moduleArchive(); }
+            @Override public File currentPath() { return cctx.moduleArchive(); }
 
             @Override public Transaction undeploymentTransaction() {
-                return cjc.undeploymentTransaction();
+                return cctx.undeploymentTransaction();
             }
 
-            @Override public File updatePath() { return ujc.moduleArchive(); }
+            @Override public File updatePath() { return uctx.moduleArchive(); }
 
             @Override public Transaction deploymentTransaction() {
-                return ujc.deploymentTransaction();
+                return uctx.deploymentTransaction();
             }
         } // ResolvedParameters
 
