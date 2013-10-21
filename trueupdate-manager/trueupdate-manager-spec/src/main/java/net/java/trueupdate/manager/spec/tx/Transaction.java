@@ -13,10 +13,11 @@ package net.java.trueupdate.manager.spec.tx;
  * Note that transactions are generally not idempotent, that is once their
  * execution has succeeded, you may not be able to execute them successfully
  * again because the preconditions for a successful execution are no longer met.
- * However, transactions must be retryable, that is if their execution has
- * failed with any other exception than a {@link TransactionException}, then
- * you will be able to execute them successfully as soon as the preconditions
- * for a successful execution are met.
+ * However, transactions must be retryable, that is if {@link #prepare()} has
+ * thrown an exception or {@link #perform()} has thrown an exception and
+ * {@link #rollback()} has succeeded, then clients will still be able to
+ * execute them successfully as soon as the preconditions for a successful
+ * execution are met.
  *
  * @see Transactions#execute
  * @see CompositeTransaction
@@ -30,8 +31,8 @@ public abstract class Transaction {
      * aborted <em>without</em>  calling {@link #rollback}, so it must not
      * leave any visible side effects.
      * If this method throws an {@link Exception} and this transaction is part
-     * of a composite transaction, then the previous transactions get properly
-     * rolled back.
+     * of a composite transaction, then the preceding transactions get
+     * properly rolled back.
      */
     public void prepare() throws Exception { }
 
@@ -41,8 +42,8 @@ public abstract class Transaction {
      * aborted <em>with</em> calling {@link #rollback}, so it may leave some
      * visible side effects.
      * If this method throws an {@link Exception} and this transaction is part
-     * of a composite transaction, then the previous transactions get properly
-     * rolled back.
+     * of a composite transaction, then the preceding transactions get
+     * properly rolled back.
      */
     public abstract void perform() throws Exception;
 
@@ -53,7 +54,7 @@ public abstract class Transaction {
      * If this method throws a {@link RuntimeException}, then the state of this
      * transaction is undefined and may be inconsistent.
      * If this method throws a {@link RuntimeException} and this transaction is
-     * part of a composite transaction, then the previous transactions get
+     * part of a composite transaction, then the preceding transactions get
      * neither committed nor rolled back and their state is undefined and may
      * be inconsistent.
      */
@@ -66,7 +67,7 @@ public abstract class Transaction {
      * If this method throws a {@link RuntimeException}, then the state of this
      * transaction is undefined and may be inconsistent.
      * If this method throws a {@link RuntimeException} and this transaction is
-     * part of a composite transaction, then the previous transactions get
+     * part of a composite transaction, then the preceding transactions get
      * neither committed nor rolled back and their state is undefined and may
      * be inconsistent.
      */

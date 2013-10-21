@@ -18,11 +18,13 @@ public class Transactions {
     private static final ThreadLocal<Boolean>
             inTx = new InheritableThreadLocal<Boolean>();
 
+    private static Logger logger() {
+        return Logger.getLogger(Transactions.class.getName());
+    }
+
     /**
      * Executes the given transaction.
      *
-     * @throws TransactionException if {@link Transaction#rollback()} or
-     *         {@link Transaction#commit()} throw an exception.
      * @throws IllegalStateException if this method is called recursively.
      */
     public static void execute(final Transaction tx) throws Exception {
@@ -35,18 +37,18 @@ public class Transactions {
             try {
                 tx.perform();
             } catch (final Exception ex) {
-                assert !(ex instanceof TransactionException);
                 try {
                     tx.rollback();
                 } catch (RuntimeException ex2) {
-                    throw new TransactionException(ex2);
+                    logger().log(Level.SEVERE, "Exception while rolling back transaction - system may be in inconsistent state:", ex2);
                 }
                 throw ex;
             }
             try {
                 tx.commit();
             } catch (RuntimeException ex) {
-                throw new TransactionException(ex);
+                logger().log(Level.SEVERE, "Exception while committing transaction - system may be in inconsistent state.");
+                throw ex;
             }
         } finally {
             inTx.remove();
