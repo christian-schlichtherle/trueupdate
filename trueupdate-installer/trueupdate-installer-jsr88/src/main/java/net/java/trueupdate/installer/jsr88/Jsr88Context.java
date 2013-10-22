@@ -39,17 +39,7 @@ final class Jsr88Context {
         this.df = df;
     }
 
-    Transaction deploymentTransaction() {
-        return new DeploymentTransaction();
-    }
-
-    Transaction undeploymentTransaction() {
-        return new UndeploymentTransaction();
-    }
-
-    DeploymentFactory deploymentFactory() {
-        return df;
-    }
+    DeploymentFactory deploymentFactory() { return df; }
 
     ModuleType moduleType() throws Jsr88Exception {
         final String scheme = location.getScheme().toLowerCase(Locale.ENGLISH);
@@ -87,6 +77,14 @@ final class Jsr88Context {
         return nonNullOr(parameters.get(name), Collections.<String>emptyList());
     }
 
+    Transaction undeploymentTransaction() {
+        return new UndeploymentTransaction();
+    }
+
+    Transaction deploymentTransaction() {
+        return new DeploymentTransaction();
+    }
+
     @NotThreadSafe
     private abstract class RedeploymentTransaction extends Transaction {
 
@@ -107,31 +105,63 @@ final class Jsr88Context {
         final void close() { session.close(); }
     } // RedeploymentTransaction
 
-    private final class DeploymentTransaction
-    extends RedeploymentTransaction {
-
-        @Override public void perform() throws Jsr88Exception {
-            session.deployAndStart();
-        }
-
-        @Override public void rollback() {
-            try { session.stopAndUndeploy(); }
-            catch (Jsr88Exception ex) { throw new IllegalStateException(ex); }
-            finally { super.rollback(); }
-        }
-    } // DeploymentTransaction
-
     private final class UndeploymentTransaction
     extends RedeploymentTransaction {
 
+        State state = State.STARTED;
+
         @Override public void perform() throws Jsr88Exception {
-            session.stopAndUndeploy();
+            session.checkAvailable();
+            session.stop();
+            state = State.STOPPED;
+            session.undeploy();
+            state = state.UNDEPLOYED;
         }
 
         @Override public void rollback() {
-            try { session.deployAndStart(); }
-            catch (Jsr88Exception ex) { throw new IllegalStateException(ex); }
-            finally { super.rollback(); }
+            try {
+                switch (state) {
+                    case UNDEPLOYED:
+                        session.deploy();
+                    case STOPPED:
+                        session.start();
+                }
+            } catch (Jsr88Exception ex) {
+                throw new IllegalStateException(ex);
+            } finally {
+                super.rollback();
+            }
         }
     } // UndeploymentTransaction
+
+    private final class DeploymentTransaction
+    extends RedeploymentTransaction {
+
+        State state = State.UNDEPLOYED;
+
+        @Override public void perform() throws Jsr88Exception {
+            session.deploy();
+            state = State.DEPLOYED;
+            session.checkAvailable();
+            session.start();
+            state = State.STARTED;
+        }
+
+        @Override public void rollback() {
+            try {
+                switch (state) {
+                    case STARTED:
+                        session.stop();
+                    case DEPLOYED:
+                        session.undeploy();
+                }
+            } catch (Jsr88Exception ex) {
+                throw new IllegalStateException(ex);
+            } finally {
+                super.rollback();
+            }
+        }
+    } // DeploymentTransaction
+
+    private enum State { STARTED, STOPPED, UNDEPLOYED, DEPLOYED }
 }

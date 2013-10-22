@@ -28,9 +28,9 @@ import static net.java.trueupdate.util.Objects.nonNullOr;
 
 /**
  * A JSR 88 session is given a JSR 88 context and creates a connected
- * deployment manager.
+ deployment manager.
  * The connected deployment manager should be released by calling
- * {@link #close()}.
+ {@link #close()}.
  *
  * @author Christian Schlichtherle
  */
@@ -54,32 +54,47 @@ final class Jsr88Session implements Closeable {
         }
     }
 
-    void deployAndStart() throws Jsr88Exception {
-        deploy();
-        start();
+    void checkAvailable() throws Jsr88Exception {
+        if (0 == targetModuleIDs().length)
+            throw new Jsr88Exception(String.format(
+                    "There is no module deployed with the ID %s.",
+                    ctx.moduleID()));
     }
 
-    private void deploy() throws Jsr88Exception {
+    void stop() throws Jsr88Exception {
+        monitor(CommandType.STOP, dm.stop(targetModuleIDs()));
+    }
+
+    void undeploy() throws Jsr88Exception {
+        monitor(CommandType.UNDEPLOY, dm.undeploy(targetModuleIDs()));
+    }
+
+    void deploy() throws Jsr88Exception {
         monitor(CommandType.DISTRIBUTE, dm.distribute(
                 targets(), ctx.moduleArchive(), ctx.deploymentPlan()));
     }
 
-    private void start() throws Jsr88Exception {
+    void start() throws Jsr88Exception {
         monitor(CommandType.START, dm.start(targetModuleIDs()));
     }
 
-    void stopAndUndeploy() throws Jsr88Exception {
-        stop();
-        undeploy();
+    private TargetModuleID[] targetModuleIDs() throws Jsr88Exception {
+        final Target[] targets = targets();
+        final Collection<TargetModuleID>
+                found = new ArrayList<TargetModuleID>(targets.length);
+        try {
+            final TargetModuleID[] available =
+                    dm.getAvailableModules(ctx.moduleType(), targets);
+            for (final TargetModuleID tmid : available)
+                if (effectiveModuleID.equals(tmid.getModuleID()))
+                    found.add(tmid);
+        } catch (TargetException ex) {
+            throw new AssertionError(ex);
+        }
+        return found.toArray(new TargetModuleID[found.size()]);
     }
 
-    private void stop() throws Jsr88Exception {
-        monitor(CommandType.STOP, dm.stop(targetModuleIDs()));
-    }
-
-    private void undeploy() throws Jsr88Exception {
-        monitor(CommandType.UNDEPLOY, dm.undeploy(targetModuleIDs()));
-    }
+    private Target[] targets() { return dm.getTargets(); }
 
     private void monitor(final CommandType command, final ProgressObject po)
     throws Jsr88Exception {
@@ -147,24 +162,6 @@ final class Jsr88Session implements Closeable {
 
         new Monitor().call();
     }
-
-    private TargetModuleID[] targetModuleIDs() throws Jsr88Exception {
-        final Target[] targets = targets();
-        final Collection<TargetModuleID>
-                found = new ArrayList<TargetModuleID>(targets.length);
-        try {
-            final TargetModuleID[] available =
-                    dm.getAvailableModules(ctx.moduleType(), targets);
-            for (final TargetModuleID tmid : available)
-                if (effectiveModuleID.equals(tmid.getModuleID()))
-                    found.add(tmid);
-        } catch (TargetException ex) {
-            throw new AssertionError(ex);
-        }
-        return found.toArray(new TargetModuleID[found.size()]);
-    }
-
-    private Target[] targets() { return dm.getTargets(); }
 
     @DischargesObligation @Override public void close() { dm.release(); }
 }
