@@ -4,20 +4,41 @@
  */
 package net.java.trueupdate.manager.core;
 
-import java.io.*;
+import java.io.File;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import javax.annotation.concurrent.ThreadSafe;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.manager.spec.*;
-import net.java.trueupdate.manager.spec.tx.*;
+import net.java.trueupdate.manager.spec.Action;
+import net.java.trueupdate.manager.spec.UpdateContext;
+import net.java.trueupdate.manager.spec.UpdateInstaller;
+import net.java.trueupdate.manager.spec.UpdateManager;
+import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.Transactions;
 import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
-import net.java.trueupdate.message.*;
+import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
-import static net.java.trueupdate.message.UpdateMessage.Type.*;
+import static net.java.trueupdate.message.UpdateMessage.Type.CANCEL_REDEPLOYMENT_RESPONSE;
+import static net.java.trueupdate.message.UpdateMessage.Type.INSTALLATION_FAILURE_RESPONSE;
+import static net.java.trueupdate.message.UpdateMessage.Type.INSTALLATION_SUCCESS_RESPONSE;
+import static net.java.trueupdate.message.UpdateMessage.Type.PROCEED_REDEPLOYMENT_RESPONSE;
+import static net.java.trueupdate.message.UpdateMessage.Type.PROGRESS_NOTICE;
+import static net.java.trueupdate.message.UpdateMessage.Type.REDEPLOYMENT_REQUEST;
+import static net.java.trueupdate.message.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
+import static net.java.trueupdate.message.UpdateMessage.Type.SUBSCRIPTION_RESPONSE;
+import static net.java.trueupdate.message.UpdateMessage.Type.UPDATE_NOTICE;
+import net.java.trueupdate.message.UpdateMessageListener;
 import net.java.trueupdate.util.Services;
 
 /**
@@ -177,7 +198,6 @@ extends UpdateMessageListener implements UpdateManager {
             String anticipatedLocation = request.currentLocation();
 
             File deltaZip;
-            Exception ex;
 
             private ArtifactDescriptor artifactDescriptor() {
                 return request.artifactDescriptor();
@@ -380,7 +400,6 @@ extends UpdateMessageListener implements UpdateManager {
         return responseFor(request)
                 .type(INSTALLATION_SUCCESS_RESPONSE)
                 .artifactDescriptor(ad)
-                .updateVersion(null)
                 .currentLocation(request.updateLocation())
                 .updateLocation(null)
                 .build();
@@ -400,7 +419,8 @@ extends UpdateMessageListener implements UpdateManager {
                 .timestamp(null)
                 .from(message.to())
                 .to(message.from())
-                .type(null);
+                .type(null)
+                .updateVersion(null);
     }
 
     /** Sends the given update message. */
