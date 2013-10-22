@@ -5,7 +5,10 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.util.Objects;
@@ -47,7 +50,7 @@ public class Sources {
                               final String name)
             throws FileNotFoundException {
                 if (null == in) throw new FileNotFoundException(String.format(
-                        "Cannot locate resource %s on the class path.", name));
+                        "Could not locate resource %s on the class path.", name));
                 return in;
             }
         };

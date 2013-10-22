@@ -4,8 +4,12 @@
  */
 package net.java.trueupdate.core.zip.io;
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 import net.java.trueupdate.util.Objects;
 
 /**
@@ -32,7 +36,7 @@ public class ZipFileStore implements ZipStore {
 
     @Override public void delete() throws IOException {
         if (!file.delete())
-            throw new FileNotFoundException(file + " (cannot delete)");
+            throw new FileNotFoundException(file + " (could not delete)");
     }
 
     @Override public boolean exists() { return file.exists(); }

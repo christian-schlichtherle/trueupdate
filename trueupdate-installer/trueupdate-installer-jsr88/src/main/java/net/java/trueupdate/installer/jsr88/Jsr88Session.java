@@ -50,7 +50,7 @@ final class Jsr88Session implements Closeable {
             this.dm = ctx.deploymentFactory().getDeploymentManager(
                     ctx.uri(), ctx.username(), ctx.password());
         } catch (DeploymentManagerCreationException ex) {
-            throw new Jsr88Exception("Cannot create JSR 88 session.", ex);
+            throw new Jsr88Exception("Could not create JSR 88 session.", ex);
         }
     }
 

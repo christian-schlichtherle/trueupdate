@@ -5,8 +5,10 @@
 package net.java.trueupdate.util;
 
 import java.net.URL;
-import java.util.*;
-import java.util.logging.*;
+import java.util.Enumeration;
+import java.util.ServiceConfigurationError;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -26,7 +28,7 @@ public final class Resources {
             url = en.nextElement();
         } catch (Exception ex) {
             throw new ServiceConfigurationError(String.format(
-                    "Cannot locate the resource %s on the class path.", name), ex);
+                    "Could not locate the resource %s on the class path.", name), ex);
         }
         if (en.hasMoreElements())
             Logger  .getLogger(Resources.class.getName())

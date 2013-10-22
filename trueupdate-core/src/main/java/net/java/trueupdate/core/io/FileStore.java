@@ -5,7 +5,13 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -29,7 +35,7 @@ public final class FileStore implements Store {
 
     @Override public void delete() throws IOException {
         if (!file.delete())
-            throw new FileNotFoundException(file + " (cannot delete)");
+            throw new FileNotFoundException(file + " (could not delete)");
     }
 
     @Override public boolean exists() { return file.exists(); }

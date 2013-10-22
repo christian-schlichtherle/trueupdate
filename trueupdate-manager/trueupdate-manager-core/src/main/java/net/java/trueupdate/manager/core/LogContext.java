@@ -40,7 +40,7 @@ final class LogContext extends Handler {
         try {
             channel.transmit(record);
         } catch (Exception ex) {
-            reportError("Cannot transmit log record to update agent:", ex,
+            reportError("Could not transmit log record to update agent:", ex,
                     ErrorManager.WRITE_FAILURE);
         } finally {
             channels.set(channel);

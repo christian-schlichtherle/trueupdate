@@ -4,12 +4,26 @@
  */
 package net.java.trueupdate.installer.core.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.zip.*;
+import java.util.zip.ZipEntry;
 import javax.annotation.CheckForNull;
-import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.core.zip.io.*;
+import net.java.trueupdate.core.io.Copy;
+import net.java.trueupdate.core.io.FileStore;
+import net.java.trueupdate.core.io.Sink;
+import net.java.trueupdate.core.io.Source;
+import net.java.trueupdate.core.zip.io.ZipEntrySink;
+import net.java.trueupdate.core.zip.io.ZipEntrySource;
+import net.java.trueupdate.core.zip.io.ZipFileStore;
+import net.java.trueupdate.core.zip.io.ZipInput;
+import net.java.trueupdate.core.zip.io.ZipInputTask;
+import net.java.trueupdate.core.zip.io.ZipOutput;
+import net.java.trueupdate.core.zip.io.ZipOutputTask;
+import net.java.trueupdate.core.zip.io.ZipSink;
+import net.java.trueupdate.core.zip.io.ZipSinks;
+import net.java.trueupdate.core.zip.io.ZipSource;
+import net.java.trueupdate.core.zip.io.ZipSources;
 
 /**
  * Provides functions for {@link File}s.
@@ -151,7 +165,7 @@ public final class Files {
                 deletePath(file);
                 if (!file.mkdir())
                     throw new IOException(String.format(
-                            "Cannot create temporary directory %s .", file));
+                            "Could not create temporary directory %s .", file));
                 return task.execute(file);
             }
         }
@@ -185,14 +199,14 @@ public final class Files {
         try {
             Copy.copy(new FileStore(from), new FileStore(to));
         } catch (IOException ex) {
-            throw new IOException(String.format("Cannot copy %s to %s .",
+            throw new IOException(String.format("Could not copy %s to %s .",
                     from, to), ex);
         }
     }
 
     public static void renamePath(File from, File to) throws IOException {
         if (!from.renameTo(to))
-            throw new IOException(String.format("Cannot rename %s to %s .",
+            throw new IOException(String.format("Could not rename %s to %s .",
                     from, to));
     }
 
@@ -201,7 +215,7 @@ public final class Files {
      *
      * @param file the file or directory to delete.
      * @throws IOException if and only if a file or directory exists, but
-     *         cannot get deleted, e.g. because of insufficient access
+     *         could not get deleted, e.g. because of insufficient access
      *         permissions.
      */
     public static void deletePath(final File file) throws IOException {
@@ -213,7 +227,7 @@ public final class Files {
                     deletePath(member);
         }
         if (!file.delete() && file.exists())
-            throw new IOException(String.format("Cannot delete %s .", file));
+            throw new IOException(String.format("Could not delete %s .", file));
     }
 
     private Files() { }

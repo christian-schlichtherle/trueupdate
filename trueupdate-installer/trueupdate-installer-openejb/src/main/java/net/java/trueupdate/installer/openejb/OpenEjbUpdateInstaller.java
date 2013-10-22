@@ -4,13 +4,16 @@
  */
 package net.java.trueupdate.installer.openejb;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import javax.annotation.concurrent.Immutable;
 import javax.ejb.EJB;
-import net.java.trueupdate.installer.core.*;
+import net.java.trueupdate.installer.core.CoreUpdateInstaller;
+import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.*;
+import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
 
@@ -88,7 +91,7 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
             if (scheme.matches(location, info))
                 return new File(info.path);
         throw new FileNotFoundException(String.format(
-                "Cannot locate application at %s .", location));
+                "Could not locate application at %s .", location));
     }
 
     private enum Scheme {
