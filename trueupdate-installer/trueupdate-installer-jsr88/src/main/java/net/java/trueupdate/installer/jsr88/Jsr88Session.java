@@ -54,19 +54,19 @@ final class Jsr88Session implements Closeable {
         }
     }
 
-    void checkAvailable() throws Jsr88Exception {
-        if (0 == targetModuleIDs().length)
+    void checkDeclaredModuleID() throws Jsr88Exception {
+        final String mid = ctx.moduleID();
+        if (0 == targetModuleIDs(mid).length)
             throw new Jsr88Exception(String.format(
-                    "There is no module deployed with the ID %s.",
-                    ctx.moduleID()));
+                    "There is no module deployed with the ID %s.", mid));
     }
 
     void stop() throws Jsr88Exception {
-        monitor(CommandType.STOP, dm.stop(targetModuleIDs()));
+        monitor(CommandType.STOP, dm.stop(effectiveTargetModuleIDs()));
     }
 
     void undeploy() throws Jsr88Exception {
-        monitor(CommandType.UNDEPLOY, dm.undeploy(targetModuleIDs()));
+        monitor(CommandType.UNDEPLOY, dm.undeploy(effectiveTargetModuleIDs()));
     }
 
     void deploy() throws Jsr88Exception {
@@ -75,10 +75,15 @@ final class Jsr88Session implements Closeable {
     }
 
     void start() throws Jsr88Exception {
-        monitor(CommandType.START, dm.start(targetModuleIDs()));
+        monitor(CommandType.START, dm.start(effectiveTargetModuleIDs()));
     }
 
-    private TargetModuleID[] targetModuleIDs() throws Jsr88Exception {
+    private TargetModuleID[] effectiveTargetModuleIDs() throws Jsr88Exception {
+        return targetModuleIDs(effectiveModuleID);
+    }
+
+    private TargetModuleID[] targetModuleIDs(final String moduleID)
+    throws Jsr88Exception {
         final Target[] targets = targets();
         final Collection<TargetModuleID>
                 found = new ArrayList<TargetModuleID>(targets.length);
@@ -86,7 +91,7 @@ final class Jsr88Session implements Closeable {
             final TargetModuleID[] available =
                     dm.getAvailableModules(ctx.moduleType(), targets);
             for (final TargetModuleID tmid : available)
-                if (effectiveModuleID.equals(tmid.getModuleID()))
+                if (moduleID.equals(tmid.getModuleID()))
                     found.add(tmid);
         } catch (TargetException ex) {
             throw new AssertionError(ex);

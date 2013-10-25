@@ -111,11 +111,11 @@ final class Jsr88Context {
         State state = State.STARTED;
 
         @Override public void perform() throws Jsr88Exception {
-            session.checkAvailable();
+            session.checkDeclaredModuleID();
             session.stop();
             state = State.STOPPED;
             session.undeploy();
-            state = state.UNDEPLOYED;
+            state = State.UNDEPLOYED;
         }
 
         @Override public void rollback() {
@@ -142,7 +142,7 @@ final class Jsr88Context {
         @Override public void perform() throws Jsr88Exception {
             session.deploy();
             state = State.DEPLOYED;
-            session.checkAvailable();
+            session.checkDeclaredModuleID();
             session.start();
             state = State.STARTED;
         }
