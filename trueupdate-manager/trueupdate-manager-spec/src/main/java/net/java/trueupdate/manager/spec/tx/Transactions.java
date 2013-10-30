@@ -55,14 +55,6 @@ public class Transactions {
         }
     }
 
-    /** Returns a transaction which does nothing. */
-    public static Transaction noOp() { return new NullTransaction(); }
-
-    private static class NullTransaction extends Transaction {
-        @Override public void perform() throws Exception { }
-        @Override public void rollback() { }
-    } // NullTransaction
-
     /**
      * Wraps the given transaction in another transaction which logs the
      * duration of each transaction method using the given configuration.
