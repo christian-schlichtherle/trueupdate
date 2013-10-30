@@ -56,9 +56,7 @@ public class Transactions {
     }
 
     /** Returns a transaction which does nothing. */
-    public static Transaction noOp() {
-        return new NullTransaction();
-    }
+    public static Transaction noOp() { return new NullTransaction(); }
 
     private static class NullTransaction extends Transaction {
         @Override public void perform() throws Exception { }
@@ -66,13 +64,13 @@ public class Transactions {
     } // NullTransaction
 
     /**
-     * Wraps the named transaction in another transaction which logs the
+     * Wraps the given transaction in another transaction which logs the
      * duration of each transaction method using the given configuration.
      *
      * @return the logging transaction.
      */
-    public static Transaction time(final String message,
-                                   final Transaction tx,
+    public static Transaction time(final Transaction tx,
+                                   final String message,
                                    final LoggerConfig config) {
 
         class Time extends Transaction {
@@ -152,11 +150,7 @@ public class Transactions {
     private Transactions() { }
 
     public enum Method {
-        prepare {
-            @Override Level succeeded() { return Level.FINE; }
-        },
-
-        perform, rollback,
+        prepare, perform, rollback,
 
         commit {
             @Override Level succeeded() { return Level.FINE; }

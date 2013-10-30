@@ -243,7 +243,7 @@ extends UpdateMessageListener implements UpdateManager {
             }
 
             Transaction time(Action id, Transaction tx) {
-                return Transactions.time(id.key(), tx, loggerConfig);
+                return Transactions.time(tx, id.key(), loggerConfig);
             }
 
             Transaction undeploy(final Transaction tx) {

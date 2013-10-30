@@ -35,7 +35,7 @@ class TransactionsTest extends WordSpec {
   def fixture = new { fixture =>
     val logger = mock[Logger]
     val tx = spy(new SlowTransaction)
-    val ttx = time("slow transaction", tx,
+    val ttx = time(tx, "slow transaction",
       new LoggerConfig { def logger = fixture.logger })
 
     when(logger isLoggable any.asInstanceOf[Level]) thenReturn true
