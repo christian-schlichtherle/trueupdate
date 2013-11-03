@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -61,6 +63,9 @@ extends UpdateMessageListener implements UpdateManager {
     private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
 
     private final SessionManager sessionManager = new SessionManager();
+
+    private final Set<UpdateDescriptor> blacklisted =
+            Collections.synchronizedSet(new TreeSet<UpdateDescriptor>());
 
     private final CoreUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
@@ -135,7 +140,8 @@ extends UpdateMessageListener implements UpdateManager {
             void notifySubscribers() throws Exception {
                 for (UpdateMessage um : sessions)
                     for (UpdateDescriptor ud : availableUpdate(um))
-                        sendAndLog(updateNotice(um, ud.updateVersion()));
+                        if (!blacklisted.contains(ud))
+                            sendAndLog(updateNotice(um, ud.updateVersion()));
             }
 
             @SuppressWarnings("unchecked")
@@ -214,11 +220,11 @@ extends UpdateMessageListener implements UpdateManager {
             @Override public File deltaZip() { return deltaZip; }
 
             @Override public Void call() throws Exception {
+                final UpdateDescriptor ud = updateDescriptor(
+                        request.artifactDescriptor(),
+                        request.updateVersion());
                 LogContext.setChannel(this);
                 try {
-                    final UpdateDescriptor ud = updateDescriptor(
-                            request.artifactDescriptor(),
-                            request.updateVersion());
                     synchronized (updateResolver) {
                         deltaZip = updateResolver.resolve(ud, this);
                     }
@@ -228,6 +234,10 @@ extends UpdateMessageListener implements UpdateManager {
                     }
                 } catch (final Exception ex) {
                     logger.log(Level.WARNING, "manager.install.exception", ex);
+                    blacklisted.add(ud);
+                    logger.log(Level.INFO, "manager.install.blacklist",
+                            new Object[] { ud.artifactDescriptor(),
+                                           ud.updateVersion() });
                     throw ex;
                 } finally {
                     LogContext.resetChannel();
