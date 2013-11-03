@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -61,14 +62,20 @@ final class Jsr88Context {
     String username() { return parameter("username"); }
     String password() { return parameter("password"); }
 
-    @Nullable File deploymentPlan() {
-        final String dp = parameter("deploymentPlan", null);
-        return null == dp ? null : new File(dp);
+    boolean redeploy() {
+        return Boolean.valueOf(parameter("redeploy", "false"));
+    }
+
+    @CheckForNull File deploymentPlan() {
+        final String dp = parameter("deploymentPlan");
+        return dp.isEmpty() ? null : new File(dp);
     }
 
     private String parameter(String name) { return parameter(name, ""); }
 
-    private String parameter(final String name, final String defaultValue) {
+    private @Nullable String parameter(
+            final String name,
+            final @CheckForNull String defaultValue) {
         for (String p : parameters(name)) return p;
         return defaultValue;
     }
@@ -111,20 +118,26 @@ final class Jsr88Context {
         State state = State.STARTED;
 
         @Override public void perform() throws Jsr88Exception {
-            session.checkDeclaredModuleID();
-            session.stop();
-            state = State.STOPPED;
-            session.undeploy();
-            state = State.UNDEPLOYED;
+            if (!redeploy()) {
+                session.checkDeclaredModuleID();
+                session.stop();
+                state = State.STOPPED;
+                session.undeploy();
+                state = State.UNDEPLOYED;
+            }
         }
 
         @Override public void rollback() {
             try {
-                switch (state) {
-                    case UNDEPLOYED:
-                        session.deploy();
-                    case STOPPED:
-                        session.start();
+                if (redeploy()) {
+                    session.redeploy();
+                } else {
+                    switch (state) {
+                        case UNDEPLOYED:
+                            session.deploy();
+                        case STOPPED:
+                            session.start();
+                    }
                 }
             } catch (Jsr88Exception ex) {
                 throw new IllegalStateException(ex);
@@ -140,20 +153,26 @@ final class Jsr88Context {
         State state = State.UNDEPLOYED;
 
         @Override public void perform() throws Jsr88Exception {
-            session.deploy();
-            state = State.DEPLOYED;
-            session.checkDeclaredModuleID();
-            session.start();
-            state = State.STARTED;
+            if (redeploy()) {
+                session.redeploy();
+            } else {
+                session.deploy();
+                state = State.DEPLOYED;
+                session.checkDeclaredModuleID();
+                session.start();
+                state = State.STARTED;
+            }
         }
 
         @Override public void rollback() {
             try {
-                switch (state) {
-                    case STARTED:
-                        session.stop();
-                    case DEPLOYED:
-                        session.undeploy();
+                if (!redeploy()) {
+                    switch (state) {
+                        case STARTED:
+                            session.stop();
+                        case DEPLOYED:
+                            session.undeploy();
+                    }
                 }
             } catch (Jsr88Exception ex) {
                 throw new IllegalStateException(ex);

@@ -70,8 +70,13 @@ final class Jsr88Session implements Closeable {
     }
 
     void deploy() throws Jsr88Exception {
-        monitor(CommandType.DISTRIBUTE, dm.distribute(
-                targets(), ctx.moduleArchive(), ctx.deploymentPlan()));
+        monitor(CommandType.DISTRIBUTE, dm.distribute(targets(),
+                ctx.moduleArchive(), ctx.deploymentPlan()));
+    }
+
+    void redeploy() throws Jsr88Exception {
+        monitor(CommandType.REDEPLOY, dm.redeploy(effectiveTargetModuleIDs(),
+                ctx.moduleArchive(), ctx.deploymentPlan()));
     }
 
     void start() throws Jsr88Exception {
