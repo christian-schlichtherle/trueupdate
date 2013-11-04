@@ -19,7 +19,7 @@
 
     <name>TrueUpdate</name>
     <description>
-        A framework for updating Java enterprise applications.
+        A framework for keeping deployed Java enterprise applications up-to-date.
 
         Note that this is commercial open source software covered by the
         GNU Affero General Public License version 3 (AGPLv3) - see
