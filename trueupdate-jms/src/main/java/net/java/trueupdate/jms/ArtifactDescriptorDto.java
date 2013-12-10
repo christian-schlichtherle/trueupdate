@@ -5,7 +5,10 @@
 package net.java.trueupdate.jms;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * A Data Transfer Object (DTO) for an
@@ -13,7 +16,6 @@ import javax.xml.bind.annotation.*;
  *
  * @author Christian Schlichtherle
  */
-@SuppressWarnings("PackageVisibleField")
 @XmlType(propOrder = { })
 @XmlAccessorType(XmlAccessType.FIELD)
 @Nullable

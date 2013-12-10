@@ -4,9 +4,13 @@
  */
 package net.java.trueupdate.jms;
 
-import java.io.*;
-import javax.xml.bind.*;
-import net.java.trueupdate.message.*;
+import java.io.StringReader;
+import java.io.StringWriter;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import net.java.trueupdate.message.UpdateMessage;
 
 /**
  * Provides functions for JAXB.
@@ -24,6 +28,7 @@ final class JAXB {
         }
     }
 
+    @SuppressWarnings({"BroadCatchBlock", "TooBroadCatch"})
     static String encode(final UpdateMessage message) throws Exception {
         final StringWriter sw = new StringWriter(1024);
         final Marshaller m = marshaller();

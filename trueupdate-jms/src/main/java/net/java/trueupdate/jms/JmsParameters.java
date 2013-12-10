@@ -4,11 +4,16 @@
  */
 package net.java.trueupdate.jms;
 
-import javax.annotation.*;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.jms.*;
-import javax.naming.*;
-import net.java.trueupdate.jms.ci.*;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import net.java.trueupdate.jms.ci.JmsParametersCi;
+import net.java.trueupdate.jms.ci.JndiParametersCi;
 import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
 
@@ -40,6 +45,7 @@ public final class JmsParameters {
         }
     }
 
+    @SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
     static Context namingContext(final JndiParametersCi ci) {
         try {
             final Context context = null == ci.initialContextClass

@@ -4,10 +4,22 @@
  */
 package net.java.trueupdate.jms;
 
-import java.util.concurrent.*;
-import javax.annotation.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.Session;
+import javax.jms.Topic;
 import net.java.trueupdate.message.UpdateMessageListener;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 import net.java.trueupdate.util.builder.AbstractBuilder;
@@ -142,8 +154,7 @@ public final class JmsReceiver implements Runnable {
                 try {
                     timeout = Math.max(1, stop - System.currentTimeMillis());
                     lock.wait(timeout);
-                    if (null != thread)
-                        throw new TimeoutException();
+                    if (null != thread) throw new TimeoutException();
                 } finally {
                     if (0 != executorService.shutdownNow().size())
                         throw new AssertionError();
