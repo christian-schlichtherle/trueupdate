@@ -8,6 +8,7 @@ import java.util.logging.ErrorManager;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import javax.annotation.CheckForNull;
 
 /**
  * A log context maintains a map of inheritable thread local
@@ -36,18 +37,18 @@ final class LogContext extends Handler {
         final LogChannel channel = channels.get();
         if (null == channel) return;
         // Prevent stack overflow in case the channel is logging, too.
-        channels.set(null);
+        set(null);
         try {
             channel.transmit(record);
         } catch (Exception ex) {
             reportError("Could not transmit log record to update agent:", ex,
                     ErrorManager.WRITE_FAILURE);
         } finally {
-            channels.set(channel);
+            set(channel);
         }
     }
 
-    void set(LogChannel channel) { channels.set(channel); }
+    void set(@CheckForNull LogChannel channel) { channels.set(channel); }
 
     void reset() { channels.remove(); }
 
