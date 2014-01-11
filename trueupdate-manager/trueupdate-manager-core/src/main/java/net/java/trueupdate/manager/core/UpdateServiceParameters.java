@@ -5,7 +5,6 @@
 package net.java.trueupdate.manager.core;
 
 import java.net.URI;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import net.java.trueupdate.manager.core.ci.UpdateServiceParametersCi;
@@ -61,7 +60,7 @@ public final class UpdateServiceParameters {
             return string.endsWith("/") ? string : string + "/";
         }
 
-        public final Builder<P> uri(final @Nullable URI uri) {
+        public final Builder<P> uri(final URI uri) {
             this.uri = uri;
             return this;
         }
