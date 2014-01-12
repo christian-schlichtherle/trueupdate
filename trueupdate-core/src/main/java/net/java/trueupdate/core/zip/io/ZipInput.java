@@ -4,8 +4,11 @@
  */
 package net.java.trueupdate.core.zip.io;
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 
 /**
@@ -16,7 +19,7 @@ import javax.annotation.Nullable;
  */
 public interface ZipInput extends Iterable<ZipEntry>, Closeable {
 
-    /** Looks up the ZIP entry with the given name. */
+    /** Looks up the nullable ZIP entry with the given name. */
     @Nullable ZipEntry entry(String name);
 
     /** Returns an input stream for reading the ZIP entry contents. */
