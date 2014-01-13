@@ -165,7 +165,7 @@ public final class Files {
                 deletePath(file);
                 if (!file.mkdir())
                     throw new IOException(String.format(
-                            "Could not create temporary directory %s .", file));
+                            "Could not create temporary directory '%s'.", file));
                 return task.execute(file);
             }
         }
@@ -199,14 +199,14 @@ public final class Files {
         try {
             Copy.copy(new FileStore(from), new FileStore(to));
         } catch (IOException ex) {
-            throw new IOException(String.format("Could not copy %s to %s .",
+            throw new IOException(String.format("Could not copy '%s' to '%s'.",
                     from, to), ex);
         }
     }
 
     public static void renamePath(File from, File to) throws IOException {
         if (!from.renameTo(to))
-            throw new IOException(String.format("Could not rename %s to %s .",
+            throw new IOException(String.format("Could not rename '%s' to '%s'.",
                     from, to));
     }
 
@@ -227,7 +227,7 @@ public final class Files {
                     deletePath(member);
         }
         if (!file.delete() && file.exists())
-            throw new IOException(String.format("Could not delete %s .", file));
+            throw new IOException(String.format("Could not delete '%s'.", file));
     }
 
     private Files() { }
