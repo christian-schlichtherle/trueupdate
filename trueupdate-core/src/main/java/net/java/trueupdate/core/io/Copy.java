@@ -5,11 +5,22 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.*;
-import java.lang.ref.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.Queue;
-import java.util.concurrent.*;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 import static net.java.trueupdate.util.Objects.requireNonNull;
@@ -239,7 +250,7 @@ public final class Copy {
                 if (ex instanceof InputException)
                     throw (InputException) ex;
                 else if (ex instanceof IOException)
-                    throw new InputException((IOException) ex);
+                    throw new InputException(ex);
                 else if (ex instanceof RuntimeException)
                     throw (RuntimeException) ex;
                 throw (Error) ex;
