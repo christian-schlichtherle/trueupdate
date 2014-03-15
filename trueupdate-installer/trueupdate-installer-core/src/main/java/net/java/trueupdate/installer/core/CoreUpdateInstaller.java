@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.zip.io.JarFileStore;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.installer.core.io.Files.*;
-import net.java.trueupdate.installer.core.io.PathTask;
+import net.java.trueupdate.installer.core.tx.PathTask;
 import net.java.trueupdate.installer.core.tx.*;
 import net.java.trueupdate.manager.spec.*;
 import static net.java.trueupdate.manager.spec.Action.*;

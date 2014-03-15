@@ -197,6 +197,7 @@ final class CargoContext {
 
     private String parameter(String name) { return parameter(name, ""); }
 
+    @SuppressWarnings("LoopStatementThatDoesntLoop")
     private String parameter(final String name, final String defaultValue) {
         for (String p : parameters(name)) return p;
         return defaultValue;
@@ -213,29 +214,13 @@ final class CargoContext {
 
     private final class DeploymentTransaction
     extends AtomicMethodsTransaction {
-
         @Override public void performAtomic() throws Exception { deploy(); }
-
-        @Override public void rollbackAtomic() {
-            try {
-                undeploy();
-            } catch (CargoException ex) {
-                throw new IllegalStateException(ex);
-            }
-        }
+        @Override public void rollbackAtomic() throws Exception { undeploy(); }
     } // DeploymentTransaction
 
     private final class UndeploymentTransaction
     extends AtomicMethodsTransaction {
-
         @Override public void performAtomic() throws Exception { undeploy(); }
-
-        @Override public void rollbackAtomic() {
-            try {
-                deploy();
-            } catch (CargoException ex) {
-                throw new IllegalStateException(ex);
-            }
-        }
+        @Override public void rollbackAtomic() throws Exception { deploy(); }
     } // UndeploymentTransaction
 }

@@ -107,13 +107,13 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         if (warDeployment) Files.deletePath(cdir);
                     }
 
-                    @Override public void rollbackAtomic() {
-                        try { config.check(cname); }
-                        finally { config.removeServiced(cname); }
+                    @Override public void commitAtomic() throws Exception {
+                        config.removeServiced(cname);
                     }
 
-                    @Override public void commitAtomic() {
-                        config.removeServiced(cname);
+                    @Override public void rollbackAtomic() throws Exception {
+                        try { config.check(cname); }
+                        finally { config.removeServiced(cname); }
                     }
                 } // UndeploymentTransaction
 
@@ -128,8 +128,7 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
                 class DeploymentTransaction extends AtomicMethodsTransaction {
 
-                    @Override
-                    public void prepareAtomic() throws Exception {
+                    @Override public void prepareAtomic() throws Exception {
                         assert !config.isDeployed(uname);
                     }
 
@@ -137,13 +136,10 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         config.check(uname);
                     }
 
-                    @Override public void rollbackAtomic() {
+                    @Override public void rollbackAtomic() throws Exception {
                         config.unmanageApp(uname);
-                        if (warDeployment) try {
+                        if (warDeployment)
                             Files.deletePath(udir);
-                        } catch (IOException ex) {
-                            throw new IllegalStateException(ex);
-                        }
                     }
                 } // DeploymentTransaction
 

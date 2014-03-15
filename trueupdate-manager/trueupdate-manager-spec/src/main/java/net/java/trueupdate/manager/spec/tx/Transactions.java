@@ -36,19 +36,14 @@ public class Transactions {
             tx.prepare();
             try {
                 tx.perform();
-            } catch (final Exception ex) {
+                tx.commit();
+            } catch (final Exception e1) {
                 try {
                     tx.rollback();
-                } catch (RuntimeException ex2) {
-                    logger().log(Level.SEVERE, "Exception while rolling back transaction - system may be in inconsistent state:", ex2);
+                } catch (Exception e2) {
+                    logger().log(Level.SEVERE, "Exception while rolling back transaction - system may be in inconsistent state:", e2);
                 }
-                throw ex;
-            }
-            try {
-                tx.commit();
-            } catch (RuntimeException ex) {
-                logger().log(Level.SEVERE, "Exception while committing transaction - system may be in inconsistent state.");
-                throw ex;
+                throw e1;
             }
         } finally {
             inTx.remove();
@@ -87,18 +82,8 @@ public class Transactions {
                 });
             }
 
-            @Override public void rollback() {
-                timeUnchecked(Method.rollback, new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        tx.rollback();
-                        return null;
-                    }
-                });
-            }
-
-            @Override public void commit() {
-                timeUnchecked(Method.commit, new Callable<Void>() {
+            @Override public void commit() throws Exception {
+                time(Method.commit, new Callable<Void>() {
                     @Override
                     public Void call() throws Exception {
                         tx.commit();
@@ -107,10 +92,14 @@ public class Transactions {
                 });
             }
 
-            void timeUnchecked(final Method method, final Callable<Void> task) {
-                try { time(method, task); }
-                catch (RuntimeException ex) { throw ex; }
-                catch (Exception ex){ throw new AssertionError(ex); }
+            @Override public void rollback() throws Exception {
+                time(Method.rollback, new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        tx.rollback();
+                        return null;
+                    }
+                });
             }
 
             void time(final Method method, final Callable<Void> task)

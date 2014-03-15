@@ -105,9 +105,9 @@ final class Jsr88Context {
             session = new Jsr88Session(Jsr88Context.this);
         }
 
-        @Override public void rollback() { close(); }
+        @Override public final void commit() throws Exception { close(); }
 
-        @Override public final void commit() { close(); }
+        @Override public void rollback() throws Exception { close(); }
 
         final void close() { session.close(); }
     } // RedeploymentTransaction
@@ -117,7 +117,7 @@ final class Jsr88Context {
 
         State state = State.STARTED;
 
-        @Override public void perform() throws Jsr88Exception {
+        @Override public void perform() throws Exception {
             if (!redeploy()) {
                 session.checkDeclaredModuleID();
                 session.stop();
@@ -127,7 +127,7 @@ final class Jsr88Context {
             }
         }
 
-        @Override public void rollback() {
+        @Override public void rollback() throws Exception {
             try {
                 if (redeploy()) {
                     session.redeploy();
@@ -139,8 +139,6 @@ final class Jsr88Context {
                             session.start();
                     }
                 }
-            } catch (Jsr88Exception ex) {
-                throw new IllegalStateException(ex);
             } finally {
                 super.rollback();
             }
@@ -152,7 +150,7 @@ final class Jsr88Context {
 
         State state = State.UNDEPLOYED;
 
-        @Override public void perform() throws Jsr88Exception {
+        @Override public void perform() throws Exception {
             if (redeploy()) {
                 session.redeploy();
             } else {
@@ -164,7 +162,7 @@ final class Jsr88Context {
             }
         }
 
-        @Override public void rollback() {
+        @Override public void rollback() throws Exception {
             try {
                 if (!redeploy()) {
                     switch (state) {
@@ -174,8 +172,6 @@ final class Jsr88Context {
                             session.undeploy();
                     }
                 }
-            } catch (Jsr88Exception ex) {
-                throw new IllegalStateException(ex);
             } finally {
                 super.rollback();
             }

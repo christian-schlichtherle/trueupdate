@@ -270,14 +270,14 @@ extends UpdateMessageListener implements UpdateManager {
                         onPerformUndeployment();
                     }
 
-                    @Override public void rollback() {
-                        tx.rollback();
-                        onRollbackUndeployment();
-                    }
-
-                    @Override public void commit() {
+                    @Override public void commit() throws Exception {
                         tx.commit();
                         onCommitUndeployment();
+                    }
+
+                    @Override public void rollback() throws Exception {
+                        tx.rollback();
+                        onRollbackUndeployment();
                     }
                 } // Undeploy
 
@@ -318,7 +318,7 @@ extends UpdateMessageListener implements UpdateManager {
                             "The update agent has cancelled the update installation.");
             }
 
-            void onPerformUndeployment() throws Exception {
+            void onPerformUndeployment() {
                 anticipatedDescriptor = request
                         .artifactDescriptor()
                         .update()
@@ -327,12 +327,12 @@ extends UpdateMessageListener implements UpdateManager {
                 anticipatedLocation = request.updateLocation();
             }
 
+            void onCommitUndeployment() { }
+
             void onRollbackUndeployment() {
                 anticipatedDescriptor = request.artifactDescriptor();
                 anticipatedLocation = request.currentLocation();
             }
-
-            void onCommitUndeployment() { }
 
             Transaction checked(final Transaction tx) {
 
@@ -351,9 +351,13 @@ extends UpdateMessageListener implements UpdateManager {
                         tx.perform();
                     }
 
-                    @Override public void rollback() { tx.rollback(); }
+                    @Override public void commit() throws Exception {
+                        tx.commit();
+                    }
 
-                    @Override public void commit() { tx.commit(); }
+                    @Override public void rollback() throws Exception {
+                        tx.rollback();
+                    }
                 } // Checked
 
                 return new Checked();

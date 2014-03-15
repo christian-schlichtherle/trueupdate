@@ -9,7 +9,6 @@ import net.java.trueupdate.core.io._
 import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
 import net.java.trueupdate.installer.core.io.Files._
-import net.java.trueupdate.installer.core.io.PathTask
 import net.java.trueupdate.manager.spec._
 import net.java.trueupdate.manager.spec.tx.Transaction
 import net.java.trueupdate.message._
@@ -19,6 +18,7 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
+import net.java.trueupdate.installer.core.tx.PathTask
 
 /**
  * @author Christian Schlichtherle

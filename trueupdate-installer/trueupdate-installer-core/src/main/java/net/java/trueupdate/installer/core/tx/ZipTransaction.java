@@ -4,13 +4,14 @@
  */
 package net.java.trueupdate.installer.core.tx;
 
-import java.io.*;
-import static net.java.trueupdate.installer.core.io.Files.*;
-
+import java.io.File;
+import java.io.IOException;
 import net.java.trueupdate.core.zip.io.ZipFileStore;
 import net.java.trueupdate.core.zip.io.ZipStore;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import static net.java.trueupdate.installer.core.io.Files.zip;
 
+import net.java.trueupdate.installer.core.io.Files;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -39,19 +40,18 @@ public final class ZipTransaction extends Transaction {
         this.entryName = requireNonNull(entryName);
     }
 
-    @Override public void prepare() throws Exception {
+    @Override public void prepare() throws IOException {
         if (store.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing ZIP file or directory %s .",
                     store));
     }
 
-    @Override public void perform() throws Exception {
+    @Override public void perform() throws IOException {
         zip(store, fileOrDirectory, entryName);
     }
 
-    @Override public void rollback() {
-        try { store.delete(); }
-        catch (IOException ex) { throw new IllegalStateException(ex); }
+    @Override public void rollback() throws IOException {
+        store.delete();
     }
 }

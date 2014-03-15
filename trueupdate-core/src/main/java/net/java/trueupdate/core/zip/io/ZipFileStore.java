@@ -35,8 +35,8 @@ public class ZipFileStore implements ZipStore {
     }
 
     @Override public void delete() throws IOException {
-        if (!file.delete())
-            throw new FileNotFoundException(file + " (could not delete)");
+        if (!file.delete() && file.exists())
+            throw new IOException(file + " (could not delete)");
     }
 
     @Override public boolean exists() { return file.exists(); }

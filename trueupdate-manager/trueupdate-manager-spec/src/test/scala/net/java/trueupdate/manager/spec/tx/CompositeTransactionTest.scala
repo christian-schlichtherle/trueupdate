@@ -105,6 +105,36 @@ class CompositeTransactionTest extends WordSpec {
       }
     }
 
+    "failing to commit the last transaction" should {
+      val f = fixture
+      import f._
+      doThrow (new RuntimeException) when tx2 commit ()
+      intercept[RuntimeException] { Transactions execute ctx }
+
+      "prepare, perform and fail to commit the transactions in order" in {
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx1) prepare ()
+        verify(tx1) perform ()
+        verify(tx2) prepare ()
+        verify(tx2) perform ()
+        verify(tx2) commit ()
+        verify(tx1, never) commit ()
+      }
+
+      "rollback the transactions in order" in {
+        val io = inOrder(tx1, tx2)
+        import io._
+        verify(tx2) rollback ()
+        verify(tx1) rollback ()
+      }
+
+      "be retryable" in {
+        doNothing when tx2 commit ()
+        Transactions execute ctx
+      }
+    }
+
     "failing to perform and rollback the last transaction" should {
       val f = fixture
       import f._
@@ -130,33 +160,6 @@ class CompositeTransactionTest extends WordSpec {
       "not be retryable" in {
         doNothing when tx2 perform ()
         doNothing when tx2 rollback ()
-        intercept[IllegalStateException] { Transactions execute ctx }
-      }
-    }
-
-    "failing to commit the last transaction" should {
-      val f = fixture
-      import f._
-      doThrow (new RuntimeException) when tx2 commit ()
-      intercept[RuntimeException] { Transactions execute ctx }
-
-      "prepare, perform and commit the transactions in order" in {
-        val io = inOrder(tx1, tx2)
-        import io._
-        verify(tx1) prepare ()
-        verify(tx1) perform ()
-        verify(tx2) prepare ()
-        verify(tx2) perform ()
-        verify(tx2) commit ()
-        verify(tx1, never) commit ()
-      }
-
-      "never rollback any transaction" in {
-        for (tx <- txs) verify(tx, never) rollback ()
-      }
-
-      "not be retryable" in {
-        doNothing when tx2 commit ()
         intercept[IllegalStateException] { Transactions execute ctx }
       }
     }

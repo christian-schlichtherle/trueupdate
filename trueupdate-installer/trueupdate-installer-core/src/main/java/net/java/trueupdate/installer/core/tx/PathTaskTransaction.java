@@ -6,10 +6,9 @@ package net.java.trueupdate.installer.core.tx;
 
 import java.io.File;
 import java.io.IOException;
-import static net.java.trueupdate.installer.core.io.Files.*;
-import net.java.trueupdate.installer.core.io.PathTask;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import static net.java.trueupdate.installer.core.io.Files.deletePath;
 
+import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -32,7 +31,7 @@ public final class PathTaskTransaction extends Transaction {
         this.task = requireNonNull(task);
     }
 
-    @Override public void prepare() throws Exception {
+    @Override public void prepare() throws IOException {
         if (path.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
@@ -47,8 +46,7 @@ public final class PathTaskTransaction extends Transaction {
                     path));
     }
 
-    @Override public void rollback() {
-        try { deletePath(path); }
-        catch (IOException ex) { throw new IllegalStateException(ex); }
+    @Override public void rollback() throws IOException {
+        deletePath(path);
     }
 }

@@ -47,12 +47,8 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
                         deployer.undeploy(cpath.getPath());
                     }
 
-                    @Override public void rollbackAtomic() {
-                        try {
-                            deployer.deploy(cpath.getPath());
-                        } catch (Exception ex) {
-                            throw new IllegalStateException(ex);
-                        }
+                    @Override public void rollbackAtomic() throws Exception {
+                        deployer.deploy(cpath.getPath());
                     }
                 } // UndeploymentTransaction
 
@@ -69,12 +65,8 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
                         deployer.deploy(upath.getPath());
                     }
 
-                    @Override public void rollbackAtomic() {
-                        try {
-                            deployer.undeploy(upath.getPath());
-                        } catch (Exception ex) {
-                            throw new IllegalStateException(ex);
-                        }
+                    @Override public void rollbackAtomic() throws Exception {
+                        deployer.undeploy(upath.getPath());
                     }
                 } // DeploymentTransaction
 

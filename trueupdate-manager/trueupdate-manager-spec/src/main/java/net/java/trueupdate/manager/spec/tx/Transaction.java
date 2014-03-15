@@ -48,6 +48,19 @@ public abstract class Transaction {
     public abstract void perform() throws Exception;
 
     /**
+     * Commits the visible side effects of the body of this transaction.
+     * If this method succeeds, any visible side effects of {@link #perform}
+     * must be durable.
+     * If this method throws an {@link Exception}, then this transaction gets
+     * aborted <em>with</em> calling {@link #rollback}, so it may leave some
+     * visible side effects.
+     * If this method throws an {@link Exception} and this transaction is part
+     * of a composite transaction, then the preceding transactions get
+     * properly rolled back.
+     */
+    public void commit() throws Exception { }
+
+    /**
      * Reverts any visible side effects of the body of this transaction.
      * If this method succeeds, it must revert any visible side effects of
      * {@link #perform}.
@@ -58,18 +71,5 @@ public abstract class Transaction {
      * neither committed nor rolled back and their state is undefined and may
      * be inconsistent.
      */
-    public abstract void rollback();
-
-    /**
-     * Commits the visible side effects of the body of this transaction.
-     * If this method succeeds, any visible side effects of {@link #perform}
-     * must be durable.
-     * If this method throws a {@link RuntimeException}, then the state of this
-     * transaction is undefined and may be inconsistent.
-     * If this method throws a {@link RuntimeException} and this transaction is
-     * part of a composite transaction, then the preceding transactions get
-     * neither committed nor rolled back and their state is undefined and may
-     * be inconsistent.
-     */
-    public void commit() { }
+    public abstract void rollback() throws Exception;
 }

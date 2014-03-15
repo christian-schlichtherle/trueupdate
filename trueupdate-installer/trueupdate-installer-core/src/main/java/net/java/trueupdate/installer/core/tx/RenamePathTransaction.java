@@ -4,12 +4,10 @@
  */
 package net.java.trueupdate.installer.core.tx;
 
-import net.java.trueupdate.manager.spec.tx.Transaction;
-
 import java.io.File;
 import java.io.IOException;
-
 import static net.java.trueupdate.installer.core.io.Files.renamePath;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -28,15 +26,11 @@ public final class RenamePathTransaction extends Transaction {
         this.to = requireNonNull(to);
     }
 
-    @Override public void perform() throws Exception {
+    @Override public void perform() throws IOException {
         renamePath(from, to);
     }
 
-    @Override public void rollback() {
-        if (to.exists()) try {
-            renamePath(to, from);
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
-        }
+    @Override public void rollback() throws IOException {
+        if (to.exists()) renamePath(to, from);
     }
 }

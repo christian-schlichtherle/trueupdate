@@ -114,6 +114,6 @@ class NestedTransaction extends Transaction {
 class SlowTransaction extends Transaction {
   override def prepare() { Thread.sleep(1) }
   def perform() { Thread.sleep(1) }
-  def rollback() { Thread.sleep(1) }
   override def commit() { Thread.sleep(1) }
+  def rollback() { Thread.sleep(1) }
 }

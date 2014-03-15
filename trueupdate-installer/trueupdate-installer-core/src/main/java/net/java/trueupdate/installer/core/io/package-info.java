@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides I/O features for update manager implementations.
+ * Provides I/O functions for {@link java.io.File}s.
  *
  * @author Christian Schlichtherle
  */

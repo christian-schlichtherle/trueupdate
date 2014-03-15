@@ -102,6 +102,6 @@ class TestTransaction extends AtomicMethodsTransaction {
 
   override def prepareAtomic() { delegate prepare () }
   override def performAtomic() { delegate perform () }
-  override def rollbackAtomic() { delegate rollback () }
   override def commitAtomic() { delegate commit () }
+  override def rollbackAtomic() { delegate rollback () }
 }

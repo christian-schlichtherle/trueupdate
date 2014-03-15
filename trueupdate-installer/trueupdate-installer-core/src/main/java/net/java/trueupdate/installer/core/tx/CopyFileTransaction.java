@@ -4,11 +4,11 @@
  */
 package net.java.trueupdate.installer.core.tx;
 
-import net.java.trueupdate.manager.spec.tx.Transaction;
-
 import java.io.File;
 import java.io.IOException;
-import static net.java.trueupdate.installer.core.io.Files.*;
+import static net.java.trueupdate.installer.core.io.Files.copyFile;
+import static net.java.trueupdate.installer.core.io.Files.deletePath;
+import net.java.trueupdate.manager.spec.tx.Transaction;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -26,7 +26,7 @@ public final class CopyFileTransaction extends Transaction {
         this.to = requireNonNull(to);
     }
 
-    @Override public void prepare() throws Exception {
+    @Override public void prepare() throws IOException {
         if (to.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
@@ -37,8 +37,7 @@ public final class CopyFileTransaction extends Transaction {
         copyFile(from, to);
     }
 
-    @Override public void rollback() {
-        try { deletePath(to); }
-        catch (IOException ex) { throw new IllegalStateException(ex); }
+    @Override public void rollback() throws IOException {
+        deletePath(to);
     }
 }
