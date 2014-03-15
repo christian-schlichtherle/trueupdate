@@ -14,13 +14,12 @@ import org.mockito.internal.matchers.VarargMatcher
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar.mock
-import scala._
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class TransactionsTest extends WordSpec {
+final class TransactionsTest extends WordSpec {
 
   "The execute function" when {
     "executing a nested transaction" should {
@@ -38,16 +37,16 @@ class TransactionsTest extends WordSpec {
     val ttx = time(tx, "slow transaction",
       new LoggerConfig { def logger = fixture.logger })
 
-    when(logger isLoggable any.asInstanceOf[Level]) thenReturn true
+    when(logger isLoggable any[Level]) thenReturn true
 
     def verifyLogger(io: InOrder, method: Method, succeeded: Boolean) {
       val level = if (succeeded) method.succeeded else method.failed
       val matches = new ArgumentMatcher[Array[AnyRef]] with VarargMatcher {
         def matches(argument: AnyRef) = {
           val args = argument.asInstanceOf[Array[AnyRef]]
-          args.length == 6
-          args(0) == (if (succeeded) 0 else 1) &&
-          args(1) == method.ordinal &&
+          args.length == 6 &&
+          args(0).asInstanceOf[java.lang.Integer] == (if (succeeded) 0 else 1) &&
+          args(1).asInstanceOf[java.lang.Integer] == method.ordinal &&
           args(2).asInstanceOf[java.lang.Long] >= 0 &&
           args(3).asInstanceOf[java.lang.Long] >= 0 &&
           args(4).asInstanceOf[java.lang.Long] >= 0 &&
@@ -58,6 +57,9 @@ class TransactionsTest extends WordSpec {
       io verify logger log (Matchers.eq(level), anyString, argThat(matches))
     }
   }
+
+  def success = true
+  def failure = false
 
   "The timed function" when {
     "called" should {
@@ -72,11 +74,11 @@ class TransactionsTest extends WordSpec {
             val io = inOrder(tx, logger)
             import io._
             verify(tx) prepare ()
-            verifyLogger(io, Method.prepare, true)
+            verifyLogger(io, Method.prepare, success)
             verify(tx) perform ()
-            verifyLogger(io, Method.perform, true)
+            verifyLogger(io, Method.perform, success)
             verify(tx) commit ()
-            verifyLogger(io, Method.commit, true)
+            verifyLogger(io, Method.commit, success)
             Mockito.verifyNoMoreInteractions(tx)
             Mockito.verifyNoMoreInteractions(logger)
           }
@@ -90,11 +92,11 @@ class TransactionsTest extends WordSpec {
             val io = inOrder(tx, logger)
             import io._
             verify(tx) prepare ()
-            verifyLogger(io, Method.prepare, true)
+            verifyLogger(io, Method.prepare, success)
             verify(tx) perform ()
-            verifyLogger(io, Method.perform, false)
+            verifyLogger(io, Method.perform, failure)
             verify(tx) rollback ()
-            verifyLogger(io, Method.rollback, true)
+            verifyLogger(io, Method.rollback, success)
             Mockito.verifyNoMoreInteractions(tx)
             Mockito.verifyNoMoreInteractions(logger)
           }
