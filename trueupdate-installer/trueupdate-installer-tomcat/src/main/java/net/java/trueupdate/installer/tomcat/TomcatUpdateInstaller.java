@@ -74,14 +74,14 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
             final File appBase = appBase();
 
-            final ContextName ccn = new ContextName(uc.currentLocation(), true);
+            final ContextName ccn = new ContextName(uc.currentLocation());
             final String cname = ccn.getName();
             final File cdir = new File(appBase, ccn.getBaseName());
             final File cwar = new File(cdir.getPath() + ".war");
 
             final boolean warDeployment = cwar.isFile();
 
-            final ContextName ucn = new ContextName(uc.updateLocation(), true);
+            final ContextName ucn = new ContextName(uc.updateLocation());
             final String uname = ucn.getName();
             final File udir = new File(appBase, ucn.getBaseName());
             final File uwar = new File(udir.getPath() + ".war");
