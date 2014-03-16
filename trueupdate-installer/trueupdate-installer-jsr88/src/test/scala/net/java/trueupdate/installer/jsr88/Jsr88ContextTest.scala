@@ -7,7 +7,7 @@ package net.java.trueupdate.installer.jsr88
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.WordSpec
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.Matchers._
 import org.scalatest.prop.PropertyChecks._
 import java.net.URI
 import javax.enterprise.deploy.spi.factories.DeploymentFactory
@@ -19,7 +19,6 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import net.java.trueupdate.manager.spec.tx.Transactions
 import javax.enterprise.deploy.spi.status.{DeploymentStatus, ProgressObject}
-import java.lang.annotation.{Annotation, ElementType, Target}
 import javax.enterprise.deploy.spi
 import net.java.trueupdate.installer.core.io.Files
 
