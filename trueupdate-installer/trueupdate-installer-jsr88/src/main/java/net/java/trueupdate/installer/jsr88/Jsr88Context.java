@@ -4,20 +4,25 @@
  */
 package net.java.trueupdate.installer.jsr88;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
+import edu.umd.cs.findbugs.annotations.CreatesObligation;
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import net.java.trueupdate.installer.core.util.Uris;
+import net.java.trueupdate.manager.spec.tx.Transaction;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.spi.factories.DeploymentFactory;
-import net.java.trueupdate.installer.core.util.Uris;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import java.io.File;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import static net.java.trueupdate.util.Objects.nonNullOr;
 
 /**
@@ -73,6 +78,7 @@ final class Jsr88Context {
 
     private String parameter(String name) { return parameter(name, ""); }
 
+    @SuppressWarnings("LoopStatementThatDoesntLoop")
     private @Nullable String parameter(
             final String name,
             final @CheckForNull String defaultValue) {
@@ -93,10 +99,12 @@ final class Jsr88Context {
     }
 
     @NotThreadSafe
+    @CleanupObligation
     private abstract class RedeploymentTransaction extends Transaction {
 
         Jsr88Session session;
 
+        @CreatesObligation
         @Override public final void prepare() throws Jsr88Exception {
             final File ma = moduleArchive();
             if (!ma.exists())
@@ -105,13 +113,17 @@ final class Jsr88Context {
             session = new Jsr88Session(Jsr88Context.this);
         }
 
+        @DischargesObligation
         @Override public final void commit() throws Exception { close(); }
 
-        @Override public void rollback() throws Exception { close(); }
+        @Override public abstract void rollback() throws Exception;
 
+        @DischargesObligation
         final void close() { session.close(); }
     } // RedeploymentTransaction
 
+    @NotThreadSafe
+    @CleanupObligation
     private final class UndeploymentTransaction
     extends RedeploymentTransaction {
 
@@ -127,6 +139,7 @@ final class Jsr88Context {
             }
         }
 
+        @DischargesObligation
         @Override public void rollback() throws Exception {
             try {
                 if (redeploy()) {
@@ -140,11 +153,13 @@ final class Jsr88Context {
                     }
                 }
             } finally {
-                super.rollback();
+                close();
             }
         }
     } // UndeploymentTransaction
 
+    @NotThreadSafe
+    @CleanupObligation
     private final class DeploymentTransaction
     extends RedeploymentTransaction {
 
@@ -162,6 +177,7 @@ final class Jsr88Context {
             }
         }
 
+        @DischargesObligation
         @Override public void rollback() throws Exception {
             try {
                 if (!redeploy()) {
@@ -173,7 +189,7 @@ final class Jsr88Context {
                     }
                 }
             } finally {
-                super.rollback();
+                close();
             }
         }
     } // DeploymentTransaction
