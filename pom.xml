@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.java.truecommons</groupId>
         <artifactId>truecommons-parent</artifactId>
-        <version>74</version>
+        <version>75</version>
     </parent>
 
     <groupId>net.java.trueupdate</groupId>
