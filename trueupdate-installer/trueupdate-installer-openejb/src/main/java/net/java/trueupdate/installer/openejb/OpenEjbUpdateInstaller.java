@@ -40,7 +40,7 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cpath; }
 
-            @Override public Command undeploymentTransaction() {
+            @Override public Command undeploymentCommand() {
 
                 class UndeploymentCommand implements Command {
 
@@ -58,7 +58,7 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File updatePath() { return upath; }
 
-            @Override public Command deploymentTransaction() {
+            @Override public Command deploymentCommand() {
 
                 class DeploymentCommand implements Command {
 

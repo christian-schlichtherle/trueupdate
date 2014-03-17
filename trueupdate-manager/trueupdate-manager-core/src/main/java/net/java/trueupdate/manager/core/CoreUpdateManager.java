@@ -264,16 +264,16 @@ extends UpdateMessageListener implements UpdateManager {
             Command undeploy(final Command cmd) {
                 return new AbstractCommand() {
 
-                    @Override protected void onStart() throws Exception {
+                    @Override protected void doStart() throws Exception {
                         onStartUndeployment();
                     }
 
-                    @Override protected void onPerform() throws Exception {
+                    @Override protected void doPerform() throws Exception {
                         cmd.perform();
                         onPerformUndeployment();
                     }
 
-                    @Override protected void onRevert() throws Exception {
+                    @Override protected void doRevert() throws Exception {
                         cmd.revert();
                         onRevertUndeployment();
                     }

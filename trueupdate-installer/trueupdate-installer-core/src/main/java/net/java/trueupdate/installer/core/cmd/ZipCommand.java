@@ -4,18 +4,18 @@
  */
 package net.java.trueupdate.installer.core.cmd;
 
-import java.io.File;
-import java.io.IOException;
 import net.java.trueupdate.core.zip.io.ZipFileStore;
 import net.java.trueupdate.core.zip.io.ZipStore;
-import static net.java.trueupdate.installer.core.io.Files.zip;
-
 import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
 
+import java.io.File;
+import java.io.IOException;
+
+import static net.java.trueupdate.installer.core.io.Files.zip;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
- * A transaction which zips a file or directory to a ZIP file.
+ * A command which zips a file or directory to a ZIP file.
  * An existing destination file or directory is <em>not</em> overwritten.
  *
  * @author Christian Schlichtherle
@@ -40,18 +40,18 @@ final public class ZipCommand extends AbstractCommand {
         this.entryName = requireNonNull(entryName);
     }
 
-    @Override protected void onStart() throws IOException {
+    @Override protected void doStart() throws IOException {
         if (store.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing ZIP file or directory %s .",
                     store));
     }
 
-    @Override protected void onPerform() throws IOException {
+    @Override protected void doPerform() throws IOException {
         zip(store, fileOrDirectory, entryName);
     }
 
-    @Override protected void onRevert() throws IOException {
+    @Override protected void doRevert() throws IOException {
         store.delete();
     }
 }

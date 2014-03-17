@@ -3,7 +3,7 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides commands with durable side effects for update manager components.
+ * Specifies an API for revertible commands with durable side effects.
  *
  * @author Christian Schlichtherle
  */

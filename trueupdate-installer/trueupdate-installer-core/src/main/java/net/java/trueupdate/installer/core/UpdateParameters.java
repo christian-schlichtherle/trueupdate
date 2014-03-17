@@ -22,23 +22,25 @@ public interface UpdateParameters {
     File currentPath();
 
     /**
-     * Returns the transaction command for the undeployment of the current
-     * application at the {@link #currentPath}.
+     * Returns the command for the undeployment of the current application at
+     * the {@link #currentPath}.
+     * The side effects of the command must be atomic, consistent and durable.
      * The command gets decorated with logging statements and composed
      * into a {@link net.java.trueupdate.manager.spec.cmd.CompositeCommand}
      * before execution.
      */
-    Command undeploymentTransaction();
+    Command undeploymentCommand();
 
     /** Returns the update path of the application. */
     File updatePath();
 
     /**
-     * Returns the transaction command for the deployment of the updated
-     * application at the {@link #updatePath}.
+     * Returns the command for the deployment of the updated application at
+     * the {@link #updatePath}.
+     * The side effects of the command must be atomic, consistent and durable.
      * The command gets decorated with logging statements and composed
      * into a {@link net.java.trueupdate.manager.spec.cmd.CompositeCommand}
      * before execution.
      */
-    Command deploymentTransaction();
+    Command deploymentCommand();
 }

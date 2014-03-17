@@ -89,11 +89,11 @@ final class Jsr88Context {
         return nonNullOr(parameters.get(name), Collections.<String>emptyList());
     }
 
-    Command undeploymentTransaction() {
+    Command undeploymentCommand() {
         return new UndeploymentCommand();
     }
 
-    Command deploymentTransaction() {
+    Command deploymentCommand() {
         return new DeploymentCommand();
     }
 
@@ -108,7 +108,7 @@ final class Jsr88Context {
 
     abstract private class RedeploymentCommand extends AbstractCommand {
 
-        @Override final protected void onStart() throws Jsr88Exception {
+        @Override final protected void doStart() throws Jsr88Exception {
             final File ma = moduleArchive();
             if (!ma.exists())
                 throw new Jsr88Exception(String.format(
@@ -122,7 +122,7 @@ final class Jsr88Context {
 
         State state = State.STARTED;
 
-        @Override protected void onPerform() throws Jsr88Exception {
+        @Override protected void doPerform() throws Jsr88Exception {
             if (!redeploy()) {
                 loanSessionTo(new Jsr88Script() {
                     @Override
@@ -138,7 +138,7 @@ final class Jsr88Context {
         }
 
         @DischargesObligation
-        @Override protected void onRevert() throws Jsr88Exception {
+        @Override protected void doRevert() throws Jsr88Exception {
             loanSessionTo(new Jsr88Script() {
                 @Override
                 public void run(final Jsr88Session session) throws Jsr88Exception {
@@ -163,7 +163,7 @@ final class Jsr88Context {
 
         State state = State.UNDEPLOYED;
 
-        @Override protected void onPerform() throws Jsr88Exception {
+        @Override protected void doPerform() throws Jsr88Exception {
             loanSessionTo(new Jsr88Script() {
                 @Override
                 public void run(final Jsr88Session session) throws Jsr88Exception {
@@ -181,7 +181,7 @@ final class Jsr88Context {
         }
 
         @DischargesObligation
-        @Override protected void onRevert() throws Jsr88Exception {
+        @Override protected void doRevert() throws Jsr88Exception {
             loanSessionTo(new Jsr88Script() {
                 @Override
                 public void run(final Jsr88Session session) throws Jsr88Exception {

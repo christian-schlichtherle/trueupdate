@@ -4,17 +4,17 @@
  */
 package net.java.trueupdate.installer.core.cmd;
 
-import java.io.File;
-import java.io.IOException;
-import static net.java.trueupdate.installer.core.io.Files.copyFile;
-import static net.java.trueupdate.installer.core.io.Files.deletePath;
-
 import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
 
+import java.io.File;
+import java.io.IOException;
+
+import static net.java.trueupdate.installer.core.io.Files.copyFile;
+import static net.java.trueupdate.installer.core.io.Files.deletePath;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
- * A copy file command.
+ * A command which copies a file.
  * An existing destination file or directory is <em>not</em> overwritten.
  *
  * @author Christian Schlichtherle
@@ -28,18 +28,18 @@ final public class CopyFileCommand extends AbstractCommand {
         this.to = requireNonNull(to);
     }
 
-    @Override protected void onStart() throws IOException {
+    @Override protected void doStart() throws IOException {
         if (to.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     to));
     }
 
-    @Override protected void onPerform() throws IOException {
+    @Override protected void doPerform() throws IOException {
         copyFile(from, to);
     }
 
-    @Override protected void onRevert() throws IOException {
+    @Override protected void doRevert() throws IOException {
         deletePath(to);
     }
 }

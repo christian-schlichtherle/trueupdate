@@ -50,7 +50,7 @@ final class CargoContext {
         this.location = location;
     }
 
-    Command deploymentTransaction() {
+    Command deploymentCommand() {
         return Commands.atomic(new DeploymentCommand());
     }
 
@@ -66,7 +66,7 @@ final class CargoContext {
         }
     }
 
-    Command undeploymentTransaction() {
+    Command undeploymentCommand() {
         return Commands.atomic(new UndeploymentCommand());
     }
 

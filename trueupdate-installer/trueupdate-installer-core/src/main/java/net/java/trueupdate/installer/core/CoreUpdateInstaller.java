@@ -77,12 +77,12 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                     cmds = new Command[] {
                             decorate(PATCH, new PathTaskCommand(
                                     updatedJar, new PatchTask(up.currentPath()))),
-                            decorate(UNDEPLOY, up.undeploymentTransaction()),
+                            decorate(UNDEPLOY, up.undeploymentCommand()),
                             decorate(SWAP_OUT_FILE, new RenamePathCommand(
                                     up.currentPath(), backup)),
                             decorate(SWAP_IN_FILE, new RenamePathCommand(
                                     updatedJar, up.updatePath())),
-                            decorate(DEPLOY, up.deploymentTransaction()),
+                            decorate(DEPLOY, up.deploymentCommand()),
                     };
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
@@ -94,12 +94,12 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                                     updatedJar, new PatchTask(currentZip))),
                             decorate(UNZIP, new UnzipCommand(
                                     updatedJar, updatedDir)),
-                            decorate(UNDEPLOY, up.undeploymentTransaction()),
+                            decorate(UNDEPLOY, up.undeploymentCommand()),
                             decorate(SWAP_OUT_DIR, new RenamePathCommand(
                                     up.currentPath(), backup)),
                             decorate(SWAP_IN_DIR, new RenamePathCommand(
                                     updatedDir, up.updatePath())),
-                            decorate(DEPLOY, up.deploymentTransaction()),
+                            decorate(DEPLOY, up.deploymentCommand()),
                     };
                 }
                 Commands.execute(new CompositeCommand(cmds));

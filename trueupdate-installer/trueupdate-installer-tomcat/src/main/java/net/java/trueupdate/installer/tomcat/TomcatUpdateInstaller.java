@@ -92,11 +92,11 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                 return warDeployment ? cwar : cdir;
             }
 
-            @Override public Command undeploymentTransaction() {
+            @Override public Command undeploymentCommand() {
 
                 class UndeploymentCommand extends AbstractCommand {
 
-                    @Override protected void onStart() throws Exception {
+                    @Override protected void doStart() throws Exception {
                         if (!config.isDeployed(cname))
                             throw new Exception(String.format(
                                     "The application %s is not deployed.",
@@ -104,12 +104,12 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         config.addServiced(cname);
                     }
 
-                    @Override protected void onPerform() throws Exception {
+                    @Override protected void doPerform() throws Exception {
                         config.unmanageApp(cname);
                         if (warDeployment) Files.deletePath(cdir);
                     }
 
-                    @Override protected void onRevert() throws Exception {
+                    @Override protected void doRevert() throws Exception {
                         try { config.check(cname); }
                         finally { config.removeServiced(cname); }
                     }
@@ -122,20 +122,20 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                 return warDeployment ? uwar : udir;
             }
 
-            @Override public Command deploymentTransaction() {
+            @Override public Command deploymentCommand() {
 
                 class DeploymentCommand extends AbstractCommand {
 
-                    @Override protected void onStart() throws Exception {
+                    @Override protected void doStart() throws Exception {
                         assert !config.isDeployed(uname);
                     }
 
-                    @Override protected void onPerform() throws Exception {
+                    @Override protected void doPerform() throws Exception {
                         config.check(uname);
                         config.removeServiced(cname);
                     }
 
-                    @Override protected void onRevert() throws Exception {
+                    @Override protected void doRevert() throws Exception {
                         config.unmanageApp(uname);
                         if (warDeployment)
                             Files.deletePath(udir);

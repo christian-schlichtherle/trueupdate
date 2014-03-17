@@ -102,8 +102,8 @@ class Jsr88ContextTest extends WordSpec {
           ctx.password() should be (password)
           ctx.deploymentPlan() should be (deploymentPlan)
 
-          Commands execute ctx.undeploymentTransaction
-          Commands execute ctx.deploymentTransaction
+          Commands execute ctx.undeploymentCommand
+          Commands execute ctx.deploymentCommand
         }
       } finally {
         Files deletePath dir

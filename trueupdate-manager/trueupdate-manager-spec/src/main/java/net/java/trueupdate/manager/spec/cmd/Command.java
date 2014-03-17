@@ -16,8 +16,8 @@ package net.java.trueupdate.manager.spec.cmd;
  * final redeployment step fails, the prior update and undeployment steps can
  * get reverted in order.
  * If each of the commands in the list has ACID properties, then this results
- * in the composed command to have ACID properties too, and thus work like a
- * transaction.
+ * in the composed command to have ACID properties too, and thus work similar
+ * to a transaction.
  * <p>
  * Note that commands are generally not idempotent, that is once they have been
  * successfully executed, you may not be able to successfully execute them

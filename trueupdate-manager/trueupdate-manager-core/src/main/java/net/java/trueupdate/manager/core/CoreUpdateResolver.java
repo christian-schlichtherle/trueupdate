@@ -93,17 +93,17 @@ abstract class CoreUpdateResolver {
 
             File deltaZip;
 
-            @Override protected void onStart() throws Exception {
+            @Override protected void doStart() throws Exception {
                 deltaZip = File.createTempFile("delta", ".zip");
             }
 
-            @Override protected void onPerform() throws Exception {
+            @Override protected void doPerform() throws Exception {
                 final ArtifactDescriptor ad = descriptor.artifactDescriptor();
                 final String uv = descriptor.updateVersion();
                 Copy.copy(updateClient().diff(ad, uv), new FileStore(deltaZip));
             }
 
-            @Override protected void onRevert() throws Exception {
+            @Override protected void doRevert() throws Exception {
                 if (!deltaZip.delete() && deltaZip.exists())
                     throw new IOException(deltaZip + " (could not delete)");
             }

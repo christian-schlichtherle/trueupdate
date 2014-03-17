@@ -4,14 +4,16 @@
  */
 package net.java.trueupdate.installer.core.cmd;
 
+import net.java.trueupdate.manager.spec.cmd.Command;
+
 import java.io.File;
 import java.io.IOException;
+
 import static net.java.trueupdate.installer.core.io.Files.renamePath;
-import net.java.trueupdate.manager.spec.cmd.Command;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
- * A transaction which renames a path.
+ * A command which renames a path.
  * The source path may refer to a file or directory.
  * An existing destination file or directory is <em>not</em> overwritten.
  *

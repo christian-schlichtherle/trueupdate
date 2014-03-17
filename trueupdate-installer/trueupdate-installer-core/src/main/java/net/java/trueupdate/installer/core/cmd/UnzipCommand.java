@@ -4,19 +4,19 @@
  */
 package net.java.trueupdate.installer.core.cmd;
 
-import java.io.File;
-import java.io.IOException;
 import net.java.trueupdate.core.zip.io.ZipFileStore;
 import net.java.trueupdate.core.zip.io.ZipSource;
-import static net.java.trueupdate.installer.core.io.Files.deletePath;
-import static net.java.trueupdate.installer.core.io.Files.unzip;
-
 import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
 
+import java.io.File;
+import java.io.IOException;
+
+import static net.java.trueupdate.installer.core.io.Files.deletePath;
+import static net.java.trueupdate.installer.core.io.Files.unzip;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
- * A transaction which unzips a ZIP file to a directory.
+ * A command which unzips a ZIP file to a directory.
  * An existing destination file or directory is <em>not</em> overwritten.
  *
  * @author Christian Schlichtherle
@@ -35,18 +35,18 @@ final public class UnzipCommand extends AbstractCommand {
         this.directory = requireNonNull(directory);
     }
 
-    @Override protected void onStart() throws IOException {
+    @Override protected void doStart() throws IOException {
         if (directory.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     directory));
     }
 
-    @Override protected void onPerform() throws IOException {
+    @Override protected void doPerform() throws IOException {
         unzip(source, directory);
     }
 
-    @Override protected void onRevert() throws IOException {
+    @Override protected void doRevert() throws IOException {
         deletePath(directory);
     }
 }

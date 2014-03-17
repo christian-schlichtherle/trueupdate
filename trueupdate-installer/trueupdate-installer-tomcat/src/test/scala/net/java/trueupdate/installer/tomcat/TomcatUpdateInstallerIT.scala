@@ -36,13 +36,13 @@ class TomcatUpdateInstallerIT {
         override def deltaZip = null
         override def decorate(cmd: Command, id: ActionId) = cmd
       }
-    Commands execute ad.deploymentTransaction
+    Commands execute ad.deploymentCommand
 
-    Commands execute ad.undeploymentTransaction
+    Commands execute ad.undeploymentCommand
     deletePath(ad.currentPath)
 
     updateArchive as classOf[ZipExporter] exportTo testWar
-    Commands execute ad.deploymentTransaction
+    Commands execute ad.deploymentCommand
   }
 }
 

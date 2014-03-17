@@ -35,14 +35,14 @@ public final class Jsr88UpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cctx.moduleArchive(); }
 
-            @Override public Command undeploymentTransaction() {
-                return cctx.undeploymentTransaction();
+            @Override public Command undeploymentCommand() {
+                return cctx.undeploymentCommand();
             }
 
             @Override public File updatePath() { return uctx.moduleArchive(); }
 
-            @Override public Command deploymentTransaction() {
-                return uctx.deploymentTransaction();
+            @Override public Command deploymentCommand() {
+                return uctx.deploymentCommand();
             }
         } // ResolvedParameters
 
