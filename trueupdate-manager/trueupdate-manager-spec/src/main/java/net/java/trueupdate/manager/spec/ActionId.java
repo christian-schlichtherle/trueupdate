@@ -8,15 +8,19 @@ import java.util.Locale;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
- * Identifiers for the transactions during the update process.
+ * Identifiers for the commands during the update process.
  *
  * @author Christian Schlichtherle
  */
-public enum Action {
+public enum ActionId {
 
     DOWNLOAD, ZIP, PATCH, UNZIP, UNDEPLOY,
     SWAP_OUT_FILE, SWAP_OUT_DIR, SWAP_IN_FILE, SWAP_IN_DIR,
     DEPLOY;
+
+    public String beginKey() { return prefix() + ".begin"; }
+
+    public String endKey() { return prefix() + ".end"; }
 
     /**
      * Returns the prefix for the key for the message catalog in the resource

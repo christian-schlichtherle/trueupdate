@@ -10,11 +10,11 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.core.zip.io.JarFileStore;
 import net.java.trueupdate.core.zip.patch.ZipPatch;
 import static net.java.trueupdate.installer.core.io.Files.*;
-import net.java.trueupdate.installer.core.tx.PathTask;
-import net.java.trueupdate.installer.core.tx.*;
+import net.java.trueupdate.installer.core.cmd.PathTask;
+import net.java.trueupdate.installer.core.cmd.*;
 import net.java.trueupdate.manager.spec.*;
-import static net.java.trueupdate.manager.spec.Action.*;
-import net.java.trueupdate.manager.spec.tx.*;
+import static net.java.trueupdate.manager.spec.ActionId.*;
+import net.java.trueupdate.manager.spec.cmd.*;
 
 /**
  * An abstract update installer.
@@ -72,9 +72,9 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updatedJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
-                final Command[] txs;
+                final Command[] cmds;
                 if (up.currentPath().isFile()) {
-                    txs = new Command[] {
+                    cmds = new Command[] {
                             decorate(PATCH, new PathTaskCommand(
                                     updatedJar, new PatchTask(up.currentPath()))),
                             decorate(UNDEPLOY, up.undeploymentTransaction()),
@@ -87,7 +87,7 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updatedDir = new File(tempDir, "updated.dir");
-                    txs = new Command[] {
+                    cmds = new Command[] {
                             decorate(ZIP, new ZipCommand(
                                     currentZip, up.currentPath(), "")),
                             decorate(PATCH, new PathTaskCommand(
@@ -102,12 +102,12 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                             decorate(DEPLOY, up.deploymentTransaction()),
                     };
                 }
-                Commands.execute(new CompositeCommand(txs));
+                Commands.execute(new CompositeCommand(cmds));
                 return null;
             }
 
-            Command decorate(Action id, Command tx) {
-                return uc.decorate(id, tx);
+            Command decorate(ActionId id, Command cmd) {
+                return uc.decorate(cmd, id);
             }
         }, "dir", null, tempDir());
     }

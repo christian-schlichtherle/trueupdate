@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
 import net.java.trueupdate.manager.spec._
-import net.java.trueupdate.manager.spec.tx._
+import net.java.trueupdate.manager.spec.cmd._
 
 @RunWith(classOf[Arquillian])
 class TomcatUpdateInstallerIT {
@@ -30,12 +30,12 @@ class TomcatUpdateInstallerIT {
                            new ContextName(location).getBaseName + ".war")
 
     testArchive as classOf[ZipExporter] exportTo testWar
-    val ad = installer updateParameters (new UpdateContext {
+    val ad = installer updateParameters new UpdateContext {
         override def currentLocation = location
         override def updateLocation = location
         override def deltaZip = null
-        override def decorate(id: Action, tx: Command) = tx
-      })
+        override def decorate(cmd: Command, id: ActionId) = cmd
+      }
     Commands execute ad.deploymentTransaction
 
     Commands execute ad.undeploymentTransaction

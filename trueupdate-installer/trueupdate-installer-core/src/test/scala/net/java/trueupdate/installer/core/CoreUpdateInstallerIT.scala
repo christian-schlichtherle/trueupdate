@@ -10,7 +10,7 @@ import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.manager.spec._
-import net.java.trueupdate.manager.spec.tx.Command
+import net.java.trueupdate.manager.spec.cmd.Command
 import net.java.trueupdate.message._
 import UpdateMessage.Type
 import org.junit.runner.RunWith
@@ -18,7 +18,7 @@ import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.mock.MockitoSugar.mock
-import net.java.trueupdate.installer.core.tx.PathTask
+import net.java.trueupdate.installer.core.cmd.PathTask
 
 /**
  * @author Christian Schlichtherle
@@ -59,7 +59,7 @@ class CoreUpdateInstallerIT extends WordSpec {
       def updateLocation = um.updateLocation
       def deltaZip = _deltaZip
 
-      def decorate(id: Action, tx: Command) = tx
+      def decorate(cmd: Command, id: ActionId) = cmd
     }
 
   "A local update installer" should {

@@ -17,7 +17,7 @@ import java.io.{FileOutputStream, File}
 import javax.enterprise.deploy.spi.{TargetModuleID, DeploymentManager}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import net.java.trueupdate.manager.spec.tx.Commands
+import net.java.trueupdate.manager.spec.cmd.Commands
 import javax.enterprise.deploy.spi.status.{DeploymentStatus, ProgressObject}
 import javax.enterprise.deploy.spi
 import net.java.trueupdate.installer.core.io.Files

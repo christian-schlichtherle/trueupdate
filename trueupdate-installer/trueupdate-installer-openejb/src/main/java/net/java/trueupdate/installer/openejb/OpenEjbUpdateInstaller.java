@@ -7,8 +7,8 @@ package net.java.trueupdate.installer.openejb;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.Command;
-import net.java.trueupdate.manager.spec.tx.Commands;
+import net.java.trueupdate.manager.spec.cmd.Command;
+import net.java.trueupdate.manager.spec.cmd.Commands;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
 

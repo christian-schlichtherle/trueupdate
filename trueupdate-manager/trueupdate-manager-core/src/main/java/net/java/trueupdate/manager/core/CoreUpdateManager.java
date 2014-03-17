@@ -7,14 +7,14 @@ package net.java.trueupdate.manager.core;
 import edu.umd.cs.findbugs.annotations.CleanupObligation;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.manager.spec.Action;
+import net.java.trueupdate.manager.spec.ActionId;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 import net.java.trueupdate.manager.spec.UpdateManager;
-import net.java.trueupdate.manager.spec.tx.AbstractCommand;
-import net.java.trueupdate.manager.spec.tx.Command;
-import net.java.trueupdate.manager.spec.tx.Commands;
-import net.java.trueupdate.manager.spec.tx.TimeContext;
+import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
+import net.java.trueupdate.manager.spec.cmd.Command;
+import net.java.trueupdate.manager.spec.cmd.Commands;
+import net.java.trueupdate.manager.spec.cmd.TimeContext;
 import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
 import net.java.trueupdate.message.UpdateMessageListener;
@@ -230,39 +230,38 @@ extends UpdateMessageListener implements UpdateManager {
             }
 
             @Override public Command decorate(
-                    final Action id,
-                    final Command command) {
-                final Command ttx = time(id, command);
-                return Action.UNDEPLOY == id ? undeploy(ttx) : checked(ttx);
+                    final Command cmd, final ActionId id) {
+                final Command ttx = time(id, cmd);
+                return ActionId.UNDEPLOY == id ? undeploy(ttx) : checked(ttx);
             }
 
-            Command time(final Action id, final Command command) {
-                final TimeContext context = new TimeContext() {
+            Command time(final ActionId id, final Command cmd) {
+                final TimeContext ctx = new TimeContext() {
 
                     @Override protected Logger logger() { return logger; }
 
                     @Override
                     protected String startingMessage(TimeContext.Method method) {
                         // Our log message uses its parameters to figure the method.
-                        return id.prefix() + ".begin";
+                        return id.beginKey();
                     }
 
                     @Override
                     protected String succeededMessage(TimeContext.Method method) {
                         // Our log message uses its parameters to figure the method and status.
-                        return id.prefix() + ".end";
+                        return id.endKey();
                     }
 
                     @Override
                     protected String failedMessage(TimeContext.Method method) {
                         // Our log message uses its parameters to figure the method and status.
-                        return id.prefix() + ".end";
+                        return id.endKey();
                     }
                 };
-                return Commands.time(context, command);
+                return Commands.time(ctx, cmd);
             }
 
-            Command undeploy(final Command command) {
+            Command undeploy(final Command cmd) {
                 return new AbstractCommand() {
 
                     @Override protected void onStart() throws Exception {
@@ -270,12 +269,12 @@ extends UpdateMessageListener implements UpdateManager {
                     }
 
                     @Override protected void onPerform() throws Exception {
-                        command.perform();
+                        cmd.perform();
                         onPerformUndeployment();
                     }
 
                     @Override protected void onRevert() throws Exception {
-                        command.revert();
+                        cmd.revert();
                         onRevertUndeployment();
                     }
                 };
@@ -329,7 +328,7 @@ extends UpdateMessageListener implements UpdateManager {
                 anticipatedLocation = request.currentLocation();
             }
 
-            Command checked(final Command command) {
+            Command checked(final Command cmd) {
                 return new Command() {
 
                     @Override public void perform() throws Exception {
@@ -338,11 +337,11 @@ extends UpdateMessageListener implements UpdateManager {
                         // May be undeployed, so check for null.
                         final UpdateMessage um = sessionManager.get(request);
                         if (null != um) checkCancelled(um.type());
-                        command.perform();
+                        cmd.perform();
                     }
 
                     @Override public void revert() throws Exception {
-                        command.revert();
+                        cmd.revert();
                     }
                 };
             }

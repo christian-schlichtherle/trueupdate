@@ -5,11 +5,10 @@
 package net.java.trueupdate.installer.jsr88;
 
 import edu.umd.cs.findbugs.annotations.CleanupObligation;
-import edu.umd.cs.findbugs.annotations.CreatesObligation;
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import net.java.trueupdate.installer.core.util.Uris;
-import net.java.trueupdate.manager.spec.tx.AbstractCommand;
-import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
+import net.java.trueupdate.manager.spec.cmd.Command;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;

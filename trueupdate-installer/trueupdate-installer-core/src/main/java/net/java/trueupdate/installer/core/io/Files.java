@@ -24,7 +24,7 @@ import net.java.trueupdate.core.zip.io.ZipSink;
 import net.java.trueupdate.core.zip.io.ZipSinks;
 import net.java.trueupdate.core.zip.io.ZipSource;
 import net.java.trueupdate.core.zip.io.ZipSources;
-import net.java.trueupdate.installer.core.tx.PathTask;
+import net.java.trueupdate.installer.core.cmd.PathTask;
 
 /**
  * Provides I/O functions for {@link File}s.

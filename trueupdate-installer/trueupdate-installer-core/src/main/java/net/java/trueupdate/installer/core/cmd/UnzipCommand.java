@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core.tx;
+package net.java.trueupdate.installer.core.cmd;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,8 +11,8 @@ import net.java.trueupdate.core.zip.io.ZipSource;
 import static net.java.trueupdate.installer.core.io.Files.deletePath;
 import static net.java.trueupdate.installer.core.io.Files.unzip;
 
-import net.java.trueupdate.manager.spec.tx.AbstractCommand;
-import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**

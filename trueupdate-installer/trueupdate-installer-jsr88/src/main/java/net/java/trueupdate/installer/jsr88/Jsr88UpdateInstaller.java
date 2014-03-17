@@ -11,7 +11,7 @@ import javax.enterprise.deploy.spi.factories.DeploymentFactory;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.cmd.Command;
 import net.java.trueupdate.util.Services;
 
 /**

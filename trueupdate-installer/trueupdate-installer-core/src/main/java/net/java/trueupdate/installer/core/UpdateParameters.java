@@ -4,7 +4,7 @@
  */
 package net.java.trueupdate.installer.core;
 
-import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.cmd.Command;
 
 import java.io.File;
 
@@ -22,10 +22,10 @@ public interface UpdateParameters {
     File currentPath();
 
     /**
-     * Returns the transaction for the undeployment of the current application
-     * at the {@link #currentPath}.
-     * The transaction gets decorated with logging statements and composed
-     * into a {@link net.java.trueupdate.manager.spec.tx.CompositeCommand}
+     * Returns the transaction command for the undeployment of the current
+     * application at the {@link #currentPath}.
+     * The command gets decorated with logging statements and composed
+     * into a {@link net.java.trueupdate.manager.spec.cmd.CompositeCommand}
      * before execution.
      */
     Command undeploymentTransaction();
@@ -34,10 +34,10 @@ public interface UpdateParameters {
     File updatePath();
 
     /**
-     * Returns the transaction for the deployment of the updated application
-     * at the {@link #updatePath}.
-     * The transaction gets decorated with logging statements and composed
-     * into a {@link net.java.trueupdate.manager.spec.tx.CompositeCommand}
+     * Returns the transaction command for the deployment of the updated
+     * application at the {@link #updatePath}.
+     * The command gets decorated with logging statements and composed
+     * into a {@link net.java.trueupdate.manager.spec.cmd.CompositeCommand}
      * before execution.
      */
     Command deploymentTransaction();

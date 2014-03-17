@@ -6,7 +6,7 @@ package net.java.trueupdate.manager.spec;
 
 import java.io.File;
 
-import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.cmd.Command;
 
 /**
  * An update context is provided by an {@link UpdateManager} to an
@@ -33,7 +33,8 @@ public interface UpdateContext {
     File deltaZip();
 
     /**
-     * Decorates the given transaction with the given identifier for execution.
+     * Decorates the given command with another command which depends on the
+     * given action identifier.
      */
-    Command decorate(Action id, Command tx);
+    Command decorate(Command cmd, ActionId id);
 }

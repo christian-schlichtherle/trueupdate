@@ -3,9 +3,9 @@
  * All rights reserved. Use is subject to license terms.
  */
 /**
- * Provides local transactions for update manager components.
+ * Provides commands with durable side effects for update installer components.
  *
  * @author Christian Schlichtherle
  */
 @javax.annotation.ParametersAreNonnullByDefault @javax.annotation.Nonnull
-package net.java.trueupdate.manager.spec.tx;
+package net.java.trueupdate.installer.core.cmd;

@@ -1,4 +1,4 @@
-package net.java.trueupdate.manager.spec.tx;
+package net.java.trueupdate.manager.spec.cmd;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

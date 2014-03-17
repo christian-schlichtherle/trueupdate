@@ -1,4 +1,4 @@
-package net.java.trueupdate.manager.spec.tx
+package net.java.trueupdate.manager.spec.cmd
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -6,7 +6,7 @@ import org.scalatest.WordSpec
 import org.mockito.Mockito._
 import java.util.logging.Logger
 import java.util.logging.Level._
-import net.java.trueupdate.manager.spec.tx.TimeContext.Method
+import net.java.trueupdate.manager.spec.cmd.TimeContext.Method
 import org.scalatest.mock.MockitoSugar.mock
 import TimeContext.Method._
 import java.util.Calendar

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core.tx
+package net.java.trueupdate.installer.core.cmd
 
 import java.io._
 import net.java.trueupdate.core.io._
@@ -11,14 +11,14 @@ import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar.mock
-import net.java.trueupdate.manager.spec.tx._
+import net.java.trueupdate.manager.spec.cmd._
 
 /**
  * @author Christian Schlichtherle
  */
 abstract class FileCommandTestSuite extends WordSpec {
 
-  def tx(oneByte: File, notExists: File): Command
+  def cmd(oneByte: File, notExists: File): Command
 
   def setUpAndLoan[A](fun: (File, File, Command) => A) = {
     Files.loanTempDir(new PathTask[A, Exception] {
@@ -29,25 +29,25 @@ abstract class FileCommandTestSuite extends WordSpec {
         } on new FileStore(oneByte)
         oneByte.length should be (1)
         val notExists = new File(tempDir, "notExists")
-        fun(oneByte, notExists, tx(oneByte, notExists))
+        fun(oneByte, notExists, cmd(oneByte, notExists))
       }
     }, "dir", null, null)
   }
 
-  "A file transaction" when {
+  "A file command" when {
 
     "failing to perform" should {
       "leave the source and destination files unmodified" in {
-        setUpAndLoan { (file, notExists, tx) =>
+        setUpAndLoan { (file, notExists, cmd) =>
           file delete ()
-          intercept[IOException] { Commands execute tx }
+          intercept[IOException] { Commands execute cmd }
           file.exists should be (false)
           notExists.exists should be (false)
         }
       }
     }
 
-    "participating in a composite transaction" which {
+    "participating in a composite command" which {
       "subsequently fails" should {
         "leave the source and destination files unmodified" in {
           setUpAndLoan { (file, notExists, tx1) =>

@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec.tx
+package net.java.trueupdate.manager.spec.cmd
 
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
@@ -60,7 +60,7 @@ class AtomicCommandTest extends WordSpec {
       }
     }
 
-    "participating in a composite transaction" which {
+    "participating in a composite command" which {
       val f = fixture
       import f._
       val nextCommand = mock[Command]

@@ -2,16 +2,16 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.installer.core.tx;
+package net.java.trueupdate.installer.core.cmd;
 
 import java.io.File;
 import java.io.IOException;
 import static net.java.trueupdate.installer.core.io.Files.renamePath;
-import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.cmd.Command;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
- * A rename path transaction.
+ * A transaction which renames a path.
  * The source path may refer to a file or directory.
  * An existing destination file or directory is <em>not</em> overwritten.
  *

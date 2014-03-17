@@ -15,7 +15,7 @@ import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.*;
-import net.java.trueupdate.manager.spec.tx.*;
+import net.java.trueupdate.manager.spec.cmd.*;
 import net.java.trueupdate.message.UpdateMessage;
 
 /**
@@ -110,7 +110,7 @@ abstract class CoreUpdateResolver {
         } // DownloadCommand
 
         final DownloadCommand cmd = new DownloadCommand();
-        Commands.execute(context.decorate(Action.DOWNLOAD, cmd));
+        Commands.execute(context.decorate(cmd, ActionId.DOWNLOAD));
         return cmd.deltaZip;
     }
 

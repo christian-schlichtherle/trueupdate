@@ -5,8 +5,8 @@
 package net.java.trueupdate.installer.cargo;
 
 import net.java.trueupdate.installer.core.util.Uris;
-import net.java.trueupdate.manager.spec.tx.Command;
-import net.java.trueupdate.manager.spec.tx.Commands;
+import net.java.trueupdate.manager.spec.cmd.Command;
+import net.java.trueupdate.manager.spec.cmd.Commands;
 import org.codehaus.cargo.container.Container;
 import org.codehaus.cargo.container.ContainerType;
 import org.codehaus.cargo.container.InstalledLocalContainer;

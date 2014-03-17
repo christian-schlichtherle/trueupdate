@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Schlichtherle IT Services & Stimulus Software.
  * All rights reserved. Use is subject to license terms.
  */
-package net.java.trueupdate.manager.spec.tx
+package net.java.trueupdate.manager.spec.cmd
 
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
@@ -39,7 +39,7 @@ class CompositeCommandTest extends WordSpec {
       }
 
       "never call revert" in {
-        for (tx <- cmds) verify(tx, never) revert ()
+        for (cmd <- cmds) verify(cmd, never) revert ()
       }
 
       "not be idempotent" in {
