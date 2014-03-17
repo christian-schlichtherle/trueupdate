@@ -11,7 +11,7 @@ import javax.enterprise.deploy.spi.factories.DeploymentFactory;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.Command;
 import net.java.trueupdate.util.Services;
 
 /**
@@ -35,13 +35,13 @@ public final class Jsr88UpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cctx.moduleArchive(); }
 
-            @Override public Transaction undeploymentTransaction() {
+            @Override public Command undeploymentTransaction() {
                 return cctx.undeploymentTransaction();
             }
 
             @Override public File updatePath() { return uctx.moduleArchive(); }
 
-            @Override public Transaction deploymentTransaction() {
+            @Override public Command deploymentTransaction() {
                 return uctx.deploymentTransaction();
             }
         } // ResolvedParameters

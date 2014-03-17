@@ -9,26 +9,26 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.scalatest.matchers.ShouldMatchers._
 import net.java.trueupdate.installer.core.io.Files._
-import net.java.trueupdate.manager.spec.tx.Transactions
+import net.java.trueupdate.manager.spec.tx.Commands
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class UnzipTransactionIT extends FileTransactionITSuite {
+class UnzipCommandIT extends FileCommandTestSuite {
 
   def tx(oneByte: File, notExists: File) = {
     zip(notExists, oneByte, oneByte.getName)
     deletePath(oneByte)
     renamePath(notExists, oneByte)
-    new UnzipTransaction(oneByte, notExists)
+    new UnzipCommand(oneByte, notExists)
   }
 
   "An unzip transaction" when {
     "executing successfully" should {
       "have unzipped the ZIP file" in {
         setUpAndLoan { (oneByte, notExists, tx) =>
-          Transactions execute tx
+          Commands execute tx
           oneByte.length should be > (1L)
           notExists.isDirectory should be (true)
           new File(notExists, oneByte.getName).isFile should be (true)

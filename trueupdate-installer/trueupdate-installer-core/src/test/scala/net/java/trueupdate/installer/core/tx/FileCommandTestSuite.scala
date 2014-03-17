@@ -16,11 +16,11 @@ import net.java.trueupdate.manager.spec.tx._
 /**
  * @author Christian Schlichtherle
  */
-abstract class FileTransactionITSuite extends WordSpec {
+abstract class FileCommandTestSuite extends WordSpec {
 
-  def tx(oneByte: File, notExists: File): Transaction
+  def tx(oneByte: File, notExists: File): Command
 
-  def setUpAndLoan[A](fun: (File, File, Transaction) => A) = {
+  def setUpAndLoan[A](fun: (File, File, Command) => A) = {
     Files.loanTempDir(new PathTask[A, Exception] {
       override def execute(tempDir: File) = {
         val oneByte = new File(tempDir, "oneByte")
@@ -40,7 +40,7 @@ abstract class FileTransactionITSuite extends WordSpec {
       "leave the source and destination files unmodified" in {
         setUpAndLoan { (file, notExists, tx) =>
           file delete ()
-          intercept[IOException] { Transactions execute tx }
+          intercept[IOException] { Commands execute tx }
           file.exists should be (false)
           notExists.exists should be (false)
         }
@@ -51,10 +51,10 @@ abstract class FileTransactionITSuite extends WordSpec {
       "subsequently fails" should {
         "leave the source and destination files unmodified" in {
           setUpAndLoan { (file, notExists, tx1) =>
-            val tx2 = mock[Transaction]
-            val ctx = new CompositeTransaction(tx1, tx2)
+            val tx2 = mock[Command]
+            val ctx = new CompositeCommand(tx1, tx2)
             doThrow(new UnsupportedOperationException) when(tx2) perform ()
-            intercept[UnsupportedOperationException] { Transactions execute ctx }
+            intercept[UnsupportedOperationException] { Commands execute ctx }
             file.isFile should be (true)
             notExists.exists should be (false)
           }

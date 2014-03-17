@@ -4,18 +4,9 @@
  */
 package net.java.trueupdate.installer.cargo;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.util.Uris;
-import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
-import net.java.trueupdate.manager.spec.tx.Transaction;
-import static net.java.trueupdate.util.Objects.nonNullOr;
-import static net.java.trueupdate.util.Strings.nonEmptyOr;
+import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.tx.Commands;
 import org.codehaus.cargo.container.Container;
 import org.codehaus.cargo.container.ContainerType;
 import org.codehaus.cargo.container.InstalledLocalContainer;
@@ -30,6 +21,17 @@ import org.codehaus.cargo.generic.DefaultContainerFactory;
 import org.codehaus.cargo.generic.configuration.DefaultConfigurationFactory;
 import org.codehaus.cargo.generic.deployable.DefaultDeployableFactory;
 import org.codehaus.cargo.generic.deployer.DefaultDeployerFactory;
+
+import javax.annotation.concurrent.Immutable;
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static net.java.trueupdate.util.Objects.nonNullOr;
+import static net.java.trueupdate.util.Strings.nonEmptyOr;
 
 /**
  * A context which decomposes a location URI to configure various parameters
@@ -48,8 +50,8 @@ final class CargoContext {
         this.location = location;
     }
 
-    Transaction deploymentTransaction() {
-        return new DeploymentTransaction();
+    Command deploymentTransaction() {
+        return Commands.atomic(new DeploymentCommand());
     }
 
     private void deploy() throws CargoException {
@@ -64,8 +66,8 @@ final class CargoContext {
         }
     }
 
-    Transaction undeploymentTransaction() {
-        return new UndeploymentTransaction();
+    Command undeploymentTransaction() {
+        return Commands.atomic(new UndeploymentCommand());
     }
 
     private void undeploy() throws CargoException {
@@ -212,15 +214,13 @@ final class CargoContext {
         return new CargoConfigurationException(location, componentName, cause);
     }
 
-    private final class DeploymentTransaction
-    extends AtomicMethodsTransaction {
-        @Override public void performAtomic() throws Exception { deploy(); }
-        @Override public void rollbackAtomic() throws Exception { undeploy(); }
-    } // DeploymentTransaction
+    final private class DeploymentCommand implements Command {
+        @Override public void perform() throws Exception { deploy(); }
+        @Override public void revert() throws Exception { undeploy(); }
+    } // DeploymentCommand
 
-    private final class UndeploymentTransaction
-    extends AtomicMethodsTransaction {
-        @Override public void performAtomic() throws Exception { undeploy(); }
-        @Override public void rollbackAtomic() throws Exception { deploy(); }
-    } // UndeploymentTransaction
+    final private class UndeploymentCommand implements Command {
+        @Override public void perform() throws Exception { undeploy(); }
+        @Override public void revert() throws Exception { deploy(); }
+    } // UndeploymentCommand
 }

@@ -17,7 +17,7 @@ import java.io.{FileOutputStream, File}
 import javax.enterprise.deploy.spi.{TargetModuleID, DeploymentManager}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import net.java.trueupdate.manager.spec.tx.Transactions
+import net.java.trueupdate.manager.spec.tx.Commands
 import javax.enterprise.deploy.spi.status.{DeploymentStatus, ProgressObject}
 import javax.enterprise.deploy.spi
 import net.java.trueupdate.installer.core.io.Files
@@ -102,8 +102,8 @@ class Jsr88ContextTest extends WordSpec {
           ctx.password() should be (password)
           ctx.deploymentPlan() should be (deploymentPlan)
 
-          Transactions execute ctx.undeploymentTransaction
-          Transactions execute ctx.deploymentTransaction
+          Commands execute ctx.undeploymentTransaction
+          Commands execute ctx.deploymentTransaction
         }
       } finally {
         Files deletePath dir

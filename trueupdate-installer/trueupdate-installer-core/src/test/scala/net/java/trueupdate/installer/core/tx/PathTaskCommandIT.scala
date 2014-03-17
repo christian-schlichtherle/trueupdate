@@ -9,16 +9,16 @@ import net.java.trueupdate.installer.core.io._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers._
-import net.java.trueupdate.manager.spec.tx.Transactions
+import net.java.trueupdate.manager.spec.tx.Commands
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class PathTaskTransactionIT extends FileTransactionITSuite {
+class PathTaskCommandIT extends FileCommandTestSuite {
 
   def tx(oneByte: File, notExists: File) =
-    new PathTaskTransaction(notExists, new PathTask[Unit, IOException] {
+    new PathTaskCommand(notExists, new PathTask[Unit, IOException] {
       def execute(notExists: File) {
         Files.zip(notExists, oneByte, oneByte.getName)
       }
@@ -28,7 +28,7 @@ class PathTaskTransactionIT extends FileTransactionITSuite {
     "executing successfully" should {
       "have zipped the source file" in {
         setUpAndLoan { (oneByte, notExists, tx) =>
-          Transactions execute tx
+          Commands execute tx
           oneByte.length should be (1)
           notExists.length should be > (1L)
         }

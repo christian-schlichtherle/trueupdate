@@ -8,12 +8,12 @@ import edu.umd.cs.findbugs.annotations.CleanupObligation;
 import edu.umd.cs.findbugs.annotations.CreatesObligation;
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import net.java.trueupdate.installer.core.util.Uris;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.AbstractCommand;
+import net.java.trueupdate.manager.spec.tx.Command;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.spi.factories.DeploymentFactory;
 import java.io.File;
@@ -90,109 +90,114 @@ final class Jsr88Context {
         return nonNullOr(parameters.get(name), Collections.<String>emptyList());
     }
 
-    Transaction undeploymentTransaction() {
-        return new UndeploymentTransaction();
+    Command undeploymentTransaction() {
+        return new UndeploymentCommand();
     }
 
-    Transaction deploymentTransaction() {
-        return new DeploymentTransaction();
+    Command deploymentTransaction() {
+        return new DeploymentCommand();
     }
 
-    @NotThreadSafe
-    @CleanupObligation
-    private abstract class RedeploymentTransaction extends Transaction {
+    private void loanSessionTo(final Jsr88Script script) throws Jsr88Exception {
+        final Jsr88Session session = new Jsr88Session(this);
+        try {
+            script.run(session);
+        } finally {
+            session.close();
+        }
+    }
 
-        Jsr88Session session;
+    abstract private class RedeploymentCommand extends AbstractCommand {
 
-        @CreatesObligation
-        @Override public final void prepare() throws Jsr88Exception {
+        @Override final protected void onStart() throws Jsr88Exception {
             final File ma = moduleArchive();
             if (!ma.exists())
                 throw new Jsr88Exception(String.format(
                         "The module archive %s does not exist.", ma));
-            session = new Jsr88Session(Jsr88Context.this);
         }
+    } // RedeploymentCommand
 
-        @DischargesObligation
-        @Override public final void commit() throws Exception { close(); }
-
-        @Override public abstract void rollback() throws Exception;
-
-        @DischargesObligation
-        final void close() { session.close(); }
-    } // RedeploymentTransaction
-
-    @NotThreadSafe
     @CleanupObligation
-    private final class UndeploymentTransaction
-    extends RedeploymentTransaction {
+    final private class UndeploymentCommand
+    extends RedeploymentCommand {
 
         State state = State.STARTED;
 
-        @Override public void perform() throws Exception {
+        @Override protected void onPerform() throws Jsr88Exception {
             if (!redeploy()) {
-                session.checkDeclaredModuleID();
-                session.stop();
-                state = State.STOPPED;
-                session.undeploy();
-                state = State.UNDEPLOYED;
+                loanSessionTo(new Jsr88Script() {
+                    @Override
+                    public void run(final Jsr88Session session) throws Jsr88Exception {
+                        session.checkDeclaredModuleID();
+                        session.stop();
+                        state = State.STOPPED;
+                        session.undeploy();
+                        state = State.UNDEPLOYED;
+                    }
+                });
             }
         }
 
         @DischargesObligation
-        @Override public void rollback() throws Exception {
-            try {
-                if (redeploy()) {
-                    session.redeploy();
-                } else {
-                    switch (state) {
-                        case UNDEPLOYED:
-                            session.deploy();
-                        case STOPPED:
-                            session.start();
+        @Override protected void onRevert() throws Jsr88Exception {
+            loanSessionTo(new Jsr88Script() {
+                @Override
+                public void run(final Jsr88Session session) throws Jsr88Exception {
+                    if (redeploy()) {
+                        session.redeploy();
+                    } else {
+                        switch (state) {
+                            case UNDEPLOYED:
+                                session.deploy();
+                            case STOPPED:
+                                session.start();
+                        }
                     }
                 }
-            } finally {
-                close();
-            }
+            });
         }
-    } // UndeploymentTransaction
+    } // UndeploymentCommand
 
-    @NotThreadSafe
     @CleanupObligation
-    private final class DeploymentTransaction
-    extends RedeploymentTransaction {
+    final private class DeploymentCommand
+    extends RedeploymentCommand {
 
         State state = State.UNDEPLOYED;
 
-        @Override public void perform() throws Exception {
-            if (redeploy()) {
-                session.redeploy();
-            } else {
-                session.deploy();
-                state = State.DEPLOYED;
-                session.checkDeclaredModuleID();
-                session.start();
-                state = State.STARTED;
-            }
+        @Override protected void onPerform() throws Jsr88Exception {
+            loanSessionTo(new Jsr88Script() {
+                @Override
+                public void run(final Jsr88Session session) throws Jsr88Exception {
+                    if (redeploy()) {
+                        session.redeploy();
+                    } else {
+                        session.deploy();
+                        state = State.DEPLOYED;
+                        session.checkDeclaredModuleID();
+                        session.start();
+                        state = State.STARTED;
+                    }
+                }
+            });
         }
 
         @DischargesObligation
-        @Override public void rollback() throws Exception {
-            try {
-                if (!redeploy()) {
-                    switch (state) {
-                        case STARTED:
-                            session.stop();
-                        case DEPLOYED:
-                            session.undeploy();
+        @Override protected void onRevert() throws Jsr88Exception {
+            loanSessionTo(new Jsr88Script() {
+                @Override
+                public void run(final Jsr88Session session) throws Jsr88Exception {
+                    if (!redeploy()) {
+                        switch (state) {
+                            case STARTED:
+                                session.stop();
+                            case DEPLOYED:
+                                session.undeploy();
+                        }
                     }
                 }
-            } finally {
-                close();
-            }
+            });
         }
-    } // DeploymentTransaction
+    } // DeploymentCommand
 
     private enum State { STARTED, STOPPED, UNDEPLOYED, DEPLOYED }
 }

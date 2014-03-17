@@ -10,8 +10,8 @@ import net.java.trueupdate.core.zip.io.ZipFileStore;
 import net.java.trueupdate.core.zip.io.ZipStore;
 import static net.java.trueupdate.installer.core.io.Files.zip;
 
-import net.java.trueupdate.installer.core.io.Files;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.AbstractCommand;
+import net.java.trueupdate.manager.spec.tx.Command;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -20,38 +20,38 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  *
  * @author Christian Schlichtherle
  */
-public final class ZipTransaction extends Transaction {
+final public class ZipCommand extends AbstractCommand {
 
     private final ZipStore store;
     private final File fileOrDirectory;
     private final String entryName;
 
-    public ZipTransaction(File zipFile,
-                          File fileOrDirectory,
-                          String entryName) {
+    public ZipCommand(File zipFile,
+                      File fileOrDirectory,
+                      String entryName) {
         this(new ZipFileStore(zipFile), fileOrDirectory, entryName);
     }
 
-    public ZipTransaction(final ZipStore store,
-                          final File fileOrDirectory,
-                          final String entryName) {
+    public ZipCommand(final ZipStore store,
+                      final File fileOrDirectory,
+                      final String entryName) {
         this.store = requireNonNull(store);
         this.fileOrDirectory = requireNonNull(fileOrDirectory);
         this.entryName = requireNonNull(entryName);
     }
 
-    @Override public void prepare() throws IOException {
+    @Override protected void onStart() throws IOException {
         if (store.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing ZIP file or directory %s .",
                     store));
     }
 
-    @Override public void perform() throws IOException {
+    @Override protected void onPerform() throws IOException {
         zip(store, fileOrDirectory, entryName);
     }
 
-    @Override public void rollback() throws IOException {
+    @Override protected void onRevert() throws IOException {
         store.delete();
     }
 }

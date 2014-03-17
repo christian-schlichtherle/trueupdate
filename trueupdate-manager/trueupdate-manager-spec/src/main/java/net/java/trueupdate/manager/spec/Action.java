@@ -19,10 +19,10 @@ public enum Action {
     DEPLOY;
 
     /**
-     * Returns the key for the message catalog in the resource bundle for the
-     * class {@link UpdateMessage}.
+     * Returns the prefix for the key for the message catalog in the resource
+     * bundle for the class {@link UpdateMessage}.
      */
-    public String key() {
-        return "tx." + name().toLowerCase(Locale.ENGLISH);
+    public String prefix() {
+        return "cmd." + name().toLowerCase(Locale.ENGLISH);
     }
 }

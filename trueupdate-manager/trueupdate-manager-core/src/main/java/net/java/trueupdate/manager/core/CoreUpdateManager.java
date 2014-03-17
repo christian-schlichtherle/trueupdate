@@ -4,44 +4,32 @@
  */
 package net.java.trueupdate.manager.core;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
 import net.java.trueupdate.manager.spec.Action;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 import net.java.trueupdate.manager.spec.UpdateManager;
-import net.java.trueupdate.manager.spec.tx.Transaction;
-import net.java.trueupdate.manager.spec.tx.Transactions;
-import net.java.trueupdate.manager.spec.tx.Transactions.LoggerConfig;
+import net.java.trueupdate.manager.spec.tx.AbstractCommand;
+import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.tx.Commands;
+import net.java.trueupdate.manager.spec.tx.TimeContext;
 import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
-import static net.java.trueupdate.message.UpdateMessage.Type.CANCEL_REDEPLOYMENT_RESPONSE;
-import static net.java.trueupdate.message.UpdateMessage.Type.INSTALLATION_FAILURE_RESPONSE;
-import static net.java.trueupdate.message.UpdateMessage.Type.INSTALLATION_SUCCESS_RESPONSE;
-import static net.java.trueupdate.message.UpdateMessage.Type.PROCEED_REDEPLOYMENT_RESPONSE;
-import static net.java.trueupdate.message.UpdateMessage.Type.PROGRESS_NOTICE;
-import static net.java.trueupdate.message.UpdateMessage.Type.REDEPLOYMENT_REQUEST;
-import static net.java.trueupdate.message.UpdateMessage.Type.SUBSCRIPTION_NOTICE;
-import static net.java.trueupdate.message.UpdateMessage.Type.SUBSCRIPTION_RESPONSE;
-import static net.java.trueupdate.message.UpdateMessage.Type.UPDATE_NOTICE;
 import net.java.trueupdate.message.UpdateMessageListener;
 import net.java.trueupdate.util.Services;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
+import static net.java.trueupdate.message.UpdateMessage.Type.*;
 
 /**
  * An abstract update manager.
@@ -55,10 +43,6 @@ extends UpdateMessageListener implements UpdateManager {
     private static final Logger logger = Logger.getLogger(
             CoreUpdateManager.class.getName(),
             UpdateMessage.class.getName());
-
-    private static final LoggerConfig loggerConfig = new LoggerConfig() {
-        @Override public Logger logger() { return logger; }
-    };
 
     private static final long HANDSHAKE_TIMEOUT_MILLIS = 10 * 1000;
 
@@ -223,7 +207,7 @@ extends UpdateMessageListener implements UpdateManager {
                 final UpdateDescriptor ud = updateDescriptor(
                         request.artifactDescriptor(),
                         request.updateVersion());
-                LogContext.setChannel(this);
+                net.java.trueupdate.manager.core.LogContext.setChannel(this);
                 try {
                     synchronized (updateResolver) {
                         deltaZip = updateResolver.resolve(ud, this);
@@ -240,51 +224,64 @@ extends UpdateMessageListener implements UpdateManager {
                                            ud.updateVersion() });
                     throw ex;
                 } finally {
-                    LogContext.resetChannel();
+                    net.java.trueupdate.manager.core.LogContext.resetChannel();
                 }
                 return null;
             }
 
-            @Override public Transaction decorate(
+            @Override public Command decorate(
                     final Action id,
-                    final Transaction tx) {
-                final Transaction ttx = time(id, tx);
+                    final Command command) {
+                final Command ttx = time(id, command);
                 return Action.UNDEPLOY == id ? undeploy(ttx) : checked(ttx);
             }
 
-            Transaction time(Action id, Transaction tx) {
-                return Transactions.time(tx, id.key(), loggerConfig);
-            }
+            Command time(final Action id, final Command command) {
+                final TimeContext context = new TimeContext() {
 
-            Transaction undeploy(final Transaction tx) {
+                    @Override protected Logger logger() { return logger; }
 
-                class Undeploy extends Transaction {
-
-                    @Override public void prepare() throws Exception {
-                        tx.prepare();
-                        onPrepareUndeployment();
+                    @Override
+                    protected String startingMessage(TimeContext.Method method) {
+                        // Our log message uses its parameters to figure the method.
+                        return id.prefix() + ".begin";
                     }
 
-                    @Override public void perform() throws Exception {
-                        tx.perform();
+                    @Override
+                    protected String succeededMessage(TimeContext.Method method) {
+                        // Our log message uses its parameters to figure the method and status.
+                        return id.prefix() + ".end";
+                    }
+
+                    @Override
+                    protected String failedMessage(TimeContext.Method method) {
+                        // Our log message uses its parameters to figure the method and status.
+                        return id.prefix() + ".end";
+                    }
+                };
+                return Commands.time(context, command);
+            }
+
+            Command undeploy(final Command command) {
+                return new AbstractCommand() {
+
+                    @Override protected void onStart() throws Exception {
+                        onStartUndeployment();
+                    }
+
+                    @Override protected void onPerform() throws Exception {
+                        command.perform();
                         onPerformUndeployment();
                     }
 
-                    @Override public void commit() throws Exception {
-                        tx.commit();
-                        onCommitUndeployment();
+                    @Override protected void onRevert() throws Exception {
+                        command.revert();
+                        onRevertUndeployment();
                     }
-
-                    @Override public void rollback() throws Exception {
-                        tx.rollback();
-                        onRollbackUndeployment();
-                    }
-                } // Undeploy
-
-                return new Undeploy();
+                };
             }
 
-            void onPrepareUndeployment() throws Exception {
+            void onStartUndeployment() throws Exception {
                 sendRedeploymentRequest();
                 final long stop = System.currentTimeMillis()
                         + HANDSHAKE_TIMEOUT_MILLIS;
@@ -327,20 +324,13 @@ extends UpdateMessageListener implements UpdateManager {
                 anticipatedLocation = request.updateLocation();
             }
 
-            void onCommitUndeployment() { }
-
-            void onRollbackUndeployment() {
+            void onRevertUndeployment() {
                 anticipatedDescriptor = request.artifactDescriptor();
                 anticipatedLocation = request.currentLocation();
             }
 
-            Transaction checked(final Transaction tx) {
-
-                class Checked extends Transaction {
-
-                    @Override public void prepare() throws Exception {
-                        tx.prepare();
-                    }
+            Command checked(final Command command) {
+                return new Command() {
 
                     @Override public void perform() throws Exception {
                         // Throw an InterruptedException if requested.
@@ -348,19 +338,13 @@ extends UpdateMessageListener implements UpdateManager {
                         // May be undeployed, so check for null.
                         final UpdateMessage um = sessionManager.get(request);
                         if (null != um) checkCancelled(um.type());
-                        tx.perform();
+                        command.perform();
                     }
 
-                    @Override public void commit() throws Exception {
-                        tx.commit();
+                    @Override public void revert() throws Exception {
+                        command.revert();
                     }
-
-                    @Override public void rollback() throws Exception {
-                        tx.rollback();
-                    }
-                } // Checked
-
-                return new Checked();
+                };
             }
 
             @Override
@@ -509,6 +493,7 @@ extends UpdateMessageListener implements UpdateManager {
         }
     } // SessionManager
 
+    @CleanupObligation
     private class ConfiguredUpdateResolver extends CoreUpdateResolver {
         @Override protected UpdateClient updateClient() {
             return CoreUpdateManager.this.updateClient();

@@ -5,7 +5,8 @@
 package net.java.trueupdate.manager.spec;
 
 import java.io.File;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+
+import net.java.trueupdate.manager.spec.tx.Command;
 
 /**
  * An update context is provided by an {@link UpdateManager} to an
@@ -34,5 +35,5 @@ public interface UpdateContext {
     /**
      * Decorates the given transaction with the given identifier for execution.
      */
-    Transaction decorate(Action id, Transaction tx);
+    Command decorate(Action id, Command tx);
 }

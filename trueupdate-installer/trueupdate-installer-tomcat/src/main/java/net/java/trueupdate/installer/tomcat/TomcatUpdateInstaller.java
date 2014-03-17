@@ -4,25 +4,27 @@
  */
 package net.java.trueupdate.installer.tomcat;
 
-import java.io.File;
-import java.io.IOException;
-import javax.annotation.concurrent.Immutable;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.installer.core.io.Files;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.AbstractCommand;
+import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.tx.Commands;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.startup.HostConfig;
 import org.apache.catalina.util.ContextName;
+
+import javax.annotation.concurrent.Immutable;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Installs updates for applications running in Apache Tomcat.
@@ -90,11 +92,11 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                 return warDeployment ? cwar : cdir;
             }
 
-            @Override public Transaction undeploymentTransaction() {
+            @Override public Command undeploymentTransaction() {
 
-                class UndeploymentTransaction extends AtomicMethodsTransaction {
+                class UndeploymentCommand extends AbstractCommand {
 
-                    @Override public void prepareAtomic() throws Exception {
+                    @Override protected void onStart() throws Exception {
                         if (!config.isDeployed(cname))
                             throw new Exception(String.format(
                                     "The application %s is not deployed.",
@@ -102,48 +104,45 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                         config.addServiced(cname);
                     }
 
-                    @Override public void performAtomic() throws Exception {
+                    @Override protected void onPerform() throws Exception {
                         config.unmanageApp(cname);
                         if (warDeployment) Files.deletePath(cdir);
                     }
 
-                    @Override public void commitAtomic() throws Exception {
-                        config.removeServiced(cname);
-                    }
-
-                    @Override public void rollbackAtomic() throws Exception {
+                    @Override protected void onRevert() throws Exception {
                         try { config.check(cname); }
                         finally { config.removeServiced(cname); }
                     }
-                } // UndeploymentTransaction
+                } // UndeploymentCommand
 
-                return new UndeploymentTransaction();
+                return Commands.atomic(new UndeploymentCommand());
             }
 
             @Override public File updatePath() {
                 return warDeployment ? uwar : udir;
             }
 
-            @Override public Transaction deploymentTransaction() {
+            @Override public Command deploymentTransaction() {
 
-                class DeploymentTransaction extends AtomicMethodsTransaction {
+                class DeploymentCommand extends AbstractCommand {
 
-                    @Override public void prepareAtomic() throws Exception {
+                    @Override protected void onStart() throws Exception {
                         assert !config.isDeployed(uname);
                     }
 
-                    @Override public void performAtomic() throws Exception {
+                    @Override protected void onPerform() throws Exception {
                         config.check(uname);
+                        config.removeServiced(cname);
                     }
 
-                    @Override public void rollbackAtomic() throws Exception {
+                    @Override protected void onRevert() throws Exception {
                         config.unmanageApp(uname);
                         if (warDeployment)
                             Files.deletePath(udir);
                     }
-                } // DeploymentTransaction
+                } // DeploymentCommand
 
-                return new DeploymentTransaction();
+                return Commands.atomic(new DeploymentCommand());
             }
         } // ResolvedParameters
 

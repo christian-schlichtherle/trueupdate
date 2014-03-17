@@ -10,7 +10,9 @@ import net.java.trueupdate.core.zip.io.ZipFileStore;
 import net.java.trueupdate.core.zip.io.ZipSource;
 import static net.java.trueupdate.installer.core.io.Files.deletePath;
 import static net.java.trueupdate.installer.core.io.Files.unzip;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+
+import net.java.trueupdate.manager.spec.tx.AbstractCommand;
+import net.java.trueupdate.manager.spec.tx.Command;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -19,32 +21,32 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  *
  * @author Christian Schlichtherle
  */
-public final class UnzipTransaction extends Transaction {
+final public class UnzipCommand extends AbstractCommand {
 
     private final ZipSource source;
     private final File directory;
 
-    public UnzipTransaction(File zipFile, File directory) {
+    public UnzipCommand(File zipFile, File directory) {
         this(new ZipFileStore(zipFile), directory);
     }
 
-    public UnzipTransaction(final ZipSource source, final File directory) {
+    public UnzipCommand(final ZipSource source, final File directory) {
         this.source = requireNonNull(source);
         this.directory = requireNonNull(directory);
     }
 
-    @Override public void prepare() throws IOException {
+    @Override protected void onStart() throws IOException {
         if (directory.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     directory));
     }
 
-    @Override public void perform() throws IOException {
+    @Override protected void onPerform() throws IOException {
         unzip(source, directory);
     }
 
-    @Override public void rollback() throws IOException {
+    @Override protected void onRevert() throws IOException {
         deletePath(directory);
     }
 }

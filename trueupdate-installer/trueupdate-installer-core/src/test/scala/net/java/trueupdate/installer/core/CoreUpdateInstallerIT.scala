@@ -10,7 +10,7 @@ import net.java.trueupdate.core.zip.diff.ZipDiff
 import net.java.trueupdate.core.zip.io.JarFileStore
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.manager.spec._
-import net.java.trueupdate.manager.spec.tx.Transaction
+import net.java.trueupdate.manager.spec.tx.Command
 import net.java.trueupdate.message._
 import UpdateMessage.Type
 import org.junit.runner.RunWith
@@ -45,9 +45,9 @@ class CoreUpdateInstallerIT extends WordSpec {
   def updateInstaller: UpdateInstaller = new CoreUpdateInstaller {
     def updateParameters(context: UpdateContext) = new UpdateParameters {
         override def currentPath = new File(context.currentLocation)
-        override def undeploymentTransaction() = mock[Transaction]
+        override def undeploymentTransaction() = mock[Command]
         override def updatePath = new File(context.updateLocation)
-        override def deploymentTransaction() = mock[Transaction]
+        override def deploymentTransaction() = mock[Command]
       }
   }
 
@@ -59,7 +59,7 @@ class CoreUpdateInstallerIT extends WordSpec {
       def updateLocation = um.updateLocation
       def deltaZip = _deltaZip
 
-      def decorate(id: Action, tx: Transaction) = tx
+      def decorate(id: Action, tx: Command) = tx
     }
 
   "A local update installer" should {

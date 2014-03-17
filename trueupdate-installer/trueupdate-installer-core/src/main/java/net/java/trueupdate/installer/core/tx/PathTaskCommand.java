@@ -8,7 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import static net.java.trueupdate.installer.core.io.Files.deletePath;
 
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.AbstractCommand;
+import net.java.trueupdate.manager.spec.tx.Command;
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -19,26 +20,24 @@ import static net.java.trueupdate.util.Objects.requireNonNull;
  *
  * @author Christian Schlichtherle
  */
-public final class PathTaskTransaction extends Transaction {
+final public class PathTaskCommand extends AbstractCommand {
 
     private final File path;
     private final PathTask<?, ?> task;
 
-    public PathTaskTransaction(
-            final File path,
-            final PathTask<?, ?> task) {
+    public PathTaskCommand(final File path, final PathTask<?, ?> task) {
         this.path = requireNonNull(path);
         this.task = requireNonNull(task);
     }
 
-    @Override public void prepare() throws IOException {
+    @Override protected void onStart() throws IOException {
         if (path.exists())
             throw new IOException(String.format(
                     "Will not overwrite existing file or directory %s .",
                     path));
     }
 
-    @Override public void perform() throws Exception {
+    @Override protected void onPerform() throws Exception {
         task.execute(path);
         if (!path.exists())
             throw new IOException(String.format(
@@ -46,7 +45,7 @@ public final class PathTaskTransaction extends Transaction {
                     path));
     }
 
-    @Override public void rollback() throws IOException {
+    @Override protected void onRevert() throws IOException {
         deletePath(path);
     }
 }

@@ -72,41 +72,41 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
             @Override public Void execute(final File tempDir) throws Exception {
                 final File updatedJar = new File(tempDir, "updated.jar");
                 final File backup = new File(tempDir, "backup");
-                final Transaction[] txs;
+                final Command[] txs;
                 if (up.currentPath().isFile()) {
-                    txs = new Transaction[] {
-                            decorate(PATCH, new PathTaskTransaction(
+                    txs = new Command[] {
+                            decorate(PATCH, new PathTaskCommand(
                                     updatedJar, new PatchTask(up.currentPath()))),
                             decorate(UNDEPLOY, up.undeploymentTransaction()),
-                            decorate(SWAP_OUT_FILE, new RenamePathTransaction(
+                            decorate(SWAP_OUT_FILE, new RenamePathCommand(
                                     up.currentPath(), backup)),
-                            decorate(SWAP_IN_FILE, new RenamePathTransaction(
+                            decorate(SWAP_IN_FILE, new RenamePathCommand(
                                     updatedJar, up.updatePath())),
                             decorate(DEPLOY, up.deploymentTransaction()),
                     };
                 } else {
                     final File currentZip = new File(tempDir, "current.zip");
                     final File updatedDir = new File(tempDir, "updated.dir");
-                    txs = new Transaction[] {
-                            decorate(ZIP, new ZipTransaction(
+                    txs = new Command[] {
+                            decorate(ZIP, new ZipCommand(
                                     currentZip, up.currentPath(), "")),
-                            decorate(PATCH, new PathTaskTransaction(
+                            decorate(PATCH, new PathTaskCommand(
                                     updatedJar, new PatchTask(currentZip))),
-                            decorate(UNZIP, new UnzipTransaction(
+                            decorate(UNZIP, new UnzipCommand(
                                     updatedJar, updatedDir)),
                             decorate(UNDEPLOY, up.undeploymentTransaction()),
-                            decorate(SWAP_OUT_DIR, new RenamePathTransaction(
+                            decorate(SWAP_OUT_DIR, new RenamePathCommand(
                                     up.currentPath(), backup)),
-                            decorate(SWAP_IN_DIR, new RenamePathTransaction(
+                            decorate(SWAP_IN_DIR, new RenamePathCommand(
                                     updatedDir, up.updatePath())),
                             decorate(DEPLOY, up.deploymentTransaction()),
                     };
                 }
-                Transactions.execute(new CompositeTransaction(txs));
+                Commands.execute(new CompositeCommand(txs));
                 return null;
             }
 
-            Transaction decorate(Action id, Transaction tx) {
+            Command decorate(Action id, Command tx) {
                 return uc.decorate(id, tx);
             }
         }, "dir", null, tempDir());

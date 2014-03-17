@@ -18,24 +18,6 @@ import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
 import net.java.trueupdate.manager.spec._
 import net.java.trueupdate.manager.spec.tx._
 
-/**
- * @author Christian Schlichtherle
- */
-object TomcatUpdateInstallerIT {
-
-  @Deployment def createDeployment = ShrinkWrap
-    .create(classOf[WebArchive])
-    .addClass(classOf[TomcatUpdateInstaller])
-
-  def testArchive = ShrinkWrap
-    .create(classOf[WebArchive])
-    .addClass(classOf[GoodbyeWorld])
-
-  def updateArchive = ShrinkWrap
-    .create(classOf[WebArchive])
-    .addClass(classOf[HelloWorld])
-}
-
 @RunWith(classOf[Arquillian])
 class TomcatUpdateInstallerIT {
 
@@ -52,14 +34,32 @@ class TomcatUpdateInstallerIT {
         override def currentLocation = location
         override def updateLocation = location
         override def deltaZip = null
-        override def decorate(id: Action, tx: Transaction) = tx
+        override def decorate(id: Action, tx: Command) = tx
       })
-    Transactions execute ad.deploymentTransaction
+    Commands execute ad.deploymentTransaction
 
-    Transactions execute ad.undeploymentTransaction
+    Commands execute ad.undeploymentTransaction
     deletePath(ad.currentPath)
 
     updateArchive as classOf[ZipExporter] exportTo testWar
-    Transactions execute ad.deploymentTransaction
+    Commands execute ad.deploymentTransaction
   }
+}
+
+/**
+ * @author Christian Schlichtherle
+ */
+object TomcatUpdateInstallerIT {
+
+  @Deployment def createDeployment = ShrinkWrap
+    .create(classOf[WebArchive])
+    .addClass(classOf[TomcatUpdateInstaller])
+
+  def testArchive = ShrinkWrap
+    .create(classOf[WebArchive])
+    .addClass(classOf[GoodbyeWorld])
+
+  def updateArchive = ShrinkWrap
+    .create(classOf[WebArchive])
+    .addClass(classOf[HelloWorld])
 }

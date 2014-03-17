@@ -4,18 +4,19 @@
  */
 package net.java.trueupdate.installer.openejb;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URI;
-import javax.annotation.concurrent.Immutable;
-import javax.ejb.EJB;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.AtomicMethodsTransaction;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.Command;
+import net.java.trueupdate.manager.spec.tx.Commands;
 import org.apache.openejb.assembler.Deployer;
 import org.apache.openejb.assembler.classic.AppInfo;
+
+import javax.annotation.concurrent.Immutable;
+import javax.ejb.EJB;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URI;
 
 /**
  * Installs updates for applications running in Apache OpenEJB.
@@ -39,38 +40,38 @@ public final class OpenEjbUpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cpath; }
 
-            @Override public Transaction undeploymentTransaction() {
+            @Override public Command undeploymentTransaction() {
 
-                class UndeploymentTransaction extends AtomicMethodsTransaction {
+                class UndeploymentCommand implements Command {
 
-                    @Override public void performAtomic() throws Exception {
+                    @Override public void perform() throws Exception {
                         deployer.undeploy(cpath.getPath());
                     }
 
-                    @Override public void rollbackAtomic() throws Exception {
+                    @Override public void revert() throws Exception {
                         deployer.deploy(cpath.getPath());
                     }
-                } // UndeploymentTransaction
+                } // UndeploymentCommand
 
-                return new UndeploymentTransaction();
+                return Commands.atomic(new UndeploymentCommand());
             }
 
             @Override public File updatePath() { return upath; }
 
-            @Override public Transaction deploymentTransaction() {
+            @Override public Command deploymentTransaction() {
 
-                class DeploymentTransaction extends AtomicMethodsTransaction {
+                class DeploymentCommand implements Command {
 
-                    @Override public void performAtomic() throws Exception {
+                    @Override public void perform() throws Exception {
                         deployer.deploy(upath.getPath());
                     }
 
-                    @Override public void rollbackAtomic() throws Exception {
+                    @Override public void revert() throws Exception {
                         deployer.undeploy(upath.getPath());
                     }
-                } // DeploymentTransaction
+                } // DeploymentCommand
 
-                return new DeploymentTransaction();
+                return Commands.atomic(new DeploymentCommand());
             }
         } // ResolvedParameters
 

@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.installer.core.CoreUpdateInstaller;
 import net.java.trueupdate.installer.core.UpdateParameters;
 import net.java.trueupdate.manager.spec.UpdateContext;
-import net.java.trueupdate.manager.spec.tx.Transaction;
+import net.java.trueupdate.manager.spec.tx.Command;
 
 /**
  * Installs updates for applications running in a container which is supported
@@ -35,13 +35,13 @@ public final class CargoUpdateInstaller extends CoreUpdateInstaller {
 
             @Override public File currentPath() { return cpath; }
 
-            @Override public Transaction undeploymentTransaction() {
+            @Override public Command undeploymentTransaction() {
                 return cctx.undeploymentTransaction();
             }
 
             @Override public File updatePath() { return upath; }
 
-            @Override public Transaction deploymentTransaction() {
+            @Override public Command deploymentTransaction() {
                 return uctx.deploymentTransaction();
             }
         } // ResolvedParameters

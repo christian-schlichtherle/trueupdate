@@ -4,28 +4,28 @@
  */
 package net.java.trueupdate.installer.core.tx
 
+import java.io._
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.scalatest.matchers.ShouldMatchers._
-import java.io._
-import net.java.trueupdate.manager.spec.tx.Transactions
+import net.java.trueupdate.manager.spec.tx.Commands
 
 /**
  * @author Christian Schlichtherle
  */
 @RunWith(classOf[JUnitRunner])
-class RenamePathTransactionIT extends FileTransactionITSuite {
+class CopyFileCommandIT extends FileCommandTestSuite {
 
   def tx(oneByte: File, notExists: File) =
-    new RenamePathTransaction(oneByte, notExists)
+    new CopyFileCommand(oneByte, notExists)
 
-  "A rename path transaction" when {
+  "A copy file transaction" when {
     "executing successfully" should {
-      "have renamed the source file to the destination file" in {
-        setUpAndLoan { (oneByte, notExists, tx) =>
-          Transactions execute tx
-          oneByte.exists should be (false)
-          notExists.length should be (1)
+      "have copied the null byte to the destination file" in {
+        setUpAndLoan { (file1, file2, tx) =>
+          Commands execute tx
+          file1.length should be (1)
+          file2.length should be (1)
         }
       }
     }

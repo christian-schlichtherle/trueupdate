@@ -7,6 +7,10 @@ package net.java.trueupdate.manager.core;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
+import edu.umd.cs.findbugs.annotations.CreatesObligation;
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.*;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
@@ -19,6 +23,7 @@ import net.java.trueupdate.message.UpdateMessage;
  *
  * @author Christian Schlichtherle
  */
+@CleanupObligation
 abstract class CoreUpdateResolver {
 
     private static final Logger logger = Logger.getLogger(
@@ -27,6 +32,9 @@ abstract class CoreUpdateResolver {
 
     private final Map<UpdateDescriptor, FileAccount>
             accounts = new HashMap<UpdateDescriptor, FileAccount>();
+
+    @CreatesObligation
+    CoreUpdateResolver() { }
 
     /** Returns the update client. */
     abstract UpdateClient updateClient();
@@ -81,35 +89,36 @@ abstract class CoreUpdateResolver {
     private File download(final UpdateDescriptor descriptor,
                           final UpdateContext context) throws Exception {
 
-        class DownloadTransaction extends Transaction {
+        class DownloadCommand extends AbstractCommand {
 
             File deltaZip;
 
-            @Override public void prepare() throws Exception {
+            @Override protected void onStart() throws Exception {
                 deltaZip = File.createTempFile("delta", ".zip");
             }
 
-            @Override public void perform() throws Exception {
+            @Override protected void onPerform() throws Exception {
                 final ArtifactDescriptor ad = descriptor.artifactDescriptor();
                 final String uv = descriptor.updateVersion();
                 Copy.copy(updateClient().diff(ad, uv), new FileStore(deltaZip));
             }
 
-            @Override public void rollback() throws Exception {
+            @Override protected void onRevert() throws Exception {
                 if (!deltaZip.delete() && deltaZip.exists())
                     throw new IOException(deltaZip + " (could not delete)");
             }
-        } // DownloadTransaction
+        } // DownloadCommand
 
-        final DownloadTransaction tx = new DownloadTransaction();
-        Transactions.execute(context.decorate(Action.DOWNLOAD, tx));
-        return tx.deltaZip;
+        final DownloadCommand cmd = new DownloadCommand();
+        Commands.execute(context.decorate(Action.DOWNLOAD, cmd));
+        return cmd.deltaZip;
     }
 
     /**
      * Closes this update resolver.
      * This method is idempotent.
      */
+    @DischargesObligation
     final void close() {
         for (final Iterator<FileAccount> it = accounts.values().iterator();
                 it.hasNext(); ) {
