@@ -4,8 +4,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A context for the method {@link Commands#time}.
+ * A log context.
  *
+ * @see Commands#time
  * @author Christian Schlichtherle
  */
 abstract public class LogContext {
