@@ -110,7 +110,7 @@ abstract class CoreUpdateResolver {
         } // DownloadCommand
 
         final DownloadCommand cmd = new DownloadCommand();
-        Commands.execute(context.decorate(cmd, ActionId.DOWNLOAD));
+        Commands.execute(context.decorate(cmd, CommandId.DOWNLOAD));
         return cmd.deltaZip;
     }
 

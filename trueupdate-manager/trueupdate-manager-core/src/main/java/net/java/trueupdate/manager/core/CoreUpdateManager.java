@@ -7,14 +7,14 @@ package net.java.trueupdate.manager.core;
 import edu.umd.cs.findbugs.annotations.CleanupObligation;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.jaxrs.client.UpdateClient;
-import net.java.trueupdate.manager.spec.ActionId;
+import net.java.trueupdate.manager.spec.CommandId;
 import net.java.trueupdate.manager.spec.UpdateContext;
 import net.java.trueupdate.manager.spec.UpdateInstaller;
 import net.java.trueupdate.manager.spec.UpdateManager;
 import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
 import net.java.trueupdate.manager.spec.cmd.Command;
 import net.java.trueupdate.manager.spec.cmd.Commands;
-import net.java.trueupdate.manager.spec.cmd.TimeContext;
+import net.java.trueupdate.manager.spec.cmd.LogContext;
 import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
 import net.java.trueupdate.message.UpdateMessageListener;
@@ -230,35 +230,21 @@ extends UpdateMessageListener implements UpdateManager {
             }
 
             @Override public Command decorate(
-                    final Command cmd, final ActionId id) {
-                final Command ttx = time(id, cmd);
-                return ActionId.UNDEPLOY == id ? undeploy(ttx) : checked(ttx);
+                    final Command cmd,
+                    final CommandId id) {
+                final Command tcmd = time(cmd, id);
+                return CommandId.UNDEPLOY == id ? undeploy(tcmd) : checked(tcmd);
             }
 
-            Command time(final ActionId id, final Command cmd) {
-                final TimeContext ctx = new TimeContext() {
+            Command time(final Command cmd, final CommandId id) {
+                return Commands.time(cmd,
+                        new CommandIdLogContext() {
+                            @Override String loggerName() {
+                                return CoreUpdateManager.class.getName();
+                            }
 
-                    @Override protected Logger logger() { return logger; }
-
-                    @Override
-                    protected String startingMessage(TimeContext.Method method) {
-                        // Our log message uses its parameters to figure the method.
-                        return id.beginKey();
-                    }
-
-                    @Override
-                    protected String succeededMessage(TimeContext.Method method) {
-                        // Our log message uses its parameters to figure the method and status.
-                        return id.endKey();
-                    }
-
-                    @Override
-                    protected String failedMessage(TimeContext.Method method) {
-                        // Our log message uses its parameters to figure the method and status.
-                        return id.endKey();
-                    }
-                };
-                return Commands.time(ctx, cmd);
+                            @Override CommandId commandId() { return id; }
+                        });
             }
 
             Command undeploy(final Command cmd) {

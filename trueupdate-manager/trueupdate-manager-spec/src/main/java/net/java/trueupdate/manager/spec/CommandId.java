@@ -12,21 +12,24 @@ import net.java.trueupdate.message.UpdateMessage;
  *
  * @author Christian Schlichtherle
  */
-public enum ActionId {
+public enum CommandId {
 
     DOWNLOAD, ZIP, PATCH, UNZIP, UNDEPLOY,
     SWAP_OUT_FILE, SWAP_OUT_DIR, SWAP_IN_FILE, SWAP_IN_DIR,
     DEPLOY;
 
+    /** Returns the resource bundle name. */
+    public static String resourceBundleName() {
+        return UpdateMessage.class.getName();
+    }
+
+    /** Returns the key for the begin message. */
     public String beginKey() { return prefix() + ".begin"; }
 
+    /** Returns the key for the end message. */
     public String endKey() { return prefix() + ".end"; }
 
-    /**
-     * Returns the prefix for the key for the message catalog in the resource
-     * bundle for the class {@link UpdateMessage}.
-     */
-    public String prefix() {
+    private String prefix() {
         return "cmd." + name().toLowerCase(Locale.ENGLISH);
     }
 }

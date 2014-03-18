@@ -32,9 +32,6 @@ public interface UpdateContext {
      */
     File deltaZip();
 
-    /**
-     * Decorates the given command with another command which depends on the
-     * given action identifier.
-     */
-    Command decorate(Command cmd, ActionId id);
+    /** Decorates the given command depending on the given identifier. */
+    Command decorate(Command cmd, CommandId id);
 }

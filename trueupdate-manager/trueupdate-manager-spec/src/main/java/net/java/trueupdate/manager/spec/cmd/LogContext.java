@@ -8,18 +8,19 @@ import java.util.logging.Logger;
  *
  * @author Christian Schlichtherle
  */
-abstract public class TimeContext {
+abstract public class LogContext {
 
-    protected void logStarting(Method method) {
-        logger().log(startingLevel(method), startingMessage(method), method);
+    public void logStarting(Method method) {
+        logger().log(startingLevel(method), startingMessage(method),
+                method.ordinal());
     }
 
-    protected void logSucceeded(Method method, long durationMillis) {
+    public void logSucceeded(Method method, long durationMillis) {
         logger().log(succeededLevel(method), succeededMessage(method),
                 params(method, true, durationMillis));
     }
 
-    protected void logFailed(Method method, long durationMillis) {
+    public void logFailed(Method method, long durationMillis) {
         logger().log(failedLevel(method), failedMessage(method),
                 params(method, false, durationMillis));
     }
@@ -71,7 +72,7 @@ abstract public class TimeContext {
 
         abstract void invoke(Command command) throws Exception;
 
-        public Level startingLevel() { return Level.FINE; }
+        public Level startingLevel() { return Level.INFO; }
         public Level succeededLevel() { return Level.INFO; }
         public Level failedLevel() { return Level.WARNING; }
     } // Method

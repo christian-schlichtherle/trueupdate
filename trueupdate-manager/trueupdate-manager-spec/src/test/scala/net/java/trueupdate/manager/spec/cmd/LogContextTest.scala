@@ -6,15 +6,15 @@ import org.scalatest.WordSpec
 import org.mockito.Mockito._
 import java.util.logging.Logger
 import java.util.logging.Level._
-import net.java.trueupdate.manager.spec.cmd.TimeContext.Method
+import net.java.trueupdate.manager.spec.cmd.LogContext.Method
 import org.scalatest.mock.MockitoSugar.mock
-import TimeContext.Method._
+import LogContext.Method._
 import java.util.Calendar
 import org.scalatest.prop.PropertyChecks._
 
 /** @author Christian Schlichtherle */
 @RunWith(classOf[JUnitRunner])
-class TimeContextTest extends WordSpec {
+class LogContextTest extends WordSpec {
 
   val methods = Table("method", perform, revert)
 
@@ -29,18 +29,18 @@ class TimeContextTest extends WordSpec {
     cal.getTimeInMillis
   }
 
-  "A TimeContext" should {
+  "A LogContext" should {
     "log the starting of the methods" in {
-      val tc = new TestTimeContext
+      val tc = new TestLogContext
       forAll(methods) { method =>
         tc.logStarting(method)
-        verify(tc.logger) log (FINE, tc startingMessage method, method)
+        verify(tc.logger) log (INFO, tc startingMessage method, method.ordinal)
       }
       verifyNoMoreInteractions(tc.logger)
     }
 
     "log the success of the methods" in {
-      val tc = new TestTimeContext
+      val tc = new TestLogContext
       forAll(methods) { method =>
         tc.logSucceeded(method, durationMillis)
         verify(tc.logger) log (INFO, tc succeededMessage method,
@@ -50,7 +50,7 @@ class TimeContextTest extends WordSpec {
     }
 
     "log the failure of the methods" in {
-      val tc = new TestTimeContext
+      val tc = new TestLogContext
       forAll(methods) { method =>
         tc.logFailed(method, durationMillis)
         verify(tc.logger) log (WARNING, tc failedMessage method,
@@ -61,7 +61,7 @@ class TimeContextTest extends WordSpec {
   }
 }
 
-private class TestTimeContext extends TimeContext {
+private class TestLogContext extends LogContext {
   override val logger = mock[Logger]
   override def startingMessage(method: Method) = "Starting to " + method
   override def succeededMessage(method: Method) = "Succeeded to " + method

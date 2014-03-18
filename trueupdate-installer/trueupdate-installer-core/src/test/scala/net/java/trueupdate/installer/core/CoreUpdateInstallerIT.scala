@@ -59,7 +59,7 @@ class CoreUpdateInstallerIT extends WordSpec {
       def updateLocation = um.updateLocation
       def deltaZip = _deltaZip
 
-      def decorate(cmd: Command, id: ActionId) = cmd
+      def decorate(cmd: Command, id: CommandId) = cmd
     }
 
   "A local update installer" should {

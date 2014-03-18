@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar.mock
-import TimeContext.Method._
+import LogContext.Method._
 import org.mockito.{ArgumentMatcher, Matchers}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -43,9 +43,9 @@ class CommandsTest extends WordSpec {
     "given a time context and a command" should {
       "log the start and success events" in {
         forAll(Table("method", perform, revert)) { method =>
-          val ctx = mock[TimeContext]
           val cmd = mock[Command]
-          method invoke (Commands time (ctx, cmd))
+          val ctx = mock[LogContext]
+          method invoke (Commands time (cmd, ctx))
           val io = inOrder(ctx, cmd)
           import io._
           verify(ctx) logStarting method
@@ -58,12 +58,12 @@ class CommandsTest extends WordSpec {
 
       "log the start and failure events" in {
         forAll(Table("method", perform, revert)) { method =>
-          val ctx = mock[TimeContext]
           val cmd = mock[Command]
+          val ctx = mock[LogContext]
           when(cmd perform ()) thenThrow new UnsupportedOperationException
           when(cmd revert ()) thenThrow new UnsupportedOperationException
           intercept[UnsupportedOperationException] {
-            method invoke (Commands time (ctx, cmd))
+            method invoke (Commands time (cmd, ctx))
           }
           val io = inOrder(ctx, cmd)
           import io._

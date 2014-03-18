@@ -17,26 +17,22 @@ public final class Commands {
     private static final ThreadLocal<Boolean>
             busy = new InheritableThreadLocal<Boolean>();
 
-    private static Logger logger() {
-        return Logger.getLogger(Commands.class.getName());
-    }
-
     /**
      * Executes the given command.
      *
      * @throws IllegalStateException if this method is called recursively.
      */
-    public static void execute(final Command command) throws Exception {
+    public static void execute(final Command cmd) throws Exception {
         if (Boolean.TRUE.equals(busy.get()))
             throw new UnsupportedOperationException(
                     "Nested commands are not supported because they can't get reverted when the enclosing command gets reverted - refactor to CompositeCommand instead.");
         busy.set(Boolean.TRUE);
         try {
             try {
-                command.perform();
+                cmd.perform();
             } catch (final Throwable t1) {
                 try {
-                    command.revert();
+                    cmd.revert();
                 } catch (Throwable t2) {
                     logger().log(Level.SEVERE, "Exception while reverting command - the state of the system is likely corrupted.", t2);
                 }
@@ -45,6 +41,10 @@ public final class Commands {
         } finally {
             busy.remove();
         }
+    }
+
+    private static Logger logger() {
+        return Logger.getLogger(Commands.class.getName());
     }
 
     private static void rethrow(final Throwable t1) throws Exception {
@@ -66,29 +66,29 @@ public final class Commands {
      * @return the logging command.
      */
     public static Command time(
-            final TimeContext context,
-            final Command command) {
+            final Command cmd,
+            final LogContext ctx) {
         return new Command() {
 
             @Override public void perform() throws Exception {
-                time(TimeContext.Method.perform);
+                time(LogContext.Method.perform);
             }
 
             @Override public void revert() throws Exception {
-                time(TimeContext.Method.revert);
+                time(LogContext.Method.revert);
             }
 
-            void time(final TimeContext.Method method) throws Exception {
-                context.logStarting(method);
+            void time(final LogContext.Method method) throws Exception {
+                ctx.logStarting(method);
                 Throwable t1 = null;
                 final long started = System.currentTimeMillis();
-                try { method.invoke(command); } catch (Throwable t2) { t1 = t2; }
+                try { method.invoke(cmd); } catch (Throwable t2) { t1 = t2; }
                 final long finished = System.currentTimeMillis();
                 final long durationMillis = finished - started;
                 if (null == t1) {
-                    context.logSucceeded(method, durationMillis);
+                    ctx.logSucceeded(method, durationMillis);
                 } else {
-                    context.logFailed(method, durationMillis);
+                    ctx.logFailed(method, durationMillis);
                     rethrow(t1);
                 }
             }
@@ -101,7 +101,7 @@ public final class Commands {
      * previous call to the {@link Command#perform} method has succeeded, for
      * example if a subsequent command in a {@link CompositeCommand} fails.
      */
-    public static Command atomic(final Command command) {
+    public static Command atomic(final Command cmd) {
         return new Command() {
 
             boolean performed;
@@ -109,13 +109,13 @@ public final class Commands {
             @Override public void perform() throws Exception {
                 if (performed)
                     throw new IllegalStateException("Not idempotent.");
-                command.perform();
+                cmd.perform();
                 performed = true;
             }
 
             @Override public void revert() throws Exception {
                 if (performed) {
-                    command.revert();
+                    cmd.revert();
                     performed = false;
                 }
             }

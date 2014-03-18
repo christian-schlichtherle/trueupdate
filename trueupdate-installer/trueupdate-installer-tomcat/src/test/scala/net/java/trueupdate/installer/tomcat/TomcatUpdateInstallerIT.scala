@@ -34,7 +34,7 @@ class TomcatUpdateInstallerIT {
         override def currentLocation = location
         override def updateLocation = location
         override def deltaZip = null
-        override def decorate(cmd: Command, id: ActionId) = cmd
+        override def decorate(cmd: Command, id: CommandId) = cmd
       }
     Commands execute ad.deploymentCommand
 

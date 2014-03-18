@@ -13,7 +13,7 @@ import static net.java.trueupdate.installer.core.io.Files.*;
 import net.java.trueupdate.installer.core.cmd.PathTask;
 import net.java.trueupdate.installer.core.cmd.*;
 import net.java.trueupdate.manager.spec.*;
-import static net.java.trueupdate.manager.spec.ActionId.*;
+import static net.java.trueupdate.manager.spec.CommandId.*;
 import net.java.trueupdate.manager.spec.cmd.*;
 
 /**
@@ -106,7 +106,7 @@ public abstract class CoreUpdateInstaller implements UpdateInstaller {
                 return null;
             }
 
-            Command decorate(ActionId id, Command cmd) {
+            Command decorate(CommandId id, Command cmd) {
                 return uc.decorate(cmd, id);
             }
         }, "dir", null, tempDir());
