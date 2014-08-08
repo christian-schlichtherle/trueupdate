@@ -41,6 +41,22 @@ class TransferSize implements Serializable {
         throw new AssertionError();
     }
 
+    @Override public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof TransferSize)) return false;
+        final TransferSize that = (TransferSize) obj;
+        return Double.compare(this.amount, that.amount) == 0 &&
+                this.unit == that.unit;
+    }
+
+    @Override public int hashCode() {
+        final long temp = Double.doubleToLongBits(amount);
+        int c;
+        c = (int) (temp ^ (temp >>> 32));
+        c = 31 * c + unit.hashCode();
+        return c;
+    }
+
     /**
      * Returns a human readable string representation of the number of bytes
      * transferred.
