@@ -4,6 +4,7 @@
  */
 package net.java.trueupdate.util;
 
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
@@ -31,7 +32,7 @@ public final class Services {
         try {
             return ServiceLoader.load(service).iterator().next();
         } catch (NoSuchElementException ex) {
-            throw new ServiceConfigurationError(String.format(
+            throw new ServiceConfigurationError(String.format(Locale.ENGLISH,
                     "Could not find an implementation of the service %s on the class path.",
                     service), ex);
         }
