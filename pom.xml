@@ -109,7 +109,7 @@
 
         <!-- For dependency management. -->
         <aether.version>0.9.0.M2</aether.version>
-        <cargo.version>1.4.7</cargo.version>
+        <cargo.version>1.4.10</cargo.version>
         <jersey.version>1.17.1</jersey.version>
         <maven.version>3.2.1</maven.version>
         <openejb.version>4.6.0</openejb.version>
