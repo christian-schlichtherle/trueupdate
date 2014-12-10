@@ -8,7 +8,7 @@ import java.util.logging._
 import org.junit.runner.RunWith
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.Matchers._
 import org.scalatest.prop.PropertyChecks._
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor
 import net.java.trueupdate.message.UpdateMessage
@@ -50,8 +50,8 @@ class JAXBTest extends WordSpec {
   }
 
   val subjects = Table(
-    ("original"),
-    (builder
+    "original",
+    builder
       .from("from")
       .to("to")
       .`type`(Type.UPDATE_NOTICE)
@@ -59,10 +59,10 @@ class JAXBTest extends WordSpec {
         .groupId("groupId")
         .artifactId("artifactId")
         .version("version")
-        .inject)
+        .inject
       .currentLocation("currentLocation")
       .build,
-    (addLogRecord(builder
+    addLogRecord(builder
       .from("from")
       .to("to")
       .`type`(Type.UPDATE_NOTICE)
@@ -76,7 +76,7 @@ class JAXBTest extends WordSpec {
       .updateVersion("updateVersion")
       .currentLocation("currentLocation")
       .updateLocation("updateLocation")
-      .build))
+      .build)
   )
 
   "An update message" when {
@@ -85,7 +85,7 @@ class JAXBTest extends WordSpec {
         forAll(subjects) { original =>
           val originalEncoding = JAXB.encode(original)
           JAXBTest.logger log (Level.FINE, "\n{0}", originalEncoding)
-          originalEncoding contains "xsi:type" should not be (true)
+          originalEncoding contains "xsi:type" should not be true
           val clone = JAXB.decode(originalEncoding)
           clone should equal (original)
         }
