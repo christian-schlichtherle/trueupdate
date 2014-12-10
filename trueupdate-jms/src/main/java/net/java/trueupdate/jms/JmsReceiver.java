@@ -63,7 +63,7 @@ public final class JmsReceiver implements Runnable {
     private JmsReceiver(final Builder<?> b) {
         this.subscriptionName = b.subscriptionName;
         this.messageSelector = b.messageSelector;
-        this.messageListener = requireNonNull(b.messageListener);
+        this.messageListener = new JmsListener(b.updateMessageListener);
         this.destination = requireNonNull(b.destination);
         this.connectionFactory = requireNonNull(b.connectionFactory);
         this.executorService = requireNonNull(b.executorService);
@@ -177,7 +177,7 @@ public final class JmsReceiver implements Runnable {
         @CheckForNull ConnectionFactory connectionFactory;
         @CheckForNull Destination destination;
         @CheckForNull String messageSelector, subscriptionName;
-        @CheckForNull MessageListener messageListener;
+        @CheckForNull UpdateMessageListener updateMessageListener;
         @CheckForNull ExecutorService executorService;
 
         protected Builder() { }
@@ -206,17 +206,9 @@ public final class JmsReceiver implements Runnable {
             return this;
         }
 
-        public final Builder<P> messageListener(
-                final @Nullable MessageListener messageListener) {
-            this.messageListener = messageListener;
-            return this;
-        }
-
         public final Builder<P> updateMessageListener(
-                final @CheckForNull UpdateMessageListener updateMessageListener) {
-            this.messageListener = null == updateMessageListener
-                    ? null
-                    : JmsListener.create(updateMessageListener);
+                final @Nullable UpdateMessageListener updateMessageListener) {
+            this.updateMessageListener = updateMessageListener;
             return this;
         }
 
