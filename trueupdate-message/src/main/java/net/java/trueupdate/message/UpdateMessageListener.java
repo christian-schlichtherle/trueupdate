@@ -15,11 +15,6 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class UpdateMessageListener {
 
-    /** Returns the filter to use before dispatching an update message. */
-    protected UpdateMessageFilter filter() {
-        return UpdateMessageFilter.ACCEPT_ALL;
-    }
-
     /**
      * Filters the given update message and dispatches the call to the
      * corresponding {@code visit<Type>(UpdateMessage)} method, where
@@ -29,6 +24,11 @@ public abstract class UpdateMessageListener {
     public void onUpdateMessage(UpdateMessage message) throws Exception {
         if (filter().accept(message))
             message.type().dispatchMessageTo(message, this);
+    }
+
+    /** Returns the filter to use before dispatching an update message. */
+    protected UpdateMessageFilter filter() {
+        return UpdateMessageFilter.ACCEPT_ALL;
     }
 
     protected void onSubscriptionNotice(UpdateMessage message)

@@ -32,17 +32,19 @@ final class JAXB {
     static String encode(final UpdateMessage message) throws Exception {
         final StringWriter sw = new StringWriter(1024);
         final Marshaller m = marshaller();
-        if (!message.attachedLogs().isEmpty()) try {
-            m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
-                    new DtoNamespaceMapper());
-        } catch(Exception anIncompatibleJaxbImplementationIsUsed) {
+        if (!message.attachedLogs().isEmpty()) {
+            try {
+                m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
+                        new DtoNamespaceMapper());
+            } catch (Exception anIncompatibleJaxbImplementationIsUsed) {
+            }
         }
         m.marshal(adapter().marshal(message), sw);
         return sw.toString();
     }
 
     static UpdateMessage decode(String string) throws Exception {
-        return (UpdateMessage) adapter().unmarshal(
+        return adapter().unmarshal(
                 (UpdateMessageDto) unmarshaller().unmarshal(
                     new StringReader(string)));
     }
