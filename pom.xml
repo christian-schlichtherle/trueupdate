@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.java.truecommons</groupId>
         <artifactId>truecommons-parent</artifactId>
-        <version>75</version>
+        <version>84</version>
     </parent>
 
     <groupId>net.java.trueupdate</groupId>
@@ -109,10 +109,10 @@
 
         <!-- For dependency management. -->
         <aether.version>0.9.0.M2</aether.version>
-        <cargo.version>1.4.10</cargo.version>
-        <jersey.version>1.17.1</jersey.version>
-        <maven.version>3.2.1</maven.version>
-        <openejb.version>4.6.0</openejb.version>
+        <cargo.version>1.4.11</cargo.version>
+        <jersey.version>1.18.3</jersey.version>
+        <maven.version>3.2.3</maven.version>
+        <openejb.version>4.7.1</openejb.version>
         <tomcat.version>7.0.50</tomcat.version>
         <wagon.version>1.2.1</wagon.version>
     </properties>
@@ -274,11 +274,11 @@
                 <artifactId>trueupdate-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!-- This must appear BEFORE the rest. -->
+            <!-- This dependency must appear BEFORE the rest. -->
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.1.1.Final</version>
+                <version>1.1.5.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -286,12 +286,6 @@
                 <groupId>asm</groupId>
                 <artifactId>asm</artifactId>
                 <version>3.3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>2.0.3</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
@@ -360,16 +354,21 @@
             <dependency>
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-all</artifactId>
-                <version>5.9.0</version>
+                <version>5.10.0</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-catalina</artifactId>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
                 <version>${tomcat.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-jasper</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-logging-juli</artifactId>
                 <version>${tomcat.version}</version>
             </dependency>
             <dependency>
@@ -400,7 +399,7 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
-                <version>3.0.17</version>
+                <version>3.0.21</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.aether</groupId>
