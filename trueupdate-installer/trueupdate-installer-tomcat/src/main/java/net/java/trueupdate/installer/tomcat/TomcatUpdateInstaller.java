@@ -34,11 +34,11 @@ import java.io.IOException;
 @Immutable
 public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
-    private static final ObjectName pattern;
+    private static final ObjectName PATTERN;
 
     static {
         try {
-            pattern = new ObjectName("*:type=Engine");
+            PATTERN = new ObjectName("*:type=Engine");
         } catch (MalformedObjectNameException ex) {
             throw new AssertionError(ex);
         }
@@ -49,7 +49,7 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
 
     public TomcatUpdateInstaller() {
         for (final MBeanServer mbs : MBeanServerFactory.findMBeanServer(null)) {
-            for (final ObjectName on : mbs.queryNames(pattern, null)) {
+            for (final ObjectName on : mbs.queryNames(PATTERN, null)) {
                 try {
                     final Engine engine = (Engine) mbs.getAttribute(on, "managedResource");
                     final Host host = (Host) engine.findChild(engine.getDefaultHost());
@@ -62,6 +62,8 @@ public final class TomcatUpdateInstaller extends CoreUpdateInstaller {
                             }
                         }
                     }
+                } catch (RuntimeException e) {
+                    throw e;
                 } catch (Exception ignored) {
                 }
             }
