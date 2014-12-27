@@ -4,27 +4,35 @@
  */
 package net.java.trueupdate.artifact.maven;
 
-import java.io.File;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.*;
-import static java.util.Arrays.asList;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-import static net.java.trueupdate.artifact.maven.ArtifactConverters.*;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.artifact.spec.ArtifactResolver;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.eclipse.aether.*;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositoryException;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
-import org.eclipse.aether.connector.wagon.*;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.repository.*;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.spi.locator.ServiceLocator;
 import org.eclipse.aether.spi.log.LoggerFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.version.Version;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.concurrent.Immutable;
+import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static net.java.trueupdate.artifact.maven.ArtifactConverters.artifact;
+import static net.java.trueupdate.artifact.maven.ArtifactConverters.updateRangeArtifact;
 
 /**
  * Resolves paths to described artifacts and their latest update by looking
@@ -155,10 +163,9 @@ public final class MavenArtifactResolver implements ArtifactResolver {
         final DefaultServiceLocator sl = MavenRepositorySystemUtils
                 .newServiceLocator()
                 .addService(RepositoryConnectorFactory.class,
-                        FileRepositoryConnectorFactory.class)
-                .addService(RepositoryConnectorFactory.class,
-                        WagonRepositoryConnectorFactory.class)
-                .setServices(WagonProvider.class, new AhcWagonProvider());
+                        BasicRepositoryConnectorFactory.class)
+                .addService(TransporterFactory.class,
+                        HttpTransporterFactory.class);
         sl.setErrorHandler(errorHandler());
         if (LegacySlf4jLoggerFactory.AVAILABLE)
             sl.setService(LoggerFactory.class, LegacySlf4jLoggerFactory.class);

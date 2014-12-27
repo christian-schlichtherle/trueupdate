@@ -108,13 +108,11 @@
         <maven.compiler.target>1.${javase.version}</maven.compiler.target>
 
         <!-- For dependency management. -->
-        <aether.version>0.9.0.M2</aether.version>
+        <aether.version>1.0.1.v20141111</aether.version>
         <cargo.version>1.4.11</cargo.version>
         <jersey.version>1.18.3</jersey.version>
-        <maven.version>3.2.5</maven.version>
         <openejb.version>4.7.1</openejb.version>
         <tomcat.version>7.0.50</tomcat.version>
-        <wagon.version>1.2.1</wagon.version>
     </properties>
 
     <dependencyManagement>
@@ -369,7 +367,7 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-aether-provider</artifactId>
-                <version>${maven.version}</version>
+                <version>3.2.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openejb</groupId>
@@ -398,23 +396,38 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-connector-file</artifactId>
+                <artifactId>aether-api</artifactId>
                 <version>${aether.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-connector-wagon</artifactId>
+                <artifactId>aether-connector-basic</artifactId>
+                <version>${aether.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-impl</artifactId>
+                <version>${aether.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-spi</artifactId>
+                <version>${aether.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-transport-http</artifactId>
+                <version>${aether.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-util</artifactId>
                 <version>${aether.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.sonatype.maven</groupId>
-                <artifactId>wagon-ahc</artifactId>
-                <version>${wagon.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
