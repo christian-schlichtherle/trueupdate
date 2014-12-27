@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.java.truecommons</groupId>
         <artifactId>truecommons-parent</artifactId>
-        <version>84</version>
+        <version>86</version>
     </parent>
 
     <groupId>net.java.trueupdate</groupId>
@@ -111,7 +111,7 @@
         <aether.version>0.9.0.M2</aether.version>
         <cargo.version>1.4.11</cargo.version>
         <jersey.version>1.18.3</jersey.version>
-        <maven.version>3.2.3</maven.version>
+        <maven.version>3.2.5</maven.version>
         <openejb.version>4.7.1</openejb.version>
         <tomcat.version>7.0.50</tomcat.version>
         <wagon.version>1.2.1</wagon.version>
@@ -281,11 +281,6 @@
                 <version>1.1.5.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>3.3.1</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
