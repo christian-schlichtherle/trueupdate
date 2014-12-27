@@ -5,12 +5,13 @@
 package net.java.trueupdate.artifact.maven.it
 
 import java.io.File
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers._
-import org.scalatest.WordSpec
+
+import net.java.trueupdate.artifact.maven.it.MavenArtifactResolverIT._
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor
-import MavenArtifactResolverIT._
+import org.junit.runner.RunWith
+import org.scalatest.WordSpec
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.Matchers._
 
 private object MavenArtifactResolverIT {
 
@@ -43,16 +44,16 @@ extends WordSpec with MavenArtifactResolverTestContext {
     "resolve a readable artifact file" in {
       val artifactFile = artifactResolver resolveArtifactFile artifactDescriptor
       artifactFile should equal (resolvedPath(artifactDescriptor))
-      artifactFile canRead () should be (true)
+      artifactFile canRead () should equal (true)
     }
 
     "resolve an update version and a readable artifact file" in {
       val updateVersion = artifactResolver resolveUpdateVersion artifactDescriptor
-      updateVersion should not equal (artifactDescriptor.version)
+      updateVersion should not equal artifactDescriptor.version
       val updateDescriptor = artifactDescriptor version updateVersion
       val updateFile = artifactResolver resolveArtifactFile updateDescriptor
       updateFile should equal (resolvedPath(updateDescriptor))
-      updateFile canRead () should be (true)
+      updateFile canRead () should equal (true)
     }
   }
 }
