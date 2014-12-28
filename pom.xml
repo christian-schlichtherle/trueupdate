@@ -117,11 +117,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-agent-spec</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!-- Project dependencies, sorted alphabetically. -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>trueupdate-agent-core</artifactId>
@@ -145,24 +141,29 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-spec</artifactId>
+                <artifactId>trueupdate-agent-spec</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-spec</artifactId>
+                <artifactId>trueupdate-artifact-maven</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>trueupdate-artifact-maven</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-spec</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>trueupdate-artifact-maven</artifactId>
+                <artifactId>trueupdate-artifact-spec</artifactId>
                 <type>test-jar</type>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -272,7 +273,8 @@
                 <artifactId>trueupdate-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!-- This dependency must appear BEFORE the rest. -->
+
+            <!-- This is an import, so it must appear BEFORE the third party dependencies. -->
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
@@ -280,6 +282,8 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- Third party dependencies, sorted alphabetically. -->
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
@@ -350,6 +354,21 @@
                 <version>5.10.0</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-aether-provider</artifactId>
+                <version>3.2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openejb</groupId>
+                <artifactId>arquillian-openejb-embedded-4</artifactId>
+                <version>${openejb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openejb</groupId>
+                <artifactId>openejb-core</artifactId>
+                <version>${openejb.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-core</artifactId>
                 <version>${tomcat.version}</version>
@@ -363,26 +382,6 @@
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-logging-juli</artifactId>
                 <version>${tomcat.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-aether-provider</artifactId>
-                <version>3.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.openejb</groupId>
-                <artifactId>arquillian-openejb-embedded-4</artifactId>
-                <version>${openejb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-tomcat-embedded-7</artifactId>
-                <version>1.0.0.CR6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.openejb</groupId>
-                <artifactId>openejb-core</artifactId>
-                <version>${openejb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.cargo</groupId>
@@ -423,6 +422,11 @@
                 <groupId>org.eclipse.aether</groupId>
                 <artifactId>aether-util</artifactId>
                 <version>${aether.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-tomcat-embedded-7</artifactId>
+                <version>1.0.0.CR6</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
