@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-tomcat-embedded-7</artifactId>
+            <artifactId>arquillian-tomcat-embedded-8</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

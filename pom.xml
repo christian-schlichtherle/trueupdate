@@ -112,7 +112,7 @@
         <cargo.version>1.4.11</cargo.version>
         <jersey.version>1.18.3</jersey.version>
         <openejb.version>4.7.1</openejb.version>
-        <tomcat.version>7.0.50</tomcat.version>
+        <tomcat.version>8.0.15</tomcat.version>
     </properties>
 
     <dependencyManagement>
@@ -431,7 +431,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-tomcat-embedded-7</artifactId>
+                <artifactId>arquillian-tomcat-embedded-8</artifactId>
                 <version>1.0.0.CR6</version>
             </dependency>
             <dependency>
