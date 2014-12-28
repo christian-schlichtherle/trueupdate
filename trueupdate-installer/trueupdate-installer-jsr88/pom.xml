@@ -28,8 +28,6 @@
         <dependency>
             <groupId>javax.enterprise.deploy</groupId>
             <artifactId>javax.enterprise.deploy-api</artifactId>
-            <version>1.${javaee.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
