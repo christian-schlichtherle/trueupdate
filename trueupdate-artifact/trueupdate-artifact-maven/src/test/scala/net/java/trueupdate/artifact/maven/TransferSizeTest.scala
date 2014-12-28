@@ -5,10 +5,11 @@
 package net.java.trueupdate.artifact.maven
 
 import java.util.Locale
+
 import org.junit.runner.RunWith
+import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
 
 /** @author Christian Schlichtherle */
@@ -19,10 +20,10 @@ class TransferSizeTest extends WordSpec {
     "given negative sizes" should {
       "throw an IllegalArgumentException" in {
         val table = Table(
-          ("size"),
-          (-1L),
-          (-1024L),
-          (Long.MinValue)
+          "size",
+          -1L,
+          -1024L,
+          Long.MinValue
         )
         forAll(table) { sizeBytes =>
           intercept[IllegalArgumentException] { new TransferSize(sizeBytes) }

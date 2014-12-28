@@ -35,6 +35,6 @@ class TransferRate extends TransferSize {
      * transferred per second.
      */
     @Override public String toString(Locale locale) {
-        return super.toString(locale) + " per second";
+        return super.toString(locale) + "/second";
     }
 }

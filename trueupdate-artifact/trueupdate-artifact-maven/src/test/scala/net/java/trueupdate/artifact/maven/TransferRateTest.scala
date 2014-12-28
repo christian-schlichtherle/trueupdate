@@ -5,10 +5,11 @@
 package net.java.trueupdate.artifact.maven
 
 import java.util.Locale
+
 import org.junit.runner.RunWith
+import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.prop.PropertyChecks._
 
 /** @author Christian Schlichtherle */
@@ -37,17 +38,17 @@ class TransferRateTest extends WordSpec {
       "represent the transferred number of bytes" in {
         val table = Table(
           ("size", "millis", "string"),
-          (0L, 1000L, "0.00 bytes per second"),
-          (1L, 1000L, "1.00 bytes per second"),
-          (1023L, 1000L, "1,023.00 bytes per second"),
-          (1024L, 1000L, "1.00 KB per second"),
-          (1024L * 1024 - 1, 1000L, "1,024.00 KB per second"),
-          (1024L * 1024, 1000L, "1.00 MB per second"),
-          (1024L * 1024 * 1024 - 1, 1000L, "1,024.00 MB per second"),
-          (1024L * 1024 * 1024, 1000L, "1.00 GB per second"),
-          (1024L * 1024 * 1024 * 1024 - 1, 1000L, "1,024.00 GB per second"),
-          (1024L * 1024 * 1024 * 1024, 1000L, "1,024.00 GB per second"),
-          (1024L * 1024 * 1024 * 1024 * 1024, 1000L, "1,048,576.00 GB per second")
+          (0L, 1000L, "0.00 bytes/second"),
+          (1L, 1000L, "1.00 bytes/second"),
+          (1023L, 1000L, "1,023.00 bytes/second"),
+          (1024L, 1000L, "1.00 KB/second"),
+          (1024L * 1024 - 1, 1000L, "1,024.00 KB/second"),
+          (1024L * 1024, 1000L, "1.00 MB/second"),
+          (1024L * 1024 * 1024 - 1, 1000L, "1,024.00 MB/second"),
+          (1024L * 1024 * 1024, 1000L, "1.00 GB/second"),
+          (1024L * 1024 * 1024 * 1024 - 1, 1000L, "1,024.00 GB/second"),
+          (1024L * 1024 * 1024 * 1024, 1000L, "1,024.00 GB/second"),
+          (1024L * 1024 * 1024 * 1024 * 1024, 1000L, "1,048,576.00 GB/second")
         )
         forAll(table) { (sizeBytes, durationMillis, string) =>
           new TransferRate(sizeBytes, durationMillis) toString Locale.ENGLISH should equal (string)
