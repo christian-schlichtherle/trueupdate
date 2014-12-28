@@ -56,7 +56,8 @@ class JAXBTest extends WordSpec {
       forAll(table) { originalMessage =>
         val encoding = JAXB.encode(originalMessage)
         logger log (Level.FINE, "\n{0}", encoding)
-        encoding should not include "xsi:type"
+        encoding should not (fullyMatch regex moreThanOneXmlSchemaNamespaceDeclarationRegex)
+        encoding should not (fullyMatch regex moreThanOneXmlSchemaInstanceNamespaceDeclarationRegex)
         val clonedMessage = JAXB.decode(encoding)
         clonedMessage should equal (originalMessage)
       }
@@ -67,6 +68,9 @@ class JAXBTest extends WordSpec {
 object JAXBTest {
 
   val logger = Logger.getLogger(getClass.getName)
+
+  val moreThanOneXmlSchemaNamespaceDeclarationRegex = "(?s)(?:.*\\sxmlns\\s*:\\s*\\w+\\s*=\\s*\\Q\"http://www.w3.org/2001/XMLSchema\"\\E){2,}.*".r
+  val moreThanOneXmlSchemaInstanceNamespaceDeclarationRegex = "(?s)(?:.*\\sxmlns\\s*:\\s*\\w+\\s*=\\s*\\Q\"http://www.w3.org/2001/XMLSchema-instance\"\\E){2,}.*".r
 
   def addLogRecord(message: UpdateMessage) = {
     val ad = ArtifactDescriptor

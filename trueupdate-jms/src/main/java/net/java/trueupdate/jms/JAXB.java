@@ -31,15 +31,7 @@ final class JAXB {
     @SuppressWarnings({"BroadCatchBlock", "TooBroadCatch"})
     static String encode(final UpdateMessage message) throws Exception {
         final StringWriter sw = new StringWriter(1024);
-        final Marshaller m = marshaller();
-        if (!message.attachedLogs().isEmpty()) {
-            try {
-                m.setProperty("com.sun.xml.internal.bind.namespacePrefixMapper",
-                        new DtoNamespaceMapper());
-            } catch (Exception anIncompatibleJaxbImplementationIsUsed) {
-            }
-        }
-        m.marshal(adapter().marshal(message), sw);
+        marshaller().marshal(adapter().marshal(message), sw);
         return sw.toString();
     }
 
