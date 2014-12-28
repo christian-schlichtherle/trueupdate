@@ -43,16 +43,16 @@ class TransferSize implements Serializable {
 
     @Override public boolean equals(final Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof TransferSize)) return false;
+        if (null == obj || this.getClass() != obj.getClass()) return false;
         final TransferSize that = (TransferSize) obj;
         return Double.compare(this.amount, that.amount) == 0 &&
                 this.unit == that.unit;
     }
 
     @Override public int hashCode() {
+        int c = 17;
         final long temp = Double.doubleToLongBits(amount);
-        int c;
-        c = (int) (temp ^ (temp >>> 32));
+        c = 31 * c + (int) (temp ^ (temp >>> 32));
         c = 31 * c + unit.hashCode();
         return c;
     }

@@ -17,6 +17,19 @@ import org.scalatest.prop.PropertyChecks._
 class TransferRateTest extends WordSpec {
 
   "A transfer rate" when {
+    "created" should {
+      "never equal a transfer size, even with otherwise equal properties" in {
+        val table = Table(
+          "bytes",
+          0,
+          1024
+        )
+        forAll(table) { bytes =>
+          new TransferRate(bytes, 1000) should not equal new TransferSize(bytes)
+        }
+      }
+    }
+
     "given negative sizes or durations" should {
       "throw an IllegalArgumentException" in {
         val table = Table(
