@@ -74,14 +74,12 @@ public final class MavenParameters {
         }
 
         private void addRemotes(final RemoteRepositoryCi[] cis) {
-            final int l = cis.length;
-            for (int i = 0; i < l; i++) {
-                final RemoteRepositoryCi ci = cis[i];
+            for (final RemoteRepositoryCi ci : cis) {
                 remotes.add(new RemoteRepository.Builder(
                         resolve(ci.id, null),
                         resolve(ci.type, null),
                         resolve(ci.url, "http://repo1.maven.org/maven2/")
-                        ).build());
+                ).build());
             }
         }
 
