@@ -6,6 +6,7 @@ package net.java.trueupdate.util;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.ServiceConfigurationError;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,7 @@ public final class Resources {
                     .getContextClassLoader().getResources(name);
             url = en.nextElement();
         } catch (Exception ex) {
-            throw new ServiceConfigurationError(String.format(
+            throw new ServiceConfigurationError(String.format(Locale.ENGLISH,
                     "Could not locate the resource %s on the class path.", name), ex);
         }
         if (en.hasMoreElements())
