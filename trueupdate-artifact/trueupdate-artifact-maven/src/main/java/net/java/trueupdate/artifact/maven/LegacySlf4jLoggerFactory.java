@@ -26,7 +26,7 @@ import org.slf4j.spi.LocationAwareLogger;
  * Glassfish Embedded 3.1.1.
  *
  * @author Sonatype, Inc (initial API and implementation)
- * @author Christian Schlichtherle (edit to use SLF4J API &lt; 1.6.0)
+ * @author Christian Schlichtherle (edited to use SLF4J API &lt; 1.6.0)
  */
 public final class LegacySlf4jLoggerFactory implements LoggerFactory, Service {
 
