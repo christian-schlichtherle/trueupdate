@@ -166,9 +166,10 @@ public final class MavenArtifactResolver implements ArtifactResolver {
                         BasicRepositoryConnectorFactory.class)
                 .addService(TransporterFactory.class,
                         HttpTransporterFactory.class);
-        sl.setErrorHandler(errorHandler());
-        if (LegacySlf4jLoggerFactory.AVAILABLE)
+        if (LegacySlf4jLoggerFactory.AVAILABLE) {
             sl.setService(LoggerFactory.class, LegacySlf4jLoggerFactory.class);
+        }
+        sl.setErrorHandler(errorHandler());
         return sl;
     }
 
