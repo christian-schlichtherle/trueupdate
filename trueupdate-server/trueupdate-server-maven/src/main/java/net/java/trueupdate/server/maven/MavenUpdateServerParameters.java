@@ -5,6 +5,7 @@
 package net.java.trueupdate.server.maven;
 
 import java.net.URL;
+import java.util.Locale;
 import java.util.ServiceConfigurationError;
 import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
@@ -42,8 +43,8 @@ public final class MavenUpdateServerParameters {
         try {
             return parse(JAXB.unmarshal(source,
                                         MavenUpdateServerParametersCi.class));
-        } catch (Exception ex) {
-            throw new ServiceConfigurationError(String.format(
+        } catch (RuntimeException ex) {
+            throw new ServiceConfigurationError(String.format(Locale.ENGLISH,
                     "Failed to load configuration from %s .", source),
                     ex);
         }
