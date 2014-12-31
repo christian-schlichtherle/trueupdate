@@ -14,17 +14,16 @@ import org.scalatest.prop.PropertyChecks._
 @RunWith(classOf[JUnitRunner])
 class SystemPropertiesTest extends WordSpec {
 
-  val userHome = System.getProperty("user.home")
-  val subjects = Table(
-    ("string", "result"),
-    ("${user.home}", userHome),
-    ("${user.home}/.m2/repository", userHome + "/.m2/repository"),
-    ("foo${user.home}bar", "foo" + userHome + "bar")
-  )
-
   "Replacing system properties " should {
     "work for a list of test strings" in {
-      forAll(subjects) { (string, result) =>
+      val userHome = System.getProperty("user.home")
+      val table = Table(
+        ("string", "result"),
+        ("${user.home}", userHome),
+        ("${user.home}/.m2/repository", userHome + "/.m2/repository"),
+        ("foo${user.home}bar", "foo" + userHome + "bar")
+      )
+      forAll(table) { (string, result) =>
         SystemProperties.resolve(string) should equal (result)
       }
     }
