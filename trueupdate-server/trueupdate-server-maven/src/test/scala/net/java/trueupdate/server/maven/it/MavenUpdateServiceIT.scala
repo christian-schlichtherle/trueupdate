@@ -17,8 +17,8 @@ with MavenArtifactResolverTestContext {
 
   override protected def configure =
     new WebAppDescriptor.Builder(
-      Array[String](classOf[MavenUpdateServerApplication].getPackage.getName,
-                    classOf[UpdateServiceExceptionMapper].getPackage.getName): _*)
+      Array(classOf[MavenUpdateServerApplication].getPackage.getName,
+            classOf[UpdateServiceExceptionMapper].getPackage.getName): _*)
       .contextPath("test")
       .build
 }
