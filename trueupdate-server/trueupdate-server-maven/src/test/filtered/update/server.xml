@@ -12,7 +12,7 @@
     <repositories>
         <!-- Configures the mandatory local repository. -->
         <local>
-            <basedir>${user.home}/.m2/repository</basedir>
+            <directory>${user.home}/.m2/repository</directory>
             <!-- The optional type. -->
             <type/>
         </local>
