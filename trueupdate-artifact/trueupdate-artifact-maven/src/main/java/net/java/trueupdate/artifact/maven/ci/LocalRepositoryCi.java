@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 @SuppressWarnings("PublicField")
 public final class LocalRepositoryCi {
 
-    @XmlElement(defaultValue = "${user.home}/.m2")
+    @XmlElement(defaultValue = "${user.home}/.m2/repository")
     public String directory;
 
     public String type;

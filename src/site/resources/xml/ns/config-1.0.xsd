@@ -354,11 +354,11 @@
 
     <xs:complexType name="LocalRepository">
         <xs:all>
-            <xs:element default="${user.home}/.m2" minOccurs="0" name="directory" type="xs:string">
+            <xs:element default="${user.home}/.m2/repository" minOccurs="0" name="directory" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         The optional base directory of the local Maven repository.
-                        The default value is "${user.home}/.m2".
+                        The default value is "${user.home}/.m2/repository".
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

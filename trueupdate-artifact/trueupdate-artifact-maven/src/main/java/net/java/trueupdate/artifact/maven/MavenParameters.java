@@ -69,7 +69,7 @@ public final class MavenParameters {
 
         private static LocalRepository local(final LocalRepositoryCi ci) {
             return new LocalRepository(
-                    new File(resolve(nonNullOr(ci.directory, "${user.home}/.m2"))),
+                    new File(resolve(nonNullOr(ci.directory, "${user.home}/.m2/repository"))),
                     resolve(ci.type, null));
         }
 
