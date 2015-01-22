@@ -5,24 +5,19 @@
  */
 package net.java.trueupdate.core.io;
 
+import javax.annotation.WillNotClose;
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Queue;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.annotation.WillNotClose;
-import javax.annotation.concurrent.Immutable;
+
 import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
@@ -53,15 +48,11 @@ public final class Copy {
      * the current thread.
      * It performs best when used with <em>unbuffered</em> streams.
      *
-     * @param  source the source for reading the data from.
-     * @param  sink the sink for writing the data to.
-     * @throws InputException if copying the data fails because of an
-     *         {@code IOException} thrown by the <em>input stream</em>.
-     * @throws IOException if copying the data fails because of an
-     *         {@code IOException} thrown by the <em>output stream</em>.
+     * @param source the source for reading the data from.
+     * @param sink the sink for writing the data to.
      */
     public static void copy(final Source source, final Sink sink)
-    throws InputException, IOException {
+    throws IOException {
 
         class SourceTask implements InputTask<Void, IOException> {
             @Override
@@ -99,16 +90,12 @@ public final class Copy {
      * {@code cat} because you could use it to con<i>cat</i>enate the contents
      * of multiple streams.
      *
-     * @param  in the input stream.
-     * @param  out the output stream.
-     * @throws InputException if copying the data fails because of an
-     *         {@code IOException} thrown by the <em>input stream</em>.
-     * @throws IOException if copying the data fails because of an
-     *         {@code IOException} thrown by the <em>output stream</em>.
+     * @param in the input stream.
+     * @param out the output stream.
      */
     private static void cat(final @WillNotClose InputStream in,
                             final @WillNotClose OutputStream out)
-    throws InputException, IOException {
+    throws IOException {
         requireNonNull(in);
         requireNonNull(out);
 
@@ -140,10 +127,7 @@ public final class Copy {
 
             @Override
             public void run() {
-                // Cache some fields for better performance.
-                final InputStream in2 = in;
-                final Buffer[] buffers2 = buffers;
-                final int buffers2Length = buffers2.length;
+                final int buffersLength = buffers.length;
 
                 // The writer executor interrupts this executor to signal
                 // that it cannot handle more input because there has been
@@ -155,14 +139,14 @@ public final class Copy {
                     final Buffer buffer;
                     lock.lock();
                     try {
-                        while (size >= buffers2Length) {
+                        while (size >= buffersLength) {
                             try {
                                 signal.await();
                             } catch (InterruptedException cancel) {
                                 return;
                             }
                         }
-                        buffer = buffers2[(off + size) % buffers2Length];
+                        buffer = buffers[(off + size) % buffersLength];
                     } finally {
                         lock.unlock();
                     }
@@ -173,7 +157,7 @@ public final class Copy {
                     // of InputStream's contract.
                     try {
                         final byte[] buf = buffer.buf;
-                        read = in2.read(buf, 0, buf.length);
+                        read = in.read(buf, 0, buf.length);
                     } catch (final Throwable ex) {
                         exception = ex;
                         read = -1;
@@ -245,15 +229,13 @@ public final class Copy {
             }
             out.flush();
 
-            final Throwable ex = reader.exception;
-            if (null != ex) {
-                if (ex instanceof InputException)
-                    throw (InputException) ex;
-                else if (ex instanceof IOException)
-                    throw new InputException(ex);
-                else if (ex instanceof RuntimeException)
-                    throw (RuntimeException) ex;
-                throw (Error) ex;
+            final Throwable t = reader.exception;
+            if (null != t) {
+                if (t instanceof IOException)
+                    throw (IOException) t;
+                else if (t instanceof RuntimeException)
+                    throw (RuntimeException) t;
+                throw (Error) t;
             }
         } finally {
             if (interrupted)
