@@ -14,7 +14,6 @@ import net.java.trueupdate.manager.spec.UpdateManager;
 import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
 import net.java.trueupdate.manager.spec.cmd.Command;
 import net.java.trueupdate.manager.spec.cmd.Commands;
-import net.java.trueupdate.manager.spec.cmd.LogContext;
 import net.java.trueupdate.message.UpdateMessage;
 import net.java.trueupdate.message.UpdateMessage.Type;
 import net.java.trueupdate.message.UpdateMessageListener;
@@ -49,7 +48,7 @@ extends UpdateMessageListener implements UpdateManager {
     private final SessionManager sessionManager = new SessionManager();
 
     private final Set<UpdateDescriptor> blacklisted =
-            Collections.synchronizedSet(new TreeSet<UpdateDescriptor>());
+            Collections.synchronizedSet(new HashSet<UpdateDescriptor>());
 
     private final CoreUpdateResolver
             updateResolver = new ConfiguredUpdateResolver();
