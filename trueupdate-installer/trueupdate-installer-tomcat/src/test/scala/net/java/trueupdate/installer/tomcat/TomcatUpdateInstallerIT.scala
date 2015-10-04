@@ -27,7 +27,7 @@ class TomcatUpdateInstallerIT {
     val installer = new TomcatUpdateInstaller
     val appBase = installer.appBase
     val testWar = new File(appBase,
-                           new ContextName(location).getBaseName + ".war")
+                           new ContextName(location, true).getBaseName + ".war")
 
     testArchive as classOf[ZipExporter] exportTo testWar
     val ad = installer updateParameters new UpdateContext {
