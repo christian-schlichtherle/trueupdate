@@ -432,7 +432,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-tomcat-embedded-7</artifactId>
-                <version>1.0.0.CR6</version>
+                <version>1.0.0.CR7</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
