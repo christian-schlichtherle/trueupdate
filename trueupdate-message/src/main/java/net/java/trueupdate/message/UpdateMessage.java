@@ -235,7 +235,7 @@ public final class UpdateMessage {
      * Note that messages may get lost or duplicated and in general, no timeout
      * is defined.
      * <p>
-     * Note that new types must be <em>strictly</em> added to the <em>end<em>
+     * Note that new types must be <em>strictly</em> added to the <em>end</em>
      * because the serialization may depend on the enum ordinal!
      */
     public enum Type {
