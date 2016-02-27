@@ -112,7 +112,7 @@
         <cargo.version>1.4.11</cargo.version>
         <jersey.version>1.18.3</jersey.version>
         <openejb.version>4.7.1</openejb.version>
-        <tomcat.version>7.0.64</tomcat.version>
+        <tomcat.version>7.0.68</tomcat.version>
     </properties>
 
     <dependencyManagement>
