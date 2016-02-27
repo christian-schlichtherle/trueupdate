@@ -11,7 +11,7 @@ import org.jboss.arquillian.junit.Arquillian
 import org.jboss.shrinkwrap.api.ShrinkWrap
 import org.jboss.shrinkwrap.api.exporter.ZipExporter
 import org.jboss.shrinkwrap.api.spec.WebArchive
-import org.junit.Test
+import org.junit.{Ignore, Test}
 import org.junit.runner.RunWith
 import net.java.trueupdate.installer.core.io.Files._
 import net.java.trueupdate.installer.tomcat.TomcatUpdateInstallerIT._
@@ -21,6 +21,7 @@ import net.java.trueupdate.manager.spec.cmd._
 @RunWith(classOf[Arquillian])
 class TomcatUpdateInstallerIT {
 
+  @Ignore("https://java.net/jira/browse/TRUEUPDATE-15")
   @Test def test() {
     val location = "/test"
 
