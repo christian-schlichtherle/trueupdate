@@ -34,7 +34,7 @@ public final class Commands {
                 try {
                     cmd.revert();
                 } catch (Throwable t2) {
-                    logger().log(Level.SEVERE, "Exception while reverting command - the state of the system is likely corrupted.", t2);
+                    logger().log(Level.SEVERE, "Exception while reverting command - the integrity of the system is probably corrupted.", t2);
                 }
                 rethrow(t1);
             }
