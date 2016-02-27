@@ -18,4 +18,11 @@
     <description>
         Provides utilities for JAX-RS.
     </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+    </dependencies>
 </project>
