@@ -4,13 +4,14 @@
  */
 package net.java.trueupdate.manager.core;
 
-import java.net.URI;
-import javax.annotation.concurrent.Immutable;
-
 import net.java.trueupdate.manager.core.ci.UpdateServiceParametersCi;
-import net.java.trueupdate.util.Objects;
-import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.concurrent.Immutable;
+import java.net.URI;
+
+import static java.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
  * Update service parameters.
@@ -23,7 +24,7 @@ public final class UpdateServiceParameters {
     private final URI uri;
 
     UpdateServiceParameters(final Builder<?> b) {
-        this.uri = Objects.requireNonNull(b.uri);
+        this.uri = requireNonNull(b.uri);
     }
 
     /** Parses the given configuration item. */
@@ -32,7 +33,7 @@ public final class UpdateServiceParameters {
     }
 
     /** Returns a new builder for update service parameters. */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the base URI of the update service. */
     public URI uri() { return uri; }

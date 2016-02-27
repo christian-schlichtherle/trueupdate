@@ -4,13 +4,19 @@
  */
 package net.java.trueupdate.message;
 
-import java.util.*;
+import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
+import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.LogRecord;
-import javax.annotation.*;
-import net.java.trueupdate.artifact.spec.*;
-import static net.java.trueupdate.util.Objects.*;
+
+import static java.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.nonNullOr;
 import static net.java.trueupdate.util.Strings.requireNonEmpty;
-import net.java.trueupdate.util.builder.*;
 
 /**
  * An update message encapsulates the data which gets exchanged between update
@@ -37,7 +43,7 @@ public final class UpdateMessage {
     private final String updateVersion;
     private final String currentLocation, updateLocation;
 
-    private final List<LogRecord> attachedLogs = new LinkedList<LogRecord>();
+    private final List<LogRecord> attachedLogs = new LinkedList<>();
 
     @SuppressWarnings("unchecked")
     UpdateMessage(final Builder<?> b) {
@@ -51,7 +57,7 @@ public final class UpdateMessage {
         this.updateLocation = nonNullOr(b.updateLocation, currentLocation);
     }
 
-    private static long nonNullOrNow(Long timestamp) {
+    private static long nonNullOrNow(@Nullable Long timestamp) {
         return null != timestamp ? timestamp : System.currentTimeMillis();
     }
 
@@ -77,7 +83,7 @@ public final class UpdateMessage {
      * The default value for the property {@code updateLocation} is the
      * effective value of the property {@code currentLocation}.
      */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the update message timestamp. */
     public long timestamp() { return timestamp; }

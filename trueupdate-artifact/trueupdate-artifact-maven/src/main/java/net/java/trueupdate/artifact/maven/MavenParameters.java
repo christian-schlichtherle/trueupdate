@@ -4,15 +4,23 @@
  */
 package net.java.trueupdate.artifact.maven;
 
-import java.io.File;
-import java.util.*;
-import javax.annotation.*;
+import net.java.trueupdate.artifact.maven.ci.LocalRepositoryCi;
+import net.java.trueupdate.artifact.maven.ci.MavenParametersCi;
+import net.java.trueupdate.artifact.maven.ci.RemoteRepositoryCi;
+import net.java.trueupdate.util.builder.AbstractBuilder;
+import net.java.trueupdate.util.builder.ImmutableListBuilder;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RemoteRepository;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.artifact.maven.ci.*;
-import static net.java.trueupdate.util.Objects.*;
+import java.io.File;
+import java.util.List;
+
+import static java.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Objects.nonNullOr;
 import static net.java.trueupdate.util.SystemProperties.resolve;
-import net.java.trueupdate.util.builder.*;
-import org.eclipse.aether.repository.*;
 
 /**
  * Maven parameters.

@@ -4,25 +4,19 @@
  */
 package net.java.trueupdate.jms;
 
+import net.java.trueupdate.message.UpdateMessageListener;
+import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.jms.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-import javax.jms.Topic;
-import net.java.trueupdate.message.UpdateMessageListener;
-import static net.java.trueupdate.util.Objects.requireNonNull;
-import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Receives JMS messages in a loop and forwards them to the given
@@ -70,7 +64,7 @@ public final class JmsReceiver implements Runnable {
     }
 
     /** Returns a new builder for JMS receivers. */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     @Override public void run() {
         try {
@@ -142,7 +136,7 @@ public final class JmsReceiver implements Runnable {
                         // JMSException with a wrapped InterruptedException
                         // when using ActiveMQ 5.8.0.
                         try { Thread.sleep(100); }
-                        catch (InterruptedException stop) { }
+                        catch (InterruptedException ignored) { }
                         t.interrupt();
                     }
                 }

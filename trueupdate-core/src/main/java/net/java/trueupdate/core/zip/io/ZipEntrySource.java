@@ -4,10 +4,13 @@
  */
 package net.java.trueupdate.core.zip.io;
 
-import java.io.*;
-import java.util.zip.*;
 import net.java.trueupdate.core.io.Source;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Reads a ZIP entry from a ZIP input.

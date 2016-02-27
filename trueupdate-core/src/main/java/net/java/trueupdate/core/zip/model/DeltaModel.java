@@ -4,20 +4,29 @@
  */
 package net.java.trueupdate.core.zip.model;
 
+import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.util.HashMaps;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import static java.util.Collections.*;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.*;
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.util.HashMaps;
-import net.java.trueupdate.util.Objects;
 
 /**
  * A Value Object which represents the meta data in a delta ZIP file.
@@ -55,6 +64,7 @@ public final class DeltaModel implements Serializable {
             unchanged, added, removed;
 
     /** Required for JAXB. */
+    @SuppressWarnings("unused")
     private DeltaModel() {
         algorithm = "";
         numBytes = null;
@@ -80,7 +90,7 @@ public final class DeltaModel implements Serializable {
                     clone = MessageDigests.create(digest.getAlgorithm());
             if (clone.getDigestLength() == digest.getDigestLength())
                 return null;
-        } catch (IllegalArgumentException fallThrough) {
+        } catch (IllegalArgumentException ignored) {
         }
         return digest.getDigestLength();
     }
@@ -88,8 +98,7 @@ public final class DeltaModel implements Serializable {
     static Map<String, EntryNameAndTwoDigests> changedMap(
             final Collection<EntryNameAndTwoDigests> entries) {
         final Map<String, EntryNameAndTwoDigests> map =
-                new LinkedHashMap<String, EntryNameAndTwoDigests>(
-                    initialCapacity(entries));
+                new LinkedHashMap<>(initialCapacity(entries));
         for (EntryNameAndTwoDigests entryNameAndTwoDigests : entries)
             map.put(entryNameAndTwoDigests.name(), entryNameAndTwoDigests);
         return unmodifiableMap(map);
@@ -98,8 +107,7 @@ public final class DeltaModel implements Serializable {
     static Map<String, EntryNameAndDigest> unchangedMap(
             final Collection<EntryNameAndDigest> entries) {
         final Map<String, EntryNameAndDigest> map =
-                new LinkedHashMap<String, EntryNameAndDigest>(
-                    initialCapacity(entries));
+                new LinkedHashMap<>(initialCapacity(entries));
         for (EntryNameAndDigest entryNameAndDigest : entries)
             map.put(entryNameAndDigest.name(), entryNameAndDigest);
         return unmodifiableMap(map);

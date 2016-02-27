@@ -4,19 +4,26 @@
  */
 package net.java.trueupdate.jaxrs.client;
 
-import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
-import java.io.*;
-import java.net.URI;
-import javax.annotation.CheckForNull;
-import javax.annotation.concurrent.Immutable;
-import javax.ws.rs.core.MediaType;
-import static javax.ws.rs.core.MediaType.*;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
 import net.java.trueupdate.core.io.Source;
-import static net.java.trueupdate.jaxrs.client.ArtifactDescriptors.queryParameters;
 import net.java.trueupdate.jaxrs.util.UpdateServiceException;
-import static net.java.trueupdate.util.Objects.*;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+import static java.util.Objects.requireNonNull;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM_TYPE;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static net.java.trueupdate.jaxrs.client.ArtifactDescriptors.queryParameters;
 
 /**
  * The client-side implementation of a RESTful service for artifact updates.
@@ -45,7 +52,7 @@ public final class UpdateClient {
      * @param client the nullable client.
      */
     public UpdateClient(final URI uri,
-                        final @CheckForNull Client client) {
+                        final @Nullable Client client) {
         this.uri = requireNonNull(uri);
         this.client = null != client ? client : Client.create();
     }
@@ -66,7 +73,7 @@ public final class UpdateClient {
     }
 
     public String version(ArtifactDescriptor descriptor,
-                          @CheckForNull MediaType mediaType)
+                          @Nullable MediaType mediaType)
     throws IOException {
         return get(path("artifact/version")
                 .queryParams(queryParameters(descriptor))

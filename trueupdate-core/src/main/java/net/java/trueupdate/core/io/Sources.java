@@ -5,13 +5,14 @@
  */
 package net.java.trueupdate.core.io;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.annotation.CheckForNull;
-import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provides functions for {@link Source}s.
@@ -37,8 +38,8 @@ public class Sources {
      */
     public static Source forResource(
             final String name,
-            final @CheckForNull ClassLoader loader) {
-        Objects.requireNonNull(name);
+            final @Nullable ClassLoader loader) {
+        requireNonNull(name);
         return new Source() {
             @Override public InputStream input() throws IOException {
                 return check(null != loader
@@ -46,7 +47,7 @@ public class Sources {
                         : ClassLoader.getSystemResourceAsStream(name), name);
             }
 
-            InputStream check(final @CheckForNull InputStream in,
+            InputStream check(final @Nullable InputStream in,
                               final String name)
             throws FileNotFoundException {
                 if (null == in) throw new FileNotFoundException(String.format(
@@ -58,7 +59,7 @@ public class Sources {
 
     public static <V, X extends Exception>
             ExecuteStatement<V, X> execute(InputTask<V, X> task) {
-        return new WithInputTask<V, X>(task);
+        return new WithInputTask<>(task);
     }
 
     public interface ExecuteStatement<V, X extends Exception> {

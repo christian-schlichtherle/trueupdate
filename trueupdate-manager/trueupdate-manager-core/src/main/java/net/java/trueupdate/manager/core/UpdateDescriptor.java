@@ -4,12 +4,15 @@
  */
 package net.java.trueupdate.manager.core;
 
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import static net.java.trueupdate.util.Objects.*;
-import static net.java.trueupdate.util.Strings.*;
 import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+import static java.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Strings.requireNonEmpty;
 
 /**
  * An update descriptor comprises of an artifact descriptor and an update
@@ -31,7 +34,7 @@ public final class UpdateDescriptor {
     }
 
     /** Returns a new builder for an update descriptor. */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the artifact descriptor. */
     public ArtifactDescriptor artifactDescriptor() {

@@ -4,18 +4,21 @@
  */
 package net.java.trueupdate.agent.jms;
 
+import net.java.trueupdate.agent.core.ApplicationParameters;
+import net.java.trueupdate.agent.core.TimerParameters;
+import net.java.trueupdate.agent.jms.ci.JmsUpdateAgentParametersCi;
+import net.java.trueupdate.jms.JmsParameters;
+import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.JAXB;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ServiceConfigurationError;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.JAXB;
-import net.java.trueupdate.agent.core.*;
-import net.java.trueupdate.agent.jms.ci.JmsUpdateAgentParametersCi;
-import net.java.trueupdate.jms.JmsParameters;
 
-import static net.java.trueupdate.util.Objects.*;
-import net.java.trueupdate.util.builder.AbstractBuilder;
+import static java.util.Objects.requireNonNull;
 
 /**
  * JMS update agent parameters.
@@ -63,7 +66,7 @@ public final class JmsUpdateAgentParameters {
     }
 
     /** Returns a new builder for JMS update agent parameters. */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the application parameters. */
     public ApplicationParameters application() { return application; }

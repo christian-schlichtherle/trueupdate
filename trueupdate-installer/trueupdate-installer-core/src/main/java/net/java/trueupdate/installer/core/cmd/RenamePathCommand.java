@@ -9,8 +9,8 @@ import net.java.trueupdate.manager.spec.cmd.Command;
 import java.io.File;
 import java.io.IOException;
 
+import static java.util.Objects.requireNonNull;
 import static net.java.trueupdate.installer.core.io.Files.renamePath;
-import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * A command which renames a path.

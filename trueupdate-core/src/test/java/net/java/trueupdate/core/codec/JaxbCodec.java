@@ -5,12 +5,19 @@
  */
 package net.java.trueupdate.core.codec;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.*;
 import net.java.trueupdate.core.io.*;
-import net.java.trueupdate.util.Objects;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A codec which encodes/decodes objects to/from XML with a
@@ -28,7 +35,7 @@ public class JaxbCodec implements Codec {
     protected final JAXBContext context;
 
     public JaxbCodec(final JAXBContext context) {
-        this.context = Objects.requireNonNull(context);
+        this.context = requireNonNull(context);
     }
 
     /**
@@ -53,7 +60,7 @@ public class JaxbCodec implements Codec {
      */
     @Override public String contentTransferEncoding() { return "8bit"; }
 
-    @Override public void encode(final Sink sink, final Object obj)
+    @Override public void encode(final Sink sink, final @Nullable Object obj)
     throws Exception {
 
         class EncodeTask implements OutputTask<Void, JAXBException> {

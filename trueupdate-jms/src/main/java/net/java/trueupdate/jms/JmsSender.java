@@ -4,13 +4,17 @@
  */
 package net.java.trueupdate.jms;
 
-import java.util.logging.*;
+import net.java.trueupdate.message.UpdateMessage;
+
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 import javax.jms.*;
-import javax.naming.*;
-import net.java.trueupdate.message.UpdateMessage;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Transmits {@link UpdateMessage}s via JMS.

@@ -4,11 +4,12 @@
  */
 package net.java.trueupdate.manager.core;
 
+import net.java.trueupdate.manager.spec.UpdateManager;
+
+import javax.annotation.concurrent.Immutable;
+import static java.util.Objects.requireNonNull;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.manager.spec.UpdateManager;
-import net.java.trueupdate.util.Objects;
 
 /**
  * A runnable task which uses a given update manager to check for updates.
@@ -25,7 +26,7 @@ public final class CheckForUpdates implements Runnable {
     private final UpdateManager manager;
 
     public CheckForUpdates(final UpdateManager manager) {
-        this.manager = Objects.requireNonNull(manager);
+        this.manager = requireNonNull(manager);
     }
 
     @Override public void run() {

@@ -4,11 +4,16 @@
  */
 package net.java.trueupdate.jms;
 
-import java.util.logging.*;
+import net.java.trueupdate.message.UpdateMessageListener;
+
 import javax.annotation.concurrent.Immutable;
-import javax.jms.*;
-import net.java.trueupdate.message.*;
-import net.java.trueupdate.util.Objects;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Adapts the {@link net.java.trueupdate.message.UpdateMessageListener} class
@@ -29,7 +34,7 @@ final class JmsListener implements MessageListener {
     private final UpdateMessageListener updateMessageListener;
 
     JmsListener(final UpdateMessageListener uml) {
-        this.updateMessageListener = Objects.requireNonNull(uml);
+        this.updateMessageListener = requireNonNull(uml);
     }
 
     @Override public final void onMessage(final Message message) {

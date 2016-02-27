@@ -5,14 +5,17 @@
 package net.java.trueupdate.core.zip.diff;
 
 import edu.umd.cs.findbugs.annotations.CreatesObligation;
-import java.io.*;
-import java.security.MessageDigest;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-import net.java.trueupdate.core.io.*;
+import net.java.trueupdate.core.io.MessageDigests;
 import net.java.trueupdate.core.zip.io.*;
 
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.io.File;
+import java.io.IOException;
+import java.security.MessageDigest;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Compares two archives entry by entry.
@@ -40,7 +43,7 @@ public abstract class ZipDiff {
 
         Builder() { }
 
-        public Builder input1(final @CheckForNull File input1) {
+        public Builder input1(final @Nullable File input1) {
             return input1(null == input1 ? null : new ZipFileStore(input1));
         }
 
@@ -49,7 +52,7 @@ public abstract class ZipDiff {
             return this;
         }
 
-        public Builder input2(final @CheckForNull File input2) {
+        public Builder input2(final @Nullable File input2) {
             return input2(null == input2 ? null : new ZipFileStore(input2));
         }
 
@@ -71,7 +74,7 @@ public abstract class ZipDiff {
         ZipDiff create(
                 final ZipSource input1,
                 final ZipSource input2,
-                final @CheckForNull String digestName) {
+                final @Nullable String digestName) {
             requireNonNull(input1);
             requireNonNull(input2);
 

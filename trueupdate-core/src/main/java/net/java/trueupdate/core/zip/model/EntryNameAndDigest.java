@@ -4,10 +4,13 @@
  */
 package net.java.trueupdate.core.zip.model;
 
-import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.annotation.*;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import java.io.Serializable;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A Value Object which represents a ZIP entry name and message digest in

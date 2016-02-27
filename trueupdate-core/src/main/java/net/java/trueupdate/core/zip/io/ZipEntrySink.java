@@ -4,10 +4,14 @@
  */
 package net.java.trueupdate.core.zip.io;
 
-import java.io.*;
-import java.util.zip.*;
 import net.java.trueupdate.core.io.Sink;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Writes a ZIP entry to a ZIP output.

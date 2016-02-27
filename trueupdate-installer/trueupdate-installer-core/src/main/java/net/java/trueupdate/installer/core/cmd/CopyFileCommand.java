@@ -9,9 +9,9 @@ import net.java.trueupdate.manager.spec.cmd.AbstractCommand;
 import java.io.File;
 import java.io.IOException;
 
+import static java.util.Objects.requireNonNull;
 import static net.java.trueupdate.installer.core.io.Files.copyFile;
 import static net.java.trueupdate.installer.core.io.Files.deletePath;
-import static net.java.trueupdate.util.Objects.requireNonNull;
 
 /**
  * A command which copies a file.

@@ -4,16 +4,19 @@
  */
 package net.java.trueupdate.agent.core;
 
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-
 import net.java.trueupdate.agent.core.ci.ApplicationParametersCi;
 import net.java.trueupdate.agent.spec.UpdateAgentListener;
 import net.java.trueupdate.artifact.spec.ArtifactDescriptor;
-import static net.java.trueupdate.util.Objects.*;
-import static net.java.trueupdate.util.Strings.*;
-import static net.java.trueupdate.util.SystemProperties.resolve;
 import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+import static java.util.Objects.requireNonNull;
+import static net.java.trueupdate.util.Strings.nonEmptyOr;
+import static net.java.trueupdate.util.Strings.requireNonEmpty;
+import static net.java.trueupdate.util.SystemProperties.resolve;
 
 /**
  * Application Parameters.
@@ -59,7 +62,7 @@ public final class ApplicationParameters {
      * The default value for the property {@code updateLocation} is the
      * value of the property {@code currentLocation}.
      */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the update agent listener. */
     public UpdateAgentListener updateAgentListener() {

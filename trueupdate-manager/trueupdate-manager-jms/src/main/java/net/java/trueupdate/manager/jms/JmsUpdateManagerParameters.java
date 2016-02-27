@@ -4,19 +4,21 @@
  */
 package net.java.trueupdate.manager.jms;
 
-import java.net.*;
-import java.util.Locale;
-import java.util.ServiceConfigurationError;
-import javax.annotation.*;
+import net.java.trueupdate.jms.JmsParameters;
+import net.java.trueupdate.manager.core.TimerParameters;
+import net.java.trueupdate.manager.core.UpdateServiceParameters;
+import net.java.trueupdate.manager.jms.ci.JmsUpdateManagerParametersCi;
+import net.java.trueupdate.util.builder.AbstractBuilder;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.JAXB;
+import java.net.URL;
+import java.util.Locale;
+import java.util.ServiceConfigurationError;
 
-import net.java.trueupdate.jms.JmsParameters;
-import net.java.trueupdate.manager.core.*;
-import net.java.trueupdate.manager.jms.ci.JmsUpdateManagerParametersCi;
-
-import static net.java.trueupdate.util.Objects.requireNonNull;
-import net.java.trueupdate.util.builder.AbstractBuilder;
+import static java.util.Objects.requireNonNull;
 
 /**
  * JMS update manager parameters.
@@ -64,7 +66,7 @@ public final class JmsUpdateManagerParameters {
     }
 
     /** Returns a new builder for JMS update manager parameters. */
-    public static Builder<Void> builder() { return new Builder<Void>(); }
+    public static Builder<Void> builder() { return new Builder<>(); }
 
     /** Returns the update service parameters. */
     public UpdateServiceParameters updateService() { return updateService; }

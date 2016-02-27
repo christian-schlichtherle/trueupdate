@@ -18,7 +18,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provides a high-performance copy function.
@@ -281,7 +281,7 @@ public final class Copy {
          * initialized with instances of this class.
          */
         static final Queue<Reference<Buffer[]>> queue
-                = new ConcurrentLinkedQueue<Reference<Buffer[]>>();
+                = new ConcurrentLinkedQueue<>();
 
         static Buffer[] allocate() {
             {
@@ -301,7 +301,7 @@ public final class Copy {
 
         static void release(Buffer[] buffers) {
             //queue.push(new SoftReference<>(buffers));
-            queue.add(new SoftReference<Buffer[]>(buffers));
+            queue.add(new SoftReference<>(buffers));
         }
 
         /** The byte buffer used for reading and writing. */

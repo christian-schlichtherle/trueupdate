@@ -5,14 +5,9 @@
  */
 package net.java.trueupdate.core.io;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import java.io.*;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A file store.

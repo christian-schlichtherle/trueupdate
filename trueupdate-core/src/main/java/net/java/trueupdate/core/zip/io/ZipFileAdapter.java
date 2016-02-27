@@ -4,11 +4,16 @@
  */
 package net.java.trueupdate.core.zip.io;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.*;
-import javax.annotation.*;
-import net.java.trueupdate.util.Objects;
+import javax.annotation.Nullable;
+import javax.annotation.WillCloseWhenClosed;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Adapts a {@link ZipFile} to a {@link ZipInput}.
@@ -26,7 +31,7 @@ public class ZipFileAdapter implements ZipInput {
 
     /** Constructs a new ZIP file adapter for the given ZIP file. */
     public ZipFileAdapter(final @WillCloseWhenClosed ZipFile input) {
-        this.zip = Objects.requireNonNull(input);
+        this.zip = requireNonNull(input);
     }
 
     @Override public Iterator<ZipEntry> iterator() {

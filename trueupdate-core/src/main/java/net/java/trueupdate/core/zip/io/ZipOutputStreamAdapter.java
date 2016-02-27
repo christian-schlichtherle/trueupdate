@@ -4,10 +4,14 @@
  */
 package net.java.trueupdate.core.zip.io;
 
-import java.io.*;
-import java.util.zip.*;
 import javax.annotation.WillCloseWhenClosed;
-import net.java.trueupdate.util.Objects;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Adapts a {@link ZipOutputStream} to a {@link ZipOutput}.
@@ -28,7 +32,7 @@ public class ZipOutputStreamAdapter implements ZipOutput {
      * stream.
      */
     public ZipOutputStreamAdapter(final @WillCloseWhenClosed ZipOutputStream zip) {
-        this.zip = Objects.requireNonNull(zip);
+        this.zip = requireNonNull(zip);
     }
 
     @Override public ZipEntry entry(String name) { return new ZipEntry(name); }

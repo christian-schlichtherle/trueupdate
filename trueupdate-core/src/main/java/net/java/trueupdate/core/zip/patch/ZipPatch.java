@@ -4,13 +4,16 @@
  */
 package net.java.trueupdate.core.zip.patch;
 
-import java.io.*;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-
 import net.java.trueupdate.core.zip.io.*;
 
-import static net.java.trueupdate.util.Objects.requireNonNull;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import javax.annotation.WillNotClose;
+import javax.annotation.concurrent.Immutable;
+import java.io.File;
+import java.io.IOException;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Applies a delta ZIP file to an input archive and generates an output archive.
