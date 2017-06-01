@@ -27,7 +27,7 @@
         If you need a quote for using it with software which is not covered by
         the AGPLv3, then please contact sales AT schlichtherle DOT de .
     </description>
-    <url>https://trueupdate.java.net</url>
+    <url>https://bitbucket.org/christian-schlichtherle/trueupdate</url>
     <inceptionYear>2013</inceptionYear>
     <licenses>
         <license>
@@ -70,8 +70,8 @@
         </contributor>
     </contributors>
     <issueManagement>
-        <system>JIRA</system>
-        <url>https://java.net/jira/browse/TRUEUPDATE</url>
+        <system>Bitbucket</system>
+        <url>https://bitbucket.org/christian-schlichtherle/trueupdate/issues</url>
     </issueManagement>
     <scm>
         <connection>scm:git:https://bitbucket.org/christian_schlichtherle/trueupdate.git</connection>
@@ -86,7 +86,7 @@
             <name>TrueUpdate Website</name>
             <!-- DON'T use ${project.groupId}, ${project.artifactId} here.
                  This would change in sub-modules! -->
-            <url>file://${env.HOME}/sites/net.java.trueupdate</url>
+            <url>file://${env.HOME}/sites/christian-schlichtherle.bitbucket.io/trueupdate</url>
         </site>
     </distributionManagement>
 
